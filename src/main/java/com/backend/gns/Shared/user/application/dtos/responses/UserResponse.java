@@ -1,15 +1,16 @@
 package com.backend.gns.Shared.user.application.dtos.responses;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public record UserResponse(
         UUID trackingId,
-        String firstName,
-        String lastName,
-        String phone,
+        String nom,
+        String prenom,
+        String telephone,
         String email,
         String role,
-        String country,
-        boolean active
+        LocalDate dateInscription,
+        boolean estActif
 ) {
 }

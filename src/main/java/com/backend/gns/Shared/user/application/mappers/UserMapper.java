@@ -26,13 +26,13 @@ public class UserMapper {
         }
         User user = new User();
         user.setTrackingId(UUID.randomUUID());
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
+        user.setNom(request.nom());
+        user.setPrenom(request.prenom());
         user.setEmail(request.email());
-        user.setPassword(passwordEncoder.encode(request.password()));
-        
-        user.setRole(TypeRole.ADMINISTRATEUR);
-        user.setActive(true);
+        user.setPassword(passwordEncoder.encode(request.motDePasse()));
+        user.setTelephone(request.telephone());
+        user.setRole(TypeRole.ADMIN);
+        user.setEstActif(true);
         return user;
     }
 
@@ -43,13 +43,13 @@ public class UserMapper {
         
         return new UserResponse(
                 user.getTrackingId(),
-                user.getFirstName(),
-                user.getLastName(),
+                user.getNom(),
+                user.getPrenom(),
                 null,
                 user.getEmail(),
                 user.getRole().name(),
                 null,
-                user.isActive()
+                user.isEstActif()
         );
     }
 }

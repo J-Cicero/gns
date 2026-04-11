@@ -42,21 +42,21 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return user.isActive();
+        return user.isEstActif();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.isActive();
+        return user.isEstActif();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return user.isActive();
+        return user.isEstActif();
     }
 
     @Override
     public boolean isEnabled() {
-        return user.isActive();
+        return user.isEstActif();
     }
 }
