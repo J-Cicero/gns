@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     public UserResponse createUser(UserRequest request){
         User user = this.userMapper.toEntity(request);
-        User savedUser = this.userRepository.save(user);
+        this.userRepository.save(user);
        return this.userMapper.toResponse(user);
     }
 
@@ -65,14 +65,14 @@ public class UserServiceImpl implements UserService {
                         user.getTrackingId(),
                         token,
                         "Bearer",
-                        user.getFirstName(),
-                        user.getLastName(),
+                        user.getNom(),
+                        user.getPrenom(),
                         null,
                         user.getEmail(),
                         user.getRole().name(),
                         rolesList,
                         null,
-                        user.isActive()
+                        user.isEstActif()
                 );
             } else {
                 throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
                         .findByTrackingId(trackingId)
                         .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
-        user.setActive(etat);
+        user.setEstActif(etat);
         user = userRepository.save(user);
         return userMapper.toResponse(user);
     }

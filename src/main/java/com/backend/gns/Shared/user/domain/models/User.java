@@ -1,5 +1,6 @@
 package com.backend.gns.Shared.user.domain.models;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -58,15 +59,29 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(length = 100, nullable = false)
-    private String firstName;
+    private String nom;
 
     @Column(length = 100, nullable = false)
-    private String lastName;
+    private String prenom;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private TypeRole role;
 
     @Column(nullable = false)
-    private boolean active = false;
+    private boolean estActif = false;
+
+    @Column(length = 20)
+    private String telephone;
+
+    @Column
+    private LocalDate dateInscription;
+
+    @Column
+    private LocalDate dateNaissance;
+
+    // Convenience alias for legacy French naming used across services
+    public void setMotDePasse(String motDePasse) {
+        this.password = motDePasse;
+    }
 }
