@@ -12,6 +12,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,8 +36,9 @@ public class BudgetVirtuel extends BaseEntity {
     @Column(nullable = false, unique = true, updatable = false)
     private UUID trackingId;
 
-    @Column(nullable = false)
-    private UUID merchantTrackingId;
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    private Merchant merchant;
 
     @Column(nullable = false)
     private Double montantAlloue;

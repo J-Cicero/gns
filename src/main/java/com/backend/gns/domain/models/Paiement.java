@@ -17,6 +17,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,11 +41,13 @@ public class Paiement extends BaseEntity {
     @Column(nullable = false, unique = true, updatable = false)
     private UUID trackingId;
 
-    @Column(nullable = false)
-    private UUID commandeTrackingId;
+    @ManyToOne
+    @JoinColumn(name = "commande_id", nullable = false)
+    private Commande commande;
 
-    @Column(nullable = false)
-    private UUID walletTrackingId;
+    @ManyToOne
+    @JoinColumn(name = "wallet_id", nullable = false)
+    private Wallet wallet;
 
     @Column(nullable = false)
     private Double montantProduit;
