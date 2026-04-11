@@ -4,7 +4,11 @@ import com.backend.gns.domain.dtos.requests.PaiementRequest;
 import com.backend.gns.domain.dtos.responses.PaiementResponse;
 import com.backend.gns.domain.enums.PaiementStatut;
 import com.backend.gns.domain.enums.PaiementType;
+import com.backend.gns.domain.models.Commande;
 import com.backend.gns.domain.models.Paiement;
+import com.backend.gns.domain.models.Wallet;
+import com.backend.gns.infrastructure.repositories.CommandeRepository;
+import com.backend.gns.infrastructure.repositories.WalletRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -15,6 +19,14 @@ import java.util.stream.Collectors;
 @Component
 public class PaiementMapper {
 
+    private final CommandeRepository commandeRepository;
+    private final WalletRepository walletRepository;
+
+    public PaiementMapper(CommandeRepository commandeRepository, WalletRepository walletRepository) {
+        this.commandeRepository = commandeRepository;
+        this.walletRepository = walletRepository;
+    }
+
     public Paiement toEntity(PaiementRequest request) {
         if (request == null) {
             return null;
@@ -22,8 +34,15 @@ public class PaiementMapper {
 
         Paiement paiement = new Paiement();
         paiement.setTrackingId(UUID.randomUUID());
-        paiement.setCommandeTrackingId(request.commandeTrackingId());
-        paiement.setWalletTrackingId(request.walletTrackingId());
+        
+        Commande commande = commandeRepository.findByTrackingId(request.commandeTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Commande not found"));
+        paiement.setCommande(commande);
+        
+        Wallet wallet = walletRepository.findByTrackingId(request.walletTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Wallet not found"));
+        paiement.setWallet(wallet);
+        
         paiement.setMontantProduit(request.montantProduit());
         paiement.setCommission(request.commission());
         paiement.setMontantDebite(request.montantDebite());
@@ -43,8 +62,8 @@ public class PaiementMapper {
 
         return new PaiementResponse(
                 entity.getTrackingId(),
-                entity.getCommandeTrackingId(),
-                entity.getWalletTrackingId(),
+                entity.getCommande() != null ? entity.getCommande().getTrackingId() : null,
+                entity.getWallet() != null ? entity.getWallet().getTrackingId() : null,
                 entity.getMontantProduit(),
                 entity.getCommission(),
                 entity.getMontantDebite(),

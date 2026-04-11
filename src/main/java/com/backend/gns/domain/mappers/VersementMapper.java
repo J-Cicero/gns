@@ -3,6 +3,8 @@ package com.backend.gns.domain.mappers;
 import com.backend.gns.domain.dtos.requests.VersementRequest;
 import com.backend.gns.domain.dtos.responses.VersementResponse;
 import com.backend.gns.domain.models.Versement;
+import com.backend.gns.domain.models.Wallet;
+import com.backend.gns.infrastructure.repositories.WalletRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +14,12 @@ import java.util.stream.Collectors;
 @Component
 public class VersementMapper {
 
+    private final WalletRepository walletRepository;
+
+    public VersementMapper(WalletRepository walletRepository) {
+        this.walletRepository = walletRepository;
+    }
+
     public Versement toEntity(VersementRequest request) {
         if (request == null) {
             return null;
@@ -19,7 +27,11 @@ public class VersementMapper {
 
         Versement versement = new Versement();
         versement.setTrackingId(UUID.randomUUID());
-        versement.setWalletTrackingId(request.walletTrackingId());
+        
+        Wallet wallet = walletRepository.findByTrackingId(request.walletTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Wallet not found"));
+        versement.setWallet(wallet);
+        
         versement.setMontantVerse(request.montantVerse());
         versement.setTypeVersement(com.backend.gns.domain.enums.VersementType.valueOf(request.typeVersement()));
         versement.setDatePrevue(request.datePrevue());
@@ -35,7 +47,7 @@ public class VersementMapper {
 
         return new VersementResponse(
                 entity.getTrackingId(),
-                entity.getWalletTrackingId(),
+                entity.getWallet() != null ? entity.getWallet().getTrackingId() : null,
                 entity.getMontantVerse(),
                 entity.getTypeVersement() != null ? entity.getTypeVersement().name() : null,
                 entity.getDatePrevue(),

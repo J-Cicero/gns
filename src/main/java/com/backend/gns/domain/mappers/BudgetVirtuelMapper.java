@@ -3,6 +3,8 @@ package com.backend.gns.domain.mappers;
 import com.backend.gns.domain.dtos.requests.BudgetVirtuelRequest;
 import com.backend.gns.domain.dtos.responses.BudgetVirtuelResponse;
 import com.backend.gns.domain.models.BudgetVirtuel;
+import com.backend.gns.domain.models.Merchant;
+import com.backend.gns.infrastructure.repositories.MerchantRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +14,12 @@ import java.util.stream.Collectors;
 @Component
 public class BudgetVirtuelMapper {
 
+    private final MerchantRepository merchantRepository;
+
+    public BudgetVirtuelMapper(MerchantRepository merchantRepository) {
+        this.merchantRepository = merchantRepository;
+    }
+
     public BudgetVirtuel toEntity(BudgetVirtuelRequest request) {
         if (request == null) {
             return null;
@@ -19,7 +27,11 @@ public class BudgetVirtuelMapper {
 
         BudgetVirtuel budget = new BudgetVirtuel();
         budget.setTrackingId(UUID.randomUUID());
-        budget.setMerchantTrackingId(request.merchantTrackingId());
+        
+        Merchant merchant = merchantRepository.findByTrackingId(request.merchantTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Merchant not found"));
+        budget.setMerchant(merchant);
+        
         budget.setMontantAlloue(request.montantAlloue());
         budget.setMontantRestant(request.montantAlloue());
         budget.setPeriodeMois(request.periodeMois());
@@ -35,7 +47,7 @@ public class BudgetVirtuelMapper {
 
         return new BudgetVirtuelResponse(
                 entity.getTrackingId(),
-                entity.getMerchantTrackingId(),
+                entity.getMerchant() != null ? entity.getMerchant().getTrackingId() : null,
                 entity.getMontantAlloue(),
                 entity.getMontantRestant(),
                 entity.getPeriodeMois(),

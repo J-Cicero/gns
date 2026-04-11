@@ -1,6 +1,7 @@
 package com.backend.gns.domain.models;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,6 +16,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,4 +62,10 @@ public class Student extends User {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private KycStatus statutKYC;
+
+    @OneToMany(mappedBy = "student")
+    private List<Wallet> wallets;
+
+    @OneToMany(mappedBy = "student")
+    private List<Commande> commandes;
 }

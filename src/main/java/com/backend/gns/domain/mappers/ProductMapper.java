@@ -2,7 +2,9 @@ package com.backend.gns.domain.mappers;
 
 import com.backend.gns.domain.dtos.requests.ProductRequest;
 import com.backend.gns.domain.dtos.responses.ProductResponse;
+import com.backend.gns.domain.models.Merchant;
 import com.backend.gns.domain.models.Product;
+import com.backend.gns.infrastructure.repositories.MerchantRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -13,6 +15,12 @@ import java.util.stream.Collectors;
 @Component
 public class ProductMapper {
 
+    private final MerchantRepository merchantRepository;
+
+    public ProductMapper(MerchantRepository merchantRepository) {
+        this.merchantRepository = merchantRepository;
+    }
+
     public Product toEntity(ProductRequest request) {
         if (request == null) {
             return null;
@@ -20,7 +28,11 @@ public class ProductMapper {
 
         Product product = new Product();
         product.setTrackingId(UUID.randomUUID());
-        product.setMerchantTrackingId(request.merchantTrackingId());
+        
+        Merchant merchant = merchantRepository.findByTrackingId(request.merchantTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Merchant not found"));
+        product.setMerchant(merchant);
+        
         product.setNom(request.nom());
         product.setDescription(request.description());
         product.setPrix(request.prix());
@@ -38,7 +50,7 @@ public class ProductMapper {
 
         return new ProductResponse(
                 entity.getTrackingId(),
-                entity.getMerchantTrackingId(),
+                entity.getMerchant() != null ? entity.getMerchant().getTrackingId() : null,
                 entity.getNom(),
                 entity.getDescription(),
                 entity.getPrix(),

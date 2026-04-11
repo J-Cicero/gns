@@ -1,6 +1,7 @@
 package com.backend.gns.domain.models;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,6 +17,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,11 +45,13 @@ public class Commande extends BaseEntity {
     @Column(length = 36, nullable = false, unique = true)
     private String reference;
 
-    @Column(nullable = false)
-    private UUID studentTrackingId;
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
 
-    @Column(nullable = false)
-    private UUID merchantTrackingId;
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    private Merchant merchant;
 
     @Column(nullable = false)
     private Double montantTotal;
@@ -56,4 +62,7 @@ public class Commande extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private CommandeStatut statut;
+
+    @OneToMany(mappedBy = "commande")
+    private List<Paiement> paiements;
 }
