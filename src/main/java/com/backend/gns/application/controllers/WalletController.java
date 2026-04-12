@@ -1,6 +1,7 @@
 package com.backend.gns.application.controllers;
 
 import com.backend.gns.domain.dtos.requests.WalletRequest;
+import com.backend.gns.domain.dtos.requests.RechargeWalletRequest;
 import com.backend.gns.domain.dtos.responses.WalletResponse;
 import com.backend.gns.domain.services.WalletService;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,25 @@ public class WalletController {
     public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
         walletService.delete(trackingId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{trackingId}/crediter-horizon")
+    public ResponseEntity<WalletResponse> crediterHorizon(@PathVariable UUID trackingId) {
+        WalletResponse response = walletService.crediterHorizon(trackingId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{trackingId}/deverrouiller")
+    public ResponseEntity<WalletResponse> deverrouillerWallet(@PathVariable UUID trackingId) {
+        WalletResponse response = walletService.deverrouillerWallet(trackingId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{trackingId}/recharger")
+    public ResponseEntity<WalletResponse> rechargerWallet(
+            @PathVariable UUID trackingId,
+            @RequestBody RechargeWalletRequest request) {
+        WalletResponse response = walletService.rechargerWallet(trackingId, request.montant());
+        return ResponseEntity.ok(response);
     }
 }

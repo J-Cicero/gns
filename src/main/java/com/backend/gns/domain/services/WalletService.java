@@ -17,4 +17,24 @@ public interface WalletService {
     WalletResponse update(UUID trackingId, WalletRequest request);
 
     void delete(UUID trackingId);
+
+    /**
+     * Verrouille un wallet par son trackingId (estVerouille = true).
+     */
+    WalletResponse verrouillerWallet(UUID walletTrackingId);
+
+    /**
+     * F6 - Deverrouille un wallet (estVerouille = false).
+     */
+    WalletResponse deverrouillerWallet(UUID walletTrackingId);
+
+    /**
+     * F2 - Cree un versement BOURSE_DBS et credite 14/15 du plafond sur le wallet HORIZON.
+     */
+    WalletResponse crediterHorizon(UUID walletTrackingId);
+
+    /**
+     * F3 - Recharge wallet RELAIS via T-Money.
+     */
+    WalletResponse rechargerWallet(UUID walletTrackingId, Double montant);
 }

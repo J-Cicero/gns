@@ -28,21 +28,29 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(
                         new Info()
-                                .title("Titan Hisaa Backend API")
+                                .title("MiabéShop API - GNS Backend")
                                 .description(
-                                        "API de la plateforme de gestion d'évènements")
+                                        "Complete API documentation for MiabéShop - Student Payment & Commerce Platform\n\n" +
+                                        "## Features\n" +
+                                        "- **Student Management**: Registration, KYC validation, wallet management\n" +
+                                        "- **Merchant Management**: Shop registration, product catalog, budget tracking\n" +
+                                        "- **Payment System**: Multi-wallet support (Relais, Horizon), commission calculation\n" +
+                                        "- **Orders**: Complete order lifecycle from creation to payment\n" +
+                                        "- **Virtual Budget**: Monthly merchant budget allocation and tracking\n\n" +
+                                        "## Authentication\n" +
+                                        "All endpoints (except /auth/login and /auth/register) require JWT Bearer token")
                                 .version("1.0.0")
                                 .contact(
                                         new Contact()
-                                                .name("NitchCorp Team")
-                                                .email("nitchcorp@gmail.com")
-                                                .url("https://nitchcorp.com"))
-                                .license(new License().name("Proprietary").url("https://nitchcorp.com/license")))
+                                                .name("MiabéShop Team")
+                                                .email("support@miabeshop.cm")
+                                                .url("https://miabeshop.cm"))
+                                .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0.html")))
                 .servers(
                         List.of(
-                                new Server().url(contextPath).description("Serveur de développement"),
+                                new Server().url("http://localhost:8080").description("Serveur de développement"),
                                 new Server()
-                                        .url("https://titan-hisaa-backend-springboot.onrender.com/api")
+                                        .url("https://gns-api.production.com")
                                         .description("Serveur de production")))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(
@@ -55,13 +63,12 @@ public class OpenApiConfig {
                                                 .scheme("bearer")
                                                 .bearerFormat("JWT")
                                                 .description(
-                                                        "Entrez votre token JWT. Format: Bearer {token}\n\n"
-                                                                + "Pour obtenir un token:\n"
-                                                                + "1. Utilisez l'endpoint POST /user/login avec vos identifiants\n"
-                                                                + "2. Copiez le token reçu dans la réponse\n"
-                                                                + "3. Cliquez sur le bouton 'Authorize' (cadenas) ci-dessus\n"
-                                                                + "4. Collez le token dans le champ 'Value'\n"
-                                                                + "5. Cliquez sur 'Authorize' puis 'Close'\n\n"
-                                                                + "Le token sera automatiquement ajouté à toutes les requêtes.")));
+                                                        "JWT Bearer Token\n\n" +
+                                                        "Pour obtenir un token:\n" +
+                                                        "1. Utilisez l'endpoint POST /api/user/login avec vos identifiants\n" +
+                                                        "2. Copiez le token reçu\n" +
+                                                        "3. Cliquez sur le bouton 'Authorize' (cadenas) ci-dessus\n" +
+                                                        "4. Entrez: Bearer {token}\n" +
+                                                        "5. Le token sera automatiquement ajouté à toutes les requêtes")));
     }
 }

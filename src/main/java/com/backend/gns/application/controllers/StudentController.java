@@ -49,4 +49,10 @@ public class StudentController {
         studentService.delete(trackingId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{trackingId}/valider-kyc")
+    public ResponseEntity<StudentResponse> validerKYC(@PathVariable UUID trackingId) {
+        StudentResponse response = studentService.validerKYC(trackingId);
+        return ResponseEntity.ok(response);
+    }
 }
