@@ -17,4 +17,14 @@ public interface VersementService {
     VersementResponse update(UUID trackingId, VersementRequest request);
 
     void delete(UUID trackingId);
+
+    /**
+     * Cree un versement avec statut EXECUTE et dateEffective = aujourd'hui.
+     */
+    VersementResponse creerVersementExecute(VersementRequest request);
+
+    /**
+     * F8 - Remboursement automatique DBS : reinitialise wallet, recrédite 14/15, crée nouveau versement.
+     */
+    VersementResponse executerRemboursementDBS(UUID versementTrackingId);
 }

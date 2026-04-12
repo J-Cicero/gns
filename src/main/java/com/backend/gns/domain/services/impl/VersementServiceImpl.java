@@ -3,16 +3,24 @@ package com.backend.gns.domain.services.impl;
 import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
 import com.backend.gns.domain.dtos.requests.VersementRequest;
 import com.backend.gns.domain.dtos.responses.VersementResponse;
+import com.backend.gns.domain.enums.VersementStatut;
+import com.backend.gns.domain.enums.VersementType;
+import com.backend.gns.domain.enums.PaiementStatut;
 import com.backend.gns.domain.mappers.VersementMapper;
 import com.backend.gns.domain.models.Versement;
+import com.backend.gns.domain.models.Wallet;
 import com.backend.gns.infrastructure.repositories.VersementRepository;
+import com.backend.gns.infrastructure.repositories.WalletRepository;
+import com.backend.gns.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.domain.services.VersementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,6 +29,8 @@ public class VersementServiceImpl implements VersementService {
 
     private final VersementRepository versementRepository;
     private final VersementMapper versementMapper;
+    private final WalletRepository walletRepository;
+    private final PaiementRepository paiementRepository;
 
     @Override
     public VersementResponse create(VersementRequest request) {
@@ -62,5 +72,80 @@ public class VersementServiceImpl implements VersementService {
         Versement versement = versementRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Versement not found with trackingId: " + trackingId));
         versementRepository.delete(versement);
+    }
+
+    @Override
+    public VersementResponse creerVersementExecute(VersementRequest request) {
+        // Recupere le wallet par trackingId
+        Wallet wallet = walletRepository.findByTrackingId(request.walletTrackingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet not found: " + request.walletTrackingId()));
+
+        // Cree le versement directement avec statut EXECUTE
+        Versement versement = new Versement();
+        versement.setTrackingId(UUID.randomUUID());
+        versement.setWallet(wallet);
+        versement.setMontantVerse(request.montantVerse());
+        versement.setTypeVersement(VersementType.valueOf(request.typeVersement()));
+        versement.setDatePrevue(request.datePrevue());
+        versement.setDateEffective(LocalDate.now());
+        versement.setStatut(VersementStatut.EXECUTE);
+
+        Versement savedVersement = versementRepository.save(versement);
+        return versementMapper.toResponse(savedVersement);
+    }
+
+    @Override
+    public VersementResponse executerRemboursementDBS(UUID versementTrackingId) {
+        // F8 - Recupere le versement par trackingId
+        Versement versement = versementRepository.findByTrackingId(versementTrackingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Versement not found: " + versementTrackingId));
+
+        // Verifie que type = BOURSE_DBS et statut = PLANIFIE
+        if (versement.getTypeVersement() != VersementType.BOURSE_DBS) {
+            throw new IllegalStateException("Versement must be of type BOURSE_DBS");
+        }
+
+        if (versement.getStatut() != VersementStatut.PROGRAMME) {
+            throw new IllegalStateException("Versement must have status PROGRAMME");
+        }
+
+        // Recupere le wallet Horizon lié au versement
+        Wallet wallet = versement.getWallet();
+
+        // Calcule la somme de tous les paiements VALIDEE effectués depuis ce wallet
+        List<com.backend.gns.domain.models.Paiement> paiementsValides = paiementRepository.findByWalletId(wallet.getId())
+                .stream()
+                .filter(p -> p.getStatutPaiement() == PaiementStatut.VALIDEE)
+                .collect(Collectors.toList());
+
+        Double sommePaiementsValides = paiementsValides.stream()
+                .mapToDouble(p -> p.getMontantDebite())
+                .sum();
+
+        // Reinitialise le solde du wallet à 0 et enregistre la somme remboursée
+        // (on ne change pas le solde en bases de données, juste on le suit conceptuellement)
+
+        // Recalcule et recrédite les 14/15 du plafond pour le trimestre suivant
+        Double creditTrimestrique = wallet.getPlafond() * (14.0 / 15.0);
+        wallet.setSolde(creditTrimestrique);
+        walletRepository.save(wallet);
+
+        // Cree un nouveau versement PLANIFIE pour le prochain trimestre
+        Versement nouveauVersement = new Versement();
+        nouveauVersement.setTrackingId(UUID.randomUUID());
+        nouveauVersement.setWallet(wallet);
+        nouveauVersement.setMontantVerse(creditTrimestrique);
+        nouveauVersement.setTypeVersement(VersementType.BOURSE_DBS);
+        nouveauVersement.setDatePrevue(LocalDate.now().plusMonths(3));
+        nouveauVersement.setStatut(VersementStatut.PROGRAMME);
+
+        versementRepository.save(nouveauVersement);
+
+        // Passe le versement actuel à statut EXECUTE avec dateEffective = aujourd'hui
+        versement.setStatut(VersementStatut.EXECUTE);
+        versement.setDateEffective(LocalDate.now());
+
+        Versement savedVersement = versementRepository.save(versement);
+        return versementMapper.toResponse(savedVersement);
     }
 }

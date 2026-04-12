@@ -49,4 +49,10 @@ public class BudgetVirtuelController {
         budgetVirtuelService.delete(trackingId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/allouer")
+    public ResponseEntity<BudgetVirtuelResponse> allocuerBudget(@RequestBody BudgetVirtuelRequest request) {
+        BudgetVirtuelResponse response = budgetVirtuelService.allocuerBudget(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 }

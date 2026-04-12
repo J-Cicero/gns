@@ -1,6 +1,9 @@
 package com.backend.gns.application.controllers;
 
 import com.backend.gns.domain.dtos.requests.PaiementRequest;
+import com.backend.gns.domain.dtos.requests.PaiementScolariteRequest;
+import com.backend.gns.domain.dtos.requests.PaiementSimpleRequest;
+import com.backend.gns.domain.dtos.requests.PaiementHybrideRequest;
 import com.backend.gns.domain.dtos.responses.PaiementResponse;
 import com.backend.gns.domain.services.PaiementService;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +51,23 @@ public class PaiementController {
     public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
         paiementService.delete(trackingId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/scolarite")
+    public ResponseEntity<PaiementResponse> effectuerPaiementScolarite(@RequestBody PaiementScolariteRequest request) {
+        PaiementResponse response = paiementService.effectuerPaiementScolarite(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/effectuer")
+    public ResponseEntity<PaiementResponse> effectuerPaiement(@RequestBody PaiementSimpleRequest request) {
+        PaiementResponse response = paiementService.effectuerPaiement(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/effectuer-hybride")
+    public ResponseEntity<PaiementResponse> effectuerPaiementHybride(@RequestBody PaiementHybrideRequest request) {
+        PaiementResponse response = paiementService.effectuerPaiementHybride(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

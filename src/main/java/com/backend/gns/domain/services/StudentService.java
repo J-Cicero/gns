@@ -17,4 +17,10 @@ public interface StudentService {
     StudentResponse update(UUID trackingId, StudentRequest request);
 
     void delete(UUID trackingId);
+
+    /**
+     * F1 - Valide le KYC de l'etudiant et cree ses wallets.
+     * Cree toujours RELAIS, et HORIZON si eligible et boursier.
+     */
+    StudentResponse validerKYC(UUID studentTrackingId);
 }

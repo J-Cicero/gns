@@ -49,4 +49,10 @@ public class VersementController {
         versementService.delete(trackingId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{trackingId}/executer-remboursement")
+    public ResponseEntity<VersementResponse> executerRemboursementDBS(@PathVariable UUID trackingId) {
+        VersementResponse response = versementService.executerRemboursementDBS(trackingId);
+        return ResponseEntity.ok(response);
+    }
 }
