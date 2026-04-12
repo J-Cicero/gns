@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.backend.gns.Shared.user.domain.models.User;
 
+import java.util.UUID;
+
 /**
  * Adapter: Converts User domain entity to Spring Security UserDetails interface
  * This decouples our User entity from Spring Security coupling
@@ -23,6 +25,14 @@ public class UserPrincipal implements UserDetails {
 
     public User getUser() {
         return user;
+    }
+
+    public UUID getTrackingId() {
+        return user.getTrackingId();
+    }
+
+    public String getEmail() {
+        return user.getEmail();
     }
 
     @Override

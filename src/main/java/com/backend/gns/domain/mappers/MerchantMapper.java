@@ -5,6 +5,7 @@ import com.backend.gns.Shared.user.domain.enums.TypeRole;
 import com.backend.gns.domain.dtos.requests.MerchantRequest;
 import com.backend.gns.domain.dtos.responses.MerchantResponse;
 import com.backend.gns.domain.models.Merchant;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,6 +14,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class MerchantMapper {
+
+    private final PasswordEncoder passwordEncoder;
+
+    public MerchantMapper(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public Merchant toEntity(MerchantRequest request) {
         if (request == null) {
@@ -24,7 +31,7 @@ public class MerchantMapper {
         merchant.setNom(request.nom());
         merchant.setPrenom(request.prenom());
         merchant.setEmail(request.email());
-        merchant.setPassword(request.motDePasse());
+        merchant.setPassword(passwordEncoder.encode(request.motDePasse()));
         merchant.setTelephone(request.telephone());
         merchant.setNomBoutique(request.nomBoutique());
         merchant.setCheminCarteEDJ(request.cheminCarteEDJ());

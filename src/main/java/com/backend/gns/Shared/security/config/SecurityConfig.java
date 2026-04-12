@@ -36,28 +36,23 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                //.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                //.authenticationProvider(authenticationProvider());
                 .authorizeHttpRequests(auth -> auth
-                        // URLs publiques (sans auth)
+                        // URLs publiques (sans authentification)
                         .requestMatchers(JavaConstant.PUBLIC_URLS).permitAll()
                         
-                        // URLs ADMINISTRATEUR (accès le plus élevé)
-                        .requestMatchers(JavaConstant.ADMINISTRATEUR_URLS).hasRole("ADMINISTRATEUR")
+                        // URLs ADMIN uniquement
+                        .requestMatchers(JavaConstant.ADMIN_URLS).hasRole("ADMIN")
                         
-                        // URLs GESTIONNAIRE
-                        .requestMatchers(JavaConstant.GESTIONNAIRE_URLS).hasAnyRole("GESTIONNAIRE", "ADMINISTRATEUR")
+                        // URLs ÉTUDIANT uniquement
+                        .requestMatchers(JavaConstant.STUDENT_URLS).hasRole("ETUDIANT")
                         
-                        // URLs CONSULTANT
-                        .requestMatchers(JavaConstant.CONSULTANT_URLS).hasAnyRole("CONSULTANT", "ADMINISTRATEUR")
+                        // URLs COMMERÇANT uniquement
+                        .requestMatchers(JavaConstant.MERCHANT_URLS).hasRole("COMMERCANT")
                         
-                        // URLs FREELANCE
-                        .requestMatchers(JavaConstant.FREELANCE_URLS).hasAnyRole("FREELANCE", "ADMINISTRATEUR")
-                        
-                        // URLs UTILISATEUR (accessible à tous les rôles authentifiés)
-                        .requestMatchers(JavaConstant.UTILISATEUR_URLS).hasAnyRole("UTILISATEUR", "GESTIONNAIRE", "CONSULTANT", "FREELANCE", "ADMINISTRATEUR")
+                        // URLs DBS uniquement
+                        .requestMatchers(JavaConstant.DBS_URLS).hasRole("DBS")
                         
                         // Tout le reste nécessite une authentification
                         .anyRequest().authenticated()

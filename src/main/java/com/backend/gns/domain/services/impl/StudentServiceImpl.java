@@ -1,6 +1,7 @@
 package com.backend.gns.domain.services.impl;
 
 import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
+import com.backend.gns.Shared.security.utils.SecurityUtils;
 import com.backend.gns.domain.dtos.requests.StudentRequest;
 import com.backend.gns.domain.dtos.requests.WalletRequest;
 import com.backend.gns.domain.dtos.responses.StudentResponse;
@@ -12,6 +13,7 @@ import com.backend.gns.infrastructure.repositories.StudentRepository;
 import com.backend.gns.domain.services.StudentService;
 import com.backend.gns.domain.services.WalletService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,10 @@ public class StudentServiceImpl implements StudentService {
     public StudentResponse getByTrackingId(UUID trackingId) {
         Student student = studentRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with trackingId: " + trackingId));
+        
+        // Vérifier que l'utilisateur accède à ses propres données uniquement
+        SecurityUtils.verifyResourceOwnership(trackingId);
+        
         return studentMapper.toResponse(student);
     }
 
@@ -53,6 +59,9 @@ public class StudentServiceImpl implements StudentService {
     public StudentResponse update(UUID trackingId, StudentRequest request) {
         Student student = studentRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with trackingId: " + trackingId));
+
+        // Vérifier que l'utilisateur modifie ses propres données uniquement
+        SecurityUtils.verifyResourceOwnership(trackingId);
 
         student.setNom(request.nom());
         student.setPrenom(request.prenom());

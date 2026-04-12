@@ -121,7 +121,7 @@ public class PaiementServiceImpl implements PaiementService {
         paiement.setMontantDebite(request.montantScolarite());
         paiement.setDateTimestamp(LocalDateTime.now());
         paiement.setTypePaiement(PaiementType.SCOLARITE);
-        paiement.setStatutPaiement(PaiementStatut.VALIDEE);
+        paiement.setStatutPaiement(PaiementStatut.VALIDE);
         paiement.setEstSwitch(false);
         paiement.setCommandeRef(commande.getReference());
 
@@ -169,7 +169,7 @@ public class PaiementServiceImpl implements PaiementService {
         paiement.setMontantDebite(montantTotal);
         paiement.setDateTimestamp(LocalDateTime.now());
         paiement.setTypePaiement(PaiementType.ACHAT);
-        paiement.setStatutPaiement(PaiementStatut.VALIDEE);
+        paiement.setStatutPaiement(PaiementStatut.VALIDE);
         paiement.setEstSwitch(false);
         paiement.setCommandeRef(commande.getReference());
 
@@ -221,7 +221,7 @@ public class PaiementServiceImpl implements PaiementService {
         paiement1.setMontantDebite(soldeWalletPrincipal);
         paiement1.setDateTimestamp(LocalDateTime.now());
         paiement1.setTypePaiement(PaiementType.ACHAT);
-        paiement1.setStatutPaiement(PaiementStatut.VALIDEE);
+        paiement1.setStatutPaiement(PaiementStatut.VALIDE);
         paiement1.setEstSwitch(false);
         paiement1.setCommandeRef(commande.getReference());
         paiementRepository.save(paiement1);
@@ -251,7 +251,7 @@ public class PaiementServiceImpl implements PaiementService {
         paiement2.setMontantDebite(resteAPayer);
         paiement2.setDateTimestamp(LocalDateTime.now());
         paiement2.setTypePaiement(PaiementType.ACHAT);
-        paiement2.setStatutPaiement(PaiementStatut.VALIDEE);
+        paiement2.setStatutPaiement(PaiementStatut.VALIDE);
         paiement2.setEstSwitch(true);
         paiement2.setCommandeRef(commande.getReference());
 
