@@ -112,10 +112,10 @@ public class VersementServiceImpl implements VersementService {
         // Recupere le wallet Horizon lié au versement
         Wallet wallet = versement.getWallet();
 
-        // Calcule la somme de tous les paiements VALIDEE effectués depuis ce wallet
+        // Calcule la somme de tous les paiements VALIDE effectués depuis ce wallet
         List<com.backend.gns.domain.models.Paiement> paiementsValides = paiementRepository.findByWalletId(wallet.getId())
                 .stream()
-                .filter(p -> p.getStatutPaiement() == PaiementStatut.VALIDEE)
+                .filter(p -> p.getStatutPaiement() == PaiementStatut.VALIDE)
                 .collect(Collectors.toList());
 
         Double sommePaiementsValides = paiementsValides.stream()

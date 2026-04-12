@@ -6,6 +6,7 @@ import com.backend.gns.domain.dtos.responses.StudentResponse;
 import com.backend.gns.domain.models.Student;
 import com.backend.gns.domain.enums.StudentNiveau;
 import com.backend.gns.domain.enums.KycStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -15,6 +16,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class StudentMapper {
+
+    private final PasswordEncoder passwordEncoder;
+
+    public StudentMapper(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public Student toEntity(StudentRequest request) {
         if (request == null) {
@@ -26,7 +33,7 @@ public class StudentMapper {
         student.setNom(request.nom());
         student.setPrenom(request.prenom());
         student.setEmail(request.email());
-        student.setPassword(request.motDePasse());
+        student.setPassword(passwordEncoder.encode(request.motDePasse()));
         student.setTelephone(request.telephone());
         student.setMatriculeUL(request.matriculeUL());
         student.setNiveau(StudentNiveau.valueOf(request.niveau()));

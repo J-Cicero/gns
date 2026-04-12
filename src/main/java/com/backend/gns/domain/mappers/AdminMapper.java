@@ -4,6 +4,7 @@ import com.backend.gns.Shared.user.domain.enums.TypeRole;
 import com.backend.gns.domain.dtos.requests.AdminRequest;
 import com.backend.gns.domain.dtos.responses.AdminResponse;
 import com.backend.gns.domain.models.Admin;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +13,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class AdminMapper {
+
+    private final PasswordEncoder passwordEncoder;
+
+    public AdminMapper(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public Admin toEntity(AdminRequest request) {
         if (request == null) {
@@ -23,7 +30,7 @@ public class AdminMapper {
         admin.setNom(request.nom());
         admin.setPrenom(request.prenom());
         admin.setEmail(request.email());
-        admin.setPassword(request.motDePasse());
+        admin.setPassword(passwordEncoder.encode(request.motDePasse()));
         admin.setTelephone(request.telephone());
         admin.setGrade(request.grade());
         admin.setRole(TypeRole.ADMIN);

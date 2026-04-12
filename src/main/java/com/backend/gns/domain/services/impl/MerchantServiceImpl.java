@@ -1,6 +1,7 @@
 package com.backend.gns.domain.services.impl;
 
 import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
+import com.backend.gns.Shared.security.utils.SecurityUtils;
 import com.backend.gns.domain.dtos.requests.MerchantRequest;
 import com.backend.gns.domain.dtos.responses.MerchantResponse;
 import com.backend.gns.domain.mappers.MerchantMapper;
@@ -41,6 +42,10 @@ public class MerchantServiceImpl implements MerchantService {
     public MerchantResponse getByTrackingId(UUID trackingId) {
         Merchant merchant = merchantRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Merchant not found with trackingId: " + trackingId));
+        
+        // Vérifier que l'utilisateur accède à ses propres données uniquement
+        SecurityUtils.verifyResourceOwnership(trackingId);
+        
         return merchantMapper.toResponse(merchant);
     }
 
@@ -48,6 +53,9 @@ public class MerchantServiceImpl implements MerchantService {
     public MerchantResponse update(UUID trackingId, MerchantRequest request) {
         Merchant merchant = merchantRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Merchant not found with trackingId: " + trackingId));
+
+        // Vérifier que l'utilisateur modifie ses propres données uniquement
+        SecurityUtils.verifyResourceOwnership(trackingId);
 
         merchant.setNom(request.nom());
         merchant.setPrenom(request.prenom());
