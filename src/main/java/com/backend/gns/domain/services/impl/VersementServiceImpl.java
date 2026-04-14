@@ -5,13 +5,11 @@ import com.backend.gns.domain.dtos.requests.VersementRequest;
 import com.backend.gns.domain.dtos.responses.VersementResponse;
 import com.backend.gns.domain.enums.VersementStatut;
 import com.backend.gns.domain.enums.VersementType;
-import com.backend.gns.domain.enums.PaiementStatut;
 import com.backend.gns.domain.mappers.VersementMapper;
 import com.backend.gns.domain.models.Versement;
 import com.backend.gns.domain.models.Wallet;
 import com.backend.gns.infrastructure.repositories.VersementRepository;
 import com.backend.gns.infrastructure.repositories.WalletRepository;
-import com.backend.gns.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.domain.services.VersementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,7 +27,6 @@ public class VersementServiceImpl implements VersementService {
     private final VersementRepository versementRepository;
     private final VersementMapper versementMapper;
     private final WalletRepository walletRepository;
-    private final PaiementRepository paiementRepository;
 
     @Override
     public VersementResponse create(VersementRequest request) {
@@ -111,19 +107,6 @@ public class VersementServiceImpl implements VersementService {
 
         // Recupere le wallet Horizon lié au versement
         Wallet wallet = versement.getWallet();
-
-        // Calcule la somme de tous les paiements VALIDE effectués depuis ce wallet
-        List<com.backend.gns.domain.models.Paiement> paiementsValides = paiementRepository.findByWalletId(wallet.getId())
-                .stream()
-                .filter(p -> p.getStatutPaiement() == PaiementStatut.VALIDE)
-                .collect(Collectors.toList());
-
-        Double sommePaiementsValides = paiementsValides.stream()
-                .mapToDouble(p -> p.getMontantDebite())
-                .sum();
-
-        // Reinitialise le solde du wallet à 0 et enregistre la somme remboursée
-        // (on ne change pas le solde en bases de données, juste on le suit conceptuellement)
 
         // Recalcule et recrédite les 14/15 du plafond pour le trimestre suivant
         Double creditTrimestrique = wallet.getPlafond() * (14.0 / 15.0);

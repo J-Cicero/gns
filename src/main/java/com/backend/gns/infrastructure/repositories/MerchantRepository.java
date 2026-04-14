@@ -22,4 +22,7 @@ public interface MerchantRepository extends JpaRepository<Merchant, Long> {
 
     @Query("SELECT m FROM Merchant m WHERE m.trackingId = :trackingId")
     Optional<Merchant> findByTrackingId(@Param("trackingId") UUID trackingId);
+
+    @Query("SELECT COUNT(m) FROM Merchant m WHERE m.statutKYC = :statut")
+    Long countByStatutKYC(@Param("statut") com.backend.gns.domain.enums.KycStatus statut);
 }

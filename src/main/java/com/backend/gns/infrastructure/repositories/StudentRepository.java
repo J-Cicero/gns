@@ -22,4 +22,14 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     @Query("SELECT s FROM Student s WHERE s.niveau = :niveau")
     List<Student> findByNiveau(@Param("niveau") com.backend.gns.domain.enums.StudentNiveau niveau);
+
+    @Query("SELECT COUNT(s) FROM Student s WHERE s.statutKYC = :statut")
+    Long countByStatutKYC(@Param("statut") com.backend.gns.domain.enums.KycStatus statut);
+
+    @Query("SELECT s FROM Student s " +
+           "WHERE s.statutKYC = :statut " +
+           "ORDER BY s.createdAt ASC")
+    List<Student> findByStatutKYCOrderByCreatedAt(
+            @Param("statut") com.backend.gns.domain.enums.KycStatus statut
+    );
 }

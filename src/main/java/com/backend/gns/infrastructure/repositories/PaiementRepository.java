@@ -25,4 +25,18 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
 
     @Query("SELECT p FROM Paiement p WHERE p.trackingId = :trackingId")
     Optional<Paiement> findByTrackingId(@Param("trackingId") UUID trackingId);
+
+    @Query("SELECT p FROM Paiement p " +
+           "WHERE p.wallet.trackingId = :trackingId " +
+           "ORDER BY p.dateTimestamp DESC")
+    List<Paiement> findByWalletTrackingId(@Param("trackingId") UUID trackingId);
+
+    @Query("SELECT COUNT(p) FROM Paiement p WHERE p.statutPaiement = :statut")
+    Long countByStatut(@Param("statut") com.backend.gns.domain.enums.PaiementStatut statut);
+
+    @Query("SELECT SUM(p.montantDebite) FROM Paiement p WHERE p.statutPaiement = :statut")
+    Double sumMontantDebiteByStatut(@Param("statut") com.backend.gns.domain.enums.PaiementStatut statut);
+
+    @Query("SELECT SUM(p.commission) FROM Paiement p WHERE p.statutPaiement = :statut")
+    Double sumCommissionByStatut(@Param("statut") com.backend.gns.domain.enums.PaiementStatut statut);
 }

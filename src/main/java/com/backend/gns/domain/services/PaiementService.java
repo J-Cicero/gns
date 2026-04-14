@@ -3,7 +3,6 @@ package com.backend.gns.domain.services;
 import com.backend.gns.domain.dtos.requests.PaiementRequest;
 import com.backend.gns.domain.dtos.requests.PaiementScolariteRequest;
 import com.backend.gns.domain.dtos.requests.PaiementSimpleRequest;
-import com.backend.gns.domain.dtos.requests.PaiementHybrideRequest;
 import com.backend.gns.domain.dtos.responses.PaiementResponse;
 
 import java.util.List;
@@ -32,7 +31,7 @@ public interface PaiementService {
     PaiementResponse effectuerPaiement(PaiementSimpleRequest request);
 
     /**
-     * F5 - Effectue un paiement hybride avec switch automatique entre deux wallets.
+     * C6 - Récupère les paiements (1 ou 2) d'un achat hybride par référence de commande
      */
-    PaiementResponse effectuerPaiementHybride(PaiementHybrideRequest request);
+    List<PaiementResponse> getPaiementsByCommandeRef(String commandeRef);
 }

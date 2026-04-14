@@ -17,13 +17,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.trackingId = :trackingId")
     Optional<User> findByTrackingId(@Param("trackingId") UUID trackingId);
 
-    @Query("SELECT u FROM User u WHERE u.active = :isActive")
+    @Query("SELECT u FROM User u WHERE u.estActif = :isActive")
     List<User> findByIsActive(@Param("isActive") Boolean isActive);
 
-    @Query("SELECT u FROM User u WHERE LOWER(u.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))")
+    @Query("SELECT u FROM User u WHERE LOWER(u.prenom) LIKE LOWER(CONCAT('%', :firstName, '%'))")
     List<User> findByFirstNameContainingIgnoreCase(@Param("firstName") String firstName);
 
-    @Query("SELECT u FROM User u WHERE LOWER(u.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))")
+    @Query("SELECT u FROM User u WHERE LOWER(u.nom) LIKE LOWER(CONCAT('%', :lastName, '%'))")
     List<User> findByLastNameContainingIgnoreCase(@Param("lastName") String lastName);
 
     @Query("SELECT u FROM User u WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))")

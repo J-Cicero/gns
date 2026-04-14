@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.gns.Shared.user.application.dtos.requests.LoginRequest;
 import com.backend.gns.Shared.user.application.dtos.requests.UserRequest;
-import com.backend.gns.Shared.user.application.dtos.responses.LoginResponse;
 import com.backend.gns.Shared.user.application.dtos.responses.UserResponse;
 import com.backend.gns.Shared.user.domain.services.UserService;
 
@@ -47,20 +45,6 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest request){
         return ResponseEntity.ok(userService.createUser(request));
-    }
-
-    @PostMapping("/login")
-    @Operation(summary = "Authenticate user", description = "Authenticates a user and returns JWT token")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Authentication successful"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input"),
-                    @ApiResponse(responseCode = "403", description = "Account disabled or locked"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
-            })
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        LoginResponse response = userService.authenticate(loginRequest);
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/get/{trackingId}")

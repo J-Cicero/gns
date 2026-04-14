@@ -14,10 +14,10 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
     @Query("SELECT w FROM Wallet w WHERE w.trackingId = :trackingId")
     Optional<Wallet> findByTrackingId(@Param("trackingId") UUID trackingId);
 
-    @Query("SELECT w FROM Wallet w WHERE w.studentTrackingId = :studentTrackingId")
+    @Query("SELECT w FROM Wallet w WHERE w.student.trackingId = :studentTrackingId")
     List<Wallet> findByStudentTrackingId(@Param("studentTrackingId") UUID studentTrackingId);
 
-    @Query("SELECT w FROM Wallet w WHERE w.studentTrackingId = :studentTrackingId AND w.typeWallet = :type")
+    @Query("SELECT w FROM Wallet w WHERE w.student.trackingId = :studentTrackingId AND w.typeWallet = :type")
     Optional<Wallet> findByStudentTrackingIdAndType(@Param("studentTrackingId") UUID studentTrackingId, 
                                            @Param("type") com.backend.gns.domain.enums.WalletType type);
 }

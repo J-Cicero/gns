@@ -20,4 +20,12 @@ public interface BudgetVirtuelRepository extends JpaRepository<BudgetVirtuel, Lo
 
     @Query("SELECT b FROM BudgetVirtuel b WHERE b.trackingId = :trackingId")
     Optional<BudgetVirtuel> findByTrackingId(@Param("trackingId") UUID trackingId);
+
+    @Query("SELECT b FROM BudgetVirtuel b " +
+           "WHERE b.merchant.trackingId = :trackingId " +
+           "AND b.periodeMois = :periode")
+    Optional<BudgetVirtuel> findByMerchantTrackingIdAndPeriode(
+            @Param("trackingId") UUID trackingId,
+            @Param("periode") String periode
+    );
 }
