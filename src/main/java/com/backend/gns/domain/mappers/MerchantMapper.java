@@ -1,6 +1,5 @@
 package com.backend.gns.domain.mappers;
 
-import com.backend.gns.Shared.user.domain.models.User;
 import com.backend.gns.Shared.user.domain.enums.TypeRole;
 import com.backend.gns.domain.dtos.requests.MerchantRequest;
 import com.backend.gns.domain.dtos.responses.MerchantResponse;

@@ -16,9 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -43,12 +40,13 @@ public class JpaRelationshipsIntegrationTest {
     public void setUp() {
         // Créer un student de test
         StudentRequest studentRequest = new StudentRequest(
-                "test@student.com",
-                "password123",
                 "Jean",
                 "Dupont",
+                "test@student.com",
+                "password123",
+                "0612345678",
                 "MAT123456",
-                com.backend.gns.domain.enums.StudentNiveau.L1,
+                "L1",
                 "Scientifique",
                 0,
                 "RIB12345",
@@ -66,10 +64,10 @@ public class JpaRelationshipsIntegrationTest {
         assertNotNull(createdStudent);
         assertNotNull(createdStudent.trackingId());
 
-        // When: Créer un wallet associé au student
+        // When: Créer un wallet HORIZON associé au student
         WalletRequest walletRequest = new WalletRequest(
                 createdStudent.trackingId(),
-                "RELAIS",
+                "HORIZON",
                 0.0,
                 36000.0
         );
@@ -80,7 +78,7 @@ public class JpaRelationshipsIntegrationTest {
         assertNotNull(walletResponse);
         assertEquals(createdStudent.trackingId(), walletResponse.studentTrackingId());
 
-        // Récupérer le student avec ses wallets
+        // Récupérer le student avec son wallet
         Student student = studentRepository.findByTrackingId(createdStudent.trackingId()).orElse(null);
         assertNotNull(student);
         assertNotNull(student.getWallets());
@@ -88,6 +86,7 @@ public class JpaRelationshipsIntegrationTest {
 
         Wallet wallet = student.getWallets().get(0);
         assertEquals(student.getId(), wallet.getStudent().getId());
+        assertEquals("HORIZON", wallet.getTypeWallet().name());
     }
 
     @Test
@@ -95,12 +94,12 @@ public class JpaRelationshipsIntegrationTest {
         // Given: Un student existe
         assertNotNull(createdStudent);
 
-        // When: Créer un wallet
+        // When: Créer un wallet HORIZON avec plafond 36000
         WalletRequest walletRequest = new WalletRequest(
                 createdStudent.trackingId(),
                 "HORIZON",
                 1000.0,
-                54000.0
+                36000.0
         );
 
         WalletResponse walletResponse = walletService.create(walletRequest);
@@ -110,42 +109,32 @@ public class JpaRelationshipsIntegrationTest {
         assertNotNull(wallet);
         assertNotNull(wallet.getStudent());
         assertEquals(createdStudent.trackingId(), wallet.getStudent().getTrackingId());
+        assertEquals(36000.0, wallet.getPlafond());
     }
 
     @Test
-    public void testMultipleWalletsPerStudent() {
+    public void testSingleHorizonWalletPerStudent() {
         // Given: Un student existe
         assertNotNull(createdStudent);
 
-        // When: Créer deux wallets pour le même student
-        WalletRequest wallet1Request = new WalletRequest(
-                createdStudent.trackingId(),
-                "RELAIS",
-                0.0,
-                36000.0
-        );
-
-        WalletRequest wallet2Request = new WalletRequest(
+        // When: Créer un wallet HORIZON unique pour l'étudiant
+        WalletRequest walletRequest = new WalletRequest(
                 createdStudent.trackingId(),
                 "HORIZON",
                 500.0,
-                54000.0
+                36000.0
         );
 
-        WalletResponse wallet1 = walletService.create(wallet1Request);
-        WalletResponse wallet2 = walletService.create(wallet2Request);
+        walletService.create(walletRequest);
 
-        // Then: Vérifier que les deux wallets sont associés au student
+        // Then: Vérifier qu'il n'y a qu'un seul wallet HORIZON associé au student
         Student student = studentRepository.findByTrackingId(createdStudent.trackingId()).orElse(null);
         assertNotNull(student);
         assertNotNull(student.getWallets());
-        assertEquals(2, student.getWallets().size());
+        assertEquals(1, student.getWallets().size());
 
-        boolean hasRelais = student.getWallets().stream()
-                .anyMatch(w -> w.getTypeWallet().name().equals("RELAIS"));
-        boolean hasHorizon = student.getWallets().stream()
-                .anyMatch(w -> w.getTypeWallet().name().equals("HORIZON"));
-
-        assertTrue(hasRelais && hasHorizon);
+        Wallet wallet = student.getWallets().get(0);
+        assertEquals("HORIZON", wallet.getTypeWallet().name());
+        assertEquals(36000.0, wallet.getPlafond());
     }
 }

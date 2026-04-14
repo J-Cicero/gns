@@ -14,7 +14,7 @@ public interface VersementRepository extends JpaRepository<Versement, Long> {
     @Query("SELECT v FROM Versement v WHERE v.trackingId = :trackingId")
     Optional<Versement> findByTrackingId(@Param("trackingId") UUID trackingId);
 
-    @Query("SELECT v FROM Versement v WHERE v.walletTrackingId = :walletTrackingId")
+    @Query("SELECT v FROM Versement v WHERE v.wallet.trackingId = :walletTrackingId")
     List<Versement> findByWalletTrackingId(@Param("walletTrackingId") UUID walletTrackingId);
 
     @Query("SELECT v FROM Versement v WHERE v.statut = :statut")
@@ -22,4 +22,7 @@ public interface VersementRepository extends JpaRepository<Versement, Long> {
 
     @Query("SELECT v FROM Versement v WHERE v.typeVersement = :type")
     List<Versement> findByTypeVersement(@Param("type") com.backend.gns.domain.enums.VersementType type);
+
+    @Query("SELECT COUNT(v) FROM Versement v WHERE v.statut = :statut")
+    Long countByStatut(@Param("statut") com.backend.gns.domain.enums.VersementStatut statut);
 }

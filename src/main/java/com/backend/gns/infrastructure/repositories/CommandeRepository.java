@@ -22,4 +22,14 @@ public interface CommandeRepository extends JpaRepository<Commande, Long> {
 
     @Query("SELECT c FROM Commande c WHERE c.trackingId = :trackingId")
     Optional<Commande> findByTrackingId(@Param("trackingId") UUID trackingId);
+
+    @Query("SELECT c FROM Commande c " +
+           "WHERE c.student.trackingId = :trackingId " +
+           "ORDER BY c.dateCommande DESC")
+    List<Commande> findByStudentTrackingId(@Param("trackingId") UUID trackingId);
+
+    @Query("SELECT c FROM Commande c " +
+           "WHERE c.merchant.trackingId = :trackingId " +
+           "ORDER BY c.dateCommande DESC")
+    List<Commande> findByMerchantTrackingId(@Param("trackingId") UUID trackingId);
 }

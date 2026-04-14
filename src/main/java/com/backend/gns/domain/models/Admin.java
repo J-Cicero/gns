@@ -22,6 +22,5 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public class Admin extends User {
 
-    @Column(length = 100)
-    private String grade;
+  
 }

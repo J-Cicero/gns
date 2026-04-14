@@ -2,6 +2,7 @@ package com.backend.gns.domain.services;
 
 import com.backend.gns.domain.dtos.requests.WalletRequest;
 import com.backend.gns.domain.dtos.responses.WalletResponse;
+import com.backend.gns.domain.dtos.responses.PaiementResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,7 +35,7 @@ public interface WalletService {
     WalletResponse crediterHorizon(UUID walletTrackingId);
 
     /**
-     * F3 - Recharge wallet RELAIS via T-Money.
+     * C3 - Récupère l'historique des paiements d'un wallet
      */
-    WalletResponse rechargerWallet(UUID walletTrackingId, Double montant);
+    List<PaiementResponse> getPaiementsOfWallet(UUID walletTrackingId);
 }

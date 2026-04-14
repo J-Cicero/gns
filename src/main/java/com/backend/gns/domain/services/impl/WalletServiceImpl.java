@@ -4,10 +4,13 @@ import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
 import com.backend.gns.domain.dtos.requests.WalletRequest;
 import com.backend.gns.domain.dtos.requests.VersementRequest;
 import com.backend.gns.domain.dtos.responses.WalletResponse;
+import com.backend.gns.domain.dtos.responses.PaiementResponse;
 import com.backend.gns.domain.mappers.WalletMapper;
+import com.backend.gns.domain.mappers.PaiementMapper;
 import com.backend.gns.domain.models.Wallet;
 import com.backend.gns.domain.enums.WalletType;
 import com.backend.gns.infrastructure.repositories.WalletRepository;
+import com.backend.gns.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.domain.services.WalletService;
 import com.backend.gns.domain.services.VersementService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,8 @@ public class WalletServiceImpl implements WalletService {
     private final WalletRepository walletRepository;
     private final WalletMapper walletMapper;
     private final VersementService versementService;
+    private final PaiementRepository paiementRepository;
+    private final PaiementMapper paiementMapper;
 
     @Override
     public WalletResponse create(WalletRequest request) {
@@ -107,8 +112,11 @@ public class WalletServiceImpl implements WalletService {
             throw new IllegalStateException("Wallet must be of type HORIZON");
         }
 
-        // Calcule les 14/15 du plafond
-        Double credit = wallet.getPlafond() * (14.0 / 15.0);
+        // Utilise le plafond fixe de 36000 FCFA
+        Double plafondFixe = 36000.0;
+
+        // Calcule les 14/15 du plafond : 36000 * (14/15) = 33600 FCFA
+        Double credit = plafondFixe * (14.0 / 15.0);
 
         // Credite le montant sur le solde
         wallet.setSolde(wallet.getSolde() + credit);
@@ -129,36 +137,14 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public WalletResponse rechargerWallet(UUID walletTrackingId, Double montant) {
-        // F3 - Recupere le wallet par trackingId
-        Wallet wallet = walletRepository.findByTrackingId(walletTrackingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Wallet not found: " + walletTrackingId));
+    @Transactional(readOnly = true)
+    public List<PaiementResponse> getPaiementsOfWallet(UUID walletTrackingId) {
+        // Vérifie que le wallet existe
+        walletRepository.findByTrackingId(walletTrackingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet not found with trackingId: " + walletTrackingId));
 
-        // Verifie que c'est un wallet RELAIS
-        if (wallet.getTypeWallet() != WalletType.RELAIS) {
-            throw new IllegalStateException("Wallet must be of type RELAIS");
-        }
-
-        // Verifie que le wallet n'est pas verrouille
-        if (wallet.getEstVerrouille()) {
-            throw new IllegalStateException("Wallet is locked");
-        }
-
-        // Ajoute le montant au solde
-        wallet.setSolde(wallet.getSolde() + montant);
-
-        // Sauvegarde le wallet
-        Wallet updatedWallet = walletRepository.save(wallet);
-
-        // Cree un versement COTISATION_TMONEY avec statut EXECUTE et dateEffective = aujourd'hui
-        VersementRequest versementRequest = new VersementRequest(
-                walletTrackingId,
-                montant,
-                "COTISATION_TMONEY",
-                LocalDate.now()
-        );
-        versementService.creerVersementExecute(versementRequest);
-
-        return walletMapper.toResponse(updatedWallet);
+        // Récupère tous les paiements du wallet (déjà triés par dateTimestamp DESC dans la requête)
+        List<com.backend.gns.domain.models.Paiement> paiements = paiementRepository.findByWalletTrackingId(walletTrackingId);
+        return paiementMapper.toResponseList(paiements);
     }
 }
