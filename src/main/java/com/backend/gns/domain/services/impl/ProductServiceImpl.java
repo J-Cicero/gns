@@ -1,9 +1,9 @@
 package com.backend.gns.domain.services.impl;
 
 import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
+import com.backend.gns.application.mappers.ProductMapper;
 import com.backend.gns.domain.dtos.requests.ProductRequest;
 import com.backend.gns.domain.dtos.responses.ProductResponse;
-import com.backend.gns.domain.mappers.ProductMapper;
 import com.backend.gns.domain.models.Product;
 import com.backend.gns.infrastructure.repositories.ProductRepository;
 import com.backend.gns.domain.services.ProductService;

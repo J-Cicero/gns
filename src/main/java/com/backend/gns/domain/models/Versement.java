@@ -1,5 +1,6 @@
 package com.backend.gns.domain.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -46,17 +47,14 @@ public class Versement extends BaseEntity {
     private Wallet wallet;
 
     @Column(nullable = false)
-    private Double montantVerse;
+    private BigDecimal montantVerse;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 30)
     private VersementType typeVersement;
 
     @Column
-    private LocalDate datePrevue;
-
-    @Column
-    private LocalDate dateEffective;
+    private LocalDate dateVersement;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)

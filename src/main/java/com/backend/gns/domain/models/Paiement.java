@@ -1,5 +1,6 @@
 package com.backend.gns.domain.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "paiement")
+@Table(name = "PAIEMENT")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -50,16 +51,16 @@ public class Paiement extends BaseEntity {
     private Wallet wallet;
 
     @Column(nullable = false)
-    private Double montantProduit;
+    private BigDecimal montantProduit;
 
     @Column(nullable = false)
-    private Double commission;
+    private BigDecimal commission;
 
     @Column(nullable = false)
-    private Double montantDebite;
+    private BigDecimal montantDebite;
 
-    @Column
-    private LocalDateTime dateTimestamp;
+    @Column(nullable = false)
+    private LocalDateTime date;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
@@ -68,10 +69,4 @@ public class Paiement extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private PaiementStatut statutPaiement;
-
-    @Column
-    private Boolean estSwitch = false;
-
-    @Column(length = 36)
-    private String commandeRef;
 }

@@ -1,7 +1,7 @@
 package com.backend.gns.domain.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -19,7 +19,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "commande")
+@Table(name = "COMMANDE")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -54,7 +53,7 @@ public class Commande extends BaseEntity {
     private Merchant merchant;
 
     @Column(nullable = false)
-    private Double montantTotal;
+    private BigDecimal montantTotal;
 
     @Column
     private LocalDateTime dateCommande;
@@ -63,6 +62,4 @@ public class Commande extends BaseEntity {
     @Column(length = 20)
     private CommandeStatut statut;
 
-    @OneToMany(mappedBy = "commande")
-    private List<Paiement> paiements;
 }

@@ -1,6 +1,5 @@
 package com.backend.gns.domain.models;
 
-import java.util.List;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -13,14 +12,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@DiscriminatorValue("COMMERCANT")
+@DiscriminatorValue("MERCHANT")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -31,9 +29,6 @@ public class Merchant extends User {
     @Column(length = 100, nullable = false)
     private String nomBoutique;
 
-    @Column(length = 255)
-    private String cheminCarteEDJ;
-
     @Column(length = 100)
     private String categorieShop;
 
@@ -41,12 +36,4 @@ public class Merchant extends User {
     @Column(length = 20)
     private KycStatus statutKYC;
 
-    @OneToMany(mappedBy = "merchant")
-    private List<Product> products;
-
-    @OneToMany(mappedBy = "merchant")
-    private List<BudgetVirtuel> budgets;
-
-    @OneToMany(mappedBy = "merchant")
-    private List<Commande> commandes;
 }

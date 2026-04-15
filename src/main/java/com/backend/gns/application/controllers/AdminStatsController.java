@@ -1,5 +1,7 @@
 package com.backend.gns.application.controllers;
 
+import com.backend.gns.application.mappers.StudentMapper;
+import com.backend.gns.application.mappers.VersementMapper;
 import com.backend.gns.domain.dtos.responses.AdminStatistiquesResponse;
 import com.backend.gns.domain.models.Student;
 import com.backend.gns.domain.models.Versement;
@@ -10,10 +12,9 @@ import com.backend.gns.infrastructure.repositories.StudentRepository;
 import com.backend.gns.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.infrastructure.repositories.VersementRepository;
-import com.backend.gns.domain.mappers.StudentMapper;
 import com.backend.gns.domain.dtos.responses.StudentResponse;
 import com.backend.gns.domain.dtos.responses.VersementResponse;
-import com.backend.gns.domain.mappers.VersementMapper;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

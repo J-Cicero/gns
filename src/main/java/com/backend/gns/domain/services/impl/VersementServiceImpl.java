@@ -1,11 +1,11 @@
 package com.backend.gns.domain.services.impl;
 
 import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
+import com.backend.gns.application.mappers.VersementMapper;
 import com.backend.gns.domain.dtos.requests.VersementRequest;
 import com.backend.gns.domain.dtos.responses.VersementResponse;
 import com.backend.gns.domain.enums.VersementStatut;
 import com.backend.gns.domain.enums.VersementType;
-import com.backend.gns.domain.mappers.VersementMapper;
 import com.backend.gns.domain.models.Versement;
 import com.backend.gns.domain.models.Wallet;
 import com.backend.gns.infrastructure.repositories.VersementRepository;

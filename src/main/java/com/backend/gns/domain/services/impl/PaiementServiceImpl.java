@@ -1,6 +1,7 @@
 package com.backend.gns.domain.services.impl;
 
 import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
+import com.backend.gns.application.mappers.PaiementMapper;
 import com.backend.gns.domain.dtos.requests.PaiementRequest;
 import com.backend.gns.domain.dtos.requests.PaiementScolariteRequest;
 import com.backend.gns.domain.dtos.requests.PaiementSimpleRequest;
@@ -8,7 +9,6 @@ import com.backend.gns.domain.dtos.responses.PaiementResponse;
 import com.backend.gns.domain.enums.PaiementStatut;
 import com.backend.gns.domain.enums.PaiementType;
 import com.backend.gns.domain.enums.WalletType;
-import com.backend.gns.domain.mappers.PaiementMapper;
 import com.backend.gns.domain.models.Paiement;
 import com.backend.gns.domain.models.Wallet;
 import com.backend.gns.domain.models.Commande;

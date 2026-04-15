@@ -2,6 +2,8 @@ package com.backend.gns.domain.services.impl;
 
 import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
 import com.backend.gns.Shared.security.utils.SecurityUtils;
+import com.backend.gns.application.mappers.StudentMapper;
+import com.backend.gns.application.mappers.WalletMapper;
 import com.backend.gns.domain.dtos.requests.StudentRequest;
 import com.backend.gns.domain.dtos.requests.WalletRequest;
 import com.backend.gns.domain.dtos.responses.StudentResponse;
@@ -9,8 +11,6 @@ import com.backend.gns.domain.dtos.responses.WalletResponse;
 import com.backend.gns.domain.dtos.responses.CommandeHistoriqueResponse;
 import com.backend.gns.domain.enums.KycStatus;
 import com.backend.gns.domain.enums.StudentNiveau;
-import com.backend.gns.domain.mappers.StudentMapper;
-import com.backend.gns.domain.mappers.WalletMapper;
 import com.backend.gns.domain.models.Student;
 import com.backend.gns.infrastructure.repositories.StudentRepository;
 import com.backend.gns.infrastructure.repositories.WalletRepository;

@@ -1,10 +1,10 @@
 package com.backend.gns.domain.services.impl;
 
 import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
+import com.backend.gns.application.mappers.BudgetVirtuelMapper;
 import com.backend.gns.Shared.security.exceptions.AlreadyExistException;
 import com.backend.gns.domain.dtos.requests.BudgetVirtuelRequest;
 import com.backend.gns.domain.dtos.responses.BudgetVirtuelResponse;
-import com.backend.gns.domain.mappers.BudgetVirtuelMapper;
 import com.backend.gns.domain.models.BudgetVirtuel;
 import com.backend.gns.domain.models.Merchant;
 import com.backend.gns.infrastructure.repositories.BudgetVirtuelRepository;

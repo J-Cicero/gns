@@ -2,12 +2,12 @@ package com.backend.gns.domain.services.impl;
 
 import com.backend.gns.Shared.security.exceptions.ResourceNotFoundException;
 import com.backend.gns.Shared.security.utils.SecurityUtils;
+import com.backend.gns.application.mappers.BudgetVirtuelMapper;
+import com.backend.gns.application.mappers.MerchantMapper;
 import com.backend.gns.domain.dtos.requests.MerchantRequest;
 import com.backend.gns.domain.dtos.responses.MerchantResponse;
 import com.backend.gns.domain.dtos.responses.BudgetVirtuelResponse;
 import com.backend.gns.domain.dtos.responses.CommandeHistoriqueResponse;
-import com.backend.gns.domain.mappers.MerchantMapper;
-import com.backend.gns.domain.mappers.BudgetVirtuelMapper;
 import com.backend.gns.domain.models.Merchant;
 import com.backend.gns.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.infrastructure.repositories.BudgetVirtuelRepository;

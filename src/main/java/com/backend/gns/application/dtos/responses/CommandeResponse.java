@@ -1,0 +1,29 @@
+package com.backend.gns.application.dtos.responses;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import com.backend.gns.domain.enums.CommandeStatut;
+
+import lombok.Builder;
+
+@Builder
+public record CommandeResponse(
+
+		UUID trackingId,
+
+		String reference,
+
+		UUID studentTrackingId,
+
+		UUID merchantTrackingId,
+
+		BigDecimal montantTotal,
+
+		LocalDateTime dateCommande,
+
+		CommandeStatut statut
+
+) {
+}
