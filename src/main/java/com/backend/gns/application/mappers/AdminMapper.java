@@ -1,69 +1,70 @@
 package com.backend.gns.application.mappers;
 
-import com.backend.gns.Shared.user.domain.enums.TypeRole;
-import com.backend.gns.domain.dtos.requests.AdminRequest;
-import com.backend.gns.domain.dtos.responses.AdminResponse;
+import com.backend.gns.application.dtos.requests.AdminRequest;
+import com.backend.gns.application.dtos.responses.AdminResponse;
 import com.backend.gns.domain.models.Admin;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class AdminMapper {
 
-    private final PasswordEncoder passwordEncoder;
-
-    public AdminMapper(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
     public Admin toEntity(AdminRequest request) {
         if (request == null) {
-            return null;
+            throw new IllegalArgumentException("La requête AdminRequest ne peut pas être nulle");
         }
 
         Admin admin = new Admin();
         admin.setTrackingId(UUID.randomUUID());
+        admin.setEmail(request.email());
+        admin.setPassword(request.password());
         admin.setNom(request.nom());
         admin.setPrenom(request.prenom());
-        admin.setEmail(request.email());
-        admin.setPassword(passwordEncoder.encode(request.motDePasse()));
+        admin.setRole(request.role());
+        admin.setEstActif(request.estActif());
         admin.setTelephone(request.telephone());
-        admin.setGrade(request.grade());
-        admin.setRole(TypeRole.ADMIN);
-        admin.setEstActif(true);
+        admin.setDateNaissance(request.dateNaissance());
+        admin.setNumeroCompte(request.numeroCompte());
 
         return admin;
     }
 
-    public AdminResponse toResponse(Admin entity) {
-        if (entity == null) {
-            return null;
+    public AdminResponse toResponse(Admin admin) {
+        if (admin == null) {
+            throw new IllegalArgumentException("L'entité Admin ne peut pas être nulle");
         }
 
-        return new AdminResponse(
-                entity.getTrackingId(),
-                entity.getNom(),
-                entity.getPrenom(),
-                entity.getEmail(),
-                entity.getTelephone(),
-                entity.getDateInscription(),
-                entity.isEstActif(),
-                entity.getGrade(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+        return AdminResponse.builder()
+                .trackingId(admin.getTrackingId())
+                .email(admin.getEmail())
+                .nom(admin.getNom())
+                .prenom(admin.getPrenom())
+                .role(admin.getRole())
+                .estActif(admin.isEstActif())
+                .telephone(admin.getTelephone())
+                .dateNaissance(admin.getDateNaissance())
+                .numeroCompte(admin.getNumeroCompte())
+                .build();
     }
 
-    public List<AdminResponse> toResponseList(List<Admin> entities) {
-        if (entities == null) {
-            return List.of();
+    public Admin toEntityFromResponse(AdminResponse response) {
+        if (response == null) {
+            throw new IllegalArgumentException("La réponse AdminResponse ne peut pas être nulle");
         }
-        return entities.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+
+        Admin admin = new Admin();
+        admin.setTrackingId(response.trackingId());
+        admin.setEmail(response.email());
+        admin.setNom(response.nom());
+        admin.setPrenom(response.prenom());
+        admin.setRole(response.role());
+        admin.setEstActif(response.estActif());
+        admin.setTelephone(response.telephone());
+        admin.setDateNaissance(response.dateNaissance());
+        admin.setNumeroCompte(response.numeroCompte());
+
+        return admin;
     }
+
 }

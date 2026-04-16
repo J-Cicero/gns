@@ -1,37 +1,31 @@
 package com.backend.gns.domain.services;
 
-import com.backend.gns.domain.dtos.requests.PaiementRequest;
-import com.backend.gns.domain.dtos.requests.PaiementScolariteRequest;
-import com.backend.gns.domain.dtos.requests.PaiementSimpleRequest;
-import com.backend.gns.domain.dtos.responses.PaiementResponse;
+import com.backend.gns.application.dtos.requests.PaiementRequest;
+import com.backend.gns.application.dtos.responses.PaiementResponse;
+import com.backend.gns.domain.enums.PaiementStatut;
+import com.backend.gns.domain.enums.PaiementType;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PaiementService {
 
     PaiementResponse create(PaiementRequest request);
 
-    List<PaiementResponse> getAll();
-
-    PaiementResponse getByTrackingId(UUID trackingId);
+    Optional<PaiementResponse> findByTrackingId(UUID trackingId);
 
     PaiementResponse update(UUID trackingId, PaiementRequest request);
 
     void delete(UUID trackingId);
 
-    /**
-     * F7 - Effectue un paiement de scolarite (type SCOLARITE, pas de commission).
-     */
-    PaiementResponse effectuerPaiementScolarite(PaiementScolariteRequest request);
+    List<PaiementResponse> findByStatutPaiement(PaiementStatut statutPaiement);
 
-    /**
-     * F4 - Effectue un paiement simple chez un commercant.
-     */
-    PaiementResponse effectuerPaiement(PaiementSimpleRequest request);
+    List<PaiementResponse> findByTypePaiement(PaiementType typePaiement);
 
-    /**
-     * C6 - Récupère les paiements (1 ou 2) d'un achat hybride par référence de commande
-     */
-    List<PaiementResponse> getPaiementsByCommandeRef(String commandeRef);
+    List<PaiementResponse> findByCommandeTrackingId(UUID commandeTrackingId);
+
+    List<PaiementResponse> findByWalletTrackingId(UUID walletTrackingId);
+
+    List<PaiementResponse> findAll();
 }

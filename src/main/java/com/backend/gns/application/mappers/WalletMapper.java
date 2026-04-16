@@ -1,72 +1,83 @@
 package com.backend.gns.application.mappers;
 
-import com.backend.gns.domain.dtos.requests.WalletRequest;
-import com.backend.gns.domain.dtos.responses.WalletResponse;
-import com.backend.gns.domain.enums.WalletType;
-import com.backend.gns.domain.models.Student;
+import com.backend.gns.application.dtos.requests.WalletRequest;
+import com.backend.gns.application.dtos.responses.WalletResponse;
 import com.backend.gns.domain.models.Wallet;
+import com.backend.gns.domain.models.Student;
+import com.backend.gns.infrastructure.repositories.WalletRepository;
 import com.backend.gns.infrastructure.repositories.StudentRepository;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class WalletMapper {
 
+    private final WalletRepository walletRepository;
     private final StudentRepository studentRepository;
 
-    public WalletMapper(StudentRepository studentRepository) {
+    public WalletMapper(WalletRepository walletRepository, 
+                       StudentRepository studentRepository) {
+        this.walletRepository = walletRepository;
         this.studentRepository = studentRepository;
     }
 
     public Wallet toEntity(WalletRequest request) {
         if (request == null) {
-            return null;
+            throw new IllegalArgumentException("La requête WalletRequest ne peut pas être nulle");
         }
 
         Wallet wallet = new Wallet();
         wallet.setTrackingId(UUID.randomUUID());
-        
-        Student student = studentRepository.findByTrackingId(request.studentTrackingId())
-                .orElseThrow(() -> new IllegalArgumentException("Student not found"));
-        wallet.setStudent(student);
-        
-        wallet.setTypeWallet(WalletType.valueOf(request.typeWallet()));
-        wallet.setSolde(request.solde());
-        wallet.setPlafond(request.plafond());
-        wallet.setEstVerrouille(false);
-        wallet.setDateCreation(LocalDate.now());
+        wallet.setTypeWallet(request.typeWallet());
+        wallet.setSolde(request.solde().doubleValue());
+        wallet.setPlafond(request.plafond().doubleValue());
+        wallet.setEstVerrouille(request.estVerrouille());
+        wallet.setDateCreation(request.dateCreation() != null ? request.dateCreation().toLocalDate() : null);
+
+        if (request.trackingStudentId() != null) {
+            Student student = studentRepository.findByTrackingId(request.trackingStudentId())
+                .orElseThrow(() -> new IllegalArgumentException("Étudiant non trouvé avec l'ID: " + request.trackingStudentId()));
+            wallet.setStudent(student);
+        }
 
         return wallet;
     }
 
-    public WalletResponse toResponse(Wallet entity) {
-        if (entity == null) {
-            return null;
+    public WalletResponse toResponse(Wallet wallet) {
+        if (wallet == null) {
+            throw new IllegalArgumentException("L'entité Wallet ne peut pas être nulle");
         }
 
-        return new WalletResponse(
-                entity.getTrackingId(),
-                entity.getStudent() != null ? entity.getStudent().getTrackingId() : null,
-                entity.getTypeWallet().name(),
-                entity.getSolde(),
-                entity.getPlafond(),
-                entity.getEstVerrouille(),
-                entity.getDateCreation(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+        return WalletResponse.builder()
+                .trackingId(wallet.getTrackingId())
+                .typeWallet(wallet.getTypeWallet())
+                .solde(java.math.BigDecimal.valueOf(wallet.getSolde()))
+                .plafond(java.math.BigDecimal.valueOf(wallet.getPlafond()))
+                .estVerrouille(wallet.getEstVerrouille())
+                .trackingStudentId(wallet.getStudent() != null ? wallet.getStudent().getTrackingId() : null)
+                .build();
     }
 
-    public List<WalletResponse> toResponseList(List<Wallet> entities) {
-        if (entities == null) {
-            return List.of();
+    public Wallet toEntityFromResponse(WalletResponse response) {
+        if (response == null) {
+            throw new IllegalArgumentException("La réponse WalletResponse ne peut pas être nulle");
         }
-        return entities.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+
+        Wallet wallet = new Wallet();
+        wallet.setTrackingId(response.trackingId());
+        wallet.setTypeWallet(response.typeWallet());
+        wallet.setSolde(response.solde().doubleValue());
+        wallet.setPlafond(response.plafond().doubleValue());
+        wallet.setEstVerrouille(response.estVerrouille());
+
+        if (response.trackingStudentId() != null) {
+            Student student = studentRepository.findByTrackingId(response.trackingStudentId())
+                .orElseThrow(() -> new IllegalArgumentException("Étudiant non trouvé avec l'ID: " + response.trackingStudentId()));
+            wallet.setStudent(student);
+        }
+
+        return wallet;
     }
+
 }

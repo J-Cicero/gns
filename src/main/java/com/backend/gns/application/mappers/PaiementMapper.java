@@ -1,88 +1,106 @@
 package com.backend.gns.application.mappers;
 
-import com.backend.gns.domain.dtos.requests.PaiementRequest;
-import com.backend.gns.domain.dtos.responses.PaiementResponse;
-import com.backend.gns.domain.enums.PaiementStatut;
-import com.backend.gns.domain.enums.PaiementType;
-import com.backend.gns.domain.models.Commande;
+import com.backend.gns.application.dtos.requests.PaiementRequest;
+import com.backend.gns.application.dtos.responses.PaiementResponse;
 import com.backend.gns.domain.models.Paiement;
+import com.backend.gns.domain.models.Commande;
 import com.backend.gns.domain.models.Wallet;
+import com.backend.gns.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.infrastructure.repositories.CommandeRepository;
 import com.backend.gns.infrastructure.repositories.WalletRepository;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class PaiementMapper {
 
+    private final PaiementRepository paiementRepository;
     private final CommandeRepository commandeRepository;
     private final WalletRepository walletRepository;
 
-    public PaiementMapper(CommandeRepository commandeRepository, WalletRepository walletRepository) {
+    public PaiementMapper(PaiementRepository paiementRepository, 
+                         CommandeRepository commandeRepository,
+                         WalletRepository walletRepository) {
+        this.paiementRepository = paiementRepository;
         this.commandeRepository = commandeRepository;
         this.walletRepository = walletRepository;
     }
 
     public Paiement toEntity(PaiementRequest request) {
         if (request == null) {
-            return null;
+            throw new IllegalArgumentException("La requête PaiementRequest ne peut pas être nulle");
         }
 
         Paiement paiement = new Paiement();
         paiement.setTrackingId(UUID.randomUUID());
-        
-        Commande commande = commandeRepository.findByTrackingId(request.commandeTrackingId())
-                .orElseThrow(() -> new IllegalArgumentException("Commande not found"));
-        paiement.setCommande(commande);
-        
-        Wallet wallet = walletRepository.findByTrackingId(request.walletTrackingId())
-                .orElseThrow(() -> new IllegalArgumentException("Wallet not found"));
-        paiement.setWallet(wallet);
-        
         paiement.setMontantProduit(request.montantProduit());
         paiement.setCommission(request.commission());
         paiement.setMontantDebite(request.montantDebite());
-        paiement.setDateTimestamp(LocalDateTime.now());
-        paiement.setTypePaiement(PaiementType.valueOf(request.typePaiement()));
-        paiement.setStatutPaiement(PaiementStatut.EN_COURS);
-        paiement.setEstSwitch(request.estSwitch());
-        paiement.setCommandeRef(request.commandeTrackingId().toString());
+        paiement.setDate(request.date());
+        paiement.setTypePaiement(request.typePaiement());
+        paiement.setStatutPaiement(request.statutPaiement());
+
+        if (request.commandeTrackingId() != null) {
+            Commande commande = commandeRepository.findByTrackingId(request.commandeTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Commande non trouvée avec l'ID: " + request.commandeTrackingId()));
+            paiement.setCommande(commande);
+        }
+
+        if (request.walletTrackingId() != null) {
+            Wallet wallet = walletRepository.findByTrackingId(request.walletTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Portefeuille non trouvé avec l'ID: " + request.walletTrackingId()));
+            paiement.setWallet(wallet);
+        }
 
         return paiement;
     }
 
-    public PaiementResponse toResponse(Paiement entity) {
-        if (entity == null) {
-            return null;
+    public PaiementResponse toResponse(Paiement paiement) {
+        if (paiement == null) {
+            throw new IllegalArgumentException("L'entité Paiement ne peut pas être nulle");
         }
 
-        return new PaiementResponse(
-                entity.getTrackingId(),
-                entity.getCommande() != null ? entity.getCommande().getTrackingId() : null,
-                entity.getWallet() != null ? entity.getWallet().getTrackingId() : null,
-                entity.getMontantProduit(),
-                entity.getCommission(),
-                entity.getMontantDebite(),
-                entity.getDateTimestamp(),
-                entity.getTypePaiement().name(),
-                entity.getStatutPaiement().name(),
-                entity.getEstSwitch(),
-                entity.getCommandeRef(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+        return PaiementResponse.builder()
+                .trackingId(paiement.getTrackingId())
+                .montantProduit(paiement.getMontantProduit())
+                .commission(paiement.getCommission())
+                .montantDebite(paiement.getMontantDebite())
+                .date(paiement.getDate())
+                .typePaiement(paiement.getTypePaiement())
+                .statutPaiement(paiement.getStatutPaiement())
+                .commandeTrackingId(paiement.getCommande() != null ? paiement.getCommande().getTrackingId() : null)
+                .walletTrackingId(paiement.getWallet() != null ? paiement.getWallet().getTrackingId() : null)
+                .build();
     }
 
-    public List<PaiementResponse> toResponseList(List<Paiement> entities) {
-        if (entities == null) {
-            return List.of();
+    public Paiement toEntityFromResponse(PaiementResponse response) {
+        if (response == null) {
+            throw new IllegalArgumentException("La réponse PaiementResponse ne peut pas être nulle");
         }
-        return entities.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+
+        Paiement paiement = new Paiement();
+        paiement.setTrackingId(response.trackingId());
+        paiement.setMontantProduit(response.montantProduit());
+        paiement.setCommission(response.commission());
+        paiement.setMontantDebite(response.montantDebite());
+        paiement.setDate(response.date());
+        paiement.setTypePaiement(response.typePaiement());
+        paiement.setStatutPaiement(response.statutPaiement());
+
+        if (response.commandeTrackingId() != null) {
+            Commande commande = commandeRepository.findByTrackingId(response.commandeTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Commande non trouvée avec l'ID: " + response.commandeTrackingId()));
+            paiement.setCommande(commande);
+        }
+
+        if (response.walletTrackingId() != null) {
+            Wallet wallet = walletRepository.findByTrackingId(response.walletTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Portefeuille non trouvé avec l'ID: " + response.walletTrackingId()));
+            paiement.setWallet(wallet);
+        }
+
+        return paiement;
     }
+
 }

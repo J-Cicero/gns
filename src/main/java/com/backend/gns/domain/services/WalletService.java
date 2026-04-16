@@ -1,41 +1,28 @@
 package com.backend.gns.domain.services;
 
-import com.backend.gns.domain.dtos.requests.WalletRequest;
-import com.backend.gns.domain.dtos.responses.WalletResponse;
-import com.backend.gns.domain.dtos.responses.PaiementResponse;
+import com.backend.gns.application.dtos.requests.WalletRequest;
+import com.backend.gns.application.dtos.responses.WalletResponse;
+import com.backend.gns.domain.enums.WalletType;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface WalletService {
 
     WalletResponse create(WalletRequest request);
 
-    List<WalletResponse> getAll();
-
-    WalletResponse getByTrackingId(UUID trackingId);
+    Optional<WalletResponse> findByTrackingId(UUID trackingId);
 
     WalletResponse update(UUID trackingId, WalletRequest request);
 
     void delete(UUID trackingId);
 
-    /**
-     * Verrouille un wallet par son trackingId (estVerouille = true).
-     */
-    WalletResponse verrouillerWallet(UUID walletTrackingId);
+    Optional<WalletResponse> findByStudentTrackingId(UUID studentTrackingId);
 
-    /**
-     * F6 - Deverrouille un wallet (estVerouille = false).
-     */
-    WalletResponse deverrouillerWallet(UUID walletTrackingId);
+    List<WalletResponse> findByTypeWallet(WalletType typeWallet);
 
-    /**
-     * F2 - Cree un versement BOURSE_DBS et credite 14/15 du plafond sur le wallet HORIZON.
-     */
-    WalletResponse crediterHorizon(UUID walletTrackingId);
+    List<WalletResponse> findByEstVerrouille(Boolean estVerrouille);
 
-    /**
-     * C3 - Récupère l'historique des paiements d'un wallet
-     */
-    List<PaiementResponse> getPaiementsOfWallet(UUID walletTrackingId);
+    List<WalletResponse> findAll();
 }

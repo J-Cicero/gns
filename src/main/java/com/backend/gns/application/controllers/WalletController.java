@@ -1,117 +1,159 @@
 package com.backend.gns.application.controllers;
 
-import com.backend.gns.domain.dtos.requests.WalletRequest;
-import com.backend.gns.domain.dtos.responses.WalletResponse;
-import com.backend.gns.domain.dtos.responses.PaiementResponse;
-import com.backend.gns.domain.services.WalletService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
+import com.backend.gns.application.dtos.requests.WalletRequest;
+import com.backend.gns.application.dtos.responses.WalletResponse;
+import com.backend.gns.domain.enums.WalletType;
+import com.backend.gns.domain.services.WalletService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/wallets")
-@RequiredArgsConstructor
-@Tag(name = "WalletController", description = "Gestion des portefeuilles et consultation de leurs transactions")
+@Tag(name = "WALLET", description = "Gestion des portefeuilles")
+@CrossOrigin("*")
 public class WalletController {
 
     private final WalletService walletService;
 
-    @PostMapping
-    @Operation(summary = "Créer un nouveau portefeuille", description = "Crée un portefeuille (RELAIS ou HORIZON) pour un étudiant")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Portefeuille créé"),
-            @ApiResponse(responseCode = "400", description = "Données invalides")
-    })
-    public ResponseEntity<WalletResponse> create(@RequestBody WalletRequest request) {
-        WalletResponse response = walletService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public WalletController(WalletService walletService) {
+        this.walletService = walletService;
     }
 
-    @GetMapping
-    @Operation(summary = "Lister tous les portefeuilles", description = "Récupère la liste de tous les portefeuilles du système")
-    @ApiResponse(responseCode = "200", description = "Liste récupérée")
-    @Transactional(readOnly = true)
-    public ResponseEntity<List<WalletResponse>> getAll() {
-        List<WalletResponse> responses = walletService.getAll();
-        return ResponseEntity.ok(responses);
+    @PostMapping
+    @Operation(summary = "Créer un portefeuille", description = "Crée un nouveau portefeuille")
+    @ApiResponse(responseCode = "201", description = "Portefeuille créé avec succès")
+    public ResponseEntity<?> create(@RequestBody WalletRequest request) {
+        try {
+            WalletResponse response = walletService.create(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "CREATION_FAILED", "message", e.getMessage()));
+        }
     }
 
     @GetMapping("/{trackingId}")
-    @Operation(summary = "Récupérer un portefeuille", description = "Récupère les détails d'un portefeuille par son identifiant unique")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Portefeuille trouvé"),
-            @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
-    })
-    @Transactional(readOnly = true)
-    public ResponseEntity<WalletResponse> getOne(@PathVariable UUID trackingId) {
-        WalletResponse response = walletService.getByTrackingId(trackingId);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Récupérer un portefeuille", description = "Récupère un portefeuille par son ID")
+    @ApiResponse(responseCode = "200", description = "Portefeuille trouvé")
+    @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
+    public ResponseEntity<?> findByTrackingId(@PathVariable UUID trackingId) {
+        try {
+            return walletService.findByTrackingId(trackingId)
+                    .map(response -> ResponseEntity.ok((Object) response))
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(Map.of("error", "NOT_FOUND", "message", "Portefeuille non trouvé")));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 
     @PutMapping("/{trackingId}")
-    @Operation(summary = "Mettre à jour un portefeuille", description = "Modifie les informations d'un portefeuille")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Portefeuille mis à jour"),
-            @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
-    })
-    public ResponseEntity<WalletResponse> update(
-            @PathVariable UUID trackingId,
-            @RequestBody WalletRequest request) {
-        WalletResponse response = walletService.update(trackingId, request);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Mettre à jour un portefeuille", description = "Mettre à jour les informations d'un portefeuille")
+    @ApiResponse(responseCode = "200", description = "Portefeuille mis à jour avec succès")
+    @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
+    public ResponseEntity<?> update(@PathVariable UUID trackingId, @RequestBody WalletRequest request) {
+        try {
+            WalletResponse response = walletService.update(trackingId, request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{trackingId}")
-    @Operation(summary = "Supprimer un portefeuille", description = "Supprime un portefeuille du système")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Portefeuille supprimé"),
-            @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
-    })
-    public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
-        walletService.delete(trackingId);
-        return ResponseEntity.noContent().build();
+    @Operation(summary = "Supprimer un portefeuille", description = "Supprime un portefeuille par son ID")
+    @ApiResponse(responseCode = "204", description = "Portefeuille supprimé avec succès")
+    @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
+    public ResponseEntity<?> delete(@PathVariable UUID trackingId) {
+        try {
+            walletService.delete(trackingId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "DELETE_FAILED", "message", e.getMessage()));
+        }
     }
 
-    @PutMapping("/{trackingId}/crediter-horizon")
-    @Operation(summary = "Créditer un wallet HORIZON", description = "Crédite 14/15 du plafond sur le portefeuille HORIZON (F2)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Crédit effectué"),
-            @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
-    })
-    public ResponseEntity<WalletResponse> crediterHorizon(@PathVariable UUID trackingId) {
-        WalletResponse response = walletService.crediterHorizon(trackingId);
-        return ResponseEntity.ok(response);
+    @GetMapping("/student/{studentTrackingId}")
+    @Operation(summary = "Récupérer les portefeuilles d'un étudiant", description = "Récupère tous les portefeuilles d'un étudiant spécifique")
+    @ApiResponse(responseCode = "200", description = "Portefeuilles trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun portefeuille trouvé")
+    public ResponseEntity<?> findByStudentTrackingId(@PathVariable UUID studentTrackingId) {
+        try {
+            Optional<WalletResponse> responses = walletService.findByStudentTrackingId(studentTrackingId);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun portefeuille pour cet étudiant"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 
-    @PutMapping("/{trackingId}/deverrouiller")
-    @Operation(summary = "Deverrouiller un portefeuille", description = "Déverrouille un portefeuille (F6)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Déverrouillage effectué"),
-            @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
-    })
-    public ResponseEntity<WalletResponse> deverrouillerWallet(@PathVariable UUID trackingId) {
-        WalletResponse response = walletService.deverrouillerWallet(trackingId);
-        return ResponseEntity.ok(response);
+    @GetMapping("/type/{typeWallet}")
+    @Operation(summary = "Récupérer les portefeuilles par type", description = "Récupère tous les portefeuilles d'un type donné")
+    @ApiResponse(responseCode = "200", description = "Portefeuilles trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun portefeuille trouvé")
+    public ResponseEntity<?> findByTypeWallet(@PathVariable WalletType typeWallet) {
+        try {
+            List<WalletResponse> responses = walletService.findByTypeWallet(typeWallet);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun portefeuille avec ce type"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 
-    @GetMapping("/{trackingId}/paiements")
-    @Operation(summary = "Récupérer l'historique des paiements", description = "Retourne la liste historique de tous les paiements effectués avec ce portefeuille, triée par date décroissante (plus récents en premier)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Historique récupéré"),
-            @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
-    })
-    @Transactional(readOnly = true)
-    public ResponseEntity<List<PaiementResponse>> getPaiementsOfWallet(@PathVariable UUID trackingId) {
-        List<PaiementResponse> paiements = walletService.getPaiementsOfWallet(trackingId);
-        return ResponseEntity.ok(paiements);
+    @GetMapping("/verrouille/{estVerrouille}")
+    @Operation(summary = "Récupérer les portefeuilles par statut de verrouillage", description = "Récupère tous les portefeuilles verrouillés ou déverrouillés")
+    @ApiResponse(responseCode = "200", description = "Portefeuilles trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun portefeuille trouvé")
+    public ResponseEntity<?> findByEstVerrouille(@PathVariable Boolean estVerrouille) {
+        try {
+            List<WalletResponse> responses = walletService.findByEstVerrouille(estVerrouille);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun portefeuille avec ce statut"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping
+    @Operation(summary = "Récupérer tous les portefeuilles", description = "Récupère la liste de tous les portefeuilles")
+    @ApiResponse(responseCode = "200", description = "Portefeuilles récupérés avec succès")
+    @ApiResponse(responseCode = "404", description = "Aucun portefeuille trouvé")
+    public ResponseEntity<?> findAll() {
+        try {
+            List<WalletResponse> responses = walletService.findAll();
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun portefeuille trouvé"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 }

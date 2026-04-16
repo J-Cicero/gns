@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query("SELECT p FROM Product p WHERE p.merchant.id = :merchantId")
-    List<Product> findByMerchantId(@Param("merchantId") Long merchantId);
+    @Query("SELECT p FROM Product p WHERE p.merchant.trackingId = :merchantTrackingId")
+    List<Product> findByMerchantTrackingId(@Param("merchantTrackingId") UUID merchantTrackingId);
 
     @Query("SELECT p FROM Product p WHERE p.nom = :nom")
     Optional<Product> findByNom(@Param("nom") String nom);

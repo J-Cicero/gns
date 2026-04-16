@@ -1,74 +1,83 @@
 package com.backend.gns.application.mappers;
 
-import com.backend.gns.Shared.user.domain.enums.TypeRole;
-import com.backend.gns.domain.dtos.requests.MerchantRequest;
-import com.backend.gns.domain.dtos.responses.MerchantResponse;
+import com.backend.gns.application.dtos.requests.MerchantRequest;
+import com.backend.gns.application.dtos.responses.MerchantResponse;
 import com.backend.gns.domain.models.Merchant;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.backend.gns.infrastructure.repositories.MerchantRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class MerchantMapper {
 
-    private final PasswordEncoder passwordEncoder;
+    private final MerchantRepository merchantRepository;
 
-    public MerchantMapper(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public MerchantMapper(MerchantRepository merchantRepository) {
+        this.merchantRepository = merchantRepository;
     }
 
     public Merchant toEntity(MerchantRequest request) {
         if (request == null) {
-            return null;
+            throw new IllegalArgumentException("La requête MerchantRequest ne peut pas être nulle");
         }
 
         Merchant merchant = new Merchant();
         merchant.setTrackingId(UUID.randomUUID());
+        merchant.setEmail(request.email());
+        merchant.setPassword(request.password());
         merchant.setNom(request.nom());
         merchant.setPrenom(request.prenom());
-        merchant.setEmail(request.email());
-        merchant.setPassword(passwordEncoder.encode(request.motDePasse()));
+        merchant.setRole(request.role());
+        merchant.setEstActif(request.estActif());
         merchant.setTelephone(request.telephone());
+        merchant.setDateNaissance(request.dateNaissance());
         merchant.setNomBoutique(request.nomBoutique());
-        merchant.setCheminCarteEDJ(request.cheminCarteEDJ());
         merchant.setCategorieShop(request.categorieShop());
-        merchant.setRole(TypeRole.COMMERCANT);
-        merchant.setEstActif(false);
+        merchant.setStatutKYC(request.statutKYC());
 
         return merchant;
     }
 
-    public MerchantResponse toResponse(Merchant entity) {
-        if (entity == null) {
-            return null;
+    public MerchantResponse toResponse(Merchant merchant) {
+        if (merchant == null) {
+            throw new IllegalArgumentException("L'entité Merchant ne peut pas être nulle");
         }
 
-        return new MerchantResponse(
-                entity.getTrackingId(),
-                entity.getNom(),
-                entity.getPrenom(),
-                entity.getEmail(),
-                entity.getTelephone(),
-                entity.getDateInscription(),
-                entity.isEstActif(),
-                entity.getNomBoutique(),
-                entity.getCheminCarteEDJ(),
-                entity.getCategorieShop(),
-                entity.getStatutKYC() != null ? entity.getStatutKYC().name() : null,
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+        return MerchantResponse.builder()
+                .trackingId(merchant.getTrackingId())
+                .email(merchant.getEmail())
+                .nom(merchant.getNom())
+                .prenom(merchant.getPrenom())
+                .role(merchant.getRole())
+                .estActif(merchant.isEstActif())
+                .telephone(merchant.getTelephone())
+                .dateNaissance(merchant.getDateNaissance())
+                .nomBoutique(merchant.getNomBoutique())
+                .categorieShop(merchant.getCategorieShop())
+                .statutKYC(merchant.getStatutKYC())
+                .build();
     }
 
-    public List<MerchantResponse> toResponseList(List<Merchant> entities) {
-        if (entities == null) {
-            return List.of();
+    public Merchant toEntityFromResponse(MerchantResponse response) {
+        if (response == null) {
+            throw new IllegalArgumentException("La réponse MerchantResponse ne peut pas être nulle");
         }
-        return entities.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+
+        Merchant merchant = new Merchant();
+        merchant.setTrackingId(response.trackingId());
+        merchant.setEmail(response.email());
+        merchant.setNom(response.nom());
+        merchant.setPrenom(response.prenom());
+        merchant.setRole(response.role());
+        merchant.setEstActif(response.estActif());
+        merchant.setTelephone(response.telephone());
+        merchant.setDateNaissance(response.dateNaissance());
+        merchant.setNomBoutique(response.nomBoutique());
+        merchant.setCategorieShop(response.categorieShop());
+        merchant.setStatutKYC(response.statutKYC());
+
+        return merchant;
     }
+
 }

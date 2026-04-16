@@ -1,32 +1,24 @@
 package com.backend.gns.domain.services;
 
-import com.backend.gns.domain.dtos.requests.MerchantRequest;
-import com.backend.gns.domain.dtos.responses.MerchantResponse;
-import com.backend.gns.domain.dtos.responses.BudgetVirtuelResponse;
-import com.backend.gns.domain.dtos.responses.CommandeHistoriqueResponse;
+import com.backend.gns.application.dtos.requests.MerchantRequest;
+import com.backend.gns.application.dtos.responses.MerchantResponse;
+import com.backend.gns.domain.enums.KycStatus;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface MerchantService {
 
     MerchantResponse create(MerchantRequest request);
 
-    List<MerchantResponse> getAll();
-
-    MerchantResponse getByTrackingId(UUID trackingId);
+    Optional<MerchantResponse> findByTrackingId(UUID trackingId);
 
     MerchantResponse update(UUID trackingId, MerchantRequest request);
 
     void delete(UUID trackingId);
 
-    /**
-     * C4 - Récupère le budget actif du mois courant d'un commerçant
-     */
-    BudgetVirtuelResponse getBudgetActif(UUID merchantTrackingId);
+    List<MerchantResponse> findByStatutKYC(KycStatus statutKYC);
 
-    /**
-     * C5 - Récupère l'historique des commandes reçues par un commerçant
-     */
-    List<CommandeHistoriqueResponse> getCommandesRecues(UUID merchantTrackingId);
+    List<MerchantResponse> findAll();
 }

@@ -1,118 +1,177 @@
 package com.backend.gns.application.controllers;
 
-import com.backend.gns.domain.dtos.requests.PaiementRequest;
-import com.backend.gns.domain.dtos.requests.PaiementScolariteRequest;
-import com.backend.gns.domain.dtos.requests.PaiementSimpleRequest;
-import com.backend.gns.domain.dtos.responses.PaiementResponse;
-import com.backend.gns.domain.services.PaiementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
+import com.backend.gns.application.dtos.requests.PaiementRequest;
+import com.backend.gns.application.dtos.responses.PaiementResponse;
+import com.backend.gns.domain.enums.PaiementStatut;
+import com.backend.gns.domain.enums.PaiementType;
+import com.backend.gns.domain.services.PaiementService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/paiements")
-@RequiredArgsConstructor
-@Tag(name = "PaiementController", description = "Gestion des paiements et consultation de l'historique")
+@Tag(name = "PAIEMENT", description = "Gestion des paiements")
+@CrossOrigin("*")
 public class PaiementController {
 
     private final PaiementService paiementService;
 
-    @PostMapping
-    @Operation(summary = "Créer un paiement", description = "Crée un nouveau paiement")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Paiement créé"),
-            @ApiResponse(responseCode = "400", description = "Données invalides")
-    })
-    public ResponseEntity<PaiementResponse> create(@RequestBody PaiementRequest request) {
-        PaiementResponse response = paiementService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public PaiementController(PaiementService paiementService) {
+        this.paiementService = paiementService;
     }
 
-    @GetMapping
-    @Operation(summary = "Lister tous les paiements", description = "Récupère la liste de tous les paiements")
-    @ApiResponse(responseCode = "200", description = "Liste récupérée")
-    @Transactional(readOnly = true)
-    public ResponseEntity<List<PaiementResponse>> getAll() {
-        List<PaiementResponse> responses = paiementService.getAll();
-        return ResponseEntity.ok(responses);
+    @PostMapping
+    @Operation(summary = "Créer un paiement", description = "Crée un nouveau paiement")
+    @ApiResponse(responseCode = "201", description = "Paiement créé avec succès")
+    public ResponseEntity<?> create(@RequestBody PaiementRequest request) {
+        try {
+            PaiementResponse response = paiementService.create(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "CREATION_FAILED", "message", e.getMessage()));
+        }
     }
 
     @GetMapping("/{trackingId}")
-    @Operation(summary = "Récupérer un paiement", description = "Récupère les détails d'un paiement par son identifiant unique")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Paiement trouvé"),
-            @ApiResponse(responseCode = "404", description = "Paiement non trouvé")
-    })
-    @Transactional(readOnly = true)
-    public ResponseEntity<PaiementResponse> getOne(@PathVariable UUID trackingId) {
-        PaiementResponse response = paiementService.getByTrackingId(trackingId);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Récupérer un paiement", description = "Récupère un paiement par son ID")
+    @ApiResponse(responseCode = "200", description = "Paiement trouvé")
+    @ApiResponse(responseCode = "404", description = "Paiement non trouvé")
+    public ResponseEntity<?> findByTrackingId(@PathVariable UUID trackingId) {
+        try {
+            return paiementService.findByTrackingId(trackingId)
+                    .map(response -> ResponseEntity.ok((Object) response))
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(Map.of("error", "NOT_FOUND", "message", "Paiement non trouvé")));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 
     @PutMapping("/{trackingId}")
-    @Operation(summary = "Mettre à jour un paiement", description = "Modifie les informations d'un paiement")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Paiement mis à jour"),
-            @ApiResponse(responseCode = "404", description = "Paiement non trouvé")
-    })
-    public ResponseEntity<PaiementResponse> update(
-            @PathVariable UUID trackingId,
-            @RequestBody PaiementRequest request) {
-        PaiementResponse response = paiementService.update(trackingId, request);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Mettre à jour un paiement", description = "Mettre à jour les informations d'un paiement")
+    @ApiResponse(responseCode = "200", description = "Paiement mis à jour avec succès")
+    @ApiResponse(responseCode = "404", description = "Paiement non trouvé")
+    public ResponseEntity<?> update(@PathVariable UUID trackingId, @RequestBody PaiementRequest request) {
+        try {
+            PaiementResponse response = paiementService.update(trackingId, request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{trackingId}")
-    @Operation(summary = "Supprimer un paiement", description = "Supprime un paiement du système")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Paiement supprimé"),
-            @ApiResponse(responseCode = "404", description = "Paiement non trouvé")
-    })
-    public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
-        paiementService.delete(trackingId);
-        return ResponseEntity.noContent().build();
+    @Operation(summary = "Supprimer un paiement", description = "Supprime un paiement par son ID")
+    @ApiResponse(responseCode = "204", description = "Paiement supprimé avec succès")
+    @ApiResponse(responseCode = "404", description = "Paiement non trouvé")
+    public ResponseEntity<?> delete(@PathVariable UUID trackingId) {
+        try {
+            paiementService.delete(trackingId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "DELETE_FAILED", "message", e.getMessage()));
+        }
     }
 
-    @PostMapping("/scolarite")
-    @Operation(summary = "Paiement de scolarité", description = "Effectue un paiement de scolarité (F7)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Paiement effectué"),
-            @ApiResponse(responseCode = "400", description = "Données invalides ou solde insuffisant")
-    })
-    public ResponseEntity<PaiementResponse> effectuerPaiementScolarite(@RequestBody PaiementScolariteRequest request) {
-        PaiementResponse response = paiementService.effectuerPaiementScolarite(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    @GetMapping("/statut/{statutPaiement}")
+    @Operation(summary = "Récupérer les paiements par statut", description = "Récupère tous les paiements avec un statut donné")
+    @ApiResponse(responseCode = "200", description = "Paiements trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
+    public ResponseEntity<?> findByStatutPaiement(@PathVariable PaiementStatut statutPaiement) {
+        try {
+            List<PaiementResponse> responses = paiementService.findByStatutPaiement(statutPaiement);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement avec ce statut"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 
-    @PostMapping("/effectuer")
-    @Operation(summary = "Paiement simple", description = "Effectue un paiement simple chez un commerçant avec commission (F4)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Paiement effectué"),
-            @ApiResponse(responseCode = "400", description = "Données invalides ou solde insuffisant")
-    })
-    public ResponseEntity<PaiementResponse> effectuerPaiement(@RequestBody PaiementSimpleRequest request) {
-        PaiementResponse response = paiementService.effectuerPaiement(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    @GetMapping("/type/{typePaiement}")
+    @Operation(summary = "Récupérer les paiements par type", description = "Récupère tous les paiements d'un type donné")
+    @ApiResponse(responseCode = "200", description = "Paiements trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
+    public ResponseEntity<?> findByTypePaiement(@PathVariable PaiementType typePaiement) {
+        try {
+            List<PaiementResponse> responses = paiementService.findByTypePaiement(typePaiement);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement avec ce type"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 
-    @GetMapping("/commande/{commandeRef}")
-    @Operation(summary = "Récupérer les paiements d'une commande", description = "Retourne les 1 ou 2 paiements associés à une référence de commande")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Paiements récupérés"),
-            @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
-    })
-    @Transactional(readOnly = true)
-    public ResponseEntity<List<PaiementResponse>> getPaiementsByCommandeRef(@PathVariable String commandeRef) {
-        List<PaiementResponse> paiements = paiementService.getPaiementsByCommandeRef(commandeRef);
-        return ResponseEntity.ok(paiements);
+    @GetMapping("/commande/{commandeTrackingId}")
+    @Operation(summary = "Récupérer les paiements d'une commande", description = "Récupère tous les paiements d'une commande spécifique")
+    @ApiResponse(responseCode = "200", description = "Paiements trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
+    public ResponseEntity<?> findByCommandeTrackingId(@PathVariable UUID commandeTrackingId) {
+        try {
+            List<PaiementResponse> responses = paiementService.findByCommandeTrackingId(commandeTrackingId);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement pour cette commande"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/wallet/{walletTrackingId}")
+    @Operation(summary = "Récupérer les paiements d'un portefeuille", description = "Récupère tous les paiements d'un portefeuille spécifique")
+    @ApiResponse(responseCode = "200", description = "Paiements trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
+    public ResponseEntity<?> findByWalletTrackingId(@PathVariable UUID walletTrackingId) {
+        try {
+            List<PaiementResponse> responses = paiementService.findByWalletTrackingId(walletTrackingId);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement pour ce portefeuille"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping
+    @Operation(summary = "Récupérer tous les paiements", description = "Récupère la liste de tous les paiements")
+    @ApiResponse(responseCode = "200", description = "Paiements récupérés avec succès")
+    @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
+    public ResponseEntity<?> findAll() {
+        try {
+            List<PaiementResponse> responses = paiementService.findAll();
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement trouvé"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 }

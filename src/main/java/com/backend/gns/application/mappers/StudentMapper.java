@@ -1,92 +1,87 @@
 package com.backend.gns.application.mappers;
 
-import com.backend.gns.Shared.user.domain.enums.TypeRole;
-import com.backend.gns.domain.dtos.requests.StudentRequest;
-import com.backend.gns.domain.dtos.responses.StudentResponse;
+import com.backend.gns.application.dtos.requests.StudentRequest;
+import com.backend.gns.application.dtos.responses.StudentResponse;
 import com.backend.gns.domain.models.Student;
-import com.backend.gns.domain.enums.StudentNiveau;
-import com.backend.gns.domain.enums.KycStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.backend.gns.infrastructure.repositories.StudentRepository;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class StudentMapper {
 
-    private final PasswordEncoder passwordEncoder;
+    private final StudentRepository studentRepository;
 
-    public StudentMapper(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public StudentMapper(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
     }
 
     public Student toEntity(StudentRequest request) {
         if (request == null) {
-            return null;
+            throw new IllegalArgumentException("La requête StudentRequest ne peut pas être nulle");
         }
 
         Student student = new Student();
         student.setTrackingId(UUID.randomUUID());
+        student.setEmail(request.email());
+        student.setPassword(request.password());
         student.setNom(request.nom());
         student.setPrenom(request.prenom());
-        student.setEmail(request.email());
-        student.setPassword(passwordEncoder.encode(request.motDePasse()));
+        student.setRole(request.role());
+        student.setEstActif(request.estActif());
         student.setTelephone(request.telephone());
-        student.setMatriculeUL(request.matriculeUL());
-        student.setNiveau(StudentNiveau.valueOf(request.niveau()));
-        student.setMentionBac(request.mentionBac());
+        student.setDateNaissance(request.dateNaissance());
         student.setCreditsValides(request.creditsValides());
         student.setRIB(request.RIB());
-        student.setCheminCarteEtu(request.cheminCarteEtu());
+        student.setCNI(request.CNI());
         student.setCheminReleve(request.cheminReleve());
-        student.setMandatSigne(request.mandatSigne());
-        if (request.dateMandatSigne() != null) {
-            student.setDateMandatSigne(LocalDate.parse(request.dateMandatSigne()));
-        }
-        student.setStatutKYC(KycStatus.EN_ATTENTE);
-        student.setRole(TypeRole.ETUDIANT);
-        student.setEstActif(false);
+        student.setStatutKYC(request.statutKYC());
 
         return student;
     }
 
-    public StudentResponse toResponse(Student entity) {
-        if (entity == null) {
-            return null;
+    public StudentResponse toResponse(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("L'entité Student ne peut pas être nulle");
         }
 
-        return new StudentResponse(
-                entity.getTrackingId(),
-                entity.getNom(),
-                entity.getPrenom(),
-                entity.getEmail(),
-                entity.getTelephone(),
-                entity.getDateInscription(),
-                entity.isEstActif(),
-                entity.getMatriculeUL(),
-                entity.getNiveau() != null ? entity.getNiveau().name() : null,
-                entity.getMentionBac(),
-                entity.getCreditsValides(),
-                entity.getRIB(),
-                entity.getCheminCarteEtu(),
-                entity.getCheminReleve(),
-                entity.getMandatSigne(),
-                entity.getDateMandatSigne(),
-                entity.getStatutKYC() != null ? entity.getStatutKYC().name() : null,
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+        return StudentResponse.builder()
+                .trackingId(student.getTrackingId())
+                .email(student.getEmail())
+                .nom(student.getNom())
+                .prenom(student.getPrenom())
+                .role(student.getRole())
+                .estActif(student.isEstActif())
+                .telephone(student.getTelephone())
+                .dateNaissance(student.getDateNaissance())
+                .creditsValides(student.getCreditsValides())
+                .RIB(student.getRIB())
+                .verifiedCNI(true)
+                .verifiedReleve(true)
+                .statutKYC(student.getStatutKYC())
+                .build();
     }
 
-    public List<StudentResponse> toResponseList(List<Student> entities) {
-        if (entities == null) {
-            return List.of();
+    public Student toEntityFromResponse(StudentResponse response) {
+        if (response == null) {
+            throw new IllegalArgumentException("La réponse StudentResponse ne peut pas être nulle");
         }
-        return entities.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+
+        Student student = new Student();
+        student.setTrackingId(response.trackingId());
+        student.setEmail(response.email());
+        student.setNom(response.nom());
+        student.setPrenom(response.prenom());
+        student.setRole(response.role());
+        student.setEstActif(response.estActif());
+        student.setTelephone(response.telephone());
+        student.setDateNaissance(response.dateNaissance());
+        student.setCreditsValides(response.creditsValides());
+        student.setRIB(response.RIB());
+        student.setStatutKYC(response.statutKYC());
+
+        return student;
     }
+
 }

@@ -1,52 +1,139 @@
 package com.backend.gns.application.controllers;
 
-import com.backend.gns.domain.dtos.requests.ProductRequest;
-import com.backend.gns.domain.dtos.responses.ProductResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.backend.gns.application.dtos.requests.ProductRequest;
+import com.backend.gns.application.dtos.responses.ProductResponse;
 import com.backend.gns.domain.services.ProductService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/products")
-@RequiredArgsConstructor
+@Tag(name = "PRODUCT", description = "Gestion des produits")
+@CrossOrigin("*")
 public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping
-    public ResponseEntity<ProductResponse> create(@RequestBody ProductRequest request) {
-        ProductResponse response = productService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAll() {
-        List<ProductResponse> responses = productService.getAll();
-        return ResponseEntity.ok(responses);
+    @PostMapping
+    @Operation(summary = "Créer un produit", description = "Crée un nouveau produit")
+    @ApiResponse(responseCode = "201", description = "Produit créé avec succès")
+    public ResponseEntity<?> create(@RequestBody ProductRequest request) {
+        try {
+            ProductResponse response = productService.create(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "CREATION_FAILED", "message", e.getMessage()));
+        }
     }
 
     @GetMapping("/{trackingId}")
-    public ResponseEntity<ProductResponse> getOne(@PathVariable UUID trackingId) {
-        ProductResponse response = productService.getByTrackingId(trackingId);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Récupérer un produit", description = "Récupère un produit par son ID")
+    @ApiResponse(responseCode = "200", description = "Produit trouvé")
+    @ApiResponse(responseCode = "404", description = "Produit non trouvé")
+    public ResponseEntity<?> findByTrackingId(@PathVariable UUID trackingId) {
+        try {
+            return productService.findByTrackingId(trackingId)
+                    .map(response -> ResponseEntity.ok((Object) response))
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(Map.of("error", "NOT_FOUND", "message", "Produit non trouvé")));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 
     @PutMapping("/{trackingId}")
-    public ResponseEntity<ProductResponse> update(
-            @PathVariable UUID trackingId,
-            @RequestBody ProductRequest request) {
-        ProductResponse response = productService.update(trackingId, request);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Mettre à jour un produit", description = "Mettre à jour les informations d'un produit")
+    @ApiResponse(responseCode = "200", description = "Produit mis à jour avec succès")
+    @ApiResponse(responseCode = "404", description = "Produit non trouvé")
+    public ResponseEntity<?> update(@PathVariable UUID trackingId, @RequestBody ProductRequest request) {
+        try {
+            ProductResponse response = productService.update(trackingId, request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{trackingId}")
-    public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
-        productService.delete(trackingId);
-        return ResponseEntity.noContent().build();
+    @Operation(summary = "Supprimer un produit", description = "Supprime un produit par son ID")
+    @ApiResponse(responseCode = "204", description = "Produit supprimé avec succès")
+    @ApiResponse(responseCode = "404", description = "Produit non trouvé")
+    public ResponseEntity<?> delete(@PathVariable UUID trackingId) {
+        try {
+            productService.delete(trackingId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "DELETE_FAILED", "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/merchant/{merchantTrackingId}")
+    @Operation(summary = "Récupérer les produits d'un marchand", description = "Récupère tous les produits d'un marchand spécifique")
+    @ApiResponse(responseCode = "200", description = "Produits trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun produit trouvé")
+    public ResponseEntity<?> findByMerchantTrackingId(@PathVariable UUID merchantTrackingId) {
+        try {
+            List<ProductResponse> responses = productService.findByMerchantTrackingId(merchantTrackingId);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun produit pour ce marchand"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/disponible/{estDisponible}")
+    @Operation(summary = "Récupérer les produits par disponibilité", description = "Récupère tous les produits disponibles ou non disponibles")
+    @ApiResponse(responseCode = "200", description = "Produits trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun produit trouvé")
+    public ResponseEntity<?> findByEstDisponible(@PathVariable Boolean estDisponible) {
+        try {
+            List<ProductResponse> responses = productService.findByEstDisponible(estDisponible);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun produit avec cette disponibilité"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping
+    @Operation(summary = "Récupérer tous les produits", description = "Récupère la liste de tous les produits")
+    @ApiResponse(responseCode = "200", description = "Produits récupérés avec succès")
+    @ApiResponse(responseCode = "404", description = "Aucun produit trouvé")
+    public ResponseEntity<?> findAll() {
+        try {
+            List<ProductResponse> responses = productService.findAll();
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun produit trouvé"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 }

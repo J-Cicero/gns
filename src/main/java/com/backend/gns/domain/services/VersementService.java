@@ -1,30 +1,29 @@
 package com.backend.gns.domain.services;
 
-import com.backend.gns.domain.dtos.requests.VersementRequest;
-import com.backend.gns.domain.dtos.responses.VersementResponse;
+import com.backend.gns.application.dtos.requests.VersementRequest;
+import com.backend.gns.application.dtos.responses.VersementResponse;
+import com.backend.gns.domain.enums.VersementStatut;
+import com.backend.gns.domain.enums.VersementType;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface VersementService {
 
     VersementResponse create(VersementRequest request);
 
-    List<VersementResponse> getAll();
-
-    VersementResponse getByTrackingId(UUID trackingId);
+    Optional<VersementResponse> findByTrackingId(UUID trackingId);
 
     VersementResponse update(UUID trackingId, VersementRequest request);
 
     void delete(UUID trackingId);
 
-    /**
-     * Cree un versement avec statut EXECUTE et dateEffective = aujourd'hui.
-     */
-    VersementResponse creerVersementExecute(VersementRequest request);
+    List<VersementResponse> findByStatut(VersementStatut statut);
 
-    /**
-     * F8 - Remboursement automatique DBS : reinitialise wallet, recrédite 14/15, crée nouveau versement.
-     */
-    VersementResponse executerRemboursementDBS(UUID versementTrackingId);
+    List<VersementResponse> findByTypeVersement(VersementType typeVersement);
+
+    List<VersementResponse> findByWalletTrackingId(UUID walletTrackingId);
+
+    List<VersementResponse> findAll();
 }

@@ -1,108 +1,122 @@
 package com.backend.gns.application.controllers;
 
-import com.backend.gns.domain.dtos.requests.MerchantRequest;
-import com.backend.gns.domain.dtos.responses.MerchantResponse;
-import com.backend.gns.domain.dtos.responses.BudgetVirtuelResponse;
-import com.backend.gns.domain.dtos.responses.CommandeHistoriqueResponse;
-import com.backend.gns.domain.services.MerchantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
+import com.backend.gns.application.dtos.requests.MerchantRequest;
+import com.backend.gns.application.dtos.responses.MerchantResponse;
+import com.backend.gns.domain.enums.KycStatus;
+import com.backend.gns.domain.services.MerchantService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/merchants")
-@RequiredArgsConstructor
-@Tag(name = "MerchantController", description = "Gestion des commerçants et consultation de leurs données")
+@Tag(name = "MERCHANT", description = "Gestion des marchands")
+@CrossOrigin("*")
 public class MerchantController {
 
     private final MerchantService merchantService;
 
-    @PostMapping
-    @Operation(summary = "Créer un nouveau commerçant", description = "Enregistre un nouveau commerçant dans le système")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Commerçant créé"),
-            @ApiResponse(responseCode = "400", description = "Données invalides")
-    })
-    public ResponseEntity<MerchantResponse> create(@RequestBody MerchantRequest request) {
-        MerchantResponse response = merchantService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public MerchantController(MerchantService merchantService) {
+        this.merchantService = merchantService;
     }
 
-    @GetMapping
-    @Operation(summary = "Lister tous les commerçants", description = "Récupère la liste complète des commerçants")
-    @ApiResponse(responseCode = "200", description = "Liste récupérée")
-    @Transactional(readOnly = true)
-    public ResponseEntity<List<MerchantResponse>> getAll() {
-        List<MerchantResponse> responses = merchantService.getAll();
-        return ResponseEntity.ok(responses);
+    @PostMapping
+    @Operation(summary = "Créer un marchand", description = "Crée un nouveau marchand")
+    @ApiResponse(responseCode = "201", description = "Marchand créé avec succès")
+    public ResponseEntity<?> create(@RequestBody MerchantRequest request) {
+        try {
+            MerchantResponse response = merchantService.create(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "CREATION_FAILED", "message", e.getMessage()));
+        }
     }
 
     @GetMapping("/{trackingId}")
-    @Operation(summary = "Récupérer un commerçant", description = "Récupère les détails d'un commerçant par son identifiant unique")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Commerçant trouvé"),
-            @ApiResponse(responseCode = "404", description = "Commerçant non trouvé")
-    })
-    @Transactional(readOnly = true)
-    public ResponseEntity<MerchantResponse> getOne(@PathVariable UUID trackingId) {
-        MerchantResponse response = merchantService.getByTrackingId(trackingId);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Récupérer un marchand", description = "Récupère un marchand par son ID")
+    @ApiResponse(responseCode = "200", description = "Marchand trouvé")
+    @ApiResponse(responseCode = "404", description = "Marchand non trouvé")
+    public ResponseEntity<?> findByTrackingId(@PathVariable UUID trackingId) {
+        try {
+            return merchantService.findByTrackingId(trackingId)
+                    .map(response -> ResponseEntity.ok((Object) response))
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(Map.of("error", "NOT_FOUND", "message", "Marchand non trouvé")));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 
     @PutMapping("/{trackingId}")
-    @Operation(summary = "Mettre à jour un commerçant", description = "Modifie les informations d'un commerçant")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Commerçant mis à jour"),
-            @ApiResponse(responseCode = "404", description = "Commerçant non trouvé")
-    })
-    public ResponseEntity<MerchantResponse> update(
-            @PathVariable UUID trackingId,
-            @RequestBody MerchantRequest request) {
-        MerchantResponse response = merchantService.update(trackingId, request);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Mettre à jour un marchand", description = "Mettre à jour les informations d'un marchand")
+    @ApiResponse(responseCode = "200", description = "Marchand mis à jour avec succès")
+    @ApiResponse(responseCode = "404", description = "Marchand non trouvé")
+    public ResponseEntity<?> update(@PathVariable UUID trackingId, @RequestBody MerchantRequest request) {
+        try {
+            MerchantResponse response = merchantService.update(trackingId, request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{trackingId}")
-    @Operation(summary = "Supprimer un commerçant", description = "Supprime un commerçant du système")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Commerçant supprimé"),
-            @ApiResponse(responseCode = "404", description = "Commerçant non trouvé")
-    })
-    public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
-        merchantService.delete(trackingId);
-        return ResponseEntity.noContent().build();
+    @Operation(summary = "Supprimer un marchand", description = "Supprime un marchand par son ID")
+    @ApiResponse(responseCode = "204", description = "Marchand supprimé avec succès")
+    @ApiResponse(responseCode = "404", description = "Marchand non trouvé")
+    public ResponseEntity<?> delete(@PathVariable UUID trackingId) {
+        try {
+            merchantService.delete(trackingId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "DELETE_FAILED", "message", e.getMessage()));
+        }
     }
 
-    @GetMapping("/{trackingId}/budget-actif")
-    @Operation(summary = "Récupérer le budget actif du mois", description = "Retourne le budget virtuel du commerçant pour le mois courant avec montant alloué, montant restant et statut d'épuisement")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Budget récupéré"),
-            @ApiResponse(responseCode = "404", description = "Budget ou commerçant non trouvé")
-    })
-    @Transactional(readOnly = true)
-    public ResponseEntity<BudgetVirtuelResponse> getBudgetActif(@PathVariable UUID trackingId) {
-        BudgetVirtuelResponse budget = merchantService.getBudgetActif(trackingId);
-        return ResponseEntity.ok(budget);
+    @GetMapping("/kyc/{statutKYC}")
+    @Operation(summary = "Récupérer les marchands par statut KYC", description = "Récupère tous les marchands avec un statut KYC donné")
+    @ApiResponse(responseCode = "200", description = "Marchands trouvés")
+    @ApiResponse(responseCode = "404", description = "Aucun marchand trouvé")
+    public ResponseEntity<?> findByStatutKYC(@PathVariable KycStatus statutKYC) {
+        try {
+            List<MerchantResponse> responses = merchantService.findByStatutKYC(statutKYC);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun marchand avec ce statut KYC"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 
-    @GetMapping("/{trackingId}/commandes")
-    @Operation(summary = "Récupérer les commandes reçues", description = "Retourne la liste des commandes reçues par le commerçant, triée par date décroissante (plus récentes en premier), avec le nom et prénom de l'étudiant acheteur")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Commandes récupérées"),
-            @ApiResponse(responseCode = "404", description = "Commerçant non trouvé")
-    })
-    @Transactional(readOnly = true)
-    public ResponseEntity<List<CommandeHistoriqueResponse>> getCommandesRecues(@PathVariable UUID trackingId) {
-        List<CommandeHistoriqueResponse> commandes = merchantService.getCommandesRecues(trackingId);
-        return ResponseEntity.ok(commandes);
+    @GetMapping
+    @Operation(summary = "Récupérer tous les marchands", description = "Récupère la liste de tous les marchands")
+    @ApiResponse(responseCode = "200", description = "Marchands récupérés avec succès")
+    @ApiResponse(responseCode = "404", description = "Aucun marchand trouvé")
+    public ResponseEntity<?> findAll() {
+        try {
+            List<MerchantResponse> responses = merchantService.findAll();
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun marchand trouvé"));
+            }
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
     }
 }
