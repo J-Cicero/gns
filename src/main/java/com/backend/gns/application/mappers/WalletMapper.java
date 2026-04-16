@@ -8,6 +8,7 @@ import com.backend.gns.infrastructure.repositories.WalletRepository;
 import com.backend.gns.infrastructure.repositories.StudentRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
@@ -33,7 +34,7 @@ public class WalletMapper {
         wallet.setSolde(request.solde().doubleValue());
         wallet.setPlafond(request.plafond().doubleValue());
         wallet.setEstVerrouille(request.estVerrouille());
-        wallet.setDateCreation(request.dateCreation() != null ? request.dateCreation().toLocalDate() : null);
+        wallet.setDateCreation(LocalDateTime.now());
 
         if (request.trackingStudentId() != null) {
             Student student = studentRepository.findByTrackingId(request.trackingStudentId())

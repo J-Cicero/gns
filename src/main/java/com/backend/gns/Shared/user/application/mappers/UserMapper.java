@@ -2,7 +2,6 @@ package com.backend.gns.Shared.user.application.mappers;
 
 import java.util.UUID;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.backend.gns.Shared.user.application.dtos.requests.UserRequest;
@@ -14,12 +13,6 @@ import com.backend.gns.Shared.user.domain.models.User;
 @Component
 public class UserMapper {
 
-    private final PasswordEncoder passwordEncoder;
-
-    public UserMapper(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
     public User toEntity(UserRequest request){
         if (request == null) {
             throw new IllegalArgumentException("UserRequest ne peut pas être null");
@@ -29,7 +22,7 @@ public class UserMapper {
         user.setNom(request.nom());
         user.setPrenom(request.prenom());
         user.setEmail(request.email());
-        user.setPassword(passwordEncoder.encode(request.motDePasse()));
+        user.setPassword(request.motDePasse());
         user.setTelephone(request.telephone());
         user.setRole(TypeRole.ADMIN);
         user.setEstActif(true);

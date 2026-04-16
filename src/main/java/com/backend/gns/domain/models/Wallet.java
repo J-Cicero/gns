@@ -1,12 +1,14 @@
 package com.backend.gns.domain.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.backend.gns.Shared.utils.BaseEntity;
 import com.backend.gns.domain.enums.WalletType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,6 +60,7 @@ public class Wallet extends BaseEntity {
     private Boolean estVerrouille = false;
 
     @Column
-    private LocalDate dateCreation;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime dateCreation;
 
 }

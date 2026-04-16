@@ -1,7 +1,7 @@
 package com.backend.gns.domain.models;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.backend.gns.Shared.utils.BaseEntity;
 import com.backend.gns.domain.enums.VersementStatut;
 import com.backend.gns.domain.enums.VersementType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,7 +55,8 @@ public class Versement extends BaseEntity {
     private VersementType typeVersement;
 
     @Column
-    private LocalDate dateVersement;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime dateVersement;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)

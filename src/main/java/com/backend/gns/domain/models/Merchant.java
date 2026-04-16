@@ -26,7 +26,7 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public class Merchant extends User {
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100, nullable = true)
     private String nomBoutique;
 
     @Column(length = 100)

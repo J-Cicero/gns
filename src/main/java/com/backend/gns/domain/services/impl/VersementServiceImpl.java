@@ -12,6 +12,7 @@ import com.backend.gns.domain.services.VersementService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,7 +51,7 @@ public class VersementServiceImpl implements VersementService {
         
         versement.setMontantVerse(request.montantVerse());
         versement.setTypeVersement(request.typeVersement());
-        versement.setDateVersement(request.dateVersement() != null ? request.dateVersement().toLocalDate() : null);
+        versement.setDateVersement(request.dateVersement() != null ? request.dateVersement() : LocalDateTime.now());
         versement.setStatut(request.statut());
         
         Versement updatedVersement = versementRepository.save(versement);

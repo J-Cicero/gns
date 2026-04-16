@@ -7,6 +7,7 @@ import com.backend.gns.domain.models.Wallet;
 import com.backend.gns.infrastructure.repositories.WalletRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
@@ -27,7 +28,7 @@ public class VersementMapper {
         versement.setTrackingId(UUID.randomUUID());
         versement.setMontantVerse(request.montantVerse());
         versement.setTypeVersement(request.typeVersement());
-        versement.setDateVersement(request.dateVersement() != null ? request.dateVersement().toLocalDate() : null);
+        versement.setDateVersement(LocalDateTime.now());
         versement.setStatut(request.statut());
 
         if (request.trackingWalletId() != null) {
@@ -48,7 +49,7 @@ public class VersementMapper {
                 .trackingId(versement.getTrackingId())
                 .montantVerse(versement.getMontantVerse())
                 .typeVersement(versement.getTypeVersement())
-                .dateVersement(versement.getDateVersement() != null ? versement.getDateVersement().atStartOfDay() : null)
+                .dateVersement(LocalDateTime.now())
                 .statut(versement.getStatut())
                 .trackingWalletId(versement.getWallet() != null ? versement.getWallet().getTrackingId() : null)
                 .build();
@@ -63,7 +64,7 @@ public class VersementMapper {
         versement.setTrackingId(response.trackingId());
         versement.setMontantVerse(response.montantVerse());
         versement.setTypeVersement(response.typeVersement());
-        versement.setDateVersement(response.dateVersement() != null ? response.dateVersement().toLocalDate() : null);
+        versement.setDateVersement(LocalDateTime.now());
         versement.setStatut(response.statut());
 
         if (response.trackingWalletId() != null) {

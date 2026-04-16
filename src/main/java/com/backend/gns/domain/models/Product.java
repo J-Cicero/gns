@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.backend.gns.Shared.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,5 +59,6 @@ public class Product extends BaseEntity {
     private Boolean estDisponible = true;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateAjout;
 }
