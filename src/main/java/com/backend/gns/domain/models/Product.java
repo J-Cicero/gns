@@ -40,8 +40,8 @@ public class Product extends BaseEntity {
     private UUID trackingId;
 
     @ManyToOne
-    @JoinColumn(name = "merchant_id", nullable = false)
-    private Merchant merchant;
+    @JoinColumn(name = "boutique_id", nullable = false)
+    private Boutique boutique;
 
     @Column(length = 100, nullable = false)
     private String nom;

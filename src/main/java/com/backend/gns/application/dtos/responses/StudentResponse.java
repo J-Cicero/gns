@@ -35,7 +35,9 @@ public record StudentResponse(
 
 		Boolean verifiedReleve,
 
-		KycStatus statutKYC
+		KycStatus statutKYC,
+
+		UUID walletTrackingId
 
 ) {
 }

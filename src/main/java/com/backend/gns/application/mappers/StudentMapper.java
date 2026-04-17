@@ -3,19 +3,20 @@ package com.backend.gns.application.mappers;
 import com.backend.gns.application.dtos.requests.StudentRequest;
 import com.backend.gns.application.dtos.responses.StudentResponse;
 import com.backend.gns.domain.models.Student;
-import com.backend.gns.infrastructure.repositories.StudentRepository;
+import com.backend.gns.domain.models.Wallet;
+import com.backend.gns.infrastructure.repositories.WalletRepository;
+
+import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
+@AllArgsConstructor
 public class StudentMapper {
 
-    private final StudentRepository studentRepository;
-
-    public StudentMapper(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
-    }
+    private final WalletRepository walletRepository;
 
     public Student toEntity(StudentRequest request) {
         if (request == null) {
@@ -37,6 +38,12 @@ public class StudentMapper {
         student.setCNI(request.CNI());
         student.setCheminReleve(request.cheminReleve());
         student.setStatutKYC(request.statutKYC());
+
+        if (request.walletTrackingId() != null) {
+            Wallet wallet = walletRepository.findByTrackingId(request.walletTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Portefeuille non trouvé avec l'ID: " + request.walletTrackingId()));
+            student.setWallet(wallet);
+        }
 
         return student;
     }
@@ -60,6 +67,7 @@ public class StudentMapper {
                 .verifiedCNI(true)
                 .verifiedReleve(true)
                 .statutKYC(student.getStatutKYC())
+                .walletTrackingId(student.getWallet() != null ? student.getWallet().getTrackingId() : null)
                 .build();
     }
 
@@ -80,6 +88,12 @@ public class StudentMapper {
         student.setCreditsValides(response.creditsValides());
         student.setRIB(response.RIB());
         student.setStatutKYC(response.statutKYC());
+
+        if (response.walletTrackingId() != null) {
+            Wallet wallet = walletRepository.findByTrackingId(response.walletTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Portefeuille non trouvé avec l'ID: " + response.walletTrackingId()));
+            student.setWallet(wallet);
+        }
 
         return student;
     }

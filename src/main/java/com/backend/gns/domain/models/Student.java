@@ -11,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,4 +42,8 @@ public class Student extends User {
     @Enumerated(EnumType.STRING)
     @Column(length = 20 , nullable = false)
     private KycStatus statutKYC;
+
+    @OneToOne
+    @JoinColumn(name = "wallet_id", nullable = false)
+    private Wallet wallet;
 }

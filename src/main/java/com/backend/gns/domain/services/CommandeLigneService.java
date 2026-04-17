@@ -2,8 +2,9 @@ package com.backend.gns.domain.services;
 
 import com.backend.gns.application.dtos.requests.CommandeLigneRequest;
 import com.backend.gns.application.dtos.responses.CommandeLigneResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,9 +18,9 @@ public interface CommandeLigneService {
 
     void delete(UUID trackingId);
 
-    List<CommandeLigneResponse> findByCommandeTrackingId(UUID commandeTrackingId);
+    Page<CommandeLigneResponse> findByCommandeTrackingId(UUID commandeTrackingId, Pageable pageable);
 
-    List<CommandeLigneResponse> findByProductTrackingId(UUID productTrackingId);
+    Page<CommandeLigneResponse> findByProductTrackingId(UUID productTrackingId, Pageable pageable);
 
-    List<CommandeLigneResponse> findAll();
+    Page<CommandeLigneResponse> findAll(Pageable pageable);
 }

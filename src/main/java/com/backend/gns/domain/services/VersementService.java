@@ -4,8 +4,9 @@ import com.backend.gns.application.dtos.requests.VersementRequest;
 import com.backend.gns.application.dtos.responses.VersementResponse;
 import com.backend.gns.domain.enums.VersementStatut;
 import com.backend.gns.domain.enums.VersementType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,11 +20,11 @@ public interface VersementService {
 
     void delete(UUID trackingId);
 
-    List<VersementResponse> findByStatut(VersementStatut statut);
+    Page<VersementResponse> findByStatut(VersementStatut statut, Pageable pageable);
 
-    List<VersementResponse> findByTypeVersement(VersementType typeVersement);
+    Page<VersementResponse> findByTypeVersement(VersementType typeVersement, Pageable pageable);
 
-    List<VersementResponse> findByWalletTrackingId(UUID walletTrackingId);
+    Page<VersementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable);
 
-    List<VersementResponse> findAll();
+    Page<VersementResponse> findAll(Pageable pageable);
 }

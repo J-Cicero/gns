@@ -4,8 +4,9 @@ import com.backend.gns.application.dtos.requests.PaiementRequest;
 import com.backend.gns.application.dtos.responses.PaiementResponse;
 import com.backend.gns.domain.enums.PaiementStatut;
 import com.backend.gns.domain.enums.PaiementType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,13 +20,17 @@ public interface PaiementService {
 
     void delete(UUID trackingId);
 
-    List<PaiementResponse> findByStatutPaiement(PaiementStatut statutPaiement);
+    Page<PaiementResponse> findByStatutPaiement(PaiementStatut statutPaiement, Pageable pageable);
 
-    List<PaiementResponse> findByTypePaiement(PaiementType typePaiement);
+    Page<PaiementResponse> findByPaiementStatut(PaiementStatut paiementStatut, Pageable pageable);
 
-    List<PaiementResponse> findByCommandeTrackingId(UUID commandeTrackingId);
+    Page<PaiementResponse> findByTypePaiement(PaiementType typePaiement, Pageable pageable);
 
-    List<PaiementResponse> findByWalletTrackingId(UUID walletTrackingId);
+    Page<PaiementResponse> findByPaiementType(PaiementType paiementType, Pageable pageable);
 
-    List<PaiementResponse> findAll();
+    Page<PaiementResponse> findByCommandeTrackingId(UUID commandeTrackingId, Pageable pageable);
+
+    Page<PaiementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable);
+
+    Page<PaiementResponse> findAll(Pageable pageable);
 }

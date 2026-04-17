@@ -1,6 +1,7 @@
 package com.backend.gns.application.dtos.requests;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.backend.gns.Shared.user.domain.enums.TypeRole;
 import com.backend.gns.domain.enums.KycStatus;
@@ -34,7 +35,9 @@ public record StudentRequest(
 
 		String cheminReleve,
 
-		KycStatus statutKYC
+		KycStatus statutKYC,
+
+		UUID walletTrackingId
 
 ) {
 }

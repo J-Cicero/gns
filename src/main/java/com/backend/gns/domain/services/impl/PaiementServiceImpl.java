@@ -9,15 +9,19 @@ import com.backend.gns.domain.enums.PaiementStatut;
 import com.backend.gns.domain.enums.PaiementType;
 import com.backend.gns.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.domain.services.PaiementService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class PaiementServiceImpl implements PaiementService {
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final PaiementRepository paiementRepository;
     private final PaiementMapper paiementMapper;
@@ -25,6 +29,11 @@ public class PaiementServiceImpl implements PaiementService {
     public PaiementServiceImpl(PaiementRepository paiementRepository, PaiementMapper paiementMapper) {
         this.paiementRepository = paiementRepository;
         this.paiementMapper = paiementMapper;
+    }
+
+    private Pageable normalize(Pageable pageable) {
+        int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
+        return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
     }
 
     @Override
@@ -69,41 +78,50 @@ public class PaiementServiceImpl implements PaiementService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaiementResponse> findByStatutPaiement(PaiementStatut statutPaiement) {
-        return paiementRepository.findByStatutPaiement(statutPaiement).stream()
-                .map(paiementMapper::toResponse)
-                .toList();
+    public Page<PaiementResponse> findByStatutPaiement(PaiementStatut statutPaiement, Pageable pageable) {
+        return paiementRepository.findByStatutPaiementOrderByDateDesc(statutPaiement, normalize(pageable))
+                .map(paiementMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaiementResponse> findByTypePaiement(PaiementType typePaiement) {
-        return paiementRepository.findByTypePaiement(typePaiement).stream()
-                .map(paiementMapper::toResponse)
-                .toList();
+    public Page<PaiementResponse> findByPaiementStatut(PaiementStatut paiementStatut, Pageable pageable) {
+        return paiementRepository.findByStatutPaiementOrderByDateDesc(paiementStatut, normalize(pageable))
+                .map(paiementMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaiementResponse> findByCommandeTrackingId(UUID commandeTrackingId) {
-        return paiementRepository.findByCommandeTrackingId(commandeTrackingId).stream()
-                .map(paiementMapper::toResponse)
-                .toList();
+    public Page<PaiementResponse> findByTypePaiement(PaiementType typePaiement, Pageable pageable) {
+        return paiementRepository.findByTypePaiementOrderByDateDesc(typePaiement, normalize(pageable))
+                .map(paiementMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaiementResponse> findByWalletTrackingId(UUID walletTrackingId) {
-        return paiementRepository.findByWalletTrackingId(walletTrackingId).stream()
-                .map(paiementMapper::toResponse)
-                .toList();
+    public Page<PaiementResponse> findByPaiementType(PaiementType paiementType, Pageable pageable) {
+        return paiementRepository.findByTypePaiementOrderByDateDesc(paiementType, normalize(pageable))
+                .map(paiementMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaiementResponse> findAll() {
-        return paiementRepository.findAll().stream()
-                .map(paiementMapper::toResponse)
-                .toList();
+    public Page<PaiementResponse> findByCommandeTrackingId(UUID commandeTrackingId, Pageable pageable) {
+        return paiementRepository.findByCommandeTrackingId(commandeTrackingId, normalize(pageable))
+                .map(paiementMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PaiementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable) {
+        return paiementRepository.findByWalletTrackingId(walletTrackingId, normalize(pageable))
+                .map(paiementMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PaiementResponse> findAll(Pageable pageable) {
+        return paiementRepository.findAll(normalize(pageable))
+                .map(paiementMapper::toResponse);
     }
 }

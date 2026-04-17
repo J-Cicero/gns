@@ -9,16 +9,20 @@ import com.backend.gns.domain.enums.VersementStatut;
 import com.backend.gns.domain.enums.VersementType;
 import com.backend.gns.infrastructure.repositories.VersementRepository;
 import com.backend.gns.domain.services.VersementService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class VersementServiceImpl implements VersementService {
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final VersementRepository versementRepository;
     private final VersementMapper versementMapper;
@@ -26,6 +30,11 @@ public class VersementServiceImpl implements VersementService {
     public VersementServiceImpl(VersementRepository versementRepository, VersementMapper versementMapper) {
         this.versementRepository = versementRepository;
         this.versementMapper = versementMapper;
+    }
+
+    private Pageable normalize(Pageable pageable) {
+        int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
+        return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
     }
 
     @Override
@@ -68,33 +77,29 @@ public class VersementServiceImpl implements VersementService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<VersementResponse> findByStatut(VersementStatut statut) {
-        return versementRepository.findByStatut(statut).stream()
-                .map(versementMapper::toResponse)
-                .toList();
+    public Page<VersementResponse> findByStatut(VersementStatut statut, Pageable pageable) {
+        return versementRepository.findByStatut(statut, normalize(pageable))
+                .map(versementMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<VersementResponse> findByTypeVersement(VersementType typeVersement) {
-        return versementRepository.findByTypeVersement(typeVersement).stream()
-                .map(versementMapper::toResponse)
-                .toList();
+    public Page<VersementResponse> findByTypeVersement(VersementType typeVersement, Pageable pageable) {
+        return versementRepository.findByTypeVersement(typeVersement, normalize(pageable))
+                .map(versementMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<VersementResponse> findByWalletTrackingId(UUID walletTrackingId) {
-        return versementRepository.findByWalletTrackingId(walletTrackingId).stream()
-                .map(versementMapper::toResponse)
-                .toList();
+    public Page<VersementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable) {
+        return versementRepository.findByWalletTrackingId(walletTrackingId, normalize(pageable))
+                .map(versementMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<VersementResponse> findAll() {
-        return versementRepository.findAll().stream()
-                .map(versementMapper::toResponse)
-                .toList();
+    public Page<VersementResponse> findAll(Pageable pageable) {
+        return versementRepository.findAll(normalize(pageable))
+                .map(versementMapper::toResponse);
     }
 }

@@ -9,7 +9,7 @@ import lombok.Builder;
 @Builder
 public record ProductRequest(
 
- UUID merchantTrackingId,
+ UUID boutiqueTrackingId,
 
 		String nom,
 

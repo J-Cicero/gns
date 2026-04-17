@@ -3,9 +3,9 @@ package com.backend.gns.application.mappers;
 import com.backend.gns.application.dtos.requests.ProductRequest;
 import com.backend.gns.application.dtos.responses.ProductResponse;
 import com.backend.gns.domain.models.Product;
-import com.backend.gns.domain.models.Merchant;
+import com.backend.gns.domain.models.Boutique;
 import com.backend.gns.infrastructure.repositories.ProductRepository;
-import com.backend.gns.infrastructure.repositories.MerchantRepository;
+import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -14,13 +14,10 @@ import java.util.UUID;
 @Component
 public class ProductMapper {
 
-    private final ProductRepository productRepository;
-    private final MerchantRepository merchantRepository;
+    private final BoutiqueRepository boutiqueRepository;
 
-    public ProductMapper(ProductRepository productRepository, 
-                        MerchantRepository merchantRepository) {
-        this.productRepository = productRepository;
-        this.merchantRepository = merchantRepository;
+    public ProductMapper( BoutiqueRepository boutiqueRepository) {
+        this.boutiqueRepository = boutiqueRepository;
     }
 
     public Product toEntity(ProductRequest request) {
@@ -37,10 +34,10 @@ public class ProductMapper {
         product.setEstDisponible(request.estDisponible());
         product.setDateAjout(request.dateAjout() != null ? request.dateAjout() : LocalDateTime.now());
 
-        if (request.merchantTrackingId() != null) {
-            Merchant merchant = merchantRepository.findByTrackingId(request.merchantTrackingId())
-                .orElseThrow(() -> new IllegalArgumentException("Commerçant non trouvé avec l'ID: " + request.merchantTrackingId()));
-            product.setMerchant(merchant);
+        if (request.boutiqueTrackingId() != null) {
+            Boutique boutique = boutiqueRepository.findByTrackingId(request.boutiqueTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Boutique non trouvée avec l'ID: " + request.boutiqueTrackingId()));
+            product.setBoutique(boutique);
         }
 
         return product;
@@ -59,7 +56,7 @@ public class ProductMapper {
                 .stock(product.getStock())
                 .estDisponible(product.getEstDisponible())
                 .dateAjout(product.getDateAjout())
-                .merchantTrackingId(product.getMerchant() != null ? product.getMerchant().getTrackingId() : null)
+                .boutiqueTrackingId(product.getBoutique() != null ? product.getBoutique().getTrackingId() : null)
                 .build();
     }
 
@@ -77,10 +74,10 @@ public class ProductMapper {
         product.setEstDisponible(response.estDisponible());
         product.setDateAjout(response.dateAjout());
 
-        if (response.merchantTrackingId() != null) {
-            Merchant merchant = merchantRepository.findByTrackingId(response.merchantTrackingId())
-                .orElseThrow(() -> new IllegalArgumentException("Commerçant non trouvé avec l'ID: " + response.merchantTrackingId()));
-            product.setMerchant(merchant);
+        if (response.boutiqueTrackingId() != null) {
+            Boutique boutique = boutiqueRepository.findByTrackingId(response.boutiqueTrackingId())
+                .orElseThrow(() -> new IllegalArgumentException("Boutique non trouvée avec l'ID: " + response.boutiqueTrackingId()));
+            product.setBoutique(boutique);
         }
 
         return product;

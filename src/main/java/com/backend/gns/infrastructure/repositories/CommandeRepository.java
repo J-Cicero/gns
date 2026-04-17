@@ -2,25 +2,24 @@ package com.backend.gns.infrastructure.repositories;
 
 import com.backend.gns.domain.models.Commande;
 import com.backend.gns.domain.enums.CommandeStatut;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface CommandeRepository extends JpaRepository<Commande, Long> {
 
-    @Query("SELECT c FROM Commande c WHERE c.trackingId = :trackingId")
-    Optional<Commande> findByTrackingId(@Param("trackingId") UUID trackingId);
+    Optional<Commande> findByTrackingId(UUID trackingId);
 
-    @Query("SELECT c FROM Commande c WHERE c.statut = :statut ORDER BY c.dateCommande DESC")
-    List<Commande> findByStatut(@Param("statut") CommandeStatut statut);
+    Page<Commande> findByStatutOrderByDateCommandeDesc(CommandeStatut statut, Pageable pageable);
 
     @Query("SELECT c FROM Commande c WHERE c.student.trackingId = :trackingId ORDER BY c.dateCommande DESC")
-    List<Commande> findByStudentTrackingId(@Param("trackingId") UUID trackingId);
+    Page<Commande> findByStudentTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 
     @Query("SELECT c FROM Commande c WHERE c.merchant.trackingId = :trackingId ORDER BY c.dateCommande DESC")
-    List<Commande> findByMerchantTrackingId(@Param("trackingId") UUID trackingId);
+    Page<Commande> findByMerchantTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 }

@@ -11,7 +11,7 @@ public record ProductResponse(
 
 		UUID trackingId,
 
-        UUID merchantTrackingId,
+        UUID boutiqueTrackingId,
 
 		String nom,
 

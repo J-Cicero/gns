@@ -5,7 +5,6 @@ import com.backend.gns.application.dtos.responses.PaiementResponse;
 import com.backend.gns.domain.models.Paiement;
 import com.backend.gns.domain.models.Commande;
 import com.backend.gns.domain.models.Wallet;
-import com.backend.gns.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.infrastructure.repositories.CommandeRepository;
 import com.backend.gns.infrastructure.repositories.WalletRepository;
 import org.springframework.stereotype.Component;
@@ -15,14 +14,12 @@ import java.util.UUID;
 @Component
 public class PaiementMapper {
 
-    private final PaiementRepository paiementRepository;
     private final CommandeRepository commandeRepository;
     private final WalletRepository walletRepository;
 
-    public PaiementMapper(PaiementRepository paiementRepository, 
+    public PaiementMapper( 
                          CommandeRepository commandeRepository,
                          WalletRepository walletRepository) {
-        this.paiementRepository = paiementRepository;
         this.commandeRepository = commandeRepository;
         this.walletRepository = walletRepository;
     }

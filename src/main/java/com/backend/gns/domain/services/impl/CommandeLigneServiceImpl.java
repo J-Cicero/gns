@@ -7,15 +7,19 @@ import com.backend.gns.application.mappers.CommandeLigneMapper;
 import com.backend.gns.domain.models.CommandeLigne;
 import com.backend.gns.infrastructure.repositories.CommandeLigneRepository;
 import com.backend.gns.domain.services.CommandeLigneService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class CommandeLigneServiceImpl implements CommandeLigneService {
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final CommandeLigneRepository commandeLigneRepository;
     private final CommandeLigneMapper commandeLigneMapper;
@@ -23,6 +27,11 @@ public class CommandeLigneServiceImpl implements CommandeLigneService {
     public CommandeLigneServiceImpl(CommandeLigneRepository commandeLigneRepository, CommandeLigneMapper commandeLigneMapper) {
         this.commandeLigneRepository = commandeLigneRepository;
         this.commandeLigneMapper = commandeLigneMapper;
+    }
+
+    private Pageable normalize(Pageable pageable) {
+        int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
+        return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
     }
 
     @Override
@@ -63,25 +72,22 @@ public class CommandeLigneServiceImpl implements CommandeLigneService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommandeLigneResponse> findByCommandeTrackingId(UUID commandeTrackingId) {
-        return commandeLigneRepository.findByCommandeTrackingId(commandeTrackingId).stream()
-                .map(commandeLigneMapper::toResponse)
-                .toList();
+    public Page<CommandeLigneResponse> findByCommandeTrackingId(UUID commandeTrackingId, Pageable pageable) {
+        return commandeLigneRepository.findByCommandeTrackingId(commandeTrackingId, normalize(pageable))
+                .map(commandeLigneMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommandeLigneResponse> findByProductTrackingId(UUID productTrackingId) {
-        return commandeLigneRepository.findByProductTrackingId(productTrackingId).stream()
-                .map(commandeLigneMapper::toResponse)
-                .toList();
+    public Page<CommandeLigneResponse> findByProductTrackingId(UUID productTrackingId, Pageable pageable) {
+        return commandeLigneRepository.findByProductTrackingId(productTrackingId, normalize(pageable))
+                .map(commandeLigneMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommandeLigneResponse> findAll() {
-        return commandeLigneRepository.findAll().stream()
-                .map(commandeLigneMapper::toResponse)
-                .toList();
+    public Page<CommandeLigneResponse> findAll(Pageable pageable) {
+        return commandeLigneRepository.findAll(normalize(pageable))
+                .map(commandeLigneMapper::toResponse);
     }
 }

@@ -3,8 +3,9 @@ package com.backend.gns.domain.services;
 import com.backend.gns.application.dtos.requests.StudentRequest;
 import com.backend.gns.application.dtos.responses.StudentResponse;
 import com.backend.gns.domain.enums.KycStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ public interface StudentService {
 
     void delete(UUID trackingId);
 
-    List<StudentResponse> findByStatutKYC(KycStatus statutKYC);
+    Page<StudentResponse> findByStatutKYC(KycStatus statutKYC, Pageable pageable);
 
-    List<StudentResponse> findAll();
+    Page<StudentResponse> findAll(Pageable pageable);
 }

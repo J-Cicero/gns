@@ -1,25 +1,23 @@
 package com.backend.gns.infrastructure.repositories;
 
 import com.backend.gns.domain.models.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query("SELECT p FROM Product p WHERE p.merchant.trackingId = :merchantTrackingId")
-    List<Product> findByMerchantTrackingId(@Param("merchantTrackingId") UUID merchantTrackingId);
+    @Query("SELECT p FROM Product p WHERE p.boutique.trackingId = :boutiqueTrackingId")
+    Page<Product> findByBoutiqueTrackingId(@Param("boutiqueTrackingId") UUID boutiqueTrackingId, Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.nom = :nom")
-    Optional<Product> findByNom(@Param("nom") String nom);
+    Optional<Product> findByNom(String nom);
 
-    @Query("SELECT p FROM Product p WHERE p.estDisponible = :disponible")
-    List<Product> findByEstDisponible(@Param("disponible") Boolean disponible);
+    Page<Product> findByEstDisponible(Boolean disponible, Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.trackingId = :trackingId")
-    Optional<Product> findByTrackingId(@Param("trackingId") UUID trackingId);
+    Optional<Product> findByTrackingId(UUID trackingId);
 }

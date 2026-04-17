@@ -8,15 +8,19 @@ import com.backend.gns.domain.models.Commande;
 import com.backend.gns.domain.enums.CommandeStatut;
 import com.backend.gns.infrastructure.repositories.CommandeRepository;
 import com.backend.gns.domain.services.CommandeService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class CommandeServiceImpl implements CommandeService {
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final CommandeRepository commandeRepository;
     private final CommandeMapper commandeMapper;
@@ -24,6 +28,11 @@ public class CommandeServiceImpl implements CommandeService {
     public CommandeServiceImpl(CommandeRepository commandeRepository, CommandeMapper commandeMapper) {
         this.commandeRepository = commandeRepository;
         this.commandeMapper = commandeMapper;
+    }
+
+    private Pageable normalize(Pageable pageable) {
+        int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
+        return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
     }
 
     @Override
@@ -66,17 +75,36 @@ public class CommandeServiceImpl implements CommandeService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommandeResponse> findByStatut(CommandeStatut statut) {
-        return commandeRepository.findByStatut(statut).stream()
-                .map(commandeMapper::toResponse)
-                .toList();
+    public Page<CommandeResponse> findByStatut(CommandeStatut statut, Pageable pageable) {
+        return commandeRepository.findByStatutOrderByDateCommandeDesc(statut, normalize(pageable))
+                .map(commandeMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommandeResponse> findAll() {
-        return commandeRepository.findAll().stream()
-                .map(commandeMapper::toResponse)
-                .toList();
+    public Page<CommandeResponse> findByCommandeStatut(CommandeStatut commandeStatut, Pageable pageable) {
+        return commandeRepository.findByStatutOrderByDateCommandeDesc(commandeStatut, normalize(pageable))
+                .map(commandeMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CommandeResponse> findByMerchantTrackingId(UUID merchantTrackingId, Pageable pageable) {
+        return commandeRepository.findByMerchantTrackingId(merchantTrackingId, normalize(pageable))
+                .map(commandeMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CommandeResponse> findByCommandeStatut(CommandeStatut commandeStatut, Pageable pageable) {
+        return commandeRepository.findByStatut(commandeStatut, normalize(pageable))
+                .map(commandeMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CommandeResponse> findAll(Pageable pageable) {
+        return commandeRepository.findAll(normalize(pageable))
+                .map(commandeMapper::toResponse);
     }
 }

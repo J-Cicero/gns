@@ -3,7 +3,6 @@ package com.backend.gns.application.mappers;
 import com.backend.gns.application.dtos.requests.MerchantRequest;
 import com.backend.gns.application.dtos.responses.MerchantResponse;
 import com.backend.gns.domain.models.Merchant;
-import com.backend.gns.infrastructure.repositories.MerchantRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -11,11 +10,6 @@ import java.util.UUID;
 @Component
 public class MerchantMapper {
 
-    private final MerchantRepository merchantRepository;
-
-    public MerchantMapper(MerchantRepository merchantRepository) {
-        this.merchantRepository = merchantRepository;
-    }
 
     public Merchant toEntity(MerchantRequest request) {
         if (request == null) {
@@ -32,9 +26,7 @@ public class MerchantMapper {
         merchant.setEstActif(request.estActif());
         merchant.setTelephone(request.telephone());
         merchant.setDateNaissance(request.dateNaissance());
-        merchant.setNomBoutique(request.nomBoutique());
-        merchant.setCategorieShop(request.categorieShop());
-        merchant.setStatutKYC(request.statutKYC());
+   
 
         return merchant;
     }
@@ -53,9 +45,6 @@ public class MerchantMapper {
                 .estActif(merchant.isEstActif())
                 .telephone(merchant.getTelephone())
                 .dateNaissance(merchant.getDateNaissance())
-                .nomBoutique(merchant.getNomBoutique())
-                .categorieShop(merchant.getCategorieShop())
-                .statutKYC(merchant.getStatutKYC())
                 .build();
     }
 
@@ -73,10 +62,6 @@ public class MerchantMapper {
         merchant.setEstActif(response.estActif());
         merchant.setTelephone(response.telephone());
         merchant.setDateNaissance(response.dateNaissance());
-        merchant.setNomBoutique(response.nomBoutique());
-        merchant.setCategorieShop(response.categorieShop());
-        merchant.setStatutKYC(response.statutKYC());
-
         return merchant;
     }
 

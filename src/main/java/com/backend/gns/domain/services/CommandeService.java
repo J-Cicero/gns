@@ -3,8 +3,9 @@ package com.backend.gns.domain.services;
 import com.backend.gns.application.dtos.requests.CommandeRequest;
 import com.backend.gns.application.dtos.responses.CommandeResponse;
 import com.backend.gns.domain.enums.CommandeStatut;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,7 +19,13 @@ public interface CommandeService {
 
     void delete(UUID trackingId);
 
-    List<CommandeResponse> findByStatut(CommandeStatut statut);
+    Page<CommandeResponse> findByStatut(CommandeStatut statut, Pageable pageable);
 
-    List<CommandeResponse> findAll();
+    Page<CommandeResponse> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable);
+
+    Page<CommandeResponse> findByMerchantTrackingId(UUID merchantTrackingId, Pageable pageable);
+
+    Page<CommandeResponse> findByCommandeStatut(CommandeStatut commandeStatut, Pageable pageable);
+
+    Page<CommandeResponse> findAll(Pageable pageable);
 }

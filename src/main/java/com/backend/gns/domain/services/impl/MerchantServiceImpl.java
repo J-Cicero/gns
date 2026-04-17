@@ -8,15 +8,19 @@ import com.backend.gns.domain.models.Merchant;
 import com.backend.gns.domain.enums.KycStatus;
 import com.backend.gns.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.domain.services.MerchantService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class MerchantServiceImpl implements MerchantService {
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final MerchantRepository merchantRepository;
     private final MerchantMapper merchantMapper;
@@ -24,6 +28,11 @@ public class MerchantServiceImpl implements MerchantService {
     public MerchantServiceImpl(MerchantRepository merchantRepository, MerchantMapper merchantMapper) {
         this.merchantRepository = merchantRepository;
         this.merchantMapper = merchantMapper;
+    }
+
+    private Pageable normalize(Pageable pageable) {
+        int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
+        return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
     }
 
     @Override
@@ -52,9 +61,6 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setPrenom(request.prenom());
         merchant.setTelephone(request.telephone());
         merchant.setDateNaissance(request.dateNaissance());
-        merchant.setNomBoutique(request.nomBoutique());
-        merchant.setCategorieShop(request.categorieShop());
-        merchant.setStatutKYC(request.statutKYC());
         
         Merchant updatedMerchant = merchantRepository.save(merchant);
         return merchantMapper.toResponse(updatedMerchant);
@@ -70,17 +76,15 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MerchantResponse> findByStatutKYC(KycStatus statutKYC) {
-        return merchantRepository.findByStatutKYC(statutKYC).stream()
-                .map(merchantMapper::toResponse)
-                .toList();
+    public Page<MerchantResponse> findByStatutKYC(KycStatus statutKYC, Pageable pageable) {
+        return merchantRepository.findByStatutKYCOrderByCreatedAtAsc(statutKYC, normalize(pageable))
+                .map(merchantMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MerchantResponse> findAll() {
-        return merchantRepository.findAll().stream()
-                .map(merchantMapper::toResponse)
-                .toList();
+    public Page<MerchantResponse> findAll(Pageable pageable) {
+        return merchantRepository.findAll(normalize(pageable))
+                .map(merchantMapper::toResponse);
     }
 }

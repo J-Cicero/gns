@@ -7,15 +7,19 @@ import com.backend.gns.application.mappers.ProductMapper;
 import com.backend.gns.domain.models.Product;
 import com.backend.gns.infrastructure.repositories.ProductRepository;
 import com.backend.gns.domain.services.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
@@ -23,6 +27,11 @@ public class ProductServiceImpl implements ProductService {
     public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+    }
+
+    private Pageable normalize(Pageable pageable) {
+        int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
+        return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
     }
 
     @Override
@@ -44,48 +53,47 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse update(UUID trackingId, ProductRequest request) {
         Product product = productRepository.findByTrackingId(trackingId)
-                .orElseThrow(() -> new EntityNotFoundException("Produit non trouvé avec l'ID: " + trackingId));
-        
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Produit non trouvé avec l'ID: " + trackingId));
+
         product.setNom(request.nom());
         product.setDescription(request.description());
         product.setPrix(request.prix());
         product.setStock(request.stock());
         product.setEstDisponible(request.estDisponible());
         product.setDateAjout(request.dateAjout());
-        
-        Product updatedProduct = productRepository.save(product);
-        return productMapper.toResponse(updatedProduct);
+
+        return productMapper.toResponse(productRepository.save(product));
     }
 
     @Override
     @Transactional
     public void delete(UUID trackingId) {
         Product product = productRepository.findByTrackingId(trackingId)
-                .orElseThrow(() -> new EntityNotFoundException("Produit non trouvé avec l'ID: " + trackingId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Produit non trouvé avec l'ID: " + trackingId));
         productRepository.delete(product);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponse> findByMerchantTrackingId(UUID merchantTrackingId) {
-        return productRepository.findByMerchantTrackingId(merchantTrackingId).stream()
-                .map(productMapper::toResponse)
-                .toList();
+    public Page<ProductResponse> findByBoutiqueTrackingId(UUID boutiqueTrackingId, Pageable pageable) {
+        return productRepository.findByBoutiqueTrackingId(boutiqueTrackingId, normalize(pageable))
+                .map(productMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponse> findByEstDisponible(Boolean estDisponible) {
-        return productRepository.findByEstDisponible(estDisponible).stream()
-                .map(productMapper::toResponse)
-                .toList();
+    public Page<ProductResponse> findByEstDisponible(Boolean estDisponible, Pageable pageable) {
+        return productRepository.findByEstDisponible(estDisponible, normalize(pageable))
+                .map(productMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponse> findAll() {
-        return productRepository.findAll().stream()
-                .map(productMapper::toResponse)
-                .toList();
+    public Page<ProductResponse> findAll(Pageable pageable) {
+        return productRepository.findAll(normalize(pageable))
+                .map(productMapper::toResponse);
     }
 }
+
