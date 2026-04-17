@@ -7,11 +7,12 @@ import com.backend.gns.application.dtos.requests.StudentRequest;
 import com.backend.gns.application.dtos.responses.StudentResponse;
 import com.backend.gns.domain.enums.KycStatus;
 import com.backend.gns.domain.services.StudentService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -88,10 +89,13 @@ public class StudentController {
     @Operation(summary = "Récupérer les étudiants par statut KYC", description = "Récupère tous les étudiants avec un statut KYC donné")
     @ApiResponse(responseCode = "200", description = "Étudiants trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun étudiant trouvé")
-    public ResponseEntity<?> findByStatutKYC(@PathVariable KycStatus statutKYC) {
+    public ResponseEntity<?> findByStatutKYC(@PathVariable KycStatus statutKYC,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
         try {
-            List<StudentResponse> responses = studentService.findByStatutKYC(statutKYC);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = studentService.findByStatutKYC(statutKYC, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun étudiant avec ce statut KYC"));
             }
@@ -106,10 +110,12 @@ public class StudentController {
     @Operation(summary = "Récupérer tous les étudiants", description = "Récupère la liste de tous les étudiants")
     @ApiResponse(responseCode = "200", description = "Étudiants récupérés avec succès")
     @ApiResponse(responseCode = "404", description = "Aucun étudiant trouvé")
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
         try {
-            List<StudentResponse> responses = studentService.findAll();
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = studentService.findAll(pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun étudiant trouvé"));
             }

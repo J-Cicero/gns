@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import com.backend.gns.application.dtos.requests.CommandeLigneRequest;
 import com.backend.gns.application.dtos.responses.CommandeLigneResponse;
 import com.backend.gns.domain.services.CommandeLigneService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -87,10 +88,13 @@ public class CommandeLigneController {
     @Operation(summary = "Récupérer les lignes d'une commande", description = "Récupère toutes les lignes d'une commande spécifique")
     @ApiResponse(responseCode = "200", description = "Lignes de commande trouvées")
     @ApiResponse(responseCode = "404", description = "Aucune ligne de commande trouvée")
-    public ResponseEntity<?> findByCommandeTrackingId(@PathVariable UUID commandeTrackingId) {
+    public ResponseEntity<?> findByCommandeTrackingId(@PathVariable UUID commandeTrackingId,
+                                                      @RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "10") int size) {
         try {
-            List<CommandeLigneResponse> responses = commandeLigneService.findByCommandeTrackingId(commandeTrackingId);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = commandeLigneService.findByCommandeTrackingId(commandeTrackingId, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucune ligne pour cette commande"));
             }
@@ -105,10 +109,13 @@ public class CommandeLigneController {
     @Operation(summary = "Récupérer les lignes d'un produit", description = "Récupère toutes les lignes contenant un produit spécifique")
     @ApiResponse(responseCode = "200", description = "Lignes de commande trouvées")
     @ApiResponse(responseCode = "404", description = "Aucune ligne de commande trouvée")
-    public ResponseEntity<?> findByProductTrackingId(@PathVariable UUID productTrackingId) {
+    public ResponseEntity<?> findByProductTrackingId(@PathVariable UUID productTrackingId,
+                                                     @RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "10") int size) {
         try {
-            List<CommandeLigneResponse> responses = commandeLigneService.findByProductTrackingId(productTrackingId);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = commandeLigneService.findByProductTrackingId(productTrackingId, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucune ligne pour ce produit"));
             }
@@ -123,10 +130,12 @@ public class CommandeLigneController {
     @Operation(summary = "Récupérer toutes les lignes de commande", description = "Récupère la liste de toutes les lignes de commande")
     @ApiResponse(responseCode = "200", description = "Lignes de commande récupérées avec succès")
     @ApiResponse(responseCode = "404", description = "Aucune ligne de commande trouvée")
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "10") int size) {
         try {
-            List<CommandeLigneResponse> responses = commandeLigneService.findAll();
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = commandeLigneService.findAll(pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucune ligne de commande trouvée"));
             }

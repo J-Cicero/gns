@@ -7,11 +7,12 @@ import com.backend.gns.application.dtos.requests.MerchantRequest;
 import com.backend.gns.application.dtos.responses.MerchantResponse;
 import com.backend.gns.domain.enums.KycStatus;
 import com.backend.gns.domain.services.MerchantService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -88,10 +89,13 @@ public class MerchantController {
     @Operation(summary = "Récupérer les marchands par statut KYC", description = "Récupère tous les marchands avec un statut KYC donné")
     @ApiResponse(responseCode = "200", description = "Marchands trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun marchand trouvé")
-    public ResponseEntity<?> findByStatutKYC(@PathVariable KycStatus statutKYC) {
+    public ResponseEntity<?> findByStatutKYC(@PathVariable KycStatus statutKYC,
+                                            @RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size) {
         try {
-            List<MerchantResponse> responses = merchantService.findByStatutKYC(statutKYC);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = merchantService.findByStatutKYC(statutKYC, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun marchand avec ce statut KYC"));
             }
@@ -106,10 +110,12 @@ public class MerchantController {
     @Operation(summary = "Récupérer tous les marchands", description = "Récupère la liste de tous les marchands")
     @ApiResponse(responseCode = "200", description = "Marchands récupérés avec succès")
     @ApiResponse(responseCode = "404", description = "Aucun marchand trouvé")
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "10") int size) {
         try {
-            List<MerchantResponse> responses = merchantService.findAll();
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = merchantService.findAll(pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun marchand trouvé"));
             }

@@ -8,11 +8,13 @@ import com.backend.gns.application.dtos.responses.VersementResponse;
 import com.backend.gns.domain.enums.VersementStatut;
 import com.backend.gns.domain.enums.VersementType;
 import com.backend.gns.domain.services.VersementService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 
@@ -89,10 +91,11 @@ public class VersementController {
     @Operation(summary = "Récupérer les versements par statut", description = "Récupère tous les versements avec un statut donné")
     @ApiResponse(responseCode = "200", description = "Versements trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun versement trouvé")
-    public ResponseEntity<?> findByStatut(@PathVariable VersementStatut statut) {
+    public ResponseEntity<?> findByStatut(@PathVariable VersementStatut statut, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            List<VersementResponse> responses = versementService.findByStatut(statut);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = versementService.findByStatut(statut, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun versement avec ce statut"));
             }
@@ -107,10 +110,11 @@ public class VersementController {
     @Operation(summary = "Récupérer les versements par type", description = "Récupère tous les versements d'un type donné")
     @ApiResponse(responseCode = "200", description = "Versements trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun versement trouvé")
-    public ResponseEntity<?> findByTypeVersement(@PathVariable VersementType typeVersement) {
+    public ResponseEntity<?> findByTypeVersement(@PathVariable VersementType typeVersement, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            List<VersementResponse> responses = versementService.findByTypeVersement(typeVersement);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = versementService.findByTypeVersement(typeVersement, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun versement avec ce type"));
             }
@@ -125,10 +129,11 @@ public class VersementController {
     @Operation(summary = "Récupérer les versements d'un portefeuille", description = "Récupère tous les versements d'un portefeuille spécifique")
     @ApiResponse(responseCode = "200", description = "Versements trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun versement trouvé")
-    public ResponseEntity<?> findByWalletTrackingId(@PathVariable UUID walletTrackingId) {
+    public ResponseEntity<?> findByWalletTrackingId(@PathVariable UUID walletTrackingId,@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            List<VersementResponse> responses = versementService.findByWalletTrackingId(walletTrackingId);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = versementService.findByWalletTrackingId(walletTrackingId, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun versement pour ce portefeuille"));
             }
@@ -143,10 +148,11 @@ public class VersementController {
     @Operation(summary = "Récupérer tous les versements", description = "Récupère la liste de tous les versements")
     @ApiResponse(responseCode = "200", description = "Versements récupérés avec succès")
     @ApiResponse(responseCode = "404", description = "Aucun versement trouvé")
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            List<VersementResponse> responses = versementService.findAll();
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = versementService.findAll(pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun versement trouvé"));
             }
@@ -154,6 +160,32 @@ public class VersementController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/tous-etudiants")
+    @Operation(summary = "Verser à tous les étudiants", description = "Crée des versements pour tous les étudiants")
+    @ApiResponse(responseCode = "200", description = "Versements créés avec succès")
+    public ResponseEntity<?> versementAusTousEtudiants(@RequestParam BigDecimal montant,@RequestParam(required = false) String description) {
+        try {
+            versementService.versementAusTousEtudiants(montant, description != null ? description : "");
+            return ResponseEntity.ok(Map.of("success", true, "message", "Versements créés pour tous les étudiants"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "VERSEMENT_FAILED", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/toutes-boutiques")
+    @Operation(summary = "Verser à toutes les boutiques", description = "Crée des versements pour toutes les boutiques")
+    @ApiResponse(responseCode = "200", description = "Versements créés avec succès")
+    public ResponseEntity<?> versementAusToutesBoutiques(@RequestParam BigDecimal montant,@RequestParam(required = false) String description) {
+        try {
+            versementService.versementAusToutesBoutiques(montant, description != null ? description : "");
+            return ResponseEntity.ok(Map.of("success", true, "message", "Versements créés pour toutes les boutiques"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "VERSEMENT_FAILED", "message", e.getMessage()));
         }
     }
 }

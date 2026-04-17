@@ -8,11 +8,12 @@ import com.backend.gns.application.dtos.responses.PaiementResponse;
 import com.backend.gns.domain.enums.PaiementStatut;
 import com.backend.gns.domain.enums.PaiementType;
 import com.backend.gns.domain.services.PaiementService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -89,10 +90,13 @@ public class PaiementController {
     @Operation(summary = "Récupérer les paiements par statut", description = "Récupère tous les paiements avec un statut donné")
     @ApiResponse(responseCode = "200", description = "Paiements trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
-    public ResponseEntity<?> findByStatutPaiement(@PathVariable PaiementStatut statutPaiement) {
+    public ResponseEntity<?> findByStatutPaiement(@PathVariable PaiementStatut statutPaiement,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "10") int size) {
         try {
-            List<PaiementResponse> responses = paiementService.findByStatutPaiement(statutPaiement);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = paiementService.findByStatutPaiement(statutPaiement, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement avec ce statut"));
             }
@@ -107,10 +111,13 @@ public class PaiementController {
     @Operation(summary = "Récupérer les paiements par type", description = "Récupère tous les paiements d'un type donné")
     @ApiResponse(responseCode = "200", description = "Paiements trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
-    public ResponseEntity<?> findByTypePaiement(@PathVariable PaiementType typePaiement) {
+    public ResponseEntity<?> findByTypePaiement(@PathVariable PaiementType typePaiement,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size) {
         try {
-            List<PaiementResponse> responses = paiementService.findByTypePaiement(typePaiement);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = paiementService.findByTypePaiement(typePaiement, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement avec ce type"));
             }
@@ -125,10 +132,13 @@ public class PaiementController {
     @Operation(summary = "Récupérer les paiements d'une commande", description = "Récupère tous les paiements d'une commande spécifique")
     @ApiResponse(responseCode = "200", description = "Paiements trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
-    public ResponseEntity<?> findByCommandeTrackingId(@PathVariable UUID commandeTrackingId) {
+    public ResponseEntity<?> findByCommandeTrackingId(@PathVariable UUID commandeTrackingId,
+                                                      @RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "10") int size) {
         try {
-            List<PaiementResponse> responses = paiementService.findByCommandeTrackingId(commandeTrackingId);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = paiementService.findByCommandeTrackingId(commandeTrackingId, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement pour cette commande"));
             }
@@ -143,10 +153,13 @@ public class PaiementController {
     @Operation(summary = "Récupérer les paiements d'un portefeuille", description = "Récupère tous les paiements d'un portefeuille spécifique")
     @ApiResponse(responseCode = "200", description = "Paiements trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
-    public ResponseEntity<?> findByWalletTrackingId(@PathVariable UUID walletTrackingId) {
+    public ResponseEntity<?> findByWalletTrackingId(@PathVariable UUID walletTrackingId,
+                                                    @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size) {
         try {
-            List<PaiementResponse> responses = paiementService.findByWalletTrackingId(walletTrackingId);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = paiementService.findByWalletTrackingId(walletTrackingId, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement pour ce portefeuille"));
             }
@@ -161,10 +174,12 @@ public class PaiementController {
     @Operation(summary = "Récupérer tous les paiements", description = "Récupère la liste de tous les paiements")
     @ApiResponse(responseCode = "200", description = "Paiements récupérés avec succès")
     @ApiResponse(responseCode = "404", description = "Aucun paiement trouvé")
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
         try {
-            List<PaiementResponse> responses = paiementService.findAll();
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = paiementService.findAll(pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun paiement trouvé"));
             }

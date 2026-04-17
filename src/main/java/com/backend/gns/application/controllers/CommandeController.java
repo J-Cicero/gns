@@ -7,11 +7,12 @@ import com.backend.gns.application.dtos.requests.CommandeRequest;
 import com.backend.gns.application.dtos.responses.CommandeResponse;
 import com.backend.gns.domain.enums.CommandeStatut;
 import com.backend.gns.domain.services.CommandeService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -89,10 +90,13 @@ public class CommandeController {
     @Operation(summary = "Récupérer les commandes par statut", description = "Récupère toutes les commandes avec un statut donné")
     @ApiResponse(responseCode = "200", description = "Commandes trouvées")
     @ApiResponse(responseCode = "404", description = "Aucune commande trouvée")
-    public ResponseEntity<?> findByStatut(@PathVariable CommandeStatut statut) {
+    public ResponseEntity<?> findByStatut(@PathVariable CommandeStatut statut,
+                                          @RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size) {
         try {
-            List<CommandeResponse> responses = commandeService.findByStatut(statut);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = commandeService.findByStatut(statut, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucune commande avec ce statut"));
             }
@@ -107,10 +111,12 @@ public class CommandeController {
     @Operation(summary = "Récupérer toutes les commandes", description = "Récupère la liste de toutes les commandes")
     @ApiResponse(responseCode = "200", description = "Commandes récupérées avec succès")
     @ApiResponse(responseCode = "404", description = "Aucune commande trouvée")
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
         try {
-            List<CommandeResponse> responses = commandeService.findAll();
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = commandeService.findAll(pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucune commande trouvée"));
             }
@@ -118,6 +124,24 @@ public class CommandeController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{trackingId}/payer")
+    @Operation(summary = "Payer une commande", description = "Traite le paiement d'une commande")
+    @ApiResponse(responseCode = "200", description = "Commande payée avec succès")
+    @ApiResponse(responseCode = "404", description = "Commande non trouvée")
+    @ApiResponse(responseCode = "400", description = "Solde insuffisant ou erreur de paiement")
+    public ResponseEntity<?> payerCommande(@PathVariable UUID trackingId) {
+        try {
+            commandeService.payerCommande(trackingId);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Commande payée avec succès"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "INSUFFICIENT_BALANCE", "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "PAYMENT_FAILED", "message", e.getMessage()));
         }
     }
 }

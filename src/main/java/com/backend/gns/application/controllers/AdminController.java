@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import com.backend.gns.application.dtos.requests.AdminRequest;
 import com.backend.gns.application.dtos.responses.AdminResponse;
 import com.backend.gns.domain.services.AdminService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -87,10 +88,12 @@ public class AdminController {
     @Operation(summary = "Récupérer tous les administrateurs", description = "Récupère la liste de tous les administrateurs")
     @ApiResponse(responseCode = "200", description = "Administrateurs récupérés avec succès")
     @ApiResponse(responseCode = "404", description = "Aucun administrateur trouvé")
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
         try {
-            List<AdminResponse> responses = adminService.findAll();
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = adminService.findAll(pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun administrateur trouvé"));
             }

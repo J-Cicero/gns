@@ -4,7 +4,6 @@ import com.backend.gns.application.dtos.requests.ProductRequest;
 import com.backend.gns.application.dtos.responses.ProductResponse;
 import com.backend.gns.domain.models.Product;
 import com.backend.gns.domain.models.Boutique;
-import com.backend.gns.infrastructure.repositories.ProductRepository;
 import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
 import org.springframework.stereotype.Component;
 

@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import com.backend.gns.application.dtos.requests.ProductRequest;
 import com.backend.gns.application.dtos.responses.ProductResponse;
 import com.backend.gns.domain.services.ProductService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -83,16 +84,19 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/merchant/{merchantTrackingId}")
-    @Operation(summary = "Récupérer les produits d'un marchand", description = "Récupère tous les produits d'un marchand spécifique")
+    @GetMapping("/boutique/{boutiqueTrackingId}")
+    @Operation(summary = "Récupérer les produits d'une boutique", description = "Récupère tous les produits d'une boutique spécifique")
     @ApiResponse(responseCode = "200", description = "Produits trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun produit trouvé")
-    public ResponseEntity<?> findByMerchantTrackingId(@PathVariable UUID merchantTrackingId) {
+    public ResponseEntity<?> findByBoutiqueTrackingId(@PathVariable UUID boutiqueTrackingId,
+                                                      @RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "10") int size) {
         try {
-            List<ProductResponse> responses = productService.findByMerchantTrackingId(merchantTrackingId);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = productService.findByBoutiqueTrackingId(boutiqueTrackingId, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun produit pour ce marchand"));
+                        .body(Map.of("error", "NOT_FOUND", "message", "Aucun produit pour cette boutique"));
             }
             return ResponseEntity.ok(responses);
         } catch (Exception e) {
@@ -105,10 +109,13 @@ public class ProductController {
     @Operation(summary = "Récupérer les produits par disponibilité", description = "Récupère tous les produits disponibles ou non disponibles")
     @ApiResponse(responseCode = "200", description = "Produits trouvés")
     @ApiResponse(responseCode = "404", description = "Aucun produit trouvé")
-    public ResponseEntity<?> findByEstDisponible(@PathVariable Boolean estDisponible) {
+    public ResponseEntity<?> findByEstDisponible(@PathVariable Boolean estDisponible,
+                                                 @RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "10") int size) {
         try {
-            List<ProductResponse> responses = productService.findByEstDisponible(estDisponible);
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = productService.findByEstDisponible(estDisponible, pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun produit avec cette disponibilité"));
             }
@@ -123,10 +130,12 @@ public class ProductController {
     @Operation(summary = "Récupérer tous les produits", description = "Récupère la liste de tous les produits")
     @ApiResponse(responseCode = "200", description = "Produits récupérés avec succès")
     @ApiResponse(responseCode = "404", description = "Aucun produit trouvé")
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
         try {
-            List<ProductResponse> responses = productService.findAll();
-            if (responses.isEmpty()) {
+            Pageable pageable = PageRequest.of(page, size);
+            var responses = productService.findAll(pageable);
+            if (!responses.hasContent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "NOT_FOUND", "message", "Aucun produit trouvé"));
             }
