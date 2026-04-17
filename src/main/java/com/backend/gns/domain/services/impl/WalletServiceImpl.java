@@ -118,4 +118,27 @@ public class WalletServiceImpl implements WalletService {
         return walletRepository.findAll(normalize(pageable))
                 .map(walletMapper::toResponse);
     }
+
+    @Override
+    @Transactional
+    public void crediter(UUID walletTrackingId, BigDecimal montant) {
+        Wallet wallet = walletRepository.findByTrackingId(walletTrackingId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Portefeuille non trouvé avec l'ID: " + walletTrackingId));
+        wallet.setSolde(wallet.getSolde().add(montant));
+        walletRepository.save(wallet);
+    }
+
+    @Override
+    @Transactional
+    public void debiter(UUID walletTrackingId, BigDecimal montant) {
+        Wallet wallet = walletRepository.findByTrackingId(walletTrackingId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Portefeuille non trouvé avec l'ID: " + walletTrackingId));
+        if (wallet.getSolde().compareTo(montant) < 0) {
+            throw new IllegalArgumentException("Solde insuffisant. Solde: " + wallet.getSolde() + ", Montant: " + montant);
+        }
+        wallet.setSolde(wallet.getSolde().subtract(montant));
+        walletRepository.save(wallet);
+    }
 }

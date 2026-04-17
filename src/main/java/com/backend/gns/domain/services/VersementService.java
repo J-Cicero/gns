@@ -7,6 +7,7 @@ import com.backend.gns.domain.enums.VersementType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,4 +28,8 @@ public interface VersementService {
     Page<VersementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable);
 
     Page<VersementResponse> findAll(Pageable pageable);
+
+    void versementAusTousEtudiants(BigDecimal montant, String description);
+
+    void versementAusToutesBoutiques(BigDecimal montant, String description);
 }

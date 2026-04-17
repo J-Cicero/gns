@@ -28,4 +28,6 @@ public interface CommandeService {
     Page<CommandeResponse> findByCommandeStatut(CommandeStatut commandeStatut, Pageable pageable);
 
     Page<CommandeResponse> findAll(Pageable pageable);
+
+    void payerCommande(UUID commandeTrackingId);
 }

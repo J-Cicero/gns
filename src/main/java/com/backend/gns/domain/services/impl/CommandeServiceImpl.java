@@ -5,15 +5,19 @@ import com.backend.gns.application.dtos.requests.CommandeRequest;
 import com.backend.gns.application.dtos.responses.CommandeResponse;
 import com.backend.gns.application.mappers.CommandeMapper;
 import com.backend.gns.domain.models.Commande;
+import com.backend.gns.domain.models.Boutique;
 import com.backend.gns.domain.enums.CommandeStatut;
 import com.backend.gns.infrastructure.repositories.CommandeRepository;
+import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.domain.services.CommandeService;
+import com.backend.gns.domain.services.WalletService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,10 +28,15 @@ public class CommandeServiceImpl implements CommandeService {
 
     private final CommandeRepository commandeRepository;
     private final CommandeMapper commandeMapper;
+    private final BoutiqueRepository boutiqueRepository;
+    private final WalletService walletService;
 
-    public CommandeServiceImpl(CommandeRepository commandeRepository, CommandeMapper commandeMapper) {
+    public CommandeServiceImpl(CommandeRepository commandeRepository, CommandeMapper commandeMapper,
+                             BoutiqueRepository boutiqueRepository, WalletService walletService) {
         this.commandeRepository = commandeRepository;
         this.commandeMapper = commandeMapper;
+        this.boutiqueRepository = boutiqueRepository;
+        this.walletService = walletService;
     }
 
     private Pageable normalize(Pageable pageable) {
@@ -82,8 +91,8 @@ public class CommandeServiceImpl implements CommandeService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CommandeResponse> findByCommandeStatut(CommandeStatut commandeStatut, Pageable pageable) {
-        return commandeRepository.findByStatutOrderByDateCommandeDesc(commandeStatut, normalize(pageable))
+    public Page<CommandeResponse> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable) {
+        return commandeRepository.findByStudentTrackingId(studentTrackingId, normalize(pageable))
                 .map(commandeMapper::toResponse);
     }
 
@@ -97,7 +106,7 @@ public class CommandeServiceImpl implements CommandeService {
     @Override
     @Transactional(readOnly = true)
     public Page<CommandeResponse> findByCommandeStatut(CommandeStatut commandeStatut, Pageable pageable) {
-        return commandeRepository.findByStatut(commandeStatut, normalize(pageable))
+        return commandeRepository.findByStatutOrderByDateCommandeDesc(commandeStatut, normalize(pageable))
                 .map(commandeMapper::toResponse);
     }
 
@@ -106,5 +115,40 @@ public class CommandeServiceImpl implements CommandeService {
     public Page<CommandeResponse> findAll(Pageable pageable) {
         return commandeRepository.findAll(normalize(pageable))
                 .map(commandeMapper::toResponse);
+    }
+
+    @Override
+    @Transactional
+    public void payerCommande(UUID commandeTrackingId) {
+        Commande commande = commandeRepository.findByTrackingId(commandeTrackingId)
+                .orElseThrow(() -> new EntityNotFoundException("Commande non trouvée avec l'ID: " + commandeTrackingId));
+
+        // Récupérer la première boutique du merchant
+        var boutiques = boutiqueRepository.findByMerchantTrackingId(commande.getMerchant().getTrackingId(), Pageable.unpaged());
+        if (!boutiques.hasContent()) {
+            throw new EntityNotFoundException("Aucune boutique trouvée pour le merchant ID: " + commande.getMerchant().getTrackingId());
+        }
+        Boutique boutique = boutiques.getContent().get(0);
+
+        BigDecimal montantCommande = commande.getMontantTotal();
+        BigDecimal montantBoutique = montantCommande.multiply(BigDecimal.valueOf(1.01)); // +1%
+
+        try {
+            // Débiter le wallet du student
+            walletService.debiter(commande.getStudent().getWallet().getTrackingId(), montantCommande);
+            
+            // Débiter le wallet de la boutique (+1%)
+            walletService.debiter(boutique.getWallet().getTrackingId(), montantBoutique);
+
+            // Mettre à jour le statut de la commande
+            commande.setStatut(CommandeStatut.FINALISEE);
+            commandeRepository.save(commande);
+
+        } catch (IllegalArgumentException e) {
+            // Solde insuffisant - annuler l'achat
+            commande.setStatut(CommandeStatut.ANNULEE);
+            commandeRepository.save(commande);
+            throw new RuntimeException("Paiement échoué : " + e.getMessage());
+        }
     }
 }

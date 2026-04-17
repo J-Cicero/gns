@@ -8,13 +8,17 @@ import com.backend.gns.domain.models.Versement;
 import com.backend.gns.domain.enums.VersementStatut;
 import com.backend.gns.domain.enums.VersementType;
 import com.backend.gns.infrastructure.repositories.VersementRepository;
+import com.backend.gns.infrastructure.repositories.StudentRepository;
+import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.domain.services.VersementService;
+import com.backend.gns.domain.services.WalletService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,10 +30,18 @@ public class VersementServiceImpl implements VersementService {
 
     private final VersementRepository versementRepository;
     private final VersementMapper versementMapper;
+    private final StudentRepository studentRepository;
+    private final BoutiqueRepository boutiqueRepository;
+    private final WalletService walletService;
 
-    public VersementServiceImpl(VersementRepository versementRepository, VersementMapper versementMapper) {
+    public VersementServiceImpl(VersementRepository versementRepository, VersementMapper versementMapper,
+                              StudentRepository studentRepository, BoutiqueRepository boutiqueRepository,
+                              WalletService walletService) {
         this.versementRepository = versementRepository;
         this.versementMapper = versementMapper;
+        this.studentRepository = studentRepository;
+        this.boutiqueRepository = boutiqueRepository;
+        this.walletService = walletService;
     }
 
     private Pageable normalize(Pageable pageable) {
@@ -101,5 +113,49 @@ public class VersementServiceImpl implements VersementService {
     public Page<VersementResponse> findAll(Pageable pageable) {
         return versementRepository.findAll(normalize(pageable))
                 .map(versementMapper::toResponse);
+    }
+
+    @Override
+    @Transactional
+    public void versementAusTousEtudiants(BigDecimal montant, String description) {
+        var students = studentRepository.findAll(Pageable.unpaged());
+        
+        for (var student : students.getContent()) {
+            if (student.getWallet() != null) {
+                Versement versement = new Versement();
+                versement.setTrackingId(UUID.randomUUID());
+                versement.setWallet(student.getWallet());
+                versement.setMontantVerse(montant);
+                versement.setTypeVersement(VersementType.BOURSE_DBS_36k);
+                versement.setStatut(VersementStatut.EFFECTUE);
+                versement.setDateVersement(LocalDateTime.now());
+                versementRepository.save(versement);
+
+                // Créditer le wallet
+                walletService.crediter(student.getWallet().getTrackingId(), montant);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void versementAusToutesBoutiques(BigDecimal montant, String description) {
+        var boutiques = boutiqueRepository.findAll(Pageable.unpaged());
+        
+        for (var boutique : boutiques.getContent()) {
+            if (boutique.getWallet() != null) {
+                Versement versement = new Versement();
+                versement.setTrackingId(UUID.randomUUID());
+                versement.setWallet(boutique.getWallet());
+                versement.setMontantVerse(montant);
+                versement.setTypeVersement(VersementType.MERCHANT);
+                versement.setStatut(VersementStatut.EFFECTUE);
+                versement.setDateVersement(LocalDateTime.now());
+                versementRepository.save(versement);
+
+                // Créditer le wallet
+                walletService.crediter(boutique.getWallet().getTrackingId(), montant);
+            }
+        }
     }
 }

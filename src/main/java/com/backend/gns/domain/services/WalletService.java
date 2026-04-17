@@ -32,4 +32,8 @@ public interface WalletService {
     Page<WalletResponse> findBySoldeGreaterThan(BigDecimal amount, Pageable pageable);
 
     Page<WalletResponse> findAll(Pageable pageable);
+
+    void crediter(UUID walletTrackingId, BigDecimal montant);
+
+    void debiter(UUID walletTrackingId, BigDecimal montant);
 }
