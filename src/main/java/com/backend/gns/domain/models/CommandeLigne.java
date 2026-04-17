@@ -1,12 +1,6 @@
 package com.backend.gns.domain.models;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.backend.gns.Shared.utils.BaseEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -17,10 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "COMMANDE_LIGNE")
@@ -31,30 +28,28 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public class CommandeLigne extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@Column(nullable = false, unique = true, updatable = false)
-	private UUID trackingId;
+  @Column(nullable = false, unique = true, updatable = false)
+  private UUID trackingId;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "commande_id", nullable = false)
-	private Commande commande;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "commande_id", nullable = false)
+  private Commande commande;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "product_id", nullable = false)
-	private Product product;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "product_id", nullable = false)
+  private Product product;
 
-	@Column(nullable = false)
-	private int quantite;
+  @Column(nullable = false)
+  private int quantite;
 
-	@Column(nullable = false)
-	private BigDecimal prixUnitaire;
+  @Column(nullable = false)
+  private BigDecimal prixUnitaire;
 
-	public BigDecimal getSousTotal() {
-		return prixUnitaire.multiply(BigDecimal.valueOf(quantite));
-	}
-
+  public BigDecimal getSousTotal() {
+    return prixUnitaire.multiply(BigDecimal.valueOf(quantite));
+  }
 }
- 

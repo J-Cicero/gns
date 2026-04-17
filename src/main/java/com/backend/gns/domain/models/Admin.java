@@ -1,9 +1,6 @@
 package com.backend.gns.domain.models;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.backend.gns.Shared.user.domain.models.User;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -12,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @DiscriminatorValue("ADMIN")
@@ -22,7 +20,6 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public class Admin extends User {
 
-    @Column(length = 20 , nullable = true) 
-    private String numeroCompte;
-  
+  @Column(length = 20, nullable = true)
+  private String numeroCompte;
 }

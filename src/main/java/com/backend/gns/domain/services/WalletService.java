@@ -4,36 +4,35 @@ import com.backend.gns.application.dtos.requests.WalletRequest;
 import com.backend.gns.application.dtos.responses.WalletResponse;
 import com.backend.gns.domain.enums.WalletStatus;
 import com.backend.gns.domain.enums.WalletType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface WalletService {
 
-    WalletResponse create(WalletRequest request);
+  WalletResponse create(WalletRequest request);
 
-    Optional<WalletResponse> findByTrackingId(UUID trackingId);
+  Optional<WalletResponse> findByTrackingId(UUID trackingId);
 
-    WalletResponse update(UUID trackingId, WalletRequest request);
+  WalletResponse update(UUID trackingId, WalletRequest request);
 
-    void delete(UUID trackingId);
+  void delete(UUID trackingId);
 
-    Page<WalletResponse> findByTypeWallet(WalletType typeWallet, Pageable pageable);
+  Page<WalletResponse> findByTypeWallet(WalletType typeWallet, Pageable pageable);
 
-    Page<WalletResponse> findByEstVerrouille(Boolean estVerrouille, Pageable pageable);
+  Page<WalletResponse> findByEstVerrouille(Boolean estVerrouille, Pageable pageable);
 
-    Page<WalletResponse> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
+  Page<WalletResponse> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
 
-    Page<WalletResponse> findBySoldeLessThan(BigDecimal amount, Pageable pageable);
+  Page<WalletResponse> findBySoldeLessThan(BigDecimal amount, Pageable pageable);
 
-    Page<WalletResponse> findBySoldeGreaterThan(BigDecimal amount, Pageable pageable);
+  Page<WalletResponse> findBySoldeGreaterThan(BigDecimal amount, Pageable pageable);
 
-    Page<WalletResponse> findAll(Pageable pageable);
+  Page<WalletResponse> findAll(Pageable pageable);
 
-    void crediter(UUID walletTrackingId, BigDecimal montant);
+  void crediter(UUID walletTrackingId, BigDecimal montant);
 
-    void debiter(UUID walletTrackingId, BigDecimal montant);
+  void debiter(UUID walletTrackingId, BigDecimal montant);
 }

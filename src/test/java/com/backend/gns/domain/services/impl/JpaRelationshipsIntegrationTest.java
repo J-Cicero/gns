@@ -5,6 +5,4 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class JpaRelationshipsIntegrationTest {
-
-}
+public class JpaRelationshipsIntegrationTest {}

@@ -4,32 +4,31 @@ import com.backend.gns.application.dtos.requests.VersementRequest;
 import com.backend.gns.application.dtos.responses.VersementResponse;
 import com.backend.gns.domain.enums.VersementStatut;
 import com.backend.gns.domain.enums.VersementType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface VersementService {
 
-    VersementResponse create(VersementRequest request);
+  VersementResponse create(VersementRequest request);
 
-    Optional<VersementResponse> findByTrackingId(UUID trackingId);
+  Optional<VersementResponse> findByTrackingId(UUID trackingId);
 
-    VersementResponse update(UUID trackingId, VersementRequest request);
+  VersementResponse update(UUID trackingId, VersementRequest request);
 
-    void delete(UUID trackingId);
+  void delete(UUID trackingId);
 
-    Page<VersementResponse> findByStatut(VersementStatut statut, Pageable pageable);
+  Page<VersementResponse> findByStatut(VersementStatut statut, Pageable pageable);
 
-    Page<VersementResponse> findByTypeVersement(VersementType typeVersement, Pageable pageable);
+  Page<VersementResponse> findByTypeVersement(VersementType typeVersement, Pageable pageable);
 
-    Page<VersementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable);
+  Page<VersementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable);
 
-    Page<VersementResponse> findAll(Pageable pageable);
+  Page<VersementResponse> findAll(Pageable pageable);
 
-    void versementAusTousEtudiants(BigDecimal montant, String description);
+  void versementAusTousEtudiants(BigDecimal montant, String description);
 
-    void versementAusToutesBoutiques(BigDecimal montant, String description);
+  void versementAusToutesBoutiques(BigDecimal montant, String description);
 }
