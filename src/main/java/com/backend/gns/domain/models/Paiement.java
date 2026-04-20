@@ -49,9 +49,6 @@ public class Paiement extends BaseEntity {
   private Wallet wallet;
 
   @Column(nullable = false)
-  private BigDecimal montantProduit;
-
-  @Column(nullable = false)
   private BigDecimal commission;
 
   @Column(nullable = false)

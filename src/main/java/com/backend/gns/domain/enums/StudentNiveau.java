@@ -1,7 +1,13 @@
 package com.backend.gns.domain.enums;
 
 public enum StudentNiveau {
-  L1,
-  L2,
-  L3
+    L1ANNEE,
+    L2ANNEE,
+    L3ANNEE,
+    L4ANNEE,
+    L5ANNEE,
+    M1ANNEE,
+    M2ANNEE,
+    M3ANNEE,
+    DOCTORAT
 }

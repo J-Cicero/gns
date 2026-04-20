@@ -30,10 +30,7 @@ public class StudentMapper {
     student.setEstActif(request.estActif());
     student.setTelephone(request.telephone());
     student.setDateNaissance(request.dateNaissance());
-    student.setCreditsValides(request.creditsValides());
     student.setRIB(request.RIB());
-    student.setCNI(request.CNI());
-    student.setCheminReleve(request.cheminReleve());
     student.setStatutKYC(request.statutKYC());
 
     if (request.walletTrackingId() != null) {
@@ -64,10 +61,7 @@ public class StudentMapper {
         .estActif(student.isEstActif())
         .telephone(student.getTelephone())
         .dateNaissance(student.getDateNaissance())
-        .creditsValides(student.getCreditsValides())
         .RIB(student.getRIB())
-        .verifiedCNI(true)
-        .verifiedReleve(true)
         .statutKYC(student.getStatutKYC())
         .walletTrackingId(student.getWallet() != null ? student.getWallet().getTrackingId() : null)
         .build();
@@ -87,7 +81,6 @@ public class StudentMapper {
     student.setEstActif(response.estActif());
     student.setTelephone(response.telephone());
     student.setDateNaissance(response.dateNaissance());
-    student.setCreditsValides(response.creditsValides());
     student.setRIB(response.RIB());
     student.setStatutKYC(response.statutKYC());
 

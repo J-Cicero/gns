@@ -1,8 +1,8 @@
 package com.backend.gns.domain.models;
 
 import com.backend.gns.Shared.utils.BaseEntity;
-import com.backend.gns.domain.enums.KycStatus;
-import jakarta.persistence.CascadeType;
+import com.backend.gns.domain.enums.StatutDocument;
+import com.backend.gns.domain.enums.TypeDocument;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -14,8 +14,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,13 +24,13 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "BOUTIQUE")
+@Table(name = "DOCUMENT_ETUDIANT")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Boutique extends BaseEntity {
+public class DocumentEtudiant extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,30 +39,31 @@ public class Boutique extends BaseEntity {
     @Column(length = 36, nullable = false, unique = true, updatable = false)
     private UUID trackingId;
 
-    @Column(length = 100, nullable = false)
-    private String nomBoutique;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
 
-    @Column(length = 100, nullable = false)
-    private String categorieShop;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inscription_id", nullable = false)
+    private InscriptionAnnuelle inscription;
 
-    @Column(length = 255)
-    private String cheminCarteEDJ;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30, nullable = false)
+    private TypeDocument type;
+
+    @Column(length = 255, nullable = false)
+    private String cheminFichier;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
-    private KycStatus statutKYC;
+    private StatutDocument statut;
+
+    @Column(length = 255)
+    private String commentaireRejet;
+
+    @Column(nullable = false)
+    private LocalDateTime dateDepot;
 
     @Column
-    private Double latitude;
-
-    @Column
-    private Double longitude;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "merchant_id", nullable = false)
-    private Merchant merchant;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "wallet_id", nullable = false)
-    private Wallet wallet;
+    private LocalDateTime dateValidation;
 }

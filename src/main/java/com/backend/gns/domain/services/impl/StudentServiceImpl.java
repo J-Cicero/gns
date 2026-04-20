@@ -99,10 +99,7 @@ public class StudentServiceImpl implements StudentService {
     student.setPrenom(request.prenom());
     student.setTelephone(request.telephone());
     student.setDateNaissance(request.dateNaissance());
-    student.setCreditsValides(request.creditsValides());
     student.setRIB(request.RIB());
-    student.setCNI(request.CNI());
-    student.setCheminReleve(request.cheminReleve());
     student.setStatutKYC(request.statutKYC());
 
     if (request.walletTrackingId() != null) {

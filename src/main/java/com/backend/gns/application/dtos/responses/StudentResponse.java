@@ -16,9 +16,6 @@ public record StudentResponse(
     Boolean estActif,
     String telephone,
     LocalDate dateNaissance,
-    int creditsValides,
     String RIB,
-    Boolean verifiedCNI,
-    Boolean verifiedReleve,
     KycStatus statutKYC,
     UUID walletTrackingId) {}

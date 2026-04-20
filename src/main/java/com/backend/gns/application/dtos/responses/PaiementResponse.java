@@ -12,7 +12,7 @@ public record PaiementResponse(
     UUID trackingId,
     UUID commandeTrackingId,
     UUID walletTrackingId,
-    BigDecimal montantProduit,
+    BigDecimal montantCommande,
     BigDecimal commission,
     BigDecimal montantDebite,
     LocalDateTime date,

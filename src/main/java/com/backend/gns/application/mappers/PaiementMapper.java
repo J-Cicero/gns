@@ -28,7 +28,6 @@ public class PaiementMapper {
 
     Paiement paiement = new Paiement();
     paiement.setTrackingId(UUID.randomUUID());
-    paiement.setMontantProduit(request.montantProduit());
     paiement.setCommission(request.commission());
     paiement.setMontantDebite(request.montantDebite());
     paiement.setDate(request.date());
@@ -67,7 +66,7 @@ public class PaiementMapper {
 
     return PaiementResponse.builder()
         .trackingId(paiement.getTrackingId())
-        .montantProduit(paiement.getMontantProduit())
+        .montantCommande(paiement.getCommande() != null ? paiement.getCommande().getMontantTotal() : null)
         .commission(paiement.getCommission())
         .montantDebite(paiement.getMontantDebite())
         .date(paiement.getDate())
@@ -87,7 +86,6 @@ public class PaiementMapper {
 
     Paiement paiement = new Paiement();
     paiement.setTrackingId(response.trackingId());
-    paiement.setMontantProduit(response.montantProduit());
     paiement.setCommission(response.commission());
     paiement.setMontantDebite(response.montantDebite());
     paiement.setDate(response.date());
