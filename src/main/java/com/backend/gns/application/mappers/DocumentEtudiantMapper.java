@@ -28,6 +28,7 @@ public class DocumentEtudiantMapper {
     document.setTrackingId(UUID.randomUUID());
     document.setType(request.type());
     document.setCheminFichier(request.cheminFichier());
+    document.setDonneesExtraites(request.donneesExtraites());
 
     if (request.studentTrackingId() != null) {
       Student student =
@@ -71,6 +72,7 @@ public class DocumentEtudiantMapper {
         .commentaireRejet(document.getCommentaireRejet())
         .dateDepot(document.getDateDepot())
         .dateValidation(document.getDateValidation())
+        .donneesExtraites(document.getDonneesExtraites())
         .build();
   }
 }

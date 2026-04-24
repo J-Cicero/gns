@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface DocumentEtudiantService {
 
@@ -30,4 +31,10 @@ public interface DocumentEtudiantService {
   Page<DocumentEtudiantResponse> findByStatut(StatutDocument statut, Pageable pageable);
 
   Page<DocumentEtudiantResponse> findAll(Pageable pageable);
+
+  DocumentEtudiantResponse uploadDocument(
+      MultipartFile fichier,
+      UUID studentTrackingId,
+      UUID inscriptionTrackingId,
+      TypeDocument typeDocument);
 }

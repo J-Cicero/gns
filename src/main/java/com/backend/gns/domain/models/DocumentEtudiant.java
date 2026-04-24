@@ -66,4 +66,7 @@ public class DocumentEtudiant extends BaseEntity {
 
     @Column
     private LocalDateTime dateValidation;
+
+    @Column(columnDefinition = "TEXT")
+    private String donneesExtraites;
 }

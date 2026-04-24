@@ -3,7 +3,7 @@ package com.backend.gns.application.dtos.requests;
 import com.backend.gns.domain.enums.SourceVerification;
 import com.backend.gns.domain.enums.StatutInscription;
 import com.backend.gns.domain.enums.StudentNiveau;
-import com.backend.gns.domain.enums.VersementType;
+import com.backend.gns.domain.enums.TypeBourse;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -13,8 +13,9 @@ public record InscriptionAnnuelleRequest(
     String anneeAcademique,
     StudentNiveau niveau,
     int creditsTotalValides,
+    String mentionBac,
     boolean estBoursier,
-    VersementType typeBourse,
+    TypeBourse typeBourse,
     boolean fraisScolaritePayes,
     StatutInscription statut,
     SourceVerification source) {}

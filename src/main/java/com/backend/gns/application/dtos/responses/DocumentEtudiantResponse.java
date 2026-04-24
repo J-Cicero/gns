@@ -16,4 +16,5 @@ public record DocumentEtudiantResponse(
     StatutDocument statut,
     String commentaireRejet,
     LocalDateTime dateDepot,
-    LocalDateTime dateValidation) {}
+    LocalDateTime dateValidation,
+    String donneesExtraites) {}

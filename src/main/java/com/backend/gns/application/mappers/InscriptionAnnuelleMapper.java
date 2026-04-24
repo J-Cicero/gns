@@ -26,6 +26,7 @@ public class InscriptionAnnuelleMapper {
     inscription.setAnneeAcademique(request.anneeAcademique());
     inscription.setNiveau(request.niveau());
     inscription.setCreditsTotalValides(request.creditsTotalValides());
+    inscription.setMentionBac(request.mentionBac());
     inscription.setEstBoursier(request.estBoursier());
     inscription.setTypeBourse(request.typeBourse());
     inscription.setFraisScolaritePayes(request.fraisScolaritePayes());
@@ -58,6 +59,7 @@ public class InscriptionAnnuelleMapper {
         .anneeAcademique(inscription.getAnneeAcademique())
         .niveau(inscription.getNiveau())
         .creditsTotalValides(inscription.getCreditsTotalValides())
+        .mentionBac(inscription.getMentionBac())
         .estBoursier(inscription.isEstBoursier())
         .typeBourse(inscription.getTypeBourse())
         .fraisScolaritePayes(inscription.isFraisScolaritePayes())

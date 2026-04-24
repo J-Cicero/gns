@@ -3,6 +3,7 @@ package com.backend.gns.application.controllers;
 import com.backend.gns.application.dtos.requests.DocumentEtudiantRequest;
 import com.backend.gns.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.domain.enums.StatutDocument;
+import com.backend.gns.domain.enums.TypeDocument;
 import com.backend.gns.domain.services.DocumentEtudiantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/documents")
@@ -218,6 +220,39 @@ public class DocumentEtudiantController {
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/upload")
+  @Operation(
+      summary = "Upload document avec extraction IA",
+      description =
+          "Upload un document, l'envoie à Cloudinary, puis extrait les données avec Gemini")
+  @ApiResponse(responseCode = "201", description = "Document uploadé et données extraites")
+  @ApiResponse(responseCode = "400", description = "Fichier ou paramètres invalides")
+  @ApiResponse(responseCode = "404", description = "Étudiant ou inscription non trouvé")
+  public ResponseEntity<?> uploadDocument(
+      @RequestParam("fichier") MultipartFile fichier,
+      @RequestParam("studentTrackingId") UUID studentTrackingId,
+      @RequestParam("inscriptionTrackingId") UUID inscriptionTrackingId,
+      @RequestParam("typeDocument") TypeDocument typeDocument) {
+    try {
+      if (fichier.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(Map.of("error", "INVALID_FILE", "message", "Le fichier ne peut pas être vide"));
+      }
+
+      DocumentEtudiantResponse response =
+          documentService.uploadDocument(
+              fichier, studentTrackingId, inscriptionTrackingId, typeDocument);
+
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "INVALID_REQUEST", "message", e.getMessage()));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "UPLOAD_FAILED", "message", e.getMessage()));
     }
   }
 }

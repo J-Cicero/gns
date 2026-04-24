@@ -1,35 +1,61 @@
 package com.backend.gns.domain.services.impl;
 
+import com.backend.gns.Shared.ai.GeminiExtractionService;
+import com.backend.gns.Shared.ai.GeminiExtractionService.ExtractionResultat;
+import com.backend.gns.Shared.storage.CloudinaryStorageService;
 import com.backend.gns.application.dtos.requests.DocumentEtudiantRequest;
 import com.backend.gns.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.application.mappers.DocumentEtudiantMapper;
 import com.backend.gns.domain.enums.StatutDocument;
+import com.backend.gns.domain.enums.StudentNiveau;
 import com.backend.gns.domain.enums.TypeDocument;
 import com.backend.gns.domain.models.DocumentEtudiant;
+import com.backend.gns.domain.models.InscriptionAnnuelle;
+import com.backend.gns.domain.models.Student;
 import com.backend.gns.domain.services.DocumentEtudiantService;
 import com.backend.gns.infrastructure.repositories.DocumentEtudiantRepository;
+import com.backend.gns.infrastructure.repositories.InscriptionAnnuelleRepository;
+import com.backend.gns.infrastructure.repositories.StudentRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Slf4j
 public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
   private static final int DEFAULT_PAGE_SIZE = 10;
 
   private final DocumentEtudiantRepository documentRepository;
   private final DocumentEtudiantMapper documentMapper;
+  private final CloudinaryStorageService cloudinaryService;
+  private final GeminiExtractionService geminiService;
+  private final StudentRepository studentRepository;
+  private final InscriptionAnnuelleRepository inscriptionRepository;
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   public DocumentEtudiantServiceImpl(
-      DocumentEtudiantRepository documentRepository, DocumentEtudiantMapper documentMapper) {
+      DocumentEtudiantRepository documentRepository,
+      DocumentEtudiantMapper documentMapper,
+      CloudinaryStorageService cloudinaryService,
+      GeminiExtractionService geminiService,
+      StudentRepository studentRepository,
+      InscriptionAnnuelleRepository inscriptionRepository) {
     this.documentRepository = documentRepository;
     this.documentMapper = documentMapper;
+    this.cloudinaryService = cloudinaryService;
+    this.geminiService = geminiService;
+    this.studentRepository = studentRepository;
+    this.inscriptionRepository = inscriptionRepository;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -37,6 +63,95 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // NOUVELLE MÉTHODE — Upload + Gemini + Sauvegarde BDD
+  // ═══════════════════════════════════════════════════════════════════════════════
+  @Override
+  @Transactional
+  public DocumentEtudiantResponse uploadDocument(
+      MultipartFile fichier,
+      UUID studentTrackingId,
+      UUID inscriptionTrackingId,
+      TypeDocument typeDocument) {
+
+    log.info("Début upload document - Student: {}, Type: {}", studentTrackingId, typeDocument);
+
+    // 1. Récupérer l'étudiant
+    Student student =
+        studentRepository
+            .findByTrackingId(studentTrackingId)
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException("Étudiant non trouvé : " + studentTrackingId));
+
+    // 2. Récupérer l'inscription
+    InscriptionAnnuelle inscription =
+        inscriptionRepository
+            .findByTrackingId(inscriptionTrackingId)
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException("Inscription non trouvée : " + inscriptionTrackingId));
+
+    // 3. Upload vers Cloudinary → URL sécurisée
+    String urlFichier = cloudinaryService.upload(fichier, studentTrackingId.toString());
+    log.info("Document uploadé sur Cloudinary : {}", urlFichier);
+
+    // 4. Appel Gemini → extraction des données du document
+    ExtractionResultat extraction = geminiService.extraire(urlFichier, typeDocument);
+    log.info("Données extraites par Gemini : {}", extraction);
+
+    // 5. Convertir l'extraction en JSON pour stockage
+    String donneesJson = toJson(extraction);
+
+    // 6. Créer et sauvegarder le DocumentEtudiant
+    DocumentEtudiant document = new DocumentEtudiant();
+    document.setTrackingId(UUID.randomUUID());
+    document.setStudent(student);
+    document.setInscription(inscription);
+    document.setType(typeDocument);
+    document.setCheminFichier(urlFichier);
+    document.setStatut(StatutDocument.EN_ATTENTE);
+    document.setDateDepot(LocalDateTime.now());
+    document.setDonneesExtraites(donneesJson);
+
+    documentRepository.save(document);
+    log.info("Document enregistré en BDD : {}", document.getTrackingId());
+
+    // 7. Pré-remplir InscriptionAnnuelle avec les données extraites
+    // L'admin validera ou corrigera ensuite
+    boolean inscriptionModifiee = false;
+
+    if (extraction.niveau() != null) {
+      try {
+        inscription.setNiveau(StudentNiveau.valueOf(extraction.niveau()));
+        inscriptionModifiee = true;
+        log.info("Niveau mis à jour : {}", extraction.niveau());
+      } catch (IllegalArgumentException ignored) {
+        log.warn("Valeur niveau invalide retournée par Gemini : {}", extraction.niveau());
+      }
+    }
+    if (extraction.creditsTotalValides() != null) {
+      inscription.setCreditsTotalValides(extraction.creditsTotalValides());
+      inscriptionModifiee = true;
+      log.info("Credits mis à jour : {}", extraction.creditsTotalValides());
+    }
+    if (extraction.mentionBac() != null) {
+      inscription.setMentionBac(extraction.mentionBac());
+      inscriptionModifiee = true;
+      log.info("Mention BAC mise à jour : {}", extraction.mentionBac());
+    }
+    if (inscriptionModifiee) {
+      inscriptionRepository.save(inscription);
+      log.info("Inscription mise à jour avec les données extraites");
+    }
+
+    log.info("Upload document terminé avec succès");
+    return documentMapper.toResponse(document);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // MÉTHODES CRUD EXISTANTES — inchangées
+  // ═══════════════════════════════════════════════════════════════════════════════
   @Override
   @Transactional
   public DocumentEtudiantResponse create(DocumentEtudiantRequest request) {
@@ -49,9 +164,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
   @Override
   public Optional<DocumentEtudiantResponse> findByTrackingId(UUID trackingId) {
-    return documentRepository
-        .findByTrackingId(trackingId)
-        .map(documentMapper::toResponse);
+    return documentRepository.findByTrackingId(trackingId).map(documentMapper::toResponse);
   }
 
   @Override
@@ -67,6 +180,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     document.setType(request.type());
     document.setCheminFichier(request.cheminFichier());
+    document.setDonneesExtraites(request.donneesExtraites());
 
     DocumentEtudiant updatedDocument = documentRepository.save(document);
     return documentMapper.toResponse(updatedDocument);
@@ -115,16 +229,22 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
   @Override
   public Page<DocumentEtudiantResponse> findByStatut(StatutDocument statut, Pageable pageable) {
     Pageable normalized = normalize(pageable);
-    return documentRepository
-        .findByStatut(statut, normalized)
-        .map(documentMapper::toResponse);
+    return documentRepository.findByStatut(statut, normalized).map(documentMapper::toResponse);
   }
 
   @Override
   public Page<DocumentEtudiantResponse> findAll(Pageable pageable) {
     Pageable normalized = normalize(pageable);
-    return documentRepository
-        .findAll(normalized)
-        .map(documentMapper::toResponse);
+    return documentRepository.findAll(normalized).map(documentMapper::toResponse);
+  }
+
+  
+  private String toJson(Object obj) {
+    try {
+      return objectMapper.writeValueAsString(obj);
+    } catch (Exception e) {
+      log.error("Erreur conversion JSON : {}", e.getMessage());
+      return "{}";
+    }
   }
 }

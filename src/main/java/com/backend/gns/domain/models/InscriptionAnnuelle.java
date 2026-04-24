@@ -4,7 +4,7 @@ import com.backend.gns.Shared.utils.BaseEntity;
 import com.backend.gns.domain.enums.SourceVerification;
 import com.backend.gns.domain.enums.StatutInscription;
 import com.backend.gns.domain.enums.StudentNiveau;
-import com.backend.gns.domain.enums.VersementType;
+import com.backend.gns.domain.enums.TypeBourse;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,12 +56,15 @@ public class InscriptionAnnuelle extends BaseEntity {
     @Column(nullable = false)
     private int creditsTotalValides;
 
+    @Column(length = 10)
+    private String mentionBac;
+
     @Column(nullable = false)
     private boolean estBoursier = false;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private VersementType typeBourse;
+    private TypeBourse typeBourse;
 
     @Column(nullable = false)
     private boolean fraisScolaritePayes = false;

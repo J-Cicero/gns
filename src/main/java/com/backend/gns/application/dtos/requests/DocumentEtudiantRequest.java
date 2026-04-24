@@ -9,4 +9,5 @@ public record DocumentEtudiantRequest(
     UUID studentTrackingId,
     UUID inscriptionTrackingId,
     TypeDocument type,
-    String cheminFichier) {}
+    String cheminFichier,
+    String donneesExtraites) {}
