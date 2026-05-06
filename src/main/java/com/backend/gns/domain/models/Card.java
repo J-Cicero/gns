@@ -1,9 +1,7 @@
 package com.backend.gns.domain.models;
 
 import com.backend.gns.Shared.utils.BaseEntity;
-import com.backend.gns.domain.enums.VersementStatut;
-import com.backend.gns.domain.enums.VersementType;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.backend.gns.domain.enums.CardStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -16,8 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,13 +22,13 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "versement")
+@Table(name = "card")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Versement extends BaseEntity {
+public class Card extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,26 +37,14 @@ public class Versement extends BaseEntity {
   @Column(nullable = false, unique = true, updatable = false)
   private UUID trackingId;
 
-  @ManyToOne
-  @JoinColumn(name = "wallet_id", nullable = false)
-  private Wallet wallet;
+  @Column(nullable = false, unique = true, length = 100)
+  private String qrCodeStaticUuid;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private CardStatus cardStatus;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "boutique_id", nullable = false)
-  private Boutique boutique;
-
-  @Column(nullable = false)
-  private BigDecimal montantVerse;
-
-  @Enumerated(EnumType.STRING)
-  @Column(length = 30)
-  private VersementType typeVersement;
-
-  @Column
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime dateVersement;
-
-  @Enumerated(EnumType.STRING)
-  @Column(length = 20)
-  private VersementStatut statut;
+  @JoinColumn(name = "student_id", nullable = false)
+  private Student student;
 }

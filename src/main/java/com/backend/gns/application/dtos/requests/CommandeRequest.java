@@ -10,7 +10,7 @@ import lombok.Builder;
 public record CommandeRequest(
     String reference,
     UUID studentTrackingId,
-    UUID merchantTrackingId,
+    UUID boutiqueTrackingId,
     BigDecimal montantTotal,
     LocalDateTime dateCommande,
     CommandeStatut statut) {}

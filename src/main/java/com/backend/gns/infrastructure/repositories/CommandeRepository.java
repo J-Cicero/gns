@@ -20,7 +20,8 @@ public interface CommandeRepository extends JpaRepository<Commande, Long> {
       "SELECT c FROM Commande c WHERE c.student.trackingId = :trackingId ORDER BY c.dateCommande DESC")
   Page<Commande> findByStudentTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 
-  @Query(
-      "SELECT c FROM Commande c WHERE c.merchant.trackingId = :trackingId ORDER BY c.dateCommande DESC")
-  Page<Commande> findByMerchantTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
+  // TODO: Method deprecated - use findByBoutiqueTrackingId instead
+  // @Query(
+  //     "SELECT c FROM Commande c WHERE c.merchant.trackingId = :trackingId ORDER BY c.dateCommande DESC")
+  // Page<Commande> findByMerchantTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 }

@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,7 +49,9 @@ public class Student extends User {
     @Column(length = 20, nullable = false)
     private KycStatus statutKYC;
 
-    @OneToOne
-    @JoinColumn(name = "wallet_id", nullable = false)
+    @OneToOne(mappedBy = "student")
     private Wallet wallet;
+
+    @Column(length = 255)
+    private String pinCode; 
 }

@@ -3,10 +3,10 @@ package com.backend.gns.application.mappers;
 import com.backend.gns.application.dtos.requests.CommandeRequest;
 import com.backend.gns.application.dtos.responses.CommandeResponse;
 import com.backend.gns.domain.enums.CommandeStatut;
+import com.backend.gns.domain.models.Boutique;
 import com.backend.gns.domain.models.Commande;
-import com.backend.gns.domain.models.Merchant;
 import com.backend.gns.domain.models.Student;
-import com.backend.gns.infrastructure.repositories.MerchantRepository;
+import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.infrastructure.repositories.StudentRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Component;
 public class CommandeMapper {
 
   private final StudentRepository studentRepository;
-  private final MerchantRepository merchantRepository;
+  private final BoutiqueRepository boutiqueRepository;
 
   public CommandeMapper(
-      StudentRepository studentRepository, MerchantRepository merchantRepository) {
+      StudentRepository studentRepository, BoutiqueRepository boutiqueRepository) {
     this.studentRepository = studentRepository;
-    this.merchantRepository = merchantRepository;
+    this.boutiqueRepository = boutiqueRepository;
   }
 
   public Commande toEntity(CommandeRequest request) {
@@ -48,15 +48,15 @@ public class CommandeMapper {
       commande.setStudent(student);
     }
 
-    if (request.merchantTrackingId() != null) {
-      Merchant merchant =
-          merchantRepository
-              .findByTrackingId(request.merchantTrackingId())
+    if (request.boutiqueTrackingId() != null) {
+      Boutique boutique =
+          boutiqueRepository
+              .findByTrackingId(request.boutiqueTrackingId())
               .orElseThrow(
                   () ->
                       new IllegalArgumentException(
-                          "Commerçant non trouvé avec l'ID: " + request.merchantTrackingId()));
-      commande.setMerchant(merchant);
+                          "Boutique non trouvée avec l'ID: " + request.boutiqueTrackingId()));
+      commande.setBoutique(boutique);
     }
 
     return commande;
@@ -75,8 +75,8 @@ public class CommandeMapper {
         .statut(commande.getStatut())
         .studentTrackingId(
             commande.getStudent() != null ? commande.getStudent().getTrackingId() : null)
-        .merchantTrackingId(
-            commande.getMerchant() != null ? commande.getMerchant().getTrackingId() : null)
+        .boutiqueTrackingId(
+            commande.getBoutique() != null ? commande.getBoutique().getTrackingId() : null)
         .build();
   }
 
@@ -103,15 +103,15 @@ public class CommandeMapper {
       commande.setStudent(student);
     }
 
-    if (response.merchantTrackingId() != null) {
-      Merchant merchant =
-          merchantRepository
-              .findByTrackingId(response.merchantTrackingId())
+    if (response.boutiqueTrackingId() != null) {
+      Boutique boutique =
+          boutiqueRepository
+              .findByTrackingId(response.boutiqueTrackingId())
               .orElseThrow(
                   () ->
                       new IllegalArgumentException(
-                          "Commerçant non trouvé avec l'ID: " + response.merchantTrackingId()));
-      commande.setMerchant(merchant);
+                          "Boutique non trouvée avec l'ID: " + response.boutiqueTrackingId()));
+      commande.setBoutique(boutique);
     }
 
     return commande;

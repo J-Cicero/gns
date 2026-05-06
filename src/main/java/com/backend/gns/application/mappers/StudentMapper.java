@@ -33,6 +33,11 @@ public class StudentMapper {
     student.setRIB(request.RIB());
     student.setStatutKYC(request.statutKYC());
 
+    // TODO: PIN code encoding - requires Spring Security
+    if (request.pinCode() != null && !request.pinCode().isEmpty()) {
+      student.setPinCode(request.pinCode());
+    }
+
     if (request.walletTrackingId() != null) {
       Wallet wallet =
           walletRepository

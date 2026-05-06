@@ -4,5 +4,6 @@ public enum TypeRole {
   ETUDIANT,
   COMMERCANT,
   ADMIN,
-  DBS
+  DBS,
+  BANQUE
 }

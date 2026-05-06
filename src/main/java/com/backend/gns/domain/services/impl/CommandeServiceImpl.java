@@ -109,9 +109,8 @@ public class CommandeServiceImpl implements CommandeService {
   @Transactional(readOnly = true)
   public Page<CommandeResponse> findByMerchantTrackingId(
       UUID merchantTrackingId, Pageable pageable) {
-    return commandeRepository
-        .findByMerchantTrackingId(merchantTrackingId, normalize(pageable))
-        .map(commandeMapper::toResponse);
+    // TODO: Method deprecated - use findByBoutiqueTrackingId instead
+    return Page.empty(pageable);
   }
 
   @Override
@@ -140,15 +139,12 @@ public class CommandeServiceImpl implements CommandeService {
                     new EntityNotFoundException(
                         "Commande non trouvée avec l'ID: " + commandeTrackingId));
 
-    // Récupérer la première boutique du merchant
-    var boutiques =
-        boutiqueRepository.findByMerchantTrackingId(
-            commande.getMerchant().getTrackingId(), Pageable.unpaged());
-    if (!boutiques.hasContent()) {
+    // Récupérer la boutique de la commande
+    Boutique boutique = commande.getBoutique();
+    if (boutique == null) {
       throw new EntityNotFoundException(
-          "Aucune boutique trouvée pour le merchant ID: " + commande.getMerchant().getTrackingId());
+          "Boutique non trouvée pour la commande ID: " + commandeTrackingId);
     }
-    Boutique boutique = boutiques.getContent().get(0);
 
     BigDecimal montantCommande = commande.getMontantTotal();
     BigDecimal montantBoutique = montantCommande.multiply(BigDecimal.valueOf(1.01)); // +1%

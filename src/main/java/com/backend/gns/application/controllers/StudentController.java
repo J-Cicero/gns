@@ -134,4 +134,27 @@ public class StudentController {
           .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
     }
   }
+
+  @PostMapping("/{trackingId}/verify-pin")
+  @Operation(
+      summary = "Vérifier le code PIN d'un étudiant",
+      description = "Vérifie si le code PIN fourni correspond au PIN haché de l'étudiant")
+  @ApiResponse(responseCode = "200", description = "PIN vérifié")
+  @ApiResponse(responseCode = "404", description = "Étudiant non trouvé")
+  @ApiResponse(responseCode = "400", description = "PIN incorrect")
+  public ResponseEntity<?> verifyPin(
+      @PathVariable UUID trackingId, @RequestParam String pinCode) {
+    try {
+      boolean isValid = studentService.verifyPin(trackingId, pinCode);
+      if (isValid) {
+        return ResponseEntity.ok(Map.of("success", true, "message", "PIN correct"));
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(Map.of("success", false, "message", "PIN incorrect"));
+      }
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "VERIFICATION_FAILED", "message", e.getMessage()));
+    }
+  }
 }

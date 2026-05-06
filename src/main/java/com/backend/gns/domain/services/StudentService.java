@@ -21,4 +21,6 @@ public interface StudentService {
   Page<StudentResponse> findByStatutKYC(KycStatus statutKYC, Pageable pageable);
 
   Page<StudentResponse> findAll(Pageable pageable);
+
+  boolean verifyPin(UUID studentTrackingId, String pinCode);
 }

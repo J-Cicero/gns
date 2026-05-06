@@ -18,4 +18,5 @@ public record StudentRequest(
     LocalDate dateNaissance,
     String RIB,
     KycStatus statutKYC,
-    UUID walletTrackingId) {}
+    UUID walletTrackingId,
+    String pinCode) {}

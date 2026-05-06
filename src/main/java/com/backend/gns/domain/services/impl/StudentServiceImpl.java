@@ -102,6 +102,11 @@ public class StudentServiceImpl implements StudentService {
     student.setRIB(request.RIB());
     student.setStatutKYC(request.statutKYC());
 
+    // TODO: PIN code encoding - requires Spring Security
+    if (request.pinCode() != null && !request.pinCode().isEmpty()) {
+      student.setPinCode(request.pinCode());
+    }
+
     if (request.walletTrackingId() != null) {
       Wallet wallet =
           walletRepository
@@ -140,5 +145,24 @@ public class StudentServiceImpl implements StudentService {
   @Transactional(readOnly = true)
   public Page<StudentResponse> findAll(Pageable pageable) {
     return studentRepository.findAll(normalize(pageable)).map(studentMapper::toResponse);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public boolean verifyPin(UUID studentTrackingId, String pinCode) {
+    // TODO: PIN verification - requires Spring Security PasswordEncoder
+    Student student =
+        studentRepository
+            .findByTrackingId(studentTrackingId)
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException("Étudiant non trouvé avec l'ID: " + studentTrackingId));
+
+    if (student.getPinCode() == null || pinCode == null) {
+      return false;
+    }
+
+    // Temporary: direct string comparison (not secure, for now)
+    return student.getPinCode().equals(pinCode);
   }
 }

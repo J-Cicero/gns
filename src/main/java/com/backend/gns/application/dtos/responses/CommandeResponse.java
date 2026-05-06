@@ -11,7 +11,7 @@ public record CommandeResponse(
     UUID trackingId,
     String reference,
     UUID studentTrackingId,
-    UUID merchantTrackingId,
+    UUID boutiqueTrackingId,
     BigDecimal montantTotal,
     LocalDateTime dateCommande,
     CommandeStatut statut) {}

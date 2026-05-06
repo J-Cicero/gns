@@ -47,8 +47,8 @@ public class Commande extends BaseEntity {
   private Student student;
 
   @ManyToOne
-  @JoinColumn(name = "merchant_id", nullable = false)
-  private Merchant merchant;
+  @JoinColumn(name = "boutique_id", nullable = false)
+  private Boutique boutique;
 
   @Column(nullable = false)
   private BigDecimal montantTotal;
