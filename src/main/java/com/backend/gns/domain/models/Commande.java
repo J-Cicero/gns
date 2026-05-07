@@ -60,4 +60,11 @@ public class Commande extends BaseEntity {
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
   private CommandeStatut statut;
+
+  @Column(length = 100, nullable = true)
+  private String qrCodeEphemere;
+
+  @Column(nullable = true)
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime qrExpiresAt;
 }

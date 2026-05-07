@@ -16,8 +16,6 @@
   origin/security
 ```
 
----
-
 ## 📋 DESCRIPTION DES BRANCHES
 
 ### 🔴 Jude (Branche de travail actuelle)
@@ -92,7 +90,7 @@ git merge security
 - Conflits potentiels sur SecurityConfig
 - Mais meilleure implémentation JWT
 
-**Option 3: Cherry-pick** (Plus conservateur)
+000**Option 3: Cherry-pick** (Plus conservateur)
 - Prendre sélectivement les commits importants
 - Plus contrôle, plus lent
 

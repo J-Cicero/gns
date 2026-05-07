@@ -118,7 +118,8 @@
        ├─────→ Wallet (multiple)
        ├─────→ Commande
        ├─────→ InscriptionAnnuelle
-       └─────→ DocumentEtudiant
+       └─────→ DocumentEtudiant- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+
 
 ┌─────────────┐
 │  Merchant   │
@@ -132,7 +133,8 @@
 │   Commande  │
 └──────┬──────┘
        │ 1:N
-       ├─────→ CommandeLigne
+       ├─────→ CommandeLigne- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+
        └─────→ Paiement
 
 ┌─────────────┐
@@ -151,7 +153,8 @@
 User Request
     ↓
 HTTP Header (Bearer Token)
-    ↓
+    ↓- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+
 JwtAuthorizationToken Filter
     ↓
 JwtService.validateToken()
@@ -160,7 +163,8 @@ UserPrincipal created
     ↓
 SecurityContext populated
     ↓
-Controller @PreAuthorize checks
+Controller @PreAuthorize checks- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+
     ↓
 Business Logic executes
     ↓
@@ -194,9 +198,11 @@ Response returned
 
 ---
 
-## 🎯 POINTS D'ENTRÉE (Controllers)
+## 🎯 POINTS D'ENTRÉE (Controllers)- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
 
-| Controller | Endpoints | Rôle |
+
+| Controller | Endpoints | Rôle |- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+
 |-----------|-----------|------|
 | UserController | /api/auth/** | Login/Register |
 | StudentController | /api/students/** | Gestion étudiants |
@@ -211,6 +217,7 @@ Response returned
 ---
 
 ## 🧬 EXEMPLE: FLUX COMMANDE COMPLÈTE
+- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
 
 ```
 1. Student fait une commande
@@ -256,7 +263,8 @@ Response returned
 
 ### Vérification
 - `KycStatus`: ENCOURS, VALIDEE, REJETEE
-- `StatutDocument`: EN_ATTENTE, ACCEPTE, REJETE
+- `StatutDocument`: EN_ATTENTE, ACCEPTE, REJETE- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+
 
 ### Étudiants
 - `StudentNiveau`: L1, L2, L3, M1, M2

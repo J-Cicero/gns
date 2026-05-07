@@ -108,7 +108,6 @@ src/main/java/com/backend/gns/
 spring-boot-starter-validation
 spring-boot-starter-webmvc
 spring-boot-starter-data-jpa
-spring-boot-starter-security
 springdoc-openapi-starter-webmvc-ui (Swagger)
 postgresql driver
 cloudinary-core (stockage images)
@@ -143,36 +142,7 @@ google-cloud-storage (backup)
 
 ---
 
-## 🌐 ENDPOINTS API PRINCIPAUX
 
-### Authentication
-- `POST /api/auth/login` - Authentification
-- `POST /api/auth/register` - Inscription
-
-### Students
-- `GET /api/students` - Lister étudiants
-- `POST /api/students` - Créer étudiant
-- `GET /api/students/{id}` - Détail
-
-### Merchants
-- `GET /api/merchants` - Lister commerçants
-- `POST /api/merchants` - Créer commerçant
-
-### Commandes
-- `POST /api/commandes` - Créer commande
-- `GET /api/commandes/{id}` - Détail commande
-- `PUT /api/commandes/{id}/statut` - Changer statut
-
-### Wallets
-- `GET /api/wallets` - Lister portefeuilles
-- `POST /api/wallets/credit` - Créditer
-- `POST /api/wallets/debit` - Débiter
-
-### Paiements
-- `POST /api/paiements` - Créer paiement
-- `GET /api/paiements/{id}` - Détail
-
----
 
 ## ✅ FONCTIONNALITÉS COMPLÉTÉES
 

@@ -18,7 +18,7 @@ Toute l'information nécessaire pour comprendre, développer et maintenir le pro
 - ✅ État actuel & prochaines étapes
 
 **Parfait pour**: Nouvelle personne arrivant sur le projet
-
+Student
 ---
 
 ### 🌿 [BRANCHES_GIT.md](./BRANCHES_GIT.md)
@@ -42,7 +42,8 @@ Toute l'information nécessaire pour comprendre, développer et maintenir le pro
 - 🔐 Flux de sécurité (JWT, Spring Security)
 - 📦 Dépendances Maven principales
 - 🎯 Points d'entrée (Controllers)
-- 🧬 Exemple: flux complet d'une commande
+- 🧬 Exemple: flux complet d'- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+une commande
 
 **Parfait pour**: Comprendre l'architecture globale
 

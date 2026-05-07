@@ -58,6 +58,9 @@ public class Wallet extends BaseEntity {
   @Column(nullable = false)
   private Boolean estVerrouille = false;
 
+  @Column(nullable = false)
+  private Boolean estGele = false;
+
   @Column
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime dateCreation;
