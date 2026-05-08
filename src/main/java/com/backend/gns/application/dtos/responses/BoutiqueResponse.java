@@ -11,6 +11,7 @@ public record BoutiqueResponse(
     UUID walletTrackingId,
     String nomBoutique,
     String categorieShop,
+    String cheminCarteEDJ,
     KycStatus statutKYC,
     Double latitude,
     Double longitude) {}

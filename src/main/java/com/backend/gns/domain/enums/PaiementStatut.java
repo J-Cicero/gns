@@ -1,7 +1,7 @@
 package com.backend.gns.domain.enums;
 
 public enum PaiementStatut {
-  EN_COURS,
+  EN_ATTENTE,
   VALIDE,
-  ECHOUE
+  ANNULEE
 }

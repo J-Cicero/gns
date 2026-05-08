@@ -2,7 +2,7 @@ package com.backend.gns.domain.services;
 
 import com.backend.gns.application.dtos.requests.CardRequest;
 import com.backend.gns.application.dtos.responses.CardResponse;
-import com.backend.gns.domain.enums.CardStatus;
+import com.backend.gns.domain.enums.CardStatut;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -20,7 +20,7 @@ public interface CardService {
 
   Page<CardResponse> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable);
 
-  Page<CardResponse> findByCardStatus(CardStatus cardStatus, Pageable pageable);
+  Page<CardResponse> findByCardStatus(CardStatut cardStatus, Pageable pageable);
 
   CardResponse declareCardLost(UUID cardTrackingId);
 

@@ -12,9 +12,11 @@ public record PaiementResponse(
     UUID trackingId,
     UUID commandeTrackingId,
     UUID walletTrackingId,
-    BigDecimal montantCommande,
+    // montantCommande removed
     BigDecimal commission,
     BigDecimal montantDebite,
+    BigDecimal montantNetBoutique, // added
     LocalDateTime date,
     PaiementType typePaiement,
-    PaiementStatut statutPaiement) {}
+    PaiementStatut statutPaiement
+) {}

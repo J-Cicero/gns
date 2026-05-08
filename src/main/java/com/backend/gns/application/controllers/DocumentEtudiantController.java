@@ -234,7 +234,8 @@ public class DocumentEtudiantController {
   public ResponseEntity<?> uploadDocument(
       @RequestParam("fichier") MultipartFile fichier,
       @RequestParam("studentTrackingId") UUID studentTrackingId,
-      @RequestParam("inscriptionTrackingId") UUID inscriptionTrackingId,
+      @RequestParam(value = "inscriptionTrackingId", required = false) UUID inscriptionTrackingId,
+      @RequestParam(value = "banqueEtudiantTrackingId", required = false) UUID banqueEtudiantTrackingId,
       @RequestParam("typeDocument") TypeDocument typeDocument) {
     try {
       if (fichier.isEmpty()) {
@@ -244,7 +245,7 @@ public class DocumentEtudiantController {
 
       DocumentEtudiantResponse response =
           documentService.uploadDocument(
-              fichier, studentTrackingId, inscriptionTrackingId, typeDocument);
+              fichier, studentTrackingId, inscriptionTrackingId, banqueEtudiantTrackingId, typeDocument);
 
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (IllegalArgumentException e) {

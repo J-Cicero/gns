@@ -11,10 +11,14 @@
 │   │   ├── GnsApplication.java    (point d'entrée Spring Boot)
 │   │   │
 │   │   ├── domain/                (couche métier)
-│   │   │   ├── models/            (12 entités JPA)
+│   │   │   ├── models/            (18 entités JPA)
+│   │   │   │   ├── User.java (Abstraite)
+│   │   │   │   ├── BaseEntity.java (Abstraite)
 │   │   │   │   ├── Student.java
 │   │   │   │   ├── Merchant.java
 │   │   │   │   ├── Admin.java
+│   │   │   │   ├── AdminUL.java
+│   │   │   │   ├── BankOperator.java
 │   │   │   │   ├── Boutique.java
 │   │   │   │   ├── Product.java
 │   │   │   │   ├── Commande.java
@@ -23,272 +27,149 @@
 │   │   │   │   ├── Paiement.java
 │   │   │   │   ├── Versement.java
 │   │   │   │   ├── InscriptionAnnuelle.java
-│   │   │   │   └── DocumentEtudiant.java
+│   │   │   │   ├── DocumentEtudiant.java
+│   │   │   │   ├── Card.java
+│   │   │   │   └── BanqueEtudiant.java
 │   │   │   │
 │   │   │   ├── services/          (interfaces services)
-│   │   │   │   ├── StudentService
-│   │   │   │   ├── MerchantService
-│   │   │   │   ├── WalletService
-│   │   │   │   ├── CommandeService
-│   │   │   │   ├── PaiementService
-│   │   │   │   └── autres...
 │   │   │   │
 │   │   │   ├── services/impl/     (implémentations)
-│   │   │   │   ├── StudentServiceImpl.java
-│   │   │   │   ├── MerchantServiceImpl.java
-│   │   │   │   └── autres...
 │   │   │   │
 │   │   │   └── enums/             (énumérations)
-│   │   │       ├── WalletType.java
-│   │   │       ├── WalletStatus.java
-│   │   │       ├── CommandeStatut.java
-│   │   │       ├── KycStatus.java
-│   │   │       └── 8+ autres enums
 │   │   │
 │   │   ├── infrastructure/        (couche persistence)
 │   │   │   └── repositories/      (JPA Repositories)
-│   │   │       ├── StudentRepository extends JpaRepository
-│   │   │       ├── MerchantRepository
-│   │   │       ├── WalletRepository
-│   │   │       ├── CommandeRepository
-│   │   │       ├── PaiementRepository
-│   │   │       └── 8+ autres repositories
 │   │   │
 │   │   ├── application/           (couche présentation)
 │   │   │   ├── controllers/       (endpoints REST)
-│   │   │   │   ├── StudentController
-│   │   │   │   ├── MerchantController
-│   │   │   │   ├── UserController (login/register)
-│   │   │   │   ├── CommandeController
-│   │   │   │   ├── WalletController
-│   │   │   │   └── autres...
 │   │   │   │
 │   │   │   └── dtos/              (Data Transfer Objects)
-│   │   │       ├── requests/
-│   │   │       │   ├── LoginRequest.java
-│   │   │       │   ├── UserRequest.java
-│   │   │       │   └── autres DTOs
-│   │   │       └── responses/
-│   │   │           └── réponses formatées
 │   │   │
 │   │   └── Shared/                (code partagé)
-│   │       ├── ai/
-│   │       │   └── GeminiExtractionService.java
-│   │       ├── storage/
-│   │       │   └── CloudinaryStorageService.java
-│   │       ├── security/
-│   │       │   ├── adapters/UserPrincipal.java
-│   │       │   ├── config/SecurityConfig.java
-│   │       │   ├── jwt/JwtService.java
-│   │       │   └── exceptions/
-│   │       ├── user/
-│   │       │   └── UserManagementService
-│   │       └── config/
-│   │           ├── CloudinaryConfig.java
-│   │           ├── JpaAuditingConfig.java
-│   │           └── OpenApiConfig.java (Swagger)
 │   │
 │   ├── resources/
-│   │   └── application.properties  (DB, server config)
+│   │   └── application.properties
 │   │
 │   └── test/
-│       ├── java/
-│       │   └── com/backend/gns/
-│       │       ├── GnsApplicationTests.java
-│       │       └── JpaRelationshipsIntegrationTest.java
-│       └── resources/
-│           └── application-test.properties
 │
-├── pom.xml                        (dépendances Maven)
-└── PROJECT_INFO/                  (cette documentation)
-    ├── INDEX_COMPLET.md           (ce fichier - vue d'ensemble)
-    ├── BRANCHES_GIT.md            (stratégie branches)
+├── pom.xml
+└── PROJECT_INFO/
     └── ARCHITECTURE.md            (ce fichier)
 ```
 
 ---
 
-## 🔗 RELATIONS ENTRE ENTITÉS
+## MODÈLE DE DONNÉES (ENTITÉS)
 
-```
-┌─────────────┐
-│   Student   │
-└──────┬──────┘
-       │ 1:1
-       ├─────→ Wallet (multiple)
-       ├─────→ Commande
-       ├─────→ InscriptionAnnuelle
-       └─────→ DocumentEtudiant- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+Le domaine métier est modélisé par 18 entités JPA.
 
-
-┌─────────────┐
-│  Merchant   │
-└──────┬──────┘
-       │ 1:1
-       └─────→ Boutique (multiple)
-               │ 1:1
-               └─────→ Product (multiple)
-
-┌─────────────┐
-│   Commande  │
-└──────┬──────┘
-       │ 1:N
-       ├─────→ CommandeLigne- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
-
-       └─────→ Paiement
-
-┌─────────────┐
-│   Wallet    │
-└──────┬──────┘
-       │ 1:N
-       ├─────→ Versement
-       └─────→ Paiement
-```
+-   **`User` (Abstraite)**: Superclasse pour tous les types d'utilisateurs, gère l'héritage avec `@DiscriminatorColumn`.
+-   **`BaseEntity` (Abstraite)**: Superclasse pour l'audit (`createdBy`, `updatedBy`, `createdAt`, `updatedAt`).
+-   **`Student`**: Entité pour les étudiants, hérite de `User`.
+-   **`Admin`**: Entité pour les administrateurs, hérite de `User`.
+-   **`Merchant`**: Entité pour les commerçants, hérite de `User`.
+-   **`AdminUL`**: Entité pour les administrateurs de l'UL, hérite de `User`.
+-   **`BankOperator`**: Entité pour les opérateurs bancaires, hérite de `User`.
+-   **`Boutique`**: Entité pour les boutiques des commerçants.
+-   **`Product`**: Entité pour les produits vendus dans les boutiques.
+-   **`Commande`**: Entité pour les commandes passées par les étudiants.
+-   **`CommandeLigne`**: Ligne d'une commande, lie un produit et une quantité.
+-   **`Wallet`**: Entité pour les portefeuilles électroniques.
+-   **`Paiement`**: Entité pour les paiements d'une commande.
+-   **`Versement`**: Entité pour les versements sur les portefeuilles.
+-   **`InscriptionAnnuelle`**: Entité pour l'inscription annuelle d'un étudiant.
+-   **`DocumentEtudiant`**: Entité pour les documents soumis par les étudiants.
+-   **`Card`**: Entité pour la carte d'étudiant.
+-   **`BanqueEtudiant`**: Entité pour les informations bancaires d'un étudiant.
 
 ---
 
-## 🔐 FLUX DE SÉCURITÉ
+## 🔗 RELATIONS ENTRE ENTITÉS (Mis à jour)
 
-```
-User Request
-    ↓
-HTTP Header (Bearer Token)
-    ↓- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+### User & ses sous-types
+-   **`User`** est une superclasse abstraite.
+-   **`Student`**, **`Admin`**, **`Merchant`**, **`AdminUL`**, **`BankOperator`** héritent de `User`.
 
-JwtAuthorizationToken Filter
-    ↓
-JwtService.validateToken()
-    ↓
-UserPrincipal created
-    ↓
-SecurityContext populated
-    ↓
-Controller @PreAuthorize checks- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
+### Student
+-   `1:1` avec **`Wallet`** (`mappedBy` dans `Student`)
+-   `1:1` avec **`Card`** (`mappedBy` dans `Student`)
+-   `1:1` avec **`BanqueEtudiant`** (`mappedBy` dans `Student`)
+-   `1:N` vers **`Commande`** (Un `Student` peut avoir plusieurs `Commande`s)
+-   `1:N` vers **`Paiement`** (Un `Student` peut faire plusieurs `Paiement`s)
+-   `1:N` vers **`InscriptionAnnuelle`** (Un `Student` peut avoir plusieurs `InscriptionAnnuelle`s)
+-   `1:N` vers **`DocumentEtudiant`** (Un `Student` peut avoir plusieurs `DocumentEtudiant`s)
 
-    ↓
-Business Logic executes
-    ↓
-Response returned
-```
+### Merchant
+-   `1:N` vers **`Boutique`** (Un `Merchant` peut avoir plusieurs `Boutique`s)
 
----
+### Boutique
+-   `N:1` avec **`Merchant`**
+-   `1:1` avec **`Wallet`**
+-   `1:N` vers **`Product`** (Une `Boutique` peut avoir plusieurs `Product`s)
+-   `1:N` vers **`Commande`** (Une `Boutique` peut être dans plusieurs `Commande`s)
 
-## 📦 DÉPENDANCES PRINCIPALES
+### Commande
+-   `N:1` avec **`Student`**
+-   `N:1` avec **`Boutique`**
+-   `1:N` vers **`CommandeLigne`**
+-   `1:N` vers **`Paiement`**
 
-### Core Spring
-- spring-boot-starter-webmvc
-- spring-boot-starter-data-jpa
-- spring-boot-starter-security
-- spring-boot-starter-validation
+### CommandeLigne
+-   `N:1` avec **`Commande`**
+-   `N:1` avec **`Product`**
 
-### Database
-- postgresql (driver)
-- spring-data-jpa (ORM)
+### Paiement
+-   `N:1` avec **`Commande`**
+-   `N:1` avec **`Student`**
+-   `N:1` avec **`Wallet`**
 
-### API Documentation
-- springdoc-openapi-starter-webmvc-ui (Swagger UI)
+### Versement
+-   `N:1` avec **`Wallet`**
+-   `N:1` avec **`Admin`** (`initiePar`)
 
-### External Services
-- google-cloud-storage
-- cloudinary-core
+### InscriptionAnnuelle
+-   `N:1` avec **`Student`**
+-   `1:N` vers **`DocumentEtudiant`**
 
-### Testing
-- spring-boot-starter-test
-- junit-jupiter
-
----
-
-## 🎯 POINTS D'ENTRÉE (Controllers)- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
-
-
-| Controller | Endpoints | Rôle |- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
-
-|-----------|-----------|------|
-| UserController | /api/auth/** | Login/Register |
-| StudentController | /api/students/** | Gestion étudiants |
-| MerchantController | /api/merchants/** | Gestion commerçants |
-| BoutiqueController | /api/boutiques/** | Gestion boutiques |
-| ProductController | /api/products/** | Gestion produits |
-| CommandeController | /api/commandes/** | Gestion commandes |
-| WalletController | /api/wallets/** | Gestion portefeuilles |
-| PaiementController | /api/paiements/** | Gestion paiements |
-| AdminController | /api/admin/** | Fonctions admin |
+### DocumentEtudiant
+-   `N:1` avec **`Student`**
+-   `N:1` avec **`InscriptionAnnuelle`** (nullable)
+-   `N:1` avec **`BanqueEtudiant`** (nullable)
 
 ---
 
-## 🧬 EXEMPLE: FLUX COMMANDE COMPLÈTE
-- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
-
-```
-1. Student fait une commande
-   POST /api/commandes
-   → CommandeController.createCommande()
-
-2. Controller valide DTO
-   → Commande entity créée
-
-3. Service applique logique métier
-   → CommandeServiceImpl.createCommande()
-   → Vérifier stock via ProductRepository
-   → Créer lignes (CommandeLigne)
-   → Mettre à jour Wallet si nécessaire
-
-4. Repository persiste en DB
-   → CommandeRepository.save()
-   → CommandeLigneRepository.saveAll()
-
-5. Service déclenche Paiement
-   → PaiementService.initiatePaiement()
-   → Débite Wallet via WalletService.debit()
-
-6. Réponse retournée
-   → HTTP 201 Created
-   → JSON avec Commande + détails
-```
-
----
-
-## ⚙️ ENUMS UTILISÉS
+## ⚙️ ENUMS UTILISÉS (Mis à jour)
 
 ### Wallets
-- `WalletType`: RELAIS, HORIZON
-- `WalletStatus`: ACTIF, DESACTIF, SUSPENDU
+-   `WalletType`: RELAIS, HORIZON, BOURSE_DBS_36k
+-   `WalletStatus`: ACTIF, DESACTIF, SUSPENDU
 
 ### Commandes
-- `CommandeStatut`: ENCOURS, VALIDEE, LIVREE, ANNULEE
+-   `CommandeStatut`: EN_COURS, FINALISEE, ANNULEE
 
 ### Paiements
-- `PaiementStatut`: ENCOURS, COMPLETE, ECHUE, REMBOURSEE
-- `PaiementType`: PAIEMENT_CLIENT, VERSEMENT_MERCHANT
+-   `PaiementStatut`: EN_ATTENTE, EFFECTUE, ECHOUE, ANNULE, REMBOURSE
+-   `PaiementType`: PAIEMENT_CLIENT, VERSEMENT_MERCHANT, BOURSE_DBS_36k
+
+### Versements
+-   `VersementStatut`: EN_ATTENTE, EFFECTUE, ECHOUE, ANNULE
+-   `VersementType`: BOURSE_DBS_36k, MERCHANT
 
 ### Vérification
-- `KycStatus`: ENCOURS, VALIDEE, REJETEE
-- `StatutDocument`: EN_ATTENTE, ACCEPTE, REJETE- **Divergence vs Jude**: 17 commits (Jude) vs 6 commits (security)
-
+-   `KycStatus`: EN_COURS, VALIDEE, REJETEE
+-   `StatutDocument`: EN_ATTENTE, ACCEPTE, REJETE
 
 ### Étudiants
-- `StudentNiveau`: L1, L2, L3, M1, M2
-- `TypeBourse`: BOURSE_COMPLETE, BOURSE_PARTIELLE, SANS_BOURSE
+-   `StudentNiveau`: L1, L2, L3, M1, M2
+-   `TypeBourse`: BOURSE_COMPLETE, BOURSE_PARTIELLE, SANS_BOURSE
+-   `TypeDocument`: RELEVE_BAC, CARTE_ETUDIANT, SOUCHE_TAMPONNEE, RELEVE_NOTES
+-   `Banque`: ECOBANK, ORABANK, UBA, NSIA
+-   `MandatStatut`: EN_ATTENTE_DEPOT, DEPOSE, VALIDE, REJETE
+
+### Cartes
+-   `CardStatus`: ACTIVE, PERDUE, REMPLACEE
 
 ---
 
-## 🔄 CYCLE DE VIE COMMANDE
-
-```
-NOUVEAU
-  ↓
-ENCOURS (awaiting payment)
-  ↓
-VALIDEE (paid)
-  ↓
-LIVREE (completed)
-  
-Alternative:
-  ↓
-ANNULEE (if cancelled)
-```
-
----
-
-**Généré**: 2026-05-06  
-**Version**: 1.0
+**Généré**: 2026-05-08
+**Version**: 1.1

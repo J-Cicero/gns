@@ -34,7 +34,6 @@ public interface DocumentEtudiantService {
 
   DocumentEtudiantResponse uploadDocument(
       MultipartFile fichier,
-      UUID studentTrackingId,
       UUID inscriptionTrackingId,
       TypeDocument typeDocument);
 }

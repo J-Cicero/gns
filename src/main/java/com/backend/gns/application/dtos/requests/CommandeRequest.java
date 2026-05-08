@@ -14,3 +14,4 @@ public record CommandeRequest(
     BigDecimal montantTotal,
     LocalDateTime dateCommande,
     CommandeStatut statut) {}
+

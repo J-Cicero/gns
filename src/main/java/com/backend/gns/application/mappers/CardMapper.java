@@ -22,8 +22,9 @@ public class CardMapper {
 
     Card card = new Card();
     card.setTrackingId(UUID.randomUUID());
-    card.setQrCodeStaticUuid(request.qrCodeStaticUuid());
-    card.setCardStatus(request.cardStatus());
+    card.setQrCodeStatique(request.qrCodeStatique());
+    card.setStatut(request.cardStatus());
+
 
     if (request.studentTrackingId() != null) {
       Student student =
@@ -46,8 +47,8 @@ public class CardMapper {
 
     return CardResponse.builder()
         .trackingId(card.getTrackingId())
-        .qrCodeStaticUuid(card.getQrCodeStaticUuid())
-        .cardStatus(card.getCardStatus())
+        .qrCodeStatique(card.getQrCodeStatique())
+        .cardStatus(card.getStatut())
         .studentTrackingId(card.getStudent() != null ? card.getStudent().getTrackingId() : null)
         .build();
   }
@@ -59,8 +60,8 @@ public class CardMapper {
 
     Card card = new Card();
     card.setTrackingId(response.trackingId());
-    card.setQrCodeStaticUuid(response.qrCodeStaticUuid());
-    card.setCardStatus(response.cardStatus());
+    card.setQrCodeStatique(response.qrCodeStatique());
+    card.setStatut(response.cardStatus());
 
     if (response.studentTrackingId() != null) {
       Student student =

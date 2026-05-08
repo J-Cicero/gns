@@ -27,7 +27,6 @@ public class CommandeServiceImpl implements CommandeService {
 
   private final CommandeRepository commandeRepository;
   private final CommandeMapper commandeMapper;
-  private final BoutiqueRepository boutiqueRepository;
   private final WalletService walletService;
 
   public CommandeServiceImpl(
@@ -37,7 +36,6 @@ public class CommandeServiceImpl implements CommandeService {
       WalletService walletService) {
     this.commandeRepository = commandeRepository;
     this.commandeMapper = commandeMapper;
-    this.boutiqueRepository = boutiqueRepository;
     this.walletService = walletService;
   }
 
@@ -157,7 +155,7 @@ public class CommandeServiceImpl implements CommandeService {
       walletService.debiter(boutique.getWallet().getTrackingId(), montantBoutique);
 
       // Mettre à jour le statut de la commande
-      commande.setStatut(CommandeStatut.FINALISEE);
+      commande.setStatut(CommandeStatut.VALIDEE);
       commandeRepository.save(commande);
 
     } catch (IllegalArgumentException e) {

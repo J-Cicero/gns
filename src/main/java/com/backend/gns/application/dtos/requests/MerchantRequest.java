@@ -1,8 +1,9 @@
 package com.backend.gns.application.dtos.requests;
 
-import com.backend.gns.Shared.user.domain.enums.TypeRole;
+import com.backend.gns.Shared.user.domain.enums.UserRole;
 import com.backend.gns.domain.enums.KycStatus;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 
 @Builder
@@ -11,10 +12,8 @@ public record MerchantRequest(
     String password,
     String nom,
     String prenom,
-    TypeRole role,
+    UserRole role,
     Boolean estActif,
     String telephone,
-    LocalDate dateNaissance,
-    String nomBoutique,
-    String categorieShop,
+    LocalDateTime dateNaissance,
     KycStatus statutKYC) {}

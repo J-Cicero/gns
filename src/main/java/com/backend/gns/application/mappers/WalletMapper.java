@@ -21,7 +21,6 @@ public class WalletMapper {
     wallet.setStatutWallet(request.statutWallet());
     wallet.setSolde(request.solde());
     wallet.setPlafond(request.plafond());
-    wallet.setEstVerrouille(request.estVerrouille());
     wallet.setDateCreation(
         request.dateCreation() != null ? request.dateCreation() : LocalDateTime.now());
 
@@ -39,7 +38,6 @@ public class WalletMapper {
         .statutWallet(wallet.getStatutWallet())
         .solde(wallet.getSolde())
         .plafond(wallet.getPlafond())
-        .estVerrouille(wallet.getEstVerrouille())
         .dateCreation(wallet.getDateCreation())
         .build();
   }
@@ -55,7 +53,6 @@ public class WalletMapper {
     wallet.setStatutWallet(response.statutWallet());
     wallet.setSolde(response.solde());
     wallet.setPlafond(response.plafond());
-    wallet.setEstVerrouille(response.estVerrouille());
     wallet.setDateCreation(response.dateCreation());
 
     return wallet;

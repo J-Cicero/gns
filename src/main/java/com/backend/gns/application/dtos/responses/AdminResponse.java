@@ -1,7 +1,8 @@
 package com.backend.gns.application.dtos.responses;
 
-import com.backend.gns.Shared.user.domain.enums.TypeRole;
-import java.time.LocalDate;
+import com.backend.gns.Shared.user.domain.enums.UserRole;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -11,8 +12,8 @@ public record AdminResponse(
     String email,
     String nom,
     String prenom,
-    TypeRole role,
+    UserRole role,
     Boolean estActif,
     String telephone,
-    LocalDate dateNaissance,
+    LocalDateTime dateNaissance,
     String numeroCompte) {}

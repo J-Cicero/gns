@@ -11,8 +11,8 @@ import com.backend.gns.domain.enums.StudentNiveau;
 import com.backend.gns.domain.enums.TypeDocument;
 import com.backend.gns.domain.models.DocumentEtudiant;
 import com.backend.gns.domain.models.InscriptionAnnuelle;
-import com.backend.gns.domain.models.Student;
 import com.backend.gns.domain.services.DocumentEtudiantService;
+import com.backend.gns.infrastructure.repositories.BanqueEtudiantRepository;
 import com.backend.gns.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.infrastructure.repositories.StudentRepository;
@@ -39,7 +39,6 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
   private final DocumentEtudiantMapper documentMapper;
   private final CloudinaryStorageService cloudinaryService;
   private final GeminiExtractionService geminiService;
-  private final StudentRepository studentRepository;
   private final InscriptionAnnuelleRepository inscriptionRepository;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -49,12 +48,12 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
       CloudinaryStorageService cloudinaryService,
       GeminiExtractionService geminiService,
       StudentRepository studentRepository,
-      InscriptionAnnuelleRepository inscriptionRepository) {
+      InscriptionAnnuelleRepository inscriptionRepository,
+      BanqueEtudiantRepository banqueEtudiantRepository) {
     this.documentRepository = documentRepository;
     this.documentMapper = documentMapper;
     this.cloudinaryService = cloudinaryService;
     this.geminiService = geminiService;
-    this.studentRepository = studentRepository;
     this.inscriptionRepository = inscriptionRepository;
   }
 
@@ -63,37 +62,24 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════════
-  // NOUVELLE MÉTHODE — Upload + Gemini + Sauvegarde BDD
-  // ═══════════════════════════════════════════════════════════════════════════════
   @Override
   @Transactional
   public DocumentEtudiantResponse uploadDocument(
       MultipartFile fichier,
-      UUID studentTrackingId,
       UUID inscriptionTrackingId,
       TypeDocument typeDocument) {
 
-    log.info("Début upload document - Student: {}, Type: {}", studentTrackingId, typeDocument);
+    log.info("Début upload document - Student: {}, Type: {}", inscriptionTrackingId, typeDocument);
 
-    // 1. Récupérer l'étudiant
-    Student student =
-        studentRepository
-            .findByTrackingId(studentTrackingId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException("Étudiant non trouvé : " + studentTrackingId));
-
-    // 2. Récupérer l'inscription
-    InscriptionAnnuelle inscription =
+    
+    InscriptionAnnuelle inscription = 
         inscriptionRepository
             .findByTrackingId(inscriptionTrackingId)
             .orElseThrow(
                 () ->
-                    new EntityNotFoundException("Inscription non trouvée : " + inscriptionTrackingId));
+                    new EntityNotFoundException("Étudiant non trouvé : " + inscriptionTrackingId));
 
-    // 3. Upload vers Cloudinary → URL sécurisée
-    String urlFichier = cloudinaryService.upload(fichier, studentTrackingId.toString());
+     String urlFichier = cloudinaryService.upload(fichier, inscription.getStudent().getTrackingId().toString());
     log.info("Document uploadé sur Cloudinary : {}", urlFichier);
 
     // 4. Appel Gemini → extraction des données du document
@@ -106,7 +92,6 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     // 6. Créer et sauvegarder le DocumentEtudiant
     DocumentEtudiant document = new DocumentEtudiant();
     document.setTrackingId(UUID.randomUUID());
-    document.setStudent(student);
     document.setInscription(inscription);
     document.setType(typeDocument);
     document.setCheminFichier(urlFichier);
@@ -119,39 +104,40 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     // 7. Pré-remplir InscriptionAnnuelle avec les données extraites
     // L'admin validera ou corrigera ensuite
-    boolean inscriptionModifiee = false;
+    if (inscription != null) {
+        boolean inscriptionModifiee = false;
 
-    if (extraction.niveau() != null) {
-      try {
-        inscription.setNiveau(StudentNiveau.valueOf(extraction.niveau()));
-        inscriptionModifiee = true;
-        log.info("Niveau mis à jour : {}", extraction.niveau());
-      } catch (IllegalArgumentException ignored) {
-        log.warn("Valeur niveau invalide retournée par Gemini : {}", extraction.niveau());
-      }
-    }
-    if (extraction.creditsTotalValides() != null) {
-      inscription.setCreditsTotalValides(extraction.creditsTotalValides());
-      inscriptionModifiee = true;
-      log.info("Credits mis à jour : {}", extraction.creditsTotalValides());
-    }
-    if (extraction.mentionBac() != null) {
-      inscription.setMentionBac(extraction.mentionBac());
-      inscriptionModifiee = true;
-      log.info("Mention BAC mise à jour : {}", extraction.mentionBac());
-    }
-    if (inscriptionModifiee) {
-      inscriptionRepository.save(inscription);
-      log.info("Inscription mise à jour avec les données extraites");
+        if (extraction.niveau() != null) {
+          try {
+            inscription.setNiveau(StudentNiveau.valueOf(extraction.niveau()));
+            inscriptionModifiee = true;
+            log.info("Niveau mis à jour : {}", extraction.niveau());
+          } catch (IllegalArgumentException ignored) {
+            log.warn("Valeur niveau invalide retournée par Gemini : {}", extraction.niveau());
+          }
+        }
+        if (extraction.creditsTotalValides() != null) {
+          inscription.setCreditsTotalValides(extraction.creditsTotalValides());
+          inscriptionModifiee = true;
+          log.info("Credits mis à jour : {}", extraction.creditsTotalValides());
+        }
+        if (extraction.mentionBac() != null) {
+          inscription.setMentionBac(extraction.mentionBac());
+          inscriptionModifiee = true;
+          log.info("Mention BAC mise à jour : {}", extraction.mentionBac());
+        }
+        if (inscriptionModifiee) {
+          inscriptionRepository.save(inscription);
+          log.info("Inscription mise à jour avec les données extraites");
+        }
     }
 
     log.info("Upload document terminé avec succès");
     return documentMapper.toResponse(document);
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════════
-  // MÉTHODES CRUD EXISTANTES — inchangées
-  // ═══════════════════════════════════════════════════════════════════════════════
+
+  //crud
   @Override
   @Transactional
   public DocumentEtudiantResponse create(DocumentEtudiantRequest request) {

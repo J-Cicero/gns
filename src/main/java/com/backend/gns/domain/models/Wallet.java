@@ -4,7 +4,6 @@ import com.backend.gns.Shared.utils.BaseEntity;
 import com.backend.gns.domain.enums.WalletStatus;
 import com.backend.gns.domain.enums.WalletType;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -13,8 +12,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,7 +23,7 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "wallet")
+@Table(name = "WALLET")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -55,21 +52,8 @@ public class Wallet extends BaseEntity {
   @Column(nullable = false)
   private BigDecimal plafond;
 
-  @Column(nullable = false)
-  private Boolean estVerrouille = false;
-
-  @Column(nullable = false)
-  private Boolean estGele = false;
-
   @Column
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime dateCreation;
 
-  @OneToOne(cascade = CascadeType.PERSIST)
-  @JoinColumn(name = "student_id")
-  private Student student;
-
-  @OneToOne(cascade = CascadeType.PERSIST)
-  @JoinColumn(name = "boutique_id")
-  private Boutique boutique;
 }

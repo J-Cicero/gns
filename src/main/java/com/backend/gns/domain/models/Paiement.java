@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -45,7 +44,7 @@ public class Paiement extends BaseEntity {
   @JoinColumn(name = "commande_id", nullable = false)
   private Commande commande;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "student_id", nullable = false)
   private Student student;
 
@@ -54,6 +53,7 @@ public class Paiement extends BaseEntity {
   private Wallet wallet;
 
   @Column(nullable = false)
+  // il est calculé automatiquement à 1% du montantDebite
   private BigDecimal commission;
 
   @Column(nullable = false)
@@ -70,4 +70,7 @@ public class Paiement extends BaseEntity {
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
   private PaiementStatut statutPaiement;
+
+  @Column(nullable = false, precision = 10, scale = 2)
+  private BigDecimal montantNetBoutique;
 }

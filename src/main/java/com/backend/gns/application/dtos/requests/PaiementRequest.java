@@ -11,7 +11,6 @@ import lombok.Builder;
 public record PaiementRequest(
     UUID commandeTrackingId,
     UUID walletTrackingId,
-    BigDecimal commission,
     BigDecimal montantDebite,
     LocalDateTime date,
     PaiementType typePaiement,

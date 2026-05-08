@@ -2,7 +2,7 @@ package com.backend.gns.application.controllers;
 
 import com.backend.gns.application.dtos.requests.CardRequest;
 import com.backend.gns.application.dtos.responses.CardResponse;
-import com.backend.gns.domain.enums.CardStatus;
+import com.backend.gns.domain.enums.CardStatut;
 import com.backend.gns.domain.services.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -127,7 +127,7 @@ public class CardController {
   @ApiResponse(responseCode = "200", description = "Cartes trouvées")
   @ApiResponse(responseCode = "404", description = "Aucune carte trouvée")
   public ResponseEntity<?> findByCardStatus(
-      @PathVariable CardStatus cardStatus,
+      @PathVariable CardStatut cardStatus,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     try {

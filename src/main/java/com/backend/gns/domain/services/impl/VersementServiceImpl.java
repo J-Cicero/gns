@@ -5,9 +5,11 @@ import com.backend.gns.application.dtos.responses.VersementResponse;
 import com.backend.gns.application.mappers.VersementMapper;
 import com.backend.gns.domain.enums.VersementStatut;
 import com.backend.gns.domain.enums.VersementType;
+import com.backend.gns.domain.models.Admin;
 import com.backend.gns.domain.models.Versement;
 import com.backend.gns.domain.services.VersementService;
 import com.backend.gns.domain.services.WalletService;
+import com.backend.gns.infrastructure.repositories.AdminRepository;
 import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.infrastructure.repositories.StudentRepository;
 import com.backend.gns.infrastructure.repositories.VersementRepository;
@@ -32,18 +34,21 @@ public class VersementServiceImpl implements VersementService {
   private final StudentRepository studentRepository;
   private final BoutiqueRepository boutiqueRepository;
   private final WalletService walletService;
+  private final AdminRepository adminRepository;
 
   public VersementServiceImpl(
       VersementRepository versementRepository,
       VersementMapper versementMapper,
       StudentRepository studentRepository,
       BoutiqueRepository boutiqueRepository,
-      WalletService walletService) {
+      WalletService walletService,
+      AdminRepository adminRepository) {
     this.versementRepository = versementRepository;
     this.versementMapper = versementMapper;
     this.studentRepository = studentRepository;
     this.boutiqueRepository = boutiqueRepository;
     this.walletService = walletService;
+    this.adminRepository = adminRepository;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -79,6 +84,15 @@ public class VersementServiceImpl implements VersementService {
     versement.setDateVersement(
         request.dateVersement() != null ? request.dateVersement() : LocalDateTime.now());
     versement.setStatut(request.statut());
+    versement.setBatchReference(request.batchReference());
+
+    if (request.adminTrackingId() != null) {
+        Admin admin =
+            adminRepository
+                .findByTrackingId(request.adminTrackingId())
+                .orElse(null);
+        versement.setInitiePar(admin);
+    }
 
     Versement updatedVersement = versementRepository.save(versement);
     return versementMapper.toResponse(updatedVersement);

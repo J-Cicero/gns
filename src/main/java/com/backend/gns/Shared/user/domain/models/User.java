@@ -1,7 +1,8 @@
 package com.backend.gns.Shared.user.domain.models;
 
-import com.backend.gns.Shared.user.domain.enums.TypeRole;
+import com.backend.gns.Shared.user.domain.enums.UserRole;
 import com.backend.gns.Shared.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -17,7 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,7 +31,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * separately in UserPrincipal
  */
 @Entity
-@Table(name = "users")
+@Table(name = "USERS")
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
@@ -63,7 +64,7 @@ public class User extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
-  private TypeRole role;
+  private UserRole role;
 
   @Column(nullable = false)
   private boolean estActif = false;
@@ -71,11 +72,14 @@ public class User extends BaseEntity {
   @Column(length = 20)
   private String telephone;
 
-  @Column private LocalDate dateInscription;
+  @Column(nullable = false)
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime dateInscription;
 
-  @Column private LocalDate dateNaissance;
+  @Column(nullable = false)
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime dateNaissance;
 
-  // Convenience alias for legacy French naming used across services
   public void setMotDePasse(String motDePasse) {
     this.password = motDePasse;
   }

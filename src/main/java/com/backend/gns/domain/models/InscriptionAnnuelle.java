@@ -5,6 +5,7 @@ import com.backend.gns.domain.enums.SourceVerification;
 import com.backend.gns.domain.enums.StatutInscription;
 import com.backend.gns.domain.enums.StudentNiveau;
 import com.backend.gns.domain.enums.TypeBourse;
+import java.math.BigDecimal; 
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -79,4 +80,10 @@ public class InscriptionAnnuelle extends BaseEntity {
 
     @Column
     private LocalDateTime dateActivation;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal plafondAccorde;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE") 
+    private boolean documentValides = false;
 }

@@ -3,7 +3,7 @@ package com.backend.gns.domain.services.impl;
 import com.backend.gns.application.dtos.requests.CardRequest;
 import com.backend.gns.application.dtos.responses.CardResponse;
 import com.backend.gns.application.mappers.CardMapper;
-import com.backend.gns.domain.enums.CardStatus;
+import com.backend.gns.domain.enums.CardStatut;
 import com.backend.gns.domain.models.Card;
 import com.backend.gns.domain.models.Student;
 import com.backend.gns.domain.services.CardService;
@@ -46,10 +46,9 @@ public class CardServiceImpl implements CardService {
   public CardResponse create(CardRequest request) {
     Card card = cardMapper.toEntity(request);
 
-    // Validation: une seule carte ACTIVE par étudiant
-    if (CardStatus.ACTIVE.equals(card.getCardStatus())) {
+    if (CardStatut.ACTIVE.equals(card.getStatut())) {
       long activeCardCount =
-          cardRepository.countByStudentAndCardStatus(card.getStudent(), CardStatus.ACTIVE);
+          cardRepository.countByStudentAndCardStatus(card.getStudent(), CardStatut.ACTIVE);
       if (activeCardCount > 0) {
         throw new IllegalStateException(
             "L'étudiant possède déjà une carte active. "
@@ -76,11 +75,10 @@ public class CardServiceImpl implements CardService {
             .orElseThrow(
                 () -> new EntityNotFoundException("Carte non trouvée avec l'ID: " + trackingId));
 
-    // Validation: si on passe le statut à ACTIVE, vérifier qu'il n'y en a pas d'autre
-    if (CardStatus.ACTIVE.equals(request.cardStatus())
-        && !CardStatus.ACTIVE.equals(card.getCardStatus())) {
+    if (CardStatut.ACTIVE.equals(request.cardStatus())
+        && !CardStatut.ACTIVE.equals(card.getStatut())) {
       long activeCardCount =
-          cardRepository.countByStudentAndCardStatus(card.getStudent(), CardStatus.ACTIVE);
+          cardRepository.countByStudentAndCardStatus(card.getStudent(), CardStatut.ACTIVE);
       if (activeCardCount > 0) {
         throw new IllegalStateException(
             "L'étudiant possède déjà une carte active. "
@@ -88,8 +86,8 @@ public class CardServiceImpl implements CardService {
       }
     }
 
-    card.setQrCodeStaticUuid(request.qrCodeStaticUuid());
-    card.setCardStatus(request.cardStatus());
+    card.setQrCodeStatique(request.qrCodeStatique());
+    card.setStatut(request.cardStatus());
 
     if (request.studentTrackingId() != null) {
       Student student =
@@ -132,7 +130,7 @@ public class CardServiceImpl implements CardService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<CardResponse> findByCardStatus(CardStatus cardStatus, Pageable pageable) {
+  public Page<CardResponse> findByCardStatus(CardStatut cardStatus, Pageable pageable) {
     return cardRepository.findByCardStatus(cardStatus, normalize(pageable)).map(cardMapper::toResponse);
   }
 
@@ -147,7 +145,7 @@ public class CardServiceImpl implements CardService {
                     new EntityNotFoundException(
                         "Carte non trouvée avec l'ID: " + cardTrackingId));
 
-    card.setCardStatus(CardStatus.PERDUE);
+    card.setStatut(CardStatut.INACTIVE);
     Card updatedCard = cardRepository.save(card);
     return cardMapper.toResponse(updatedCard);
   }

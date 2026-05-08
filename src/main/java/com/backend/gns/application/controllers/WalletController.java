@@ -1,5 +1,7 @@
 package com.backend.gns.application.controllers;
 
+import com.backend.gns.application.dtos.requests.WalletRequest;
+import com.backend.gns.application.dtos.responses.WalletResponse;
 import com.backend.gns.domain.enums.WalletType;
 import com.backend.gns.domain.services.WalletService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +27,6 @@ public class WalletController {
     this.walletService = walletService;
   }
 
-  /*
-  // ENDPOINTS NON NECESSAIRES - Les wallets sont créés automatiquement lors de la création de Student/Boutique
   @PostMapping
   @Operation(summary = "Créer un portefeuille", description = "Crée un nouveau portefeuille")
   @ApiResponse(responseCode = "201", description = "Portefeuille créé avec succès")
@@ -67,8 +67,7 @@ public class WalletController {
                   .body(Map.of("error", "DELETE_FAILED", "message", e.getMessage()));
       }
   }
-  */
-
+  
   @GetMapping("/{trackingId}")
   @Operation(
       summary = "Récupérer un portefeuille",
@@ -105,30 +104,6 @@ public class WalletController {
       if (!responses.hasContent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(Map.of("error", "NOT_FOUND", "message", "Aucun portefeuille avec ce type"));
-      }
-      return ResponseEntity.ok(responses);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
-    }
-  }
-
-  @GetMapping("/verrouille/{estVerrouille}")
-  @Operation(
-      summary = "Récupérer les portefeuilles par statut de verrouillage",
-      description = "Récupère tous les portefeuilles verrouillés ou déverrouillés")
-  @ApiResponse(responseCode = "200", description = "Portefeuilles trouvés")
-  @ApiResponse(responseCode = "404", description = "Aucun portefeuille trouvé")
-  public ResponseEntity<?> findByEstVerrouille(
-      @PathVariable Boolean estVerrouille,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
-    try {
-      Pageable pageable = PageRequest.of(page, size);
-      var responses = walletService.findByEstVerrouille(estVerrouille, pageable);
-      if (!responses.hasContent()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(Map.of("error", "NOT_FOUND", "message", "Aucun portefeuille avec ce statut"));
       }
       return ResponseEntity.ok(responses);
     } catch (Exception e) {

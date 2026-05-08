@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,10 +43,9 @@ public class Commande extends BaseEntity {
   @Column(length = 36, nullable = false, unique = true)
   private String reference;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "student_id", nullable = false)
   private Student student;
-
   @ManyToOne
   @JoinColumn(name = "boutique_id", nullable = false)
   private Boutique boutique;
@@ -61,10 +61,4 @@ public class Commande extends BaseEntity {
   @Column(length = 20)
   private CommandeStatut statut;
 
-  @Column(length = 100, nullable = true)
-  private String qrCodeEphemere;
-
-  @Column(nullable = true)
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime qrExpiresAt;
 }

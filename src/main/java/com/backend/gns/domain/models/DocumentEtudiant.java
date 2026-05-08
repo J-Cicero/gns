@@ -40,11 +40,7 @@ public class DocumentEtudiant extends BaseEntity {
     private UUID trackingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inscription_id", nullable = false)
+    @JoinColumn(name = "inscription_id")
     private InscriptionAnnuelle inscription;
 
     @Enumerated(EnumType.STRING)

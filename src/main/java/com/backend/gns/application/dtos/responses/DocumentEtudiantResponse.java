@@ -9,7 +9,6 @@ import lombok.Builder;
 @Builder
 public record DocumentEtudiantResponse(
     UUID trackingId,
-    UUID studentTrackingId,
     UUID inscriptionTrackingId,
     TypeDocument type,
     String cheminFichier,
@@ -17,4 +16,5 @@ public record DocumentEtudiantResponse(
     String commentaireRejet,
     LocalDateTime dateDepot,
     LocalDateTime dateValidation,
-    String donneesExtraites) {}
+    String donneesExtraites
+) {}

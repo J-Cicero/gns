@@ -14,12 +14,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
+  // Rechercher un portefeuille par son trackingId
   Optional<Wallet> findByTrackingId(UUID trackingId);
 
+  // Rechercher un portefeuille par son type
   Page<Wallet> findByTypeWallet(WalletType typeWallet, Pageable pageable);
 
-  Page<Wallet> findByEstVerrouille(Boolean estVerrouille, Pageable pageable);
-
+  // Rechercher un portefeuille par son statut
   Page<Wallet> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
 
   @Query("SELECT w FROM Wallet w WHERE w.solde < :amount ORDER BY w.solde ASC")

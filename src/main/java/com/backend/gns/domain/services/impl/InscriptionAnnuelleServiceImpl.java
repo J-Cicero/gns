@@ -8,6 +8,7 @@ import com.backend.gns.domain.models.InscriptionAnnuelle;
 import com.backend.gns.domain.services.InscriptionAnnuelleService;
 import com.backend.gns.infrastructure.repositories.InscriptionAnnuelleRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,6 +43,7 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   public InscriptionAnnuelleResponse create(InscriptionAnnuelleRequest request) {
     InscriptionAnnuelle inscription = inscriptionMapper.toEntity(request);
     inscription.setDateActivation(LocalDateTime.now());
+    inscription.setPlafondAccorde(BigDecimal.ZERO);
     InscriptionAnnuelle savedInscription = inscriptionRepository.save(inscription);
     return inscriptionMapper.toResponse(savedInscription);
   }

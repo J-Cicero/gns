@@ -2,18 +2,22 @@ package com.backend.gns.application.mappers;
 
 import com.backend.gns.application.dtos.requests.StudentRequest;
 import com.backend.gns.application.dtos.responses.StudentResponse;
+import com.backend.gns.domain.models.BanqueEtudiant;
 import com.backend.gns.domain.models.Student;
 import com.backend.gns.domain.models.Wallet;
+import com.backend.gns.infrastructure.repositories.BanqueEtudiantRepository;
 import com.backend.gns.infrastructure.repositories.WalletRepository;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+
 
 @Component
 @AllArgsConstructor
 public class StudentMapper {
 
   private final WalletRepository walletRepository;
+  private final BanqueEtudiantRepository banqueEtudiantRepository;
 
   public Student toEntity(StudentRequest request) {
     if (request == null) {
@@ -30,10 +34,8 @@ public class StudentMapper {
     student.setEstActif(request.estActif());
     student.setTelephone(request.telephone());
     student.setDateNaissance(request.dateNaissance());
-    student.setRIB(request.RIB());
     student.setStatutKYC(request.statutKYC());
 
-    // TODO: PIN code encoding - requires Spring Security
     if (request.pinCode() != null && !request.pinCode().isEmpty()) {
       student.setPinCode(request.pinCode());
     }
@@ -47,6 +49,17 @@ public class StudentMapper {
                       new IllegalArgumentException(
                           "Portefeuille non trouvé avec l'ID: " + request.walletTrackingId()));
       student.setWallet(wallet);
+    }
+
+     if (request.banqueEtudiantTrackingId() != null) {
+      BanqueEtudiant banqueEtudiant =
+          banqueEtudiantRepository
+              .findByTrackingId(request.banqueEtudiantTrackingId())
+              .orElseThrow(
+                  () ->
+                      new IllegalArgumentException(
+                          "Portefeuille non trouvé avec l'ID: " + request.banqueEtudiantTrackingId()));
+      student.setBanqueEtudiant(banqueEtudiant);
     }
 
     return student;
@@ -66,9 +79,10 @@ public class StudentMapper {
         .estActif(student.isEstActif())
         .telephone(student.getTelephone())
         .dateNaissance(student.getDateNaissance())
-        .RIB(student.getRIB())
         .statutKYC(student.getStatutKYC())
         .walletTrackingId(student.getWallet() != null ? student.getWallet().getTrackingId() : null)
+        .banqueEtudiantTrackingId(student.getBanqueEtudiant() != null ? student.getBanqueEtudiant().getTrackingId() : null)
+        .pinCode(student.getPinCode())
         .build();
   }
 
@@ -86,7 +100,6 @@ public class StudentMapper {
     student.setEstActif(response.estActif());
     student.setTelephone(response.telephone());
     student.setDateNaissance(response.dateNaissance());
-    student.setRIB(response.RIB());
     student.setStatutKYC(response.statutKYC());
 
     if (response.walletTrackingId() != null) {
@@ -99,6 +112,17 @@ public class StudentMapper {
                           "Portefeuille non trouvé avec l'ID: " + response.walletTrackingId()));
       student.setWallet(wallet);
     }
+
+      if (response.banqueEtudiantTrackingId() != null) {
+        BanqueEtudiant banqueEtudiant =
+            banqueEtudiantRepository
+                .findByTrackingId(response.banqueEtudiantTrackingId())
+                .orElseThrow(
+                    () ->
+                        new IllegalArgumentException(
+                            "Portefeuille non trouvé avec l'ID: " + response.banqueEtudiantTrackingId()));
+        student.setBanqueEtudiant(banqueEtudiant);
+      }
 
     return student;
   }

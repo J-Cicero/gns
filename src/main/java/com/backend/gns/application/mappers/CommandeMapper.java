@@ -34,7 +34,7 @@ public class CommandeMapper {
     commande.setReference(request.reference());
     commande.setDateCommande(
         request.dateCommande() != null ? request.dateCommande() : LocalDateTime.now());
-    commande.setStatut(CommandeStatut.EN_COURS);
+    commande.setStatut(CommandeStatut.EN_ATTENTE);
     commande.setMontantTotal(request.montantTotal());
 
     if (request.studentTrackingId() != null) {
@@ -90,7 +90,7 @@ public class CommandeMapper {
     commande.setReference(response.reference());
     commande.setDateCommande(response.dateCommande());
     commande.setMontantTotal(response.montantTotal());
-    commande.setStatut(response.statut() != null ? response.statut() : CommandeStatut.EN_COURS);
+    commande.setStatut(response.statut() != null ? response.statut() : CommandeStatut.EN_ATTENTE);
 
     if (response.studentTrackingId() != null) {
       Student student =

@@ -37,6 +37,7 @@ public class BoutiqueMapper {
     boutique.setStatutKYC(request.statutKYC());
     boutique.setLatitude(request.latitude());
     boutique.setLongitude(request.longitude());
+    boutique.setCheminCarteEDJ(request.cheminCarteEDJ());
 
     if (request.merchantTrackingId() != null) {
       Merchant merchant =
@@ -72,6 +73,7 @@ public class BoutiqueMapper {
         .trackingId(boutique.getTrackingId())
         .nomBoutique(boutique.getNomBoutique())
         .categorieShop(boutique.getCategorieShop())
+        .cheminCarteEDJ(boutique.getCheminCarteEDJ())
         .statutKYC(boutique.getStatutKYC())
         .latitude(boutique.getLatitude())
         .longitude(boutique.getLongitude())

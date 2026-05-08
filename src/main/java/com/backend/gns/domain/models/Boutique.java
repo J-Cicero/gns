@@ -44,17 +44,17 @@ public class Boutique extends BaseEntity {
     @Column(length = 100, nullable = false)
     private String categorieShop;
 
-    @Column(length = 255)
+    @Column(length = 255, nullable = false)
     private String cheminCarteEDJ;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private KycStatus statutKYC;
 
-    @Column
+    @Column(length = 40)
     private Double latitude;
 
-    @Column
+    @Column(length = 40)
     private Double longitude;
 
     @ManyToOne(fetch = FetchType.LAZY)

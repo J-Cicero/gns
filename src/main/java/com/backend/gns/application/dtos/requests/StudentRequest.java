@@ -1,8 +1,8 @@
 package com.backend.gns.application.dtos.requests;
 
-import com.backend.gns.Shared.user.domain.enums.TypeRole;
+import com.backend.gns.Shared.user.domain.enums.UserRole;
 import com.backend.gns.domain.enums.KycStatus;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -12,11 +12,14 @@ public record StudentRequest(
     String password,
     String nom,
     String prenom,
-    TypeRole role,
+    UserRole role,
     Boolean estActif,
     String telephone,
-    LocalDate dateNaissance,
-    String RIB,
+    LocalDateTime dateNaissance,
+    String numEtudiantUL,
     KycStatus statutKYC,
     UUID walletTrackingId,
-    String pinCode) {}
+    UUID banqueEtudiantTrackingId,
+    String pinCode
+) {}
+

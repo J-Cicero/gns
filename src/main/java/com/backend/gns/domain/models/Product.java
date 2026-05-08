@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "product")
+@Table(name = "PRODUCT")
 @Getter
 @Setter
 @AllArgsConstructor

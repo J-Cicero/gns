@@ -7,6 +7,7 @@ import com.backend.gns.domain.models.Paiement;
 import com.backend.gns.domain.models.Wallet;
 import com.backend.gns.infrastructure.repositories.CommandeRepository;
 import com.backend.gns.infrastructure.repositories.WalletRepository;
+import java.math.BigDecimal;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
@@ -28,8 +29,12 @@ public class PaiementMapper {
 
     Paiement paiement = new Paiement();
     paiement.setTrackingId(UUID.randomUUID());
-    paiement.setCommission(request.commission());
     paiement.setMontantDebite(request.montantDebite());
+    // Commission is calculated as 1% of montantDebite
+    BigDecimal commission = request.montantDebite().multiply(new BigDecimal("0.01"));
+    paiement.setCommission(commission);
+    // montantNetBoutique is montantDebite - commission
+    paiement.setMontantNetBoutique(request.montantDebite().subtract(commission));
     paiement.setDate(request.date());
     paiement.setTypePaiement(request.typePaiement());
     paiement.setStatutPaiement(request.statutPaiement());
@@ -66,9 +71,10 @@ public class PaiementMapper {
 
     return PaiementResponse.builder()
         .trackingId(paiement.getTrackingId())
-        .montantCommande(paiement.getCommande() != null ? paiement.getCommande().getMontantTotal() : null)
+        // .montantCommande(paiement.getCommande() != null ? paiement.getCommande().getMontantTotal() : null) // Removed
         .commission(paiement.getCommission())
         .montantDebite(paiement.getMontantDebite())
+        .montantNetBoutique(paiement.getMontantNetBoutique()) // Added
         .date(paiement.getDate())
         .typePaiement(paiement.getTypePaiement())
         .statutPaiement(paiement.getStatutPaiement())
@@ -86,8 +92,9 @@ public class PaiementMapper {
 
     Paiement paiement = new Paiement();
     paiement.setTrackingId(response.trackingId());
-    paiement.setCommission(response.commission());
+    // paiement.setCommission(response.commission()); // Removed as it's calculated
     paiement.setMontantDebite(response.montantDebite());
+    paiement.setMontantNetBoutique(response.montantNetBoutique());
     paiement.setDate(response.date());
     paiement.setTypePaiement(response.typePaiement());
     paiement.setStatutPaiement(response.statutPaiement());

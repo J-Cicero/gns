@@ -55,7 +55,7 @@ public class InscriptionAnnuelleMapper {
 
     return InscriptionAnnuelleResponse.builder()
         .trackingId(inscription.getTrackingId())
-        .studentTrackingId(inscription.getStudent().getTrackingId())
+        .studentTrackingId(inscription.getStudent() != null ? inscription.getStudent().getTrackingId() : null)
         .anneeAcademique(inscription.getAnneeAcademique())
         .niveau(inscription.getNiveau())
         .creditsTotalValides(inscription.getCreditsTotalValides())
@@ -66,6 +66,8 @@ public class InscriptionAnnuelleMapper {
         .statut(inscription.getStatut())
         .source(inscription.getSource())
         .dateActivation(inscription.getDateActivation())
+        .plafondAccorde(inscription.getPlafondAccorde())
+        .documentValides(inscription.isDocumentValides())
         .build();
   }
 }

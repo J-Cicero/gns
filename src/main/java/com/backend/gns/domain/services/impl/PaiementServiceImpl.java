@@ -58,8 +58,11 @@ public class PaiementServiceImpl implements PaiementService {
             .orElseThrow(
                 () -> new EntityNotFoundException("Paiement non trouvé avec l'ID: " + trackingId));
 
-    paiement.setCommission(request.commission());
     paiement.setMontantDebite(request.montantDebite());
+    // Recalculate commission and montantNetBoutique
+    BigDecimal commission = request.montantDebite().multiply(new BigDecimal("0.01"));
+    paiement.setCommission(commission);
+    paiement.setMontantNetBoutique(request.montantDebite().subtract(commission));
     paiement.setDate(request.date());
     paiement.setTypePaiement(request.typePaiement());
     paiement.setStatutPaiement(request.statutPaiement());

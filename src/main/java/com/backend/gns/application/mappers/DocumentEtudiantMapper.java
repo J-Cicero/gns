@@ -4,9 +4,7 @@ import com.backend.gns.application.dtos.requests.DocumentEtudiantRequest;
 import com.backend.gns.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.domain.models.DocumentEtudiant;
 import com.backend.gns.domain.models.InscriptionAnnuelle;
-import com.backend.gns.domain.models.Student;
 import com.backend.gns.infrastructure.repositories.InscriptionAnnuelleRepository;
-import com.backend.gns.infrastructure.repositories.StudentRepository;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class DocumentEtudiantMapper {
 
-  private final StudentRepository studentRepository;
   private final InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
 
   public DocumentEtudiant toEntity(DocumentEtudiantRequest request) {
@@ -30,27 +27,12 @@ public class DocumentEtudiantMapper {
     document.setCheminFichier(request.cheminFichier());
     document.setDonneesExtraites(request.donneesExtraites());
 
-    if (request.studentTrackingId() != null) {
-      Student student =
-          studentRepository
-              .findByTrackingId(request.studentTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Étudiant non trouvé avec trackingId: "
-                              + request.studentTrackingId()));
-      document.setStudent(student);
-    }
-
+    
     if (request.inscriptionTrackingId() != null) {
       InscriptionAnnuelle inscription =
           inscriptionAnnuelleRepository
               .findByTrackingId(request.inscriptionTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Inscription non trouvée avec trackingId: "
-                              + request.inscriptionTrackingId()));
+              .orElse(null); // orElse(null) because it's nullable
       document.setInscription(inscription);
     }
 
@@ -58,14 +40,14 @@ public class DocumentEtudiantMapper {
   }
 
   public DocumentEtudiantResponse toResponse(DocumentEtudiant document) {
-    if (document == null) {
-      return null;
+     if (document == null) {
+      throw new IllegalArgumentException(
+          "La requête DocumentEtudiantRequest ne peut pas être nulle");
     }
 
     return DocumentEtudiantResponse.builder()
         .trackingId(document.getTrackingId())
-        .studentTrackingId(document.getStudent().getTrackingId())
-        .inscriptionTrackingId(document.getInscription().getTrackingId())
+        .inscriptionTrackingId(document.getInscription() != null ? document.getInscription().getTrackingId() : null) 
         .type(document.getType())
         .cheminFichier(document.getCheminFichier())
         .statut(document.getStatut())

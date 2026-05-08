@@ -4,6 +4,7 @@ import com.backend.gns.application.dtos.requests.VersementRequest;
 import com.backend.gns.application.dtos.responses.VersementResponse;
 import com.backend.gns.domain.models.Versement;
 import com.backend.gns.domain.models.Wallet;
+import com.backend.gns.infrastructure.repositories.AdminRepository;
 import com.backend.gns.infrastructure.repositories.WalletRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,7 +15,7 @@ public class VersementMapper {
 
   private final WalletRepository walletRepository;
 
-  public VersementMapper(WalletRepository walletRepository) {
+  public VersementMapper(WalletRepository walletRepository, AdminRepository adminRepository) {
     this.walletRepository = walletRepository;
   }
 
@@ -82,7 +83,6 @@ public class VersementMapper {
                           "Portefeuille non trouvé avec l'ID: " + response.trackingWalletId()));
       versement.setWallet(wallet);
     }
-
     return versement;
   }
 }

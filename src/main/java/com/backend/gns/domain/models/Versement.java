@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,8 +24,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+
 @Entity
-@Table(name = "versement")
+@Table(name = "VERSEMENT")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -34,33 +34,30 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Versement extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false, unique = true, updatable = false)
-  private UUID trackingId;
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID trackingId;
 
-  @ManyToOne
-  @JoinColumn(name = "wallet_id", nullable = false)
-  private Wallet wallet;
+    @ManyToOne
+    @JoinColumn(name = "wallet_id", nullable = false)
+    private Wallet wallet;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "boutique_id", nullable = false)
-  private Boutique boutique;
+    @Column(nullable = false)
+    private BigDecimal montantVerse;
 
-  @Column(nullable = false)
-  private BigDecimal montantVerse;
+   @Column
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime dateVersement;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 30)
   private VersementType typeVersement;
 
-  @Column
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime dateVersement;
-
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
   private VersementStatut statut;
+
 }

@@ -14,3 +14,4 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Setter
 @EntityListeners(AuditingEntityListener.class)
 public class Merchant extends User {}
+

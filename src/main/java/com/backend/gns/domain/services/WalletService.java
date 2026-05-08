@@ -22,8 +22,6 @@ public interface WalletService {
 
   Page<WalletResponse> findByTypeWallet(WalletType typeWallet, Pageable pageable);
 
-  Page<WalletResponse> findByEstVerrouille(Boolean estVerrouille, Pageable pageable);
-
   Page<WalletResponse> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
 
   Page<WalletResponse> findBySoldeLessThan(BigDecimal amount, Pageable pageable);
