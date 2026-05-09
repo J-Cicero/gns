@@ -19,7 +19,6 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "BANK_OPERATOR")
 @DiscriminatorValue("BANK_OPERATOR")
 @Getter
 @Setter

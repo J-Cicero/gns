@@ -3,6 +3,7 @@ package com.backend.gns.domain.models;
 import com.backend.gns.Shared.utils.BaseEntity;
 import com.backend.gns.domain.enums.KycStatus;
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -61,6 +62,7 @@ public class Boutique extends BaseEntity {
     @JoinColumn(name = "merchant_id", nullable = false)
     private Merchant merchant;
 
-    @OneToOne(mappedBy = "boutique")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 }

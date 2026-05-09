@@ -1,7 +1,6 @@
 package com.backend.gns.infrastructure.repositories;
 
 import com.backend.gns.domain.enums.CardStatut;
-import com.backend.gns.domain.models.Card;
 import com.backend.gns.domain.models.Student;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,17 +8,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.backend.gns.domain.models.Card;
+
 public interface CardRepository extends JpaRepository<Card, Long> {
 
   Optional<Card> findByTrackingId(UUID trackingId);
 
-  Optional<Card> findByQrCodeStaticUuid(String qrCodeStaticUuid);
+  Optional<Card> findByQrCodeStatique(String qrCodeStatique);
 
-  Optional<Card> findByStudentAndCardStatus(Student student, CardStatut cardStatus);
+  Optional<Card> findByStudentAndStatut(Student student, CardStatut statut);
 
   Page<Card> findByStudent(Student student, Pageable pageable);
 
-  Page<Card> findByCardStatus(CardStatut cardStatus, Pageable pageable);
+  Page<Card> findByStatut(CardStatut statut, Pageable pageable);
 
-  Long countByStudentAndCardStatus(Student student, CardStatut cardStatus);
+  Long countByStudentAndStatut(Student student, CardStatut statut);
 }

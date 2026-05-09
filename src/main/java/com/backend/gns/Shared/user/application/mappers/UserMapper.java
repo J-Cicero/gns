@@ -2,7 +2,7 @@ package com.backend.gns.Shared.user.application.mappers;
 
 import com.backend.gns.Shared.user.application.dtos.requests.UserRequest;
 import com.backend.gns.Shared.user.application.dtos.responses.UserResponse;
-import com.backend.gns.Shared.user.domain.enums.TypeRole;
+import com.backend.gns.Shared.user.domain.enums.UserRole;
 import com.backend.gns.Shared.user.domain.models.User;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class UserMapper {
     user.setEmail(request.email());
     user.setPassword(request.motDePasse());
     user.setTelephone(request.telephone());
-    user.setRole(TypeRole.ADMIN);
+    user.setRole(UserRole.ADMIN_GNS);
     user.setEstActif(true);
     return user;
   }

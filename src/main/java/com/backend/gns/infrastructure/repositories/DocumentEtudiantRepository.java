@@ -14,7 +14,7 @@ public interface DocumentEtudiantRepository extends JpaRepository<DocumentEtudia
 
   Optional<DocumentEtudiant> findByTrackingId(UUID trackingId);
 
-  @Query("SELECT d FROM DocumentEtudiant d WHERE d.student.trackingId = :studentTrackingId")
+    @Query("SELECT d FROM DocumentEtudiant d WHERE d.inscription.student.trackingId = :studentTrackingId")
   Page<DocumentEtudiant> findByStudentTrackingId(
       @Param("studentTrackingId") UUID studentTrackingId, Pageable pageable);
 
@@ -24,7 +24,7 @@ public interface DocumentEtudiantRepository extends JpaRepository<DocumentEtudia
       @Param("inscriptionTrackingId") UUID inscriptionTrackingId, Pageable pageable);
 
   @Query(
-      "SELECT d FROM DocumentEtudiant d WHERE d.student.trackingId = :studentTrackingId "
+      "SELECT d FROM DocumentEtudiant d WHERE d.inscription.student.trackingId = :studentTrackingId "
           + "AND d.statut = :statut")
   Page<DocumentEtudiant> findByStudentAndStatut(
       @Param("studentTrackingId") UUID studentTrackingId,

@@ -22,7 +22,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class AdminUL extends User {
 
-    @Column(name = "numero_compte", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String numeroCompte;
 
     @OneToOne

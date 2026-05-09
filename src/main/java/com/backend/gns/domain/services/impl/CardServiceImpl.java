@@ -48,7 +48,7 @@ public class CardServiceImpl implements CardService {
 
     if (CardStatut.ACTIVE.equals(card.getStatut())) {
       long activeCardCount =
-          cardRepository.countByStudentAndCardStatus(card.getStudent(), CardStatut.ACTIVE);
+          cardRepository.countByStudentAndStatut(card.getStudent(), CardStatut.ACTIVE);
       if (activeCardCount > 0) {
         throw new IllegalStateException(
             "L'étudiant possède déjà une carte active. "
@@ -78,7 +78,7 @@ public class CardServiceImpl implements CardService {
     if (CardStatut.ACTIVE.equals(request.cardStatus())
         && !CardStatut.ACTIVE.equals(card.getStatut())) {
       long activeCardCount =
-          cardRepository.countByStudentAndCardStatus(card.getStudent(), CardStatut.ACTIVE);
+        cardRepository.countByStudentAndStatut(card.getStudent(), CardStatut.ACTIVE);
       if (activeCardCount > 0) {
         throw new IllegalStateException(
             "L'étudiant possède déjà une carte active. "
@@ -131,7 +131,7 @@ public class CardServiceImpl implements CardService {
   @Override
   @Transactional(readOnly = true)
   public Page<CardResponse> findByCardStatus(CardStatut cardStatus, Pageable pageable) {
-    return cardRepository.findByCardStatus(cardStatus, normalize(pageable)).map(cardMapper::toResponse);
+    return cardRepository.findByStatut(cardStatus, normalize(pageable)).map(cardMapper::toResponse);
   }
 
   @Override

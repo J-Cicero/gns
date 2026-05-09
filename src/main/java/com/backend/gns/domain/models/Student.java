@@ -3,11 +3,14 @@ package com.backend.gns.domain.models;
 import com.backend.gns.Shared.user.domain.models.User;
 import com.backend.gns.domain.enums.KycStatus;
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,7 +41,8 @@ public class Student extends User {
     @OneToOne(mappedBy = "student", optional = true)
     private BanqueEtudiant banqueEtudiant;
 
-    @OneToOne(mappedBy = "student")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
 }
