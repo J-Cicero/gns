@@ -1,7 +1,7 @@
-package com.backend.gns.application.dtos.requests;
+package com.backend.gns.student.application.dtos.requests;
 
-import com.backend.gns.domain.enums.StatutDocument;
-import com.backend.gns.domain.enums.TypeDocument;
+import com.backend.gns.student.domain.enums.StatutDocument;
+import com.backend.gns.Shared.domain.enums.TypeDocument;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.backend.gns.application.dtos.responses;
+package com.backend.gns.admin.application.dtos.responses;
 
 import com.backend.gns.Shared.user.domain.enums.UserRole;
 import lombok.Builder;

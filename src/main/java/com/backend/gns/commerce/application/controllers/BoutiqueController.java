@@ -1,9 +1,9 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.commerce.application.controllers;
 
-import com.backend.gns.application.dtos.requests.BoutiqueRequest;
-import com.backend.gns.application.dtos.responses.BoutiqueResponse;
-import com.backend.gns.domain.enums.KycStatus;
-import com.backend.gns.domain.services.BoutiqueService;
+import com.backend.gns.commerce.application.dtos.requests.BoutiqueRequest;
+import com.backend.gns.commerce.application.dtos.responses.BoutiqueResponse;
+import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.commerce.domain.services.BoutiqueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

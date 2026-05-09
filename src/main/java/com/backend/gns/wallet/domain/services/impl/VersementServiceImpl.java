@@ -1,18 +1,18 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.wallet.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.VersementRequest;
-import com.backend.gns.application.dtos.responses.VersementResponse;
-import com.backend.gns.application.mappers.VersementMapper;
-import com.backend.gns.domain.enums.VersementStatut;
-import com.backend.gns.domain.enums.VersementType;
-import com.backend.gns.domain.models.Admin;
-import com.backend.gns.domain.models.Versement;
-import com.backend.gns.domain.services.VersementService;
-import com.backend.gns.domain.services.WalletService;
-import com.backend.gns.infrastructure.repositories.AdminRepository;
-import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.infrastructure.repositories.StudentRepository;
-import com.backend.gns.infrastructure.repositories.VersementRepository;
+import com.backend.gns.wallet.application.dtos.requests.VersementRequest;
+import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
+import com.backend.gns.wallet.application.mappers.VersementMapper;
+import com.backend.gns.wallet.domain.enums.VersementStatut;
+import com.backend.gns.wallet.domain.enums.VersementType;
+import com.backend.gns.admin.domain.models.Admin;
+import com.backend.gns.wallet.domain.models.Versement;
+import com.backend.gns.wallet.domain.services.VersementService;
+import com.backend.gns.wallet.domain.services.WalletService;
+import com.backend.gns.admin.infrastructure.repositories.AdminRepository;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -84,15 +84,6 @@ public class VersementServiceImpl implements VersementService {
     versement.setDateVersement(
         request.dateVersement() != null ? request.dateVersement() : LocalDateTime.now());
     versement.setStatut(request.statut());
-    versement.setBatchReference(request.batchReference());
-
-    if (request.adminTrackingId() != null) {
-        Admin admin =
-            adminRepository
-                .findByTrackingId(request.adminTrackingId())
-                .orElse(null);
-        versement.setInitiePar(admin);
-    }
 
     Versement updatedVersement = versementRepository.save(versement);
     return versementMapper.toResponse(updatedVersement);
@@ -152,7 +143,7 @@ public class VersementServiceImpl implements VersementService {
         versement.setWallet(student.getWallet());
         versement.setMontantVerse(montant);
         versement.setTypeVersement(VersementType.BOURSE_DBS_36k);
-        versement.setStatut(VersementStatut.EFFECTUE);
+        versement.setStatut(VersementStatut.VALIDEE);
         versement.setDateVersement(LocalDateTime.now());
         versementRepository.save(versement);
 
@@ -174,7 +165,7 @@ public class VersementServiceImpl implements VersementService {
         versement.setWallet(boutique.getWallet());
         versement.setMontantVerse(montant);
         versement.setTypeVersement(VersementType.MERCHANT);
-        versement.setStatut(VersementStatut.EFFECTUE);
+        versement.setStatut(VersementStatut.VALIDEE);
         versement.setDateVersement(LocalDateTime.now());
         versementRepository.save(versement);
 

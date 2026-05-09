@@ -1,12 +1,12 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.admin.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.AdminULRequest;
-import com.backend.gns.application.dtos.responses.AdminULResponse;
-import com.backend.gns.application.mappers.AdminULMapper;
-import com.backend.gns.domain.exception.ResourceNotFoundException;
-import com.backend.gns.domain.models.AdminUL;
-import com.backend.gns.domain.services.AdminULService;
-import com.backend.gns.infrastructure.repositories.AdminULRepository;
+import com.backend.gns.admin.application.dtos.requests.AdminULRequest;
+import com.backend.gns.admin.application.dtos.responses.AdminULResponse;
+import com.backend.gns.admin.application.mappers.AdminULMapper;
+import com.backend.gns.Shared.exception.ResourceNotFoundException;
+import com.backend.gns.admin.domain.models.AdminUL;
+import com.backend.gns.admin.domain.services.AdminULService;
+import com.backend.gns.admin.infrastructure.repositories.AdminULRepository;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

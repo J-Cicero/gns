@@ -1,11 +1,11 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.commerce.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.ProductRequest;
-import com.backend.gns.application.dtos.responses.ProductResponse;
-import com.backend.gns.application.mappers.ProductMapper;
-import com.backend.gns.domain.models.Product;
-import com.backend.gns.domain.services.ProductService;
-import com.backend.gns.infrastructure.repositories.ProductRepository;
+import com.backend.gns.commerce.application.dtos.requests.ProductRequest;
+import com.backend.gns.commerce.application.dtos.responses.ProductResponse;
+import com.backend.gns.commerce.application.mappers.ProductMapper;
+import com.backend.gns.commerce.domain.models.Product;
+import com.backend.gns.commerce.domain.services.ProductService;
+import com.backend.gns.commerce.infrastructure.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.UUID;

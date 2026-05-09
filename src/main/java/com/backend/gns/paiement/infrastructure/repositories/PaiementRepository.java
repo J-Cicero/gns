@@ -1,8 +1,8 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.paiement.infrastructure.repositories;
 
-import com.backend.gns.domain.enums.PaiementStatut;
-import com.backend.gns.domain.enums.PaiementType;
-import com.backend.gns.domain.models.Paiement;
+import com.backend.gns.paiement.domain.enums.PaiementStatut;
+import com.backend.gns.paiement.domain.enums.PaiementType;
+import com.backend.gns.paiement.domain.models.Paiement;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;

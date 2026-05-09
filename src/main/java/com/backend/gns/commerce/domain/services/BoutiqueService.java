@@ -1,8 +1,8 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.commerce.domain.services;
 
-import com.backend.gns.application.dtos.requests.BoutiqueRequest;
-import com.backend.gns.application.dtos.responses.BoutiqueResponse;
-import com.backend.gns.domain.enums.KycStatus;
+import com.backend.gns.commerce.application.dtos.requests.BoutiqueRequest;
+import com.backend.gns.commerce.application.dtos.responses.BoutiqueResponse;
+import com.backend.gns.Shared.domain.enums.KycStatus;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

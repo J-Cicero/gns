@@ -1,6 +1,6 @@
-package com.backend.gns.application.dtos.responses;
+package com.backend.gns.paiement.application.dtos.responses;
 
-import com.backend.gns.domain.enums.CommandeStatut;
+import com.backend.gns.paiement.domain.enums.CommandeStatut;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;

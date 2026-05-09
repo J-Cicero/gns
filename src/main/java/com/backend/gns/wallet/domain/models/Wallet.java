@@ -1,8 +1,8 @@
-package com.backend.gns.domain.models;
+package com.backend.gns.wallet.domain.models;
 
 import com.backend.gns.Shared.utils.BaseEntity;
-import com.backend.gns.domain.enums.WalletStatus;
-import com.backend.gns.domain.enums.WalletType;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
+import com.backend.gns.wallet.domain.enums.WalletType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

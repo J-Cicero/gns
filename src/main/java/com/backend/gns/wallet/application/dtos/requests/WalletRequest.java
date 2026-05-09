@@ -1,7 +1,7 @@
-package com.backend.gns.application.dtos.requests;
+package com.backend.gns.wallet.application.dtos.requests;
 
-import com.backend.gns.domain.enums.WalletStatus;
-import com.backend.gns.domain.enums.WalletType;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
+import com.backend.gns.wallet.domain.enums.WalletType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Builder;

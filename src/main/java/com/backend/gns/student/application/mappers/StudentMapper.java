@@ -1,12 +1,12 @@
-package com.backend.gns.application.mappers;
+package com.backend.gns.student.application.mappers;
 
-import com.backend.gns.application.dtos.requests.StudentRequest;
-import com.backend.gns.application.dtos.responses.StudentResponse;
-import com.backend.gns.domain.models.BanqueEtudiant;
-import com.backend.gns.domain.models.Student;
-import com.backend.gns.domain.models.Wallet;
-import com.backend.gns.infrastructure.repositories.BanqueEtudiantRepository;
-import com.backend.gns.infrastructure.repositories.WalletRepository;
+import com.backend.gns.student.application.dtos.requests.StudentRequest;
+import com.backend.gns.student.application.dtos.responses.StudentResponse;
+import com.backend.gns.student.domain.models.BanqueEtudiant;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.student.infrastructure.repositories.BanqueEtudiantRepository;
+import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

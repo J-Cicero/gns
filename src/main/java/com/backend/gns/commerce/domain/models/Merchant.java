@@ -1,4 +1,4 @@
-package com.backend.gns.domain.models;
+package com.backend.gns.commerce.domain.models;
 
 import com.backend.gns.Shared.user.domain.models.User;
 import jakarta.persistence.DiscriminatorValue;

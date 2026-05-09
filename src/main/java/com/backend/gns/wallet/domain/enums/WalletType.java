@@ -1,4 +1,4 @@
-package com.backend.gns.domain.enums;
+package com.backend.gns.wallet.domain.enums;
 
 public enum WalletType {
   STUDENT_36k,

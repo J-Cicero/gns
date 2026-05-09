@@ -1,9 +1,9 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.student.application.controllers;
 
-import com.backend.gns.application.dtos.requests.CardRequest;
-import com.backend.gns.application.dtos.responses.CardResponse;
-import com.backend.gns.domain.enums.CardStatut;
-import com.backend.gns.domain.services.CardService;
+import com.backend.gns.student.application.dtos.requests.CardRequest;
+import com.backend.gns.student.application.dtos.responses.CardResponse;
+import com.backend.gns.student.domain.enums.CardStatut;
+import com.backend.gns.student.domain.services.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

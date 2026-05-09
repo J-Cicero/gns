@@ -1,8 +1,8 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.wallet.infrastructure.repositories;
 
-import com.backend.gns.domain.enums.VersementStatut;
-import com.backend.gns.domain.enums.VersementType;
-import com.backend.gns.domain.models.Versement;
+import com.backend.gns.wallet.domain.enums.VersementStatut;
+import com.backend.gns.wallet.domain.enums.VersementType;
+import com.backend.gns.wallet.domain.models.Versement;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

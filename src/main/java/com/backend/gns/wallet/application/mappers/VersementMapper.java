@@ -1,11 +1,11 @@
-package com.backend.gns.application.mappers;
+package com.backend.gns.wallet.application.mappers;
 
-import com.backend.gns.application.dtos.requests.VersementRequest;
-import com.backend.gns.application.dtos.responses.VersementResponse;
-import com.backend.gns.domain.models.Versement;
-import com.backend.gns.domain.models.Wallet;
-import com.backend.gns.infrastructure.repositories.AdminRepository;
-import com.backend.gns.infrastructure.repositories.WalletRepository;
+import com.backend.gns.wallet.application.dtos.requests.VersementRequest;
+import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
+import com.backend.gns.wallet.domain.models.Versement;
+import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.admin.infrastructure.repositories.AdminRepository;
+import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

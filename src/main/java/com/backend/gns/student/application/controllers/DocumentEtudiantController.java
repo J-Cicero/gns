@@ -1,10 +1,10 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.student.application.controllers;
 
-import com.backend.gns.application.dtos.requests.DocumentEtudiantRequest;
-import com.backend.gns.application.dtos.responses.DocumentEtudiantResponse;
-import com.backend.gns.domain.enums.StatutDocument;
-import com.backend.gns.domain.enums.TypeDocument;
-import com.backend.gns.domain.services.DocumentEtudiantService;
+import com.backend.gns.student.application.dtos.requests.DocumentEtudiantRequest;
+import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse;
+import com.backend.gns.student.domain.enums.StatutDocument;
+import com.backend.gns.Shared.domain.enums.TypeDocument;
+import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -233,9 +233,7 @@ public class DocumentEtudiantController {
   @ApiResponse(responseCode = "404", description = "Étudiant ou inscription non trouvé")
   public ResponseEntity<?> uploadDocument(
       @RequestParam("fichier") MultipartFile fichier,
-      @RequestParam("studentTrackingId") UUID studentTrackingId,
       @RequestParam(value = "inscriptionTrackingId", required = false) UUID inscriptionTrackingId,
-      @RequestParam(value = "banqueEtudiantTrackingId", required = false) UUID banqueEtudiantTrackingId,
       @RequestParam("typeDocument") TypeDocument typeDocument) {
     try {
       if (fichier.isEmpty()) {
@@ -245,7 +243,7 @@ public class DocumentEtudiantController {
 
       DocumentEtudiantResponse response =
           documentService.uploadDocument(
-              fichier, studentTrackingId, inscriptionTrackingId, banqueEtudiantTrackingId, typeDocument);
+              fichier, inscriptionTrackingId, typeDocument);
 
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (IllegalArgumentException e) {

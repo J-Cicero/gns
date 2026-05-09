@@ -1,7 +1,7 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.admin.domain.services;
 
-import com.backend.gns.application.dtos.requests.AdminULRequest;
-import com.backend.gns.application.dtos.responses.AdminULResponse;
+import com.backend.gns.admin.application.dtos.requests.AdminULRequest;
+import com.backend.gns.admin.application.dtos.responses.AdminULResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

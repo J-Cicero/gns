@@ -1,7 +1,7 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.paiement.infrastructure.repositories;
 
-import com.backend.gns.domain.enums.CommandeStatut;
-import com.backend.gns.domain.models.Commande;
+import com.backend.gns.paiement.domain.enums.CommandeStatut;
+import com.backend.gns.paiement.domain.models.Commande;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

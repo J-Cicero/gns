@@ -1,6 +1,6 @@
 package com.backend.gns.Shared.ai;
 
-import com.backend.gns.domain.enums.TypeDocument;
+import com.backend.gns.Shared.domain.enums.TypeDocument;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -88,11 +88,18 @@ public class GeminiExtractionService {
                 {"niveau": "L1 ou L2 ou L3", "creditsTotalValides": nombre entier}
                 Si tu ne trouves pas une valeur mets null.
                 """;
-      case RELEVE_ANNEE_PRECEDENTE ->
+      case RELEVE_NOTES ->
           """
                 Analyse ce relevé de notes universitaire togolais.
                 Retourne UNIQUEMENT ce JSON sans aucun autre texte :
                 {"niveau": "L1 ou L2 ou L3", "creditsTotalValides": nombre entier total validés}
+                Si tu ne trouves pas une valeur mets null.
+                """;
+      case SOUCHE_TAMPONNEE ->
+          """
+                Analyse cette souche tamponnée.
+                Retourne UNIQUEMENT ce JSON sans aucun autre texte :
+                {"documentStatus": "valide ou invalide", "dateVerification": "ex: 2023-01-01"}
                 Si tu ne trouves pas une valeur mets null.
                 """;
     };

@@ -1,7 +1,7 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.student.infrastructure.repositories;
 
-import com.backend.gns.domain.enums.KycStatus;
-import com.backend.gns.domain.models.Student;
+import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.student.domain.models.Student;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

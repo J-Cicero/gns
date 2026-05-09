@@ -1,7 +1,7 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.commerce.domain.services;
 
-import com.backend.gns.application.dtos.requests.MerchantRequest;
-import com.backend.gns.application.dtos.responses.MerchantResponse;
+import com.backend.gns.commerce.application.dtos.requests.MerchantRequest;
+import com.backend.gns.commerce.application.dtos.responses.MerchantResponse;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

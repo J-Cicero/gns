@@ -1,8 +1,8 @@
-package com.backend.gns.application.mappers;
+package com.backend.gns.commerce.application.mappers;
 
-import com.backend.gns.application.dtos.requests.MerchantRequest;
-import com.backend.gns.application.dtos.responses.MerchantResponse;
-import com.backend.gns.domain.models.Merchant;
+import com.backend.gns.commerce.application.dtos.requests.MerchantRequest;
+import com.backend.gns.commerce.application.dtos.responses.MerchantResponse;
+import com.backend.gns.commerce.domain.models.Merchant;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 

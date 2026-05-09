@@ -1,8 +1,8 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.wallet.infrastructure.repositories;
 
-import com.backend.gns.domain.enums.WalletStatus;
-import com.backend.gns.domain.enums.WalletType;
-import com.backend.gns.domain.models.Wallet;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
+import com.backend.gns.wallet.domain.enums.WalletType;
+import com.backend.gns.wallet.domain.models.Wallet;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;

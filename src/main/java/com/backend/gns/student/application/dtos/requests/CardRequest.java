@@ -1,6 +1,6 @@
-package com.backend.gns.application.dtos.requests;
+package com.backend.gns.student.application.dtos.requests;
 
-import com.backend.gns.domain.enums.CardStatut;
+import com.backend.gns.student.domain.enums.CardStatut;
 
 import java.util.UUID;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.backend.gns.domain.enums;
+package com.backend.gns.student.domain.enums;
 
 public enum StatutInscription {
     EN_ATTENTE,

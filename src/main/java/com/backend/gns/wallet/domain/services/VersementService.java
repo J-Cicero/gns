@@ -1,9 +1,9 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.wallet.domain.services;
 
-import com.backend.gns.application.dtos.requests.VersementRequest;
-import com.backend.gns.application.dtos.responses.VersementResponse;
-import com.backend.gns.domain.enums.VersementStatut;
-import com.backend.gns.domain.enums.VersementType;
+import com.backend.gns.wallet.application.dtos.requests.VersementRequest;
+import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
+import com.backend.gns.wallet.domain.enums.VersementStatut;
+import com.backend.gns.wallet.domain.enums.VersementType;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;

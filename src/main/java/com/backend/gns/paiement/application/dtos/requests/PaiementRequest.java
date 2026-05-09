@@ -1,7 +1,7 @@
-package com.backend.gns.application.dtos.requests;
+package com.backend.gns.paiement.application.dtos.requests;
 
-import com.backend.gns.domain.enums.PaiementStatut;
-import com.backend.gns.domain.enums.PaiementType;
+import com.backend.gns.paiement.domain.enums.PaiementStatut;
+import com.backend.gns.paiement.domain.enums.PaiementType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;

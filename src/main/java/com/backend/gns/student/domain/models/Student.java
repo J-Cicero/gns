@@ -1,7 +1,8 @@
-package com.backend.gns.domain.models;
+package com.backend.gns.student.domain.models;
 
 import com.backend.gns.Shared.user.domain.models.User;
-import com.backend.gns.domain.enums.KycStatus;
+import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.wallet.domain.models.Wallet;
 import jakarta.persistence.Column;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;

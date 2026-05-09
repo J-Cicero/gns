@@ -1,8 +1,8 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.student.application.controllers;
 
-import com.backend.gns.application.dtos.requests.BanqueEtudiantRequest;
-import com.backend.gns.application.dtos.responses.BanqueEtudiantResponse;
-import com.backend.gns.domain.services.BanqueEtudiantService;
+import com.backend.gns.student.application.dtos.requests.BanqueEtudiantRequest;
+import com.backend.gns.student.application.dtos.responses.BanqueEtudiantResponse;
+import com.backend.gns.student.domain.services.BanqueEtudiantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

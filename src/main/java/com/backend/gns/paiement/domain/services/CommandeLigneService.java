@@ -1,7 +1,7 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.paiement.domain.services;
 
-import com.backend.gns.application.dtos.requests.CommandeLigneRequest;
-import com.backend.gns.application.dtos.responses.CommandeLigneResponse;
+import com.backend.gns.paiement.application.dtos.requests.CommandeLigneRequest;
+import com.backend.gns.paiement.application.dtos.responses.CommandeLigneResponse;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

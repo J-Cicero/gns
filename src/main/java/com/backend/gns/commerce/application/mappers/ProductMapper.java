@@ -1,10 +1,10 @@
-package com.backend.gns.application.mappers;
+package com.backend.gns.commerce.application.mappers;
 
-import com.backend.gns.application.dtos.requests.ProductRequest;
-import com.backend.gns.application.dtos.responses.ProductResponse;
-import com.backend.gns.domain.models.Boutique;
-import com.backend.gns.domain.models.Product;
-import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.commerce.application.dtos.requests.ProductRequest;
+import com.backend.gns.commerce.application.dtos.responses.ProductResponse;
+import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.commerce.domain.models.Product;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

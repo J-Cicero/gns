@@ -1,7 +1,7 @@
-package com.backend.gns.application.dtos.requests;
+package com.backend.gns.student.application.dtos.requests;
 
-import com.backend.gns.domain.enums.Banque;
-import com.backend.gns.domain.enums.MandatStatut;
+import com.backend.gns.Shared.domain.enums.Banque;
+import com.backend.gns.student.domain.enums.MandatStatut;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

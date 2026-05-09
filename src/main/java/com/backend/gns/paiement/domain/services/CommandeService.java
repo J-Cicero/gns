@@ -1,8 +1,8 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.paiement.domain.services;
 
-import com.backend.gns.application.dtos.requests.CommandeRequest;
-import com.backend.gns.application.dtos.responses.CommandeResponse;
-import com.backend.gns.domain.enums.CommandeStatut;
+import com.backend.gns.paiement.application.dtos.requests.CommandeRequest;
+import com.backend.gns.paiement.application.dtos.responses.CommandeResponse;
+import com.backend.gns.paiement.domain.enums.CommandeStatut;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

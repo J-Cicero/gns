@@ -1,12 +1,12 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.admin.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.BankOperatorRequest;
-import com.backend.gns.application.dtos.responses.BankOperatorResponse;
-import com.backend.gns.application.mappers.BankOperatorMapper;
-import com.backend.gns.domain.exception.ResourceNotFoundException;
-import com.backend.gns.domain.models.BankOperator;
-import com.backend.gns.domain.services.BankOperatorService;
-import com.backend.gns.infrastructure.repositories.BankOperatorRepository;
+import com.backend.gns.admin.application.dtos.requests.BankOperatorRequest;
+import com.backend.gns.admin.application.dtos.responses.BankOperatorResponse;
+import com.backend.gns.admin.application.mappers.BankOperatorMapper;
+import com.backend.gns.Shared.exception.ResourceNotFoundException;
+import com.backend.gns.admin.domain.models.BankOperator;
+import com.backend.gns.admin.domain.services.BankOperatorService;
+import com.backend.gns.admin.infrastructure.repositories.BankOperatorRepository;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

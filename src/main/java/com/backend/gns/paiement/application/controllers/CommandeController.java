@@ -1,9 +1,9 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.paiement.application.controllers;
 
-import com.backend.gns.application.dtos.requests.CommandeRequest;
-import com.backend.gns.application.dtos.responses.CommandeResponse;
-import com.backend.gns.domain.enums.CommandeStatut;
-import com.backend.gns.domain.services.CommandeService;
+import com.backend.gns.paiement.application.dtos.requests.CommandeRequest;
+import com.backend.gns.paiement.application.dtos.responses.CommandeResponse;
+import com.backend.gns.paiement.domain.enums.CommandeStatut;
+import com.backend.gns.paiement.domain.services.CommandeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

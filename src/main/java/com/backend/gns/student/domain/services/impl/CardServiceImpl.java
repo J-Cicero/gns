@@ -1,14 +1,14 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.CardRequest;
-import com.backend.gns.application.dtos.responses.CardResponse;
-import com.backend.gns.application.mappers.CardMapper;
-import com.backend.gns.domain.enums.CardStatut;
-import com.backend.gns.domain.models.Card;
-import com.backend.gns.domain.models.Student;
-import com.backend.gns.domain.services.CardService;
-import com.backend.gns.infrastructure.repositories.CardRepository;
-import com.backend.gns.infrastructure.repositories.StudentRepository;
+import com.backend.gns.student.application.dtos.requests.CardRequest;
+import com.backend.gns.student.application.dtos.responses.CardResponse;
+import com.backend.gns.student.application.mappers.CardMapper;
+import com.backend.gns.student.domain.enums.CardStatut;
+import com.backend.gns.student.domain.models.Card;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.domain.services.CardService;
+import com.backend.gns.student.infrastructure.repositories.CardRepository;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,14 +1,14 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.wallet.domain.services.impl;
 
 import com.backend.gns.Shared.user.domain.exception.ResourceNotFoundException;
-import com.backend.gns.application.dtos.requests.WalletRequest;
-import com.backend.gns.application.dtos.responses.WalletResponse;
-import com.backend.gns.application.mappers.WalletMapper;
-import com.backend.gns.domain.enums.WalletStatus;
-import com.backend.gns.domain.enums.WalletType;
-import com.backend.gns.domain.models.Wallet;
-import com.backend.gns.domain.services.WalletService;
-import com.backend.gns.infrastructure.repositories.WalletRepository;
+import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
+import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
+import com.backend.gns.wallet.application.mappers.WalletMapper;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
+import com.backend.gns.wallet.domain.enums.WalletType;
+import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.wallet.domain.services.WalletService;
+import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;

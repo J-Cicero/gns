@@ -1,6 +1,6 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.paiement.infrastructure.repositories;
 
-import com.backend.gns.domain.models.CommandeLigne;
+import com.backend.gns.paiement.domain.models.CommandeLigne;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

@@ -1,8 +1,10 @@
-package com.backend.gns.domain.models;
+package com.backend.gns.paiement.domain.models;
 
 import com.backend.gns.Shared.utils.BaseEntity;
-import com.backend.gns.domain.enums.PaiementStatut;
-import com.backend.gns.domain.enums.PaiementType;
+import com.backend.gns.paiement.domain.enums.PaiementStatut;
+import com.backend.gns.paiement.domain.enums.PaiementType;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.wallet.domain.models.Wallet;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

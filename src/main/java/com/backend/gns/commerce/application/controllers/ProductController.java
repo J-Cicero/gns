@@ -1,8 +1,8 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.commerce.application.controllers;
 
-import com.backend.gns.application.dtos.requests.ProductRequest;
-import com.backend.gns.application.dtos.responses.ProductResponse;
-import com.backend.gns.domain.services.ProductService;
+import com.backend.gns.commerce.application.dtos.requests.ProductRequest;
+import com.backend.gns.commerce.application.dtos.responses.ProductResponse;
+import com.backend.gns.commerce.domain.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

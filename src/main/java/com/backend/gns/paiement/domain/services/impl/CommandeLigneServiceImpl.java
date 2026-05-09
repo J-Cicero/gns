@@ -1,11 +1,11 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.paiement.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.CommandeLigneRequest;
-import com.backend.gns.application.dtos.responses.CommandeLigneResponse;
-import com.backend.gns.application.mappers.CommandeLigneMapper;
-import com.backend.gns.domain.models.CommandeLigne;
-import com.backend.gns.domain.services.CommandeLigneService;
-import com.backend.gns.infrastructure.repositories.CommandeLigneRepository;
+import com.backend.gns.paiement.application.dtos.requests.CommandeLigneRequest;
+import com.backend.gns.paiement.application.dtos.responses.CommandeLigneResponse;
+import com.backend.gns.paiement.application.mappers.CommandeLigneMapper;
+import com.backend.gns.paiement.domain.models.CommandeLigne;
+import com.backend.gns.paiement.domain.services.CommandeLigneService;
+import com.backend.gns.paiement.infrastructure.repositories.CommandeLigneRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,8 +1,8 @@
-package com.backend.gns.application.mappers;
+package com.backend.gns.wallet.application.mappers;
 
-import com.backend.gns.application.dtos.requests.WalletRequest;
-import com.backend.gns.application.dtos.responses.WalletResponse;
-import com.backend.gns.domain.models.Wallet;
+import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
+import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
+import com.backend.gns.wallet.domain.models.Wallet;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,7 @@
-package com.backend.gns.domain.models;
+package com.backend.gns.admin.domain.models;
 
 import com.backend.gns.Shared.user.domain.models.User;
+import com.backend.gns.wallet.domain.models.Wallet;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

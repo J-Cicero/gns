@@ -1,10 +1,10 @@
-package com.backend.gns.application.mappers;
+package com.backend.gns.student.application.mappers;
 
-import com.backend.gns.application.dtos.requests.DocumentEtudiantRequest;
-import com.backend.gns.application.dtos.responses.DocumentEtudiantResponse;
-import com.backend.gns.domain.models.DocumentEtudiant;
-import com.backend.gns.domain.models.InscriptionAnnuelle;
-import com.backend.gns.infrastructure.repositories.InscriptionAnnuelleRepository;
+import com.backend.gns.student.application.dtos.requests.DocumentEtudiantRequest;
+import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse;
+import com.backend.gns.student.domain.models.DocumentEtudiant;
+import com.backend.gns.student.domain.models.InscriptionAnnuelle;
+import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

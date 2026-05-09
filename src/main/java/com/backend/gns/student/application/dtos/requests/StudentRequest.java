@@ -1,7 +1,7 @@
-package com.backend.gns.application.dtos.requests;
+package com.backend.gns.student.application.dtos.requests;
 
 import com.backend.gns.Shared.user.domain.enums.UserRole;
-import com.backend.gns.domain.enums.KycStatus;
+import com.backend.gns.Shared.domain.enums.KycStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;

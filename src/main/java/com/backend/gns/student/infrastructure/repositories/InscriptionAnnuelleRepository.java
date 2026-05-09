@@ -1,7 +1,7 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.student.infrastructure.repositories;
 
-import com.backend.gns.domain.enums.StatutInscription;
-import com.backend.gns.domain.models.InscriptionAnnuelle;
+import com.backend.gns.student.domain.enums.StatutInscription;
+import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

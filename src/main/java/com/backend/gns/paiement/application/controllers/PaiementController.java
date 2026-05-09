@@ -1,10 +1,10 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.paiement.application.controllers;
 
-import com.backend.gns.application.dtos.requests.PaiementRequest;
-import com.backend.gns.application.dtos.responses.PaiementResponse;
-import com.backend.gns.domain.enums.PaiementStatut;
-import com.backend.gns.domain.enums.PaiementType;
-import com.backend.gns.domain.services.PaiementService;
+import com.backend.gns.paiement.application.dtos.requests.PaiementRequest;
+import com.backend.gns.paiement.application.dtos.responses.PaiementResponse;
+import com.backend.gns.paiement.domain.enums.PaiementStatut;
+import com.backend.gns.paiement.domain.enums.PaiementType;
+import com.backend.gns.paiement.domain.services.PaiementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,4 +1,4 @@
-package com.backend.gns.domain.exception;
+package com.backend.gns.Shared.exception;
 
 public class ResourceNotFoundException  extends RuntimeException {
     public ResourceNotFoundException(String message) {

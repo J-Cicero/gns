@@ -1,8 +1,8 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.admin.application.controllers;
 
-import com.backend.gns.application.dtos.requests.AdminULRequest;
-import com.backend.gns.application.dtos.responses.AdminULResponse;
-import com.backend.gns.domain.services.AdminULService;
+import com.backend.gns.admin.application.dtos.requests.AdminULRequest;
+import com.backend.gns.admin.application.dtos.responses.AdminULResponse;
+import com.backend.gns.admin.domain.services.AdminULService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

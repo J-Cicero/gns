@@ -1,11 +1,11 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.admin.application.controllers;
 
-import com.backend.gns.application.dtos.requests.BankOperatorRequest;
-import com.backend.gns.application.dtos.responses.BankOperatorResponse;
-import com.backend.gns.application.dtos.responses.StudentResponse;
-import com.backend.gns.domain.enums.KycStatus;
-import com.backend.gns.domain.services.BankOperatorService;
-import com.backend.gns.domain.services.StudentService;
+import com.backend.gns.admin.application.dtos.requests.BankOperatorRequest;
+import com.backend.gns.admin.application.dtos.responses.BankOperatorResponse;
+import com.backend.gns.student.application.dtos.responses.StudentResponse;
+import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.admin.domain.services.BankOperatorService;
+import com.backend.gns.student.domain.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

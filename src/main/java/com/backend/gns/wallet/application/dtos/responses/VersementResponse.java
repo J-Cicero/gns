@@ -1,7 +1,7 @@
-package com.backend.gns.application.dtos.responses;
+package com.backend.gns.wallet.application.dtos.responses;
 
-import com.backend.gns.domain.enums.VersementStatut;
-import com.backend.gns.domain.enums.VersementType;
+import com.backend.gns.wallet.domain.enums.VersementStatut;
+import com.backend.gns.wallet.domain.enums.VersementType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;

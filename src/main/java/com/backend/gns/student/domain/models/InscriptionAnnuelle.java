@@ -1,10 +1,10 @@
-package com.backend.gns.domain.models;
+package com.backend.gns.student.domain.models;
 
 import com.backend.gns.Shared.utils.BaseEntity;
-import com.backend.gns.domain.enums.SourceVerification;
-import com.backend.gns.domain.enums.StatutInscription;
-import com.backend.gns.domain.enums.StudentNiveau;
-import com.backend.gns.domain.enums.TypeBourse;
+import com.backend.gns.student.domain.enums.SourceVerification;
+import com.backend.gns.student.domain.enums.StatutInscription;
+import com.backend.gns.student.domain.enums.StudentNiveau;
+import com.backend.gns.student.domain.enums.TypeBourse;
 import java.math.BigDecimal; 
 
 import jakarta.persistence.Column;

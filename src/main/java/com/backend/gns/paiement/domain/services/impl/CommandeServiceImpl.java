@@ -1,15 +1,15 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.paiement.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.CommandeRequest;
-import com.backend.gns.application.dtos.responses.CommandeResponse;
-import com.backend.gns.application.mappers.CommandeMapper;
-import com.backend.gns.domain.enums.CommandeStatut;
-import com.backend.gns.domain.models.Boutique;
-import com.backend.gns.domain.models.Commande;
-import com.backend.gns.domain.services.CommandeService;
-import com.backend.gns.domain.services.WalletService;
-import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.infrastructure.repositories.CommandeRepository;
+import com.backend.gns.paiement.application.dtos.requests.CommandeRequest;
+import com.backend.gns.paiement.application.dtos.responses.CommandeResponse;
+import com.backend.gns.paiement.application.mappers.CommandeMapper;
+import com.backend.gns.paiement.domain.enums.CommandeStatut;
+import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.paiement.domain.models.Commande;
+import com.backend.gns.paiement.domain.services.CommandeService;
+import com.backend.gns.wallet.domain.services.WalletService;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.Optional;

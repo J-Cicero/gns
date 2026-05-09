@@ -1,13 +1,13 @@
-package com.backend.gns.application.mappers;
+package com.backend.gns.paiement.application.mappers;
 
-import com.backend.gns.application.dtos.requests.CommandeRequest;
-import com.backend.gns.application.dtos.responses.CommandeResponse;
-import com.backend.gns.domain.enums.CommandeStatut;
-import com.backend.gns.domain.models.Boutique;
-import com.backend.gns.domain.models.Commande;
-import com.backend.gns.domain.models.Student;
-import com.backend.gns.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.infrastructure.repositories.StudentRepository;
+import com.backend.gns.paiement.application.dtos.requests.CommandeRequest;
+import com.backend.gns.paiement.application.dtos.responses.CommandeResponse;
+import com.backend.gns.paiement.domain.enums.CommandeStatut;
+import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.paiement.domain.models.Commande;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

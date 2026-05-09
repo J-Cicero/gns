@@ -1,4 +1,4 @@
-package com.backend.gns.application.dtos.requests;
+package com.backend.gns.paiement.application.dtos.requests;
 
 import java.math.BigDecimal;
 import java.util.UUID;

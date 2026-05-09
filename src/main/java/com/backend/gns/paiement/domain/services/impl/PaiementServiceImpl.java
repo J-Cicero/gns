@@ -1,14 +1,15 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.paiement.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.PaiementRequest;
-import com.backend.gns.application.dtos.responses.PaiementResponse;
-import com.backend.gns.application.mappers.PaiementMapper;
-import com.backend.gns.domain.enums.PaiementStatut;
-import com.backend.gns.domain.enums.PaiementType;
-import com.backend.gns.domain.models.Paiement;
-import com.backend.gns.domain.services.PaiementService;
-import com.backend.gns.infrastructure.repositories.PaiementRepository;
+import com.backend.gns.paiement.application.dtos.requests.PaiementRequest;
+import com.backend.gns.paiement.application.dtos.responses.PaiementResponse;
+import com.backend.gns.paiement.application.mappers.PaiementMapper;
+import com.backend.gns.paiement.domain.enums.PaiementStatut;
+import com.backend.gns.paiement.domain.enums.PaiementType;
+import com.backend.gns.paiement.domain.models.Paiement;
+import com.backend.gns.paiement.domain.services.PaiementService;
+import com.backend.gns.paiement.infrastructure.repositories.PaiementRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

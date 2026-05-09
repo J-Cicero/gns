@@ -1,6 +1,6 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.commerce.infrastructure.repositories;
 
-import com.backend.gns.domain.models.Product;
+import com.backend.gns.commerce.domain.models.Product;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

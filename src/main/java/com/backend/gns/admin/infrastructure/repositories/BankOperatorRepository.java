@@ -1,6 +1,6 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.admin.infrastructure.repositories;
 
-import com.backend.gns.domain.models.BankOperator;
+import com.backend.gns.admin.domain.models.BankOperator;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,8 @@
-package com.backend.gns.application.mappers;
+package com.backend.gns.admin.application.mappers;
 
-import com.backend.gns.application.dtos.requests.AdminRequest;
-import com.backend.gns.application.dtos.responses.AdminResponse;
-import com.backend.gns.domain.models.Admin;
+import com.backend.gns.admin.application.dtos.requests.AdminRequest;
+import com.backend.gns.admin.application.dtos.responses.AdminResponse;
+import com.backend.gns.admin.domain.models.Admin;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 

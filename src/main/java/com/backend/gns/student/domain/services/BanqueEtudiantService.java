@@ -1,7 +1,7 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.student.domain.services;
 
-import com.backend.gns.application.dtos.requests.BanqueEtudiantRequest;
-import com.backend.gns.application.dtos.responses.BanqueEtudiantResponse;
+import com.backend.gns.student.application.dtos.requests.BanqueEtudiantRequest;
+import com.backend.gns.student.application.dtos.responses.BanqueEtudiantResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

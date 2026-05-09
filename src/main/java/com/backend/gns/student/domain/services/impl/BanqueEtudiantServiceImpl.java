@@ -1,12 +1,12 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.BanqueEtudiantRequest;
-import com.backend.gns.application.dtos.responses.BanqueEtudiantResponse;
-import com.backend.gns.application.mappers.BanqueEtudiantMapper;
-import com.backend.gns.domain.exception.ResourceNotFoundException;
-import com.backend.gns.domain.models.BanqueEtudiant;
-import com.backend.gns.domain.services.BanqueEtudiantService;
-import com.backend.gns.infrastructure.repositories.BanqueEtudiantRepository;
+import com.backend.gns.student.application.dtos.requests.BanqueEtudiantRequest;
+import com.backend.gns.student.application.dtos.responses.BanqueEtudiantResponse;
+import com.backend.gns.student.application.mappers.BanqueEtudiantMapper;
+import com.backend.gns.Shared.exception.ResourceNotFoundException;
+import com.backend.gns.student.domain.models.BanqueEtudiant;
+import com.backend.gns.student.domain.services.BanqueEtudiantService;
+import com.backend.gns.student.infrastructure.repositories.BanqueEtudiantRepository;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

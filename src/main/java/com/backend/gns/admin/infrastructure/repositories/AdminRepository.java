@@ -1,6 +1,6 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.admin.infrastructure.repositories;
 
-import com.backend.gns.domain.models.Admin;
+import com.backend.gns.admin.domain.models.Admin;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

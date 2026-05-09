@@ -1,8 +1,8 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.student.domain.services;
 
-import com.backend.gns.application.dtos.requests.CardRequest;
-import com.backend.gns.application.dtos.responses.CardResponse;
-import com.backend.gns.domain.enums.CardStatut;
+import com.backend.gns.student.application.dtos.requests.CardRequest;
+import com.backend.gns.student.application.dtos.responses.CardResponse;
+import com.backend.gns.student.domain.enums.CardStatut;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

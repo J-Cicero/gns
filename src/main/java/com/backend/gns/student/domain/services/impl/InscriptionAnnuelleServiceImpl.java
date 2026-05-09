@@ -1,12 +1,12 @@
-package com.backend.gns.domain.services.impl;
+package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.application.dtos.requests.InscriptionAnnuelleRequest;
-import com.backend.gns.application.dtos.responses.InscriptionAnnuelleResponse;
-import com.backend.gns.application.mappers.InscriptionAnnuelleMapper;
-import com.backend.gns.domain.enums.StatutInscription;
-import com.backend.gns.domain.models.InscriptionAnnuelle;
-import com.backend.gns.domain.services.InscriptionAnnuelleService;
-import com.backend.gns.infrastructure.repositories.InscriptionAnnuelleRepository;
+import com.backend.gns.student.application.dtos.requests.InscriptionAnnuelleRequest;
+import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleResponse;
+import com.backend.gns.student.application.mappers.InscriptionAnnuelleMapper;
+import com.backend.gns.student.domain.enums.StatutInscription;
+import com.backend.gns.student.domain.models.InscriptionAnnuelle;
+import com.backend.gns.student.domain.services.InscriptionAnnuelleService;
+import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

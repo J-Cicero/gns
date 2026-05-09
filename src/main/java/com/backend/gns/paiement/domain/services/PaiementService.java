@@ -1,9 +1,9 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.paiement.domain.services;
 
-import com.backend.gns.application.dtos.requests.PaiementRequest;
-import com.backend.gns.application.dtos.responses.PaiementResponse;
-import com.backend.gns.domain.enums.PaiementStatut;
-import com.backend.gns.domain.enums.PaiementType;
+import com.backend.gns.paiement.application.dtos.requests.PaiementRequest;
+import com.backend.gns.paiement.application.dtos.responses.PaiementResponse;
+import com.backend.gns.paiement.domain.enums.PaiementStatut;
+import com.backend.gns.paiement.domain.enums.PaiementType;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

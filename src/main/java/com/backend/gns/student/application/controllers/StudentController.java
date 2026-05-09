@@ -1,9 +1,9 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.student.application.controllers;
 
-import com.backend.gns.application.dtos.requests.StudentRequest;
-import com.backend.gns.application.dtos.responses.StudentResponse;
-import com.backend.gns.domain.enums.KycStatus;
-import com.backend.gns.domain.services.StudentService;
+import com.backend.gns.student.application.dtos.requests.StudentRequest;
+import com.backend.gns.student.application.dtos.responses.StudentResponse;
+import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.student.domain.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

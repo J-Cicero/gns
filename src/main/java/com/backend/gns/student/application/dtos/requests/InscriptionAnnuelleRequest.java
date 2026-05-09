@@ -1,9 +1,9 @@
-package com.backend.gns.application.dtos.requests;
+package com.backend.gns.student.application.dtos.requests;
 
-import com.backend.gns.domain.enums.SourceVerification;
-import com.backend.gns.domain.enums.StatutInscription;
-import com.backend.gns.domain.enums.StudentNiveau;
-import com.backend.gns.domain.enums.TypeBourse;
+import com.backend.gns.student.domain.enums.SourceVerification;
+import com.backend.gns.student.domain.enums.StatutInscription;
+import com.backend.gns.student.domain.enums.StudentNiveau;
+import com.backend.gns.student.domain.enums.TypeBourse;
 import java.util.UUID;
 import lombok.Builder;
 

@@ -1,4 +1,4 @@
-package com.backend.gns.application.dtos.responses;
+package com.backend.gns.commerce.application.dtos.responses;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

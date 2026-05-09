@@ -1,4 +1,4 @@
-package com.backend.gns.domain.enums;
+package com.backend.gns.wallet.domain.enums;
 
 public enum WalletStatus {
     INACTIF,    // wallet créé mais KYC pas encore validé

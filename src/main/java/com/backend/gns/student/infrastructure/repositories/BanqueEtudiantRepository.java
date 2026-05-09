@@ -1,6 +1,6 @@
-package com.backend.gns.infrastructure.repositories;
+package com.backend.gns.student.infrastructure.repositories;
 
-import com.backend.gns.domain.models.BanqueEtudiant;
+import com.backend.gns.student.domain.models.BanqueEtudiant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

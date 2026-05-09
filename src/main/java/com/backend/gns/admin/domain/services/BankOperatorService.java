@@ -1,7 +1,7 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.admin.domain.services;
 
-import com.backend.gns.application.dtos.requests.BankOperatorRequest;
-import com.backend.gns.application.dtos.responses.BankOperatorResponse;
+import com.backend.gns.admin.application.dtos.requests.BankOperatorRequest;
+import com.backend.gns.admin.application.dtos.responses.BankOperatorResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

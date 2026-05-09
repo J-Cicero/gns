@@ -1,4 +1,4 @@
-package com.backend.gns.domain.enums;
+package com.backend.gns.paiement.domain.enums;
 
 public enum PaiementType {
   ACHAT,

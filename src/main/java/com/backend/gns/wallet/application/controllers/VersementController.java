@@ -1,10 +1,10 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.wallet.application.controllers;
 
-import com.backend.gns.application.dtos.requests.VersementRequest;
-import com.backend.gns.application.dtos.responses.VersementResponse;
-import com.backend.gns.domain.enums.VersementStatut;
-import com.backend.gns.domain.enums.VersementType;
-import com.backend.gns.domain.services.VersementService;
+import com.backend.gns.wallet.application.dtos.requests.VersementRequest;
+import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
+import com.backend.gns.wallet.domain.enums.VersementStatut;
+import com.backend.gns.wallet.domain.enums.VersementType;
+import com.backend.gns.wallet.domain.services.VersementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

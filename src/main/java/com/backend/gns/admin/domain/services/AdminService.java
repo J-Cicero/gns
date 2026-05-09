@@ -1,7 +1,7 @@
-package com.backend.gns.domain.services;
+package com.backend.gns.admin.domain.services;
 
-import com.backend.gns.application.dtos.requests.AdminRequest;
-import com.backend.gns.application.dtos.responses.AdminResponse;
+import com.backend.gns.admin.application.dtos.requests.AdminRequest;
+import com.backend.gns.admin.application.dtos.responses.AdminResponse;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

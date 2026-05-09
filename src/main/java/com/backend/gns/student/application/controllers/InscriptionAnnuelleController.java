@@ -1,9 +1,9 @@
-package com.backend.gns.application.controllers;
+package com.backend.gns.student.application.controllers;
 
-import com.backend.gns.application.dtos.requests.InscriptionAnnuelleRequest;
-import com.backend.gns.application.dtos.responses.InscriptionAnnuelleResponse;
-import com.backend.gns.domain.enums.StatutInscription;
-import com.backend.gns.domain.services.InscriptionAnnuelleService;
+import com.backend.gns.student.application.dtos.requests.InscriptionAnnuelleRequest;
+import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleResponse;
+import com.backend.gns.student.domain.enums.StatutInscription;
+import com.backend.gns.student.domain.services.InscriptionAnnuelleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
