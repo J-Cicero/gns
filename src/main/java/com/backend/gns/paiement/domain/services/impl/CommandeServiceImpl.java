@@ -7,7 +7,7 @@ import com.backend.gns.paiement.domain.enums.CommandeStatut;
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.paiement.domain.models.Commande;
 import com.backend.gns.paiement.domain.services.CommandeService;
-import com.backend.gns.wallet.domain.services.WalletService;
+import com.backend.gns.Shared.wallet.domain.services.WalletService;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
 import jakarta.persistence.EntityNotFoundException;

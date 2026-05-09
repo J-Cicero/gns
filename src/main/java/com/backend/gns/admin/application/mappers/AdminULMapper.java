@@ -3,8 +3,8 @@ package com.backend.gns.admin.application.mappers;
 import com.backend.gns.admin.application.dtos.requests.AdminULRequest;
 import com.backend.gns.admin.application.dtos.responses.AdminULResponse;
 import com.backend.gns.admin.domain.models.AdminUL;
-import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
+import com.backend.gns.Shared.wallet.domain.models.Wallet;
+import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

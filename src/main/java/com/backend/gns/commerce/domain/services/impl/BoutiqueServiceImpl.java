@@ -1,20 +1,20 @@
 package com.backend.gns.commerce.domain.services.impl;
 
 import com.backend.gns.commerce.application.dtos.requests.BoutiqueRequest;
-import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
+import com.backend.gns.Shared.wallet.application.dtos.requests.WalletRequest;
 import com.backend.gns.commerce.application.dtos.responses.BoutiqueResponse;
 import com.backend.gns.commerce.application.mappers.BoutiqueMapper;
 import com.backend.gns.Shared.domain.enums.KycStatus;
-import com.backend.gns.wallet.domain.enums.WalletStatus;
-import com.backend.gns.wallet.domain.enums.WalletType;
+import com.backend.gns.Shared.wallet.domain.enums.WalletStatus;
+import com.backend.gns.Shared.wallet.domain.enums.WalletType;
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.domain.models.Merchant;
-import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.Shared.wallet.domain.models.Wallet;
 import com.backend.gns.commerce.domain.services.BoutiqueService;
-import com.backend.gns.wallet.domain.services.WalletService;
+import com.backend.gns.Shared.wallet.domain.services.WalletService;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
-import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
+import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
