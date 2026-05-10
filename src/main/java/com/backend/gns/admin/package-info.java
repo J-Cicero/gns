@@ -1,7 +1,7 @@
  @ApplicationModule(
     displayName = "Module Administration",
-    allowedDependencies = {"Shared"}
-)
-package com.backend.gns.admin;
+    allowedDependencies = {"Shared.wallet", "Shared"}
+ )
+ package com.backend.gns.admin;
 
 import org.springframework.modulith.ApplicationModule;
