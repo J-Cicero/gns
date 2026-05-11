@@ -1,7 +1,7 @@
-package com.saas.plateform.Shared.security.advice;
+package com.backend.gns.Shared.security.advice;
 
-import com.saas.plateform.Shared.security.exceptions.UserAlreadyExistException;
-import com.saas.plateform.Shared.security.exceptions.UserNotFoundException;
+import com.backend.gns.Shared.security.exceptions.UserAlreadyExistException;
+import com.backend.gns.Shared.security.exceptions.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.NoResultException;
