@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avance créditée</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+        .content {
+            line-height: 1.6;
+        }
+        .amount-box {
+            background-color: #f0f9ff;
+            border: 2px solid #0284c7;
+            padding: 20px;
+            text-align: center;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .amount-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #0284c7;
+            margin: 10px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">studCash</div>
+        </div>
+        
+        <div class="content">
+            <p>Bonjour <span th:text="${nom}">User</span>,</p>
+            
+            <p>Bonne nouvelle ! Une avance a été créditée sur votre portefeuille.</p>
+            
+            <div class="amount-box">
+                <p>Montant crédité :</p>
+                <div class="amount-value" th:text="${montant}">10,000 FCFA</div>
+            </div>
+            
+            <p>Vous pouvez désormais :</p>
+            <ul>
+                <li>Consulter votre solde dans votre portefeuille</li>
+                <li>Utiliser vos fonds immédiatement</li>
+                <li>Effectuer des transactions</li>
+            </ul>
+            
+            <p>Pour toute question concernant votre avance, consultez la section "Aide" de notre application.</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 studCash. Tous les droits réservés.</p>
+            <p>L'équipe studCash</p>
+        </div>
+    </div>
+</body>
+</html>
