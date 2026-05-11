@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solde faible</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+        .alert-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .content {
+            line-height: 1.6;
+        }
+        .balance-box {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .balance-label {
+            font-weight: bold;
+            color: #b45309;
+        }
+        .balance-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f59e0b;
+            margin-top: 10px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">studCash</div>
+            <div class="alert-icon">💰</div>
+        </div>
+        
+        <div class="content">
+            <p>Bonjour <span th:text="${nom}">User</span>,</p>
+            
+            <p>Nous vous informons que votre solde est actuellement faible.</p>
+            
+            <div class="balance-box">
+                <div class="balance-label">Solde actuel :</div>
+                <div class="balance-value" th:text="${solde}">5,000 FCFA</div>
+            </div>
+            
+            <p>Pensez à recharger votre portefeuille pour continuer à utiliser nos services sans interruption.</p>
+            
+            <p>Vous pouvez :</p>
+            <ul>
+                <li>Ajouter des fonds à votre portefeuille</li>
+                <li>Demander une nouvelle avance si vous êtes éligible</li>
+                <li>Consulter votre historique de transactions</li>
+            </ul>
+            
+            <p>Besoin d'aide ? Rendez-vous sur l'application pour en savoir plus.</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 studCash. Tous les droits réservés.</p>
+            <p>L'équipe studCash</p>
+        </div>
+    </div>
+</body>
+</html>
