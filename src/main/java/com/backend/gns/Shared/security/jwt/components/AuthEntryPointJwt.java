@@ -1,4 +1,4 @@
-package com.saas.plateform.Shared.security.jwt.components;
+package com.backend.gns.Shared.security.jwt.components;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

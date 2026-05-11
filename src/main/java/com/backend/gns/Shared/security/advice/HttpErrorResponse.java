@@ -1,4 +1,4 @@
-package com.saas.plateform.Shared.security.advice;
+package com.backend.gns.Shared.security.advice;
 
 import lombok.Data;
 import lombok.Getter;

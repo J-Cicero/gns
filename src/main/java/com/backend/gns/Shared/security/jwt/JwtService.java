@@ -1,4 +1,4 @@
-package com.saas.plateform.Shared.security.jwt;
+package com.backend.gns.Shared.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package com.saas.plateform.Shared.security.config;
+package com.backend.gns.Shared.security.config;
 
 import java.util.Arrays;
 
@@ -18,9 +18,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.saas.plateform.Shared.security.constants.JavaConstant;
-import com.saas.plateform.Shared.security.jwt.filters.JwtAuthorizationToken;
-import com.saas.plateform.Shared.security.userDetailsConf.UserServiceSecure;
+import com.backend.gns.Shared.security.constants.JavaConstant;
+import com.backend.gns.Shared.security.jwt.filters.JwtAuthorizationToken;
+import com.backend.gns.Shared.security.userDetailsConf.UserServiceSecure;
 
 @Configuration
 @EnableWebSecurity

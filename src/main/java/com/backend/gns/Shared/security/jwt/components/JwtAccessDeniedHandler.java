@@ -1,7 +1,7 @@
-package com.saas.plateform.Shared.security.jwt.components;
+package com.backend.gns.Shared.security.jwt.components;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saas.plateform.Shared.security.advice.HttpErrorResponse;
+import com.backend.gns.Shared.security.advice.HttpErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package com.saas.plateform.Shared.security.constants;
+package com.backend.gns.Shared.security.constants;
 
 public class JavaConstant {
 

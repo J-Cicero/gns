@@ -1,4 +1,4 @@
-package com.saas.plateform.Shared.security.jwt.filters;
+package com.backend.gns.Shared.security.jwt.filters;
 
 import java.io.IOException;
 
@@ -11,9 +11,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.saas.plateform.Shared.security.constants.JavaConstant;
-import com.saas.plateform.Shared.security.jwt.JwtService;
-import com.saas.plateform.Shared.security.userDetailsConf.UserServiceSecure;
+import com.backend.gns.Shared.security.constants.JavaConstant;
+import com.backend.gns.Shared.security.jwt.JwtService;
+import com.backend.gns.Shared.security.userDetailsConf.UserServiceSecure;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
