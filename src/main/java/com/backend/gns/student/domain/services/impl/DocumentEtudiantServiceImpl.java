@@ -82,14 +82,11 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
      String urlFichier = cloudinaryService.upload(fichier, inscription.getStudent().getTrackingId().toString());
     log.info("Document uploadé sur Cloudinary : {}", urlFichier);
 
-    // 4. Appel Gemini → extraction des données du document
     ExtractionResultat extraction = geminiService.extraire(urlFichier, typeDocument);
     log.info("Données extraites par Gemini : {}", extraction);
 
-    // 5. Convertir l'extraction en JSON pour stockage
     String donneesJson = toJson(extraction);
 
-    // 6. Créer et sauvegarder le DocumentEtudiant
     DocumentEtudiant document = new DocumentEtudiant();
     document.setTrackingId(UUID.randomUUID());
     document.setInscription(inscription);
