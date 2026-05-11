@@ -45,9 +45,7 @@ public class BanqueEtudiantServiceImpl implements BanqueEtudiantService {
               "BanqueEtudiant non trouvée avec l'ID: " + trackingId);
         });
   }
-
-  @Override
-  @Transactional
+   @Transactional
   public BanqueEtudiantResponse create(BanqueEtudiantRequest request) {
     log.info("Création d'une BanqueEtudiant, banque: {}", request.banque());
 

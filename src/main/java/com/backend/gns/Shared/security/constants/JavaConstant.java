@@ -17,35 +17,51 @@ public class JavaConstant {
             "/actuator/info"
     };
 
-    // URLs pour ADMINISTRATEUR (accès complet)
-    public final static String[] ADMINISTRATEUR_URLS = {
+    // URLs pour ADMINISTRATEUR (ADMIN_GNS, ADMIN_UL, ADMIN_BANQUE, ADMIN_DBS)
+    public final static String[] ADMIN_URLS = {
             "/admin/**",
-            "/users/all/**",
-            "/config/**"
-    };
-    
-    // URLs pour GESTIONNAIRE
-    public final static String[] GESTIONNAIRE_URLS = {
-            "/gestion/**",
-            "/reports/**"
+            "/api/admin/**",
+            "/api/admin-ul/**",
+            "/api/admin-dbs/**",
+            "/api/kyc/**",
+            "/api/documents/validate/**",
+            "/api/documents/reject/**"
     };
 
-    // URLs pour UTILISATEUR authentifié
-    public final static String[] UTILISATEUR_URLS = {
-            "/profile/**",
-            "/dashboard/**"
+    // URLs pour ETUDIANT
+    public final static String[] ETUDIANT_URLS = {
+            "/api/students/**",
+            "/api/wallets/**",
+            "/api/paiements/**",
+            "/api/commandes/**",
+            "/api/documents/**",
+            "/api/cards/**",
+            "/api/inscriptions/**"
     };
-    
-    // URLs pour CONSULTANT
-    public final static String[] CONSULTANT_URLS = {
-            "/consultations/**",
-            "/analytics/**"
+
+    // URLs pour COMMERCANT
+    public final static String[] COMMERCANT_URLS = {
+            "/api/merchants/**",
+            "/api/boutiques/**",
+            "/api/products/**"
     };
-    
-    // URLs pour FREELANCE
-    public final static String[] FREELANCE_URLS = {
-            "/projects/**",
-            "/tasks/**"
+
+    // URLs pour PORTAIL BANQUE
+    public final static String[] BANQUE_URLS = {
+            "/api/bank-portal/**",
+            "/api/bank-operator/**",
+            "/api/versements/**"
+    };
+
+    // URLs pour ADMIN UL
+    public final static String[] UL_URLS = {
+            "/api/admin-ul/**"
+    };
+
+    // URLs pour ADMIN DBS
+    public final static String[] DBS_URLS = {
+            "/api/admin-dbs/**",
+            "/api/stats/**"
     };
 
 }

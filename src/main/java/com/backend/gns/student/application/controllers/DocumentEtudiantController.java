@@ -14,13 +14,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/documents")
 @Tag(name = "DOCUMENT_ETUDIANT", description = "Gestion des documents étudiants")
-@CrossOrigin("*")
 public class DocumentEtudiantController {
 
   private final DocumentEtudiantService documentService;
@@ -224,6 +224,7 @@ public class DocumentEtudiantController {
   }
 
   @PostMapping("/upload")
+  @PreAuthorize("hasAnyRole('ETUDIANT', 'ADMIN_GNS')")
   @Operation(
       summary = "Upload document avec extraction IA",
       description =

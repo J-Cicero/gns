@@ -21,7 +21,7 @@ public class UserMapper {
     user.setEmail(request.email());
     user.setPassword(request.motDePasse());
     user.setTelephone(request.telephone());
-    user.setRole(UserRole.ADMIN_GNS);
+    user.setRole(UserRole.ETUDIANT);
     user.setEstActif(true);
     return user;
   }

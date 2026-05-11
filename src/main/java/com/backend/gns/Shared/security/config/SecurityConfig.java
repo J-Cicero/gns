@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -44,22 +43,25 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // URLs publiques (sans auth)
                         .requestMatchers(JavaConstant.PUBLIC_URLS).permitAll()
-                        
-                        // URLs ADMINISTRATEUR (accès le plus élevé)
-                        .requestMatchers(JavaConstant.ADMINISTRATEUR_URLS).hasRole("ADMINISTRATEUR")
-                        
-                        // URLs GESTIONNAIRE
-                        .requestMatchers(JavaConstant.GESTIONNAIRE_URLS).hasAnyRole("GESTIONNAIRE", "ADMINISTRATEUR")
-                        
-                        // URLs CONSULTANT
-                        .requestMatchers(JavaConstant.CONSULTANT_URLS).hasAnyRole("CONSULTANT", "ADMINISTRATEUR")
-                        
-                        // URLs FREELANCE
-                        .requestMatchers(JavaConstant.FREELANCE_URLS).hasAnyRole("FREELANCE", "ADMINISTRATEUR")
-                        
-                        // URLs UTILISATEUR (accessible à tous les rôles authentifiés)
-                        .requestMatchers(JavaConstant.UTILISATEUR_URLS).hasAnyRole("UTILISATEUR", "GESTIONNAIRE", "CONSULTANT", "FREELANCE", "ADMINISTRATEUR")
-                        
+
+                        // URLs ADMINISTRATEUR GNS (KYC, validation, wallet)
+                        .requestMatchers(JavaConstant.ADMIN_URLS).hasAnyRole("ADMIN_GNS", "ADMIN_UL", "ADMIN_BANQUE", "ADMIN_DBS")
+
+                        // URLs ETUDIANT
+                        .requestMatchers(JavaConstant.ETUDIANT_URLS).hasAnyRole("ETUDIANT", "ADMIN_GNS")
+
+                        // URLs COMMERCANT
+                        .requestMatchers(JavaConstant.COMMERCANT_URLS).hasAnyRole("COMMERCANT", "ADMIN_GNS")
+
+                        // URLs PORTAIL BANQUE
+                        .requestMatchers(JavaConstant.BANQUE_URLS).hasAnyRole("ADMIN_BANQUE", "ADMIN_GNS")
+
+                        // URLs ADMIN UL
+                        .requestMatchers(JavaConstant.UL_URLS).hasAnyRole("ADMIN_UL", "ADMIN_GNS")
+
+                        // URLs ADMIN DBS
+                        .requestMatchers(JavaConstant.DBS_URLS).hasAnyRole("ADMIN_DBS", "ADMIN_GNS")
+
                         // Tout le reste nécessite une authentification
                         .anyRequest().authenticated()
                 );
@@ -74,14 +76,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider(UserServiceSecure userServiceSecure) {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userServiceSecure);
-        authProvider.setPasswordEncoder(this.passwordEncoder());
-        return authProvider;
     }
 
     @Bean

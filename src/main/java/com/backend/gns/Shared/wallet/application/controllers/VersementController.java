@@ -15,12 +15,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/versements")
 @Tag(name = "VERSEMENT", description = "Gestion des versements")
-@CrossOrigin("*")
 public class VersementController {
 
   private final VersementService versementService;
@@ -30,6 +30,7 @@ public class VersementController {
   }
 
   @PostMapping
+  @PreAuthorize("hasAnyRole('ADMIN_GNS', 'ADMIN_UL', 'ADMIN_DBS', 'ADMIN_BANQUE')")
   @Operation(summary = "Créer un versement", description = "Crée un nouveau versement")
   @ApiResponse(responseCode = "201", description = "Versement créé avec succès")
   public ResponseEntity<?> create(@RequestBody VersementRequest request) {

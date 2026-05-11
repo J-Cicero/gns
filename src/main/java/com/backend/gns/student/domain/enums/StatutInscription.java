@@ -5,5 +5,6 @@ public enum StatutInscription {
     VERIFIE_UL,
     DOCUMENTS_EN_COURS,
     ACTIVE,
-    EXPIREE
+    EXPIREE,
+    REJETEE,
 }

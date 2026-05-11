@@ -2,7 +2,7 @@ package com.backend.gns.student.domain.models;
 
 import com.backend.gns.Shared.utils.BaseEntity;
 import com.backend.gns.Shared.domain.enums.Banque;
-import com.backend.gns.student.domain.enums.MandatStatut; // Assuming this enum exists
+import com.backend.gns.student.domain.enums.MandatStatut; 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;

@@ -8,7 +8,6 @@ import jakarta.persistence.NoResultException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -33,7 +32,7 @@ import java.util.Objects;
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
-public class SecurityExceptionsHandler implements ErrorController {
+public class SecurityExceptionsHandler {
 
     private static final String ACCOUNT_LOCKED = "Votre compte a été bloqué. Veuillez contacter l'administration";
     private static final String METHOD_IS_NOT_ALLOWED = "Cette méthode de demande n'est pas autorisée sur ce point de terminaison. Veuillez envoyer une demande %s";
