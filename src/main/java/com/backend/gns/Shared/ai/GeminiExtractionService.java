@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,8 +61,12 @@ public class GeminiExtractionService {
               + ":generateContent?key="
               + apiKey;
 
-      ResponseEntity<Map> response =
-          restTemplate.postForEntity(url, new HttpEntity<>(body, headers), Map.class);
+      ResponseEntity<Map<String, Object>> response =
+          restTemplate.exchange(
+              url,
+              HttpMethod.POST,
+              new HttpEntity<>(body, headers),
+              new ParameterizedTypeReference<Map<String, Object>>() {});
 
       String texte = extraireTexte(response.getBody());
       return parseResultat(texte);
@@ -107,16 +112,17 @@ public class GeminiExtractionService {
 
   // Télécharge l'image depuis Cloudinary et l'encode en Base64
   private String telechargerEtEncoder(String url) throws Exception {
-    RestTemplate rt = new RestTemplate();
-    ResponseEntity<byte[]> response = rt.getForEntity(url, byte[].class);
+    ResponseEntity<byte[]> response = restTemplate.getForEntity(url, byte[].class);
     return java.util.Base64.getEncoder().encodeToString(response.getBody());
   }
 
-  @SuppressWarnings("unchecked")
-  private String extraireTexte(Map response) {
-    List<Map> candidates = (List<Map>) response.get("candidates");
-    Map content = (Map) candidates.get(0).get("content");
-    List<Map> parts = (List<Map>) content.get("parts");
+  private String extraireTexte(Map<String, Object> response) {
+    @SuppressWarnings("unchecked")
+    List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.get("candidates");
+    @SuppressWarnings("unchecked")
+    Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
+    @SuppressWarnings("unchecked")
+    List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
     return (String) parts.get(0).get("text");
   }
 

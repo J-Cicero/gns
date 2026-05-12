@@ -32,7 +32,7 @@ public class DocumentEtudiantController {
   @PostMapping
   @Operation(summary = "Créer un document", description = "Crée un nouveau document étudiant")
   @ApiResponse(responseCode = "201", description = "Document créé avec succès")
-  public ResponseEntity<?> create(@RequestBody DocumentEtudiantRequest request) {
+  public ResponseEntity<Object> create(@RequestBody DocumentEtudiantRequest request) {
     try {
       DocumentEtudiantResponse response = documentService.create(request);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -46,7 +46,7 @@ public class DocumentEtudiantController {
   @Operation(summary = "Récupérer un document", description = "Récupère un document par son ID")
   @ApiResponse(responseCode = "200", description = "Document trouvé")
   @ApiResponse(responseCode = "404", description = "Document non trouvé")
-  public ResponseEntity<?> findByTrackingId(@PathVariable UUID trackingId) {
+  public ResponseEntity<Object> findByTrackingId(@PathVariable UUID trackingId) {
     try {
       return documentService
           .findByTrackingId(trackingId)
@@ -66,7 +66,7 @@ public class DocumentEtudiantController {
       description = "Mettre à jour les informations d'un document")
   @ApiResponse(responseCode = "200", description = "Document mis à jour avec succès")
   @ApiResponse(responseCode = "404", description = "Document non trouvé")
-  public ResponseEntity<?> update(
+  public ResponseEntity<Object> update(
       @PathVariable UUID trackingId, @RequestBody DocumentEtudiantRequest request) {
     try {
       DocumentEtudiantResponse response = documentService.update(trackingId, request);
@@ -81,7 +81,7 @@ public class DocumentEtudiantController {
   @Operation(summary = "Supprimer un document", description = "Supprime un document par son ID")
   @ApiResponse(responseCode = "204", description = "Document supprimé avec succès")
   @ApiResponse(responseCode = "404", description = "Document non trouvé")
-  public ResponseEntity<?> delete(@PathVariable UUID trackingId) {
+  public ResponseEntity<Object> delete(@PathVariable UUID trackingId) {
     try {
       documentService.delete(trackingId);
       return ResponseEntity.noContent().build();
@@ -97,7 +97,7 @@ public class DocumentEtudiantController {
       description = "Récupère tous les documents d'un étudiant spécifique")
   @ApiResponse(responseCode = "200", description = "Documents trouvés")
   @ApiResponse(responseCode = "404", description = "Aucun document trouvé")
-  public ResponseEntity<?> findByStudentTrackingId(
+  public ResponseEntity<Object> findByStudentTrackingId(
       @PathVariable UUID studentTrackingId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
@@ -124,7 +124,7 @@ public class DocumentEtudiantController {
       description = "Récupère tous les documents d'une inscription spécifique")
   @ApiResponse(responseCode = "200", description = "Documents trouvés")
   @ApiResponse(responseCode = "404", description = "Aucun document trouvé")
-  public ResponseEntity<?> findByInscriptionTrackingId(
+  public ResponseEntity<Object> findByInscriptionTrackingId(
       @PathVariable UUID inscriptionTrackingId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
@@ -151,7 +151,7 @@ public class DocumentEtudiantController {
       description = "Récupère les documents d'un étudiant avec un statut spécifique")
   @ApiResponse(responseCode = "200", description = "Documents trouvés")
   @ApiResponse(responseCode = "404", description = "Aucun document trouvé")
-  public ResponseEntity<?> findByStudentAndStatut(
+  public ResponseEntity<Object> findByStudentAndStatut(
       @PathVariable UUID studentTrackingId,
       @PathVariable StatutDocument statut,
       @RequestParam(defaultValue = "0") int page,
@@ -180,7 +180,7 @@ public class DocumentEtudiantController {
       description = "Récupère tous les documents avec un statut donné")
   @ApiResponse(responseCode = "200", description = "Documents trouvés")
   @ApiResponse(responseCode = "404", description = "Aucun document trouvé")
-  public ResponseEntity<?> findByStatut(
+  public ResponseEntity<Object> findByStatut(
       @PathVariable StatutDocument statut,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
@@ -207,7 +207,7 @@ public class DocumentEtudiantController {
       description = "Récupère la liste de tous les documents")
   @ApiResponse(responseCode = "200", description = "Documents récupérés avec succès")
   @ApiResponse(responseCode = "404", description = "Aucun document trouvé")
-  public ResponseEntity<?> findAll(
+  public ResponseEntity<Object> findAll(
       @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
     try {
       Pageable pageable = PageRequest.of(page, size);
@@ -232,7 +232,7 @@ public class DocumentEtudiantController {
   @ApiResponse(responseCode = "201", description = "Document uploadé et données extraites")
   @ApiResponse(responseCode = "400", description = "Fichier ou paramètres invalides")
   @ApiResponse(responseCode = "404", description = "Étudiant ou inscription non trouvé")
-  public ResponseEntity<?> uploadDocument(
+  public ResponseEntity<Object> uploadDocument(
       @RequestParam("fichier") MultipartFile fichier,
       @RequestParam(value = "inscriptionTrackingId", required = false) UUID inscriptionTrackingId,
       @RequestParam("typeDocument") TypeDocument typeDocument) {
