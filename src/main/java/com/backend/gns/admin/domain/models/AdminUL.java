@@ -6,7 +6,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,4 +31,8 @@ public class AdminUL extends User {
     @OneToOne
     @JoinColumn(name = "wallet_id", unique = true)
     private Wallet wallet;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "universite_id")
+    private com.backend.gns.Shared.domain.models.Universite universite;
 }

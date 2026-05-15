@@ -8,6 +8,7 @@ import com.backend.gns.paiement.domain.enums.PaiementType;
 import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.paiement.domain.services.PaiementService;
 import com.backend.gns.paiement.infrastructure.repositories.PaiementRepository;
+import com.backend.gns.Shared.domain.services.ParametreGnsService;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -25,10 +26,12 @@ public class PaiementServiceImpl implements PaiementService {
 
   private final PaiementRepository paiementRepository;
   private final PaiementMapper paiementMapper;
+  private final ParametreGnsService parametreGnsService;
 
-  public PaiementServiceImpl(PaiementRepository paiementRepository, PaiementMapper paiementMapper) {
+  public PaiementServiceImpl(PaiementRepository paiementRepository, PaiementMapper paiementMapper, ParametreGnsService parametreGnsService) {
     this.paiementRepository = paiementRepository;
     this.paiementMapper = paiementMapper;
+    this.parametreGnsService = parametreGnsService;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -60,8 +63,9 @@ public class PaiementServiceImpl implements PaiementService {
                 () -> new EntityNotFoundException("Paiement non trouvé avec l'ID: " + trackingId));
 
     paiement.setMontantDebite(request.montantDebite());
-    // Recalculate commission and montantNetBoutique
-    BigDecimal commission = request.montantDebite().multiply(new BigDecimal("0.01"));
+    // Recalculate commission and montantNetBoutique dynamically
+    BigDecimal taux = parametreGnsService.getValeurAsBigDecimal("TAUX_COMMISSION_PAIEMENT");
+    BigDecimal commission = request.montantDebite().multiply(taux);
     paiement.setCommission(commission);
     paiement.setMontantNetBoutique(request.montantDebite().subtract(commission));
     paiement.setDate(request.date());

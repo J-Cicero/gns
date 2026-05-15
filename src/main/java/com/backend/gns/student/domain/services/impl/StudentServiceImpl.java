@@ -7,6 +7,7 @@ import com.backend.gns.Shared.domain.enums.KycStatus;
 import com.backend.gns.Shared.wallet.domain.enums.WalletStatus;
 import com.backend.gns.Shared.wallet.domain.enums.WalletType;
 import com.backend.gns.Shared.exception.ResourceNotFoundException;
+import com.backend.gns.Shared.domain.services.ParametreGnsService;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.Shared.wallet.domain.models.Wallet;
 import com.backend.gns.student.domain.services.StudentService;
@@ -34,7 +35,7 @@ public class StudentServiceImpl implements StudentService {
   private final StudentRepository studentRepository;
   private final StudentMapper studentMapper;
   private final WalletRepository walletRepository;
-
+  private final ParametreGnsService parametreGnsService;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -55,17 +56,18 @@ public class StudentServiceImpl implements StudentService {
   public StudentResponse create(StudentRequest request) {
     log.info("Création d'un étudiant: {} {}", request.prenom(), request.nom());
 
-
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
     wallet.setTypeWallet(WalletType.STUDENT_36k);
     wallet.setStatutWallet(WalletStatus.INACTIF);
     wallet.setSolde(BigDecimal.ZERO);
-    wallet.setPlafond(new BigDecimal("36000"));
+    
+    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal("MONTANT_DEFAUT_WALLET");
+    wallet.setPlafond(plafondDefaut);
+    
     wallet.setDateCreation(LocalDateTime.now());
     Wallet savedWallet = walletRepository.save(wallet);
 
-    // Construire l'étudiant et lui associer le wallet
     Student student = studentMapper.toEntity(request);
     student.setWallet(savedWallet);
 
@@ -149,7 +151,6 @@ public class StudentServiceImpl implements StudentService {
       return false;
     }
 
-    // TODO: remplacer par passwordEncoder.matches() quand Spring Security sera ajouté
     return student.getPinCode().equals(pinCode);
   }
 }
