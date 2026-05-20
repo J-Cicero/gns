@@ -63,6 +63,6 @@ public class DocumentEtudiant extends BaseEntity {
     @Column
     private LocalDateTime dateValidation;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "jsonb")
     private String donneesExtraites;
 }

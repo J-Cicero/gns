@@ -19,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,9 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "INSCRIPTION_ANNUELLE")
+@Table(name = "INSCRIPTION_ANNUELLE", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"student_id", "anneeAcademique"})
+})
 @Getter
 @Setter
 @AllArgsConstructor
@@ -57,8 +60,8 @@ public class InscriptionAnnuelle extends BaseEntity {
     @Column(nullable = false)
     private int creditsTotalValides;
 
-    @Column(length = 10)
-    private String mentionBac;
+    @Column(precision = 4, scale = 2)
+    private BigDecimal moyenneBac;
 
     @Column(nullable = false)
     private boolean estBoursier = false;
@@ -66,9 +69,6 @@ public class InscriptionAnnuelle extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private TypeBourse typeBourse;
-
-    @Column(nullable = false)
-    private boolean fraisScolaritePayes = false;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 30, nullable = false)
@@ -83,7 +83,4 @@ public class InscriptionAnnuelle extends BaseEntity {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal plafondAccorde;
-
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE") 
-    private boolean documentValides = false;
 }

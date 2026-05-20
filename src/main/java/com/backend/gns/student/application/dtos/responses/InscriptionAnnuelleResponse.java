@@ -16,13 +16,11 @@ public record InscriptionAnnuelleResponse(
     String anneeAcademique,
     StudentNiveau niveau,
     int creditsTotalValides,
-    String mentionBac,
+    BigDecimal moyenneBac,
     boolean estBoursier,
     TypeBourse typeBourse,
-    boolean fraisScolaritePayes,
     StatutInscription statut,
     SourceVerification source,
     LocalDateTime dateActivation,
-    BigDecimal plafondAccorde, 
-    boolean documentValides 
+    BigDecimal plafondAccorde
 ) {}

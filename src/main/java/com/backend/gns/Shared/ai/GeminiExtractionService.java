@@ -32,7 +32,7 @@ public class GeminiExtractionService {
   }
 
   public record ExtractionResultat(
-      String niveau, Integer creditsTotalValides, String mentionBac, String anneeObtention) {}
+      String niveau, Integer creditsTotalValides, java.math.BigDecimal moyenneBac, String anneeObtention) {}
 
   public ExtractionResultat extraire(String urlImage, TypeDocument typeDoc) {
     try {
@@ -135,8 +135,8 @@ public class GeminiExtractionService {
       JsonNode node = objectMapper.readTree(clean);
       return new ExtractionResultat(
           node.has("niveau") ? node.get("niveau").asText(null) : null,
-          node.has("creditsTotalValides") ? node.get("creditsTotalValides").asInt() : null,
-          node.has("mentionBac") ? node.get("mentionBac").asText(null) : null,
+          node.has("creditsTotalValides") ? (node.get("creditsTotalValides").isNull() ? null : node.get("creditsTotalValides").asInt()) : null,
+          node.has("moyenneBac") ? (node.get("moyenneBac").isNull() ? null : new java.math.BigDecimal(node.get("moyenneBac").asText())) : null,
           node.has("anneeObtention") ? node.get("anneeObtention").asText(null) : null);
     } catch (Exception e) {
       return new ExtractionResultat(null, null, null, null);

@@ -70,10 +70,9 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     inscription.setAnneeAcademique(request.anneeAcademique());
     inscription.setNiveau(request.niveau());
     inscription.setCreditsTotalValides(request.creditsTotalValides());
-    inscription.setMentionBac(request.mentionBac());
+    inscription.setMoyenneBac(request.moyenneBac());
     inscription.setEstBoursier(request.estBoursier());
     inscription.setTypeBourse(request.typeBourse());
-    inscription.setFraisScolaritePayes(request.fraisScolaritePayes());
     inscription.setStatut(request.statut());
     inscription.setSource(request.source());
 

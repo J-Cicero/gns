@@ -118,10 +118,10 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
           inscriptionModifiee = true;
           log.info("Credits mis à jour : {}", extraction.creditsTotalValides());
         }
-        if (extraction.mentionBac() != null) {
-          inscription.setMentionBac(extraction.mentionBac());
+        if (extraction.moyenneBac() != null) {
+          inscription.setMoyenneBac(extraction.moyenneBac());
           inscriptionModifiee = true;
-          log.info("Mention BAC mise à jour : {}", extraction.mentionBac());
+          log.info("Moyenne BAC mise à jour : {}", extraction.moyenneBac());
         }
         if (inscriptionModifiee) {
           inscriptionRepository.save(inscription);

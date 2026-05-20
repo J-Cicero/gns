@@ -22,120 +22,100 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EligibiliteServiceImpl implements EligibiliteService {
 
-  private final RegleBourseDbsService regleBourseService;
+    private final RegleBourseDbsService regleBourseService;
 
-  @Override
-  public EligibiliteResult verifierEligibilite(
-      Student student, InscriptionAnnuelle inscription, BanqueEtudiant banque) {
+    @Override
+    public EligibiliteResult verifierEligibilite(
+            Student student, InscriptionAnnuelle inscription, BanqueEtudiant banque) {
 
-    if (student == null || inscription == null) {
-      return EligibiliteResult.nonEligible("Données étudiant ou inscription manquantes");
+        if (student == null || inscription == null) {
+            return EligibiliteResult.nonEligible("Données étudiant ou inscription manquantes");
+        }
+
+        // 1. Vérification de l'âge (Max 26 ans pour Licence)
+        String motifAge = verifierAge(student);
+        if (motifAge != null) {
+            return EligibiliteResult.nonEligible(motifAge);
+        }
+
+        // 2. Vérification administrative
+        if (student.getStatutKYC() != KycStatus.VALIDEE) {
+            return EligibiliteResult.nonEligible("KYC non validé");
+        }
+
+        if (banque == null || banque.getMandatStatut() != MandatStatut.VALIDE || !banque.isMandatSigne()) {
+            return EligibiliteResult.nonEligible("Mandat bancaire absent ou non validé");
+        }
+
+        if (inscription.getStatut() != StatutInscription.ACTIVE) {
+            return EligibiliteResult.nonEligible("Inscription non active");
+        }
+
+        if (!inscription.isEstBoursier()) {
+            return EligibiliteResult.nonEligible("Étudiant non déclaré boursier par la DBS");
+        }
+
+        // 3. Calcul de l'éligibilité financière par niveau
+        return calculerEligibiliteFinanciere(inscription);
     }
 
-    String motifAge = verifierAge(student, inscription.getNiveau());
-    if (motifAge != null) {
-      log.info("Étudiant {} non éligible — motif: {}", student.getTrackingId(), motifAge);
-      return EligibiliteResult.nonEligible(motifAge);
+    private String verifierAge(Student student) {
+        if (student.getDateNaissance() == null) {
+            return "Date de naissance manquante";
+        }
+        int age = Period.between(student.getDateNaissance().toLocalDate(), LocalDate.now()).getYears();
+        int ageMax = regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.AGE_MAX_LICENCE);
+
+        if (age > ageMax) {
+            return String.format("Âge limite dépassé (%d ans > %d ans)", age, ageMax);
+        }
+        return null;
     }
 
-    if (student.getStatutKYC() != KycStatus.VALIDEE) {
-      String motif = "KYC non validé. Statut actuel: " + student.getStatutKYC();
-      log.info("Étudiant {} non éligible — motif: {}", student.getTrackingId(), motif);
-      return EligibiliteResult.nonEligible(motif);
+    private EligibiliteResult calculerEligibiliteFinanciere(InscriptionAnnuelle ins) {
+        return switch (ins.getNiveau()) {
+            case L1_ANNEE -> verifierL1(ins.getMoyenneBac());
+            case L2_ANNEE -> verifierCredits(ins.getCreditsTotalValides(), 
+                    TypeRegleBourse.L2_CREDITS_MIN_STANDARD, TypeRegleBourse.L2_CREDITS_MIN_SUPERIEUR);
+            case L3_ANNEE -> verifierCredits(ins.getCreditsTotalValides(), 
+                    TypeRegleBourse.L3_CREDITS_MIN_STANDARD, TypeRegleBourse.L3_CREDITS_MIN_SUPERIEUR);
+            case L4_ANNEE -> verifierCreditsRecyclage(ins.getCreditsTotalValides(), TypeRegleBourse.L4_CREDITS_MIN_STANDARD);
+            case L5_ANNEE -> verifierCreditsRecyclage(ins.getCreditsTotalValides(), TypeRegleBourse.L5_CREDITS_MIN_STANDARD);
+            default -> EligibiliteResult.nonEligible("Niveau non géré pour la bourse DBS");
+        };
     }
 
-    if (banque == null || !isMandatValide(banque)) {
-      String motif = "Mandat bancaire non validé ou absent";
-      log.info("Étudiant {} non éligible — motif: {}", student.getTrackingId(), motif);
-      return EligibiliteResult.nonEligible(motif);
+    private EligibiliteResult verifierL1(BigDecimal moyenne) {
+        if (moyenne == null) return EligibiliteResult.nonEligible("Moyenne BAC manquante");
+
+        BigDecimal minPassable = regleBourseService.getValeurCritere(TypeRegleBourse.L1_MOYENNE_MIN_PASSABLE);
+        BigDecimal minMentionSup = regleBourseService.getValeurCritere(TypeRegleBourse.L1_MOYENNE_MIN_MENTION_SUP);
+
+        if (moyenne.compareTo(minMentionSup) >= 0) {
+            return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.MONTANT_TRANCHE_SUPERIEURE));
+        } else if (moyenne.compareTo(minPassable) >= 0) {
+            return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.MONTANT_TRANCHE_STANDARD));
+        }
+        return EligibiliteResult.nonEligible("Moyenne insuffisante pour L1");
     }
 
-    if (inscription.getStatut() != StatutInscription.ACTIVE) {
-      String motif = "Inscription non validée. Statut actuel: " + inscription.getStatut();
-      log.info("Étudiant {} non éligible — motif: {}", student.getTrackingId(), motif);
-      return EligibiliteResult.nonEligible(motif);
+    private EligibiliteResult verifierCredits(int credits, TypeRegleBourse regleMin, TypeRegleBourse regleSup) {
+        int minStandard = regleBourseService.getValeurCritereAsInteger(regleMin);
+        int minSuperieur = regleBourseService.getValeurCritereAsInteger(regleSup);
+
+        if (credits >= minSuperieur) {
+            return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.MONTANT_TRANCHE_SUPERIEURE));
+        } else if (credits >= minStandard) {
+            return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.MONTANT_TRANCHE_STANDARD));
+        }
+        return EligibiliteResult.nonEligible(String.format("Crédits insuffisants (%d < %d)", credits, minStandard));
     }
 
-    if (!inscription.isEstBoursier()) {
-      String motif = "Étudiant non boursier";
-      log.info("Étudiant {} non éligible — motif: {}", student.getTrackingId(), motif);
-      return EligibiliteResult.nonEligible(motif);
+    private EligibiliteResult verifierCreditsRecyclage(int credits, TypeRegleBourse regleMin) {
+        int min = regleBourseService.getValeurCritereAsInteger(regleMin);
+        if (credits >= min) {
+            return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.MONTANT_TRANCHE_STANDARD));
+        }
+        return EligibiliteResult.nonEligible(String.format("Crédits insuffisants pour recyclage (%d < %d)", credits, min));
     }
-
-    EligibiliteResult resultat = calculerPlafond(inscription);
-    log.info("Étudiant {} — résultat éligibilité: eligible={}, plafond={}",
-        student.getTrackingId(), resultat.estEligible, resultat.plafondAccorde);
-    return resultat;
-  }
-
-  private String verifierAge(Student student, StudentNiveau niveau) {
-    if (student.getDateNaissance() == null) {
-      return "Date de naissance manquante";
-    }
-
-    int age = Period.between(student.getDateNaissance().toLocalDate(), LocalDate.now()).getYears();
-    int ageMax = isLicence(niveau) ? regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.AGE_MAX_LICENCE) 
-                                  : isMaster(niveau) ? regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.AGE_MAX_MASTER) : 0;
-    String cycle = isLicence(niveau) ? "Licence" : "Master";
-
-    if (ageMax > 0 && age > ageMax) {
-      return String.format("Âge dépassé pour %s. Âge: %d ans, max: %d ans", cycle, age, ageMax);
-    }
-
-    return null;
-  }
-  
-  private boolean isMandatValide(BanqueEtudiant banque) {
-    return banque.getMandatStatut() == MandatStatut.VALIDE && banque.isMandatSigne();
-  }
-
-  private EligibiliteResult calculerPlafond(InscriptionAnnuelle inscription) {
-    return switch (inscription.getNiveau()) {
-      case L1_ANNEE                                    -> calculerPlafondL1(inscription.getMentionBac());
-      case L2_ANNEE, L3_ANNEE, L4_ANNEE, L5_ANNEE    -> calculerPlafondParCreditsLicence(inscription.getCreditsTotalValides());
-      case M1_ANNEE                                    -> EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MONTANT_SUPERIEUR)); // Par défaut supérieur pour M1
-      case M2_ANNEE, M3_ANNEE                         -> calculerPlafondParCreditsMaster(inscription.getCreditsTotalValides());
-      default -> EligibiliteResult.nonEligible("Niveau académique non reconnu: " + inscription.getNiveau());
-    };
-  }
-
-  private EligibiliteResult calculerPlafondL1(String mention) {
-    if (mention == null || mention.isBlank()) {
-      return EligibiliteResult.nonEligible("Mention BAC requise pour L1");
-    }
-
-    return switch (mention.toUpperCase().trim()) {
-      case "PASSABLE", "ASSEZ_BIEN" -> EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MONTANT_STANDARD));
-      case "BIEN", "TRES_BIEN"      -> EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MONTANT_SUPERIEUR));
-      default -> EligibiliteResult.nonEligible("Mention BAC non reconnue: " + mention);
-    };
-  }
-
-  private EligibiliteResult calculerPlafondParCreditsLicence(int credits) {
-    if (credits >= 60) return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.LICENCE_MIN_60_CREDITS));
-    if (credits >= 30) return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.LICENCE_MIN_30_CREDITS));
-    return EligibiliteResult.nonEligible(
-        String.format("Crédits insuffisants pour Licence. Crédits validés: %d, minimum: 30", credits));
-  }
-
-  private EligibiliteResult calculerPlafondParCreditsMaster(int credits) {
-    if (credits >= 90) return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.MASTER_MIN_90_CREDITS));
-    if (credits >= 45) return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.MASTER_MIN_45_CREDITS));
-    return EligibiliteResult.nonEligible(
-        String.format("Crédits insuffisants pour Master. Crédits validés: %d, minimum: 45", credits));
-  }
-
-  private boolean isLicence(StudentNiveau niveau) {
-    return switch (niveau) {
-      case L1_ANNEE, L2_ANNEE, L3_ANNEE, L4_ANNEE, L5_ANNEE -> true;
-      default -> false;
-    };
-  }
-
-  private boolean isMaster(StudentNiveau niveau) {
-    return switch (niveau) {
-      case M1_ANNEE, M2_ANNEE, M3_ANNEE -> true;
-      default -> false;
-    };
-  }
 }

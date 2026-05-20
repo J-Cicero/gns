@@ -4,6 +4,7 @@ import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
 import com.backend.gns.Shared.domain.enums.KycStatus;
 import com.backend.gns.student.domain.services.StudentService;
+import com.backend.gns.Shared.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

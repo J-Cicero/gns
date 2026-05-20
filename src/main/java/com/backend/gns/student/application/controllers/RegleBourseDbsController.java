@@ -2,6 +2,7 @@ package com.backend.gns.student.application.controllers;
 
 import com.backend.gns.student.application.dtos.requests.RegleBourseDbsRequest;
 import com.backend.gns.student.application.dtos.responses.RegleBourseDbsResponse;
+import com.backend.gns.student.domain.enums.TypeRegleBourse;
 import com.backend.gns.student.domain.services.RegleBourseDbsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "REGLES BOURSE DBS", description = "Gestion des règles d'éligibilité (Admin DBS)")
 @CrossOrigin("*")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN_GNS')")
 public class RegleBourseDbsController {
 
     private final RegleBourseDbsService service;
@@ -42,7 +45,7 @@ public class RegleBourseDbsController {
 
     @GetMapping("/type/{type}")
     @Operation(summary = "Rechercher par type de règle")
-    public ResponseEntity<RegleBourseDbsResponse> findByType(@PathVariable com.backend.gns.student.domain.enums.TypeRegleBourse type) {
+    public ResponseEntity<RegleBourseDbsResponse> findByType(@PathVariable TypeRegleBourse type) {
         return service.findByTypeRegle(type)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());

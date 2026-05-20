@@ -5,6 +5,8 @@ import com.backend.gns.student.domain.enums.CardStatut;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,6 +41,7 @@ public class Card extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String qrCodeStatique;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)  
     private CardStatut statut; 
 

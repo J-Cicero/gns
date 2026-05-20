@@ -4,6 +4,7 @@ import com.backend.gns.student.domain.enums.SourceVerification;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.StudentNiveau;
 import com.backend.gns.student.domain.enums.TypeBourse;
+import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -13,9 +14,8 @@ public record InscriptionAnnuelleRequest(
     String anneeAcademique,
     StudentNiveau niveau,
     int creditsTotalValides,
-    String mentionBac,
+    BigDecimal moyenneBac,
     boolean estBoursier,
     TypeBourse typeBourse,
-    boolean fraisScolaritePayes,
     StatutInscription statut,
     SourceVerification source) {}
