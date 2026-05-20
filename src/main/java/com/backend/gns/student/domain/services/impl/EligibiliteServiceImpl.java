@@ -4,6 +4,7 @@ import com.backend.gns.Shared.domain.enums.KycStatus;
 import com.backend.gns.student.domain.enums.MandatStatut;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.StudentNiveau;
+import com.backend.gns.student.domain.enums.TypeRegleBourse;
 import com.backend.gns.student.domain.models.BanqueEtudiant;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.Student;
@@ -73,8 +74,8 @@ public class EligibiliteServiceImpl implements EligibiliteService {
     }
 
     int age = Period.between(student.getDateNaissance().toLocalDate(), LocalDate.now()).getYears();
-    int ageMax = isLicence(niveau) ? regleBourseService.getAgeMax("AGE_MAX_LICENCE") 
-                                  : isMaster(niveau) ? regleBourseService.getAgeMax("AGE_MAX_MASTER") : 0;
+    int ageMax = isLicence(niveau) ? regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.AGE_MAX_LICENCE) 
+                                  : isMaster(niveau) ? regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.AGE_MAX_MASTER) : 0;
     String cycle = isLicence(niveau) ? "Licence" : "Master";
 
     if (ageMax > 0 && age > ageMax) {
@@ -92,7 +93,7 @@ public class EligibiliteServiceImpl implements EligibiliteService {
     return switch (inscription.getNiveau()) {
       case L1_ANNEE                                    -> calculerPlafondL1(inscription.getMentionBac());
       case L2_ANNEE, L3_ANNEE, L4_ANNEE, L5_ANNEE    -> calculerPlafondParCreditsLicence(inscription.getCreditsTotalValides());
-      case M1_ANNEE                                    -> EligibiliteResult.eligible(regleBourseService.getMontantBourse("M1_STANDARD"));
+      case M1_ANNEE                                    -> EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MONTANT_SUPERIEUR)); // Par défaut supérieur pour M1
       case M2_ANNEE, M3_ANNEE                         -> calculerPlafondParCreditsMaster(inscription.getCreditsTotalValides());
       default -> EligibiliteResult.nonEligible("Niveau académique non reconnu: " + inscription.getNiveau());
     };
@@ -104,22 +105,22 @@ public class EligibiliteServiceImpl implements EligibiliteService {
     }
 
     return switch (mention.toUpperCase().trim()) {
-      case "PASSABLE", "ASSEZ_BIEN" -> EligibiliteResult.eligible(regleBourseService.getMontantBourse("L1_STANDARD"));
-      case "BIEN", "TRES_BIEN"      -> EligibiliteResult.eligible(regleBourseService.getMontantBourse("L1_SUPERIEUR"));
+      case "PASSABLE", "ASSEZ_BIEN" -> EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MONTANT_STANDARD));
+      case "BIEN", "TRES_BIEN"      -> EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MONTANT_SUPERIEUR));
       default -> EligibiliteResult.nonEligible("Mention BAC non reconnue: " + mention);
     };
   }
 
   private EligibiliteResult calculerPlafondParCreditsLicence(int credits) {
-    if (credits >= 60) return EligibiliteResult.eligible(regleBourseService.getMontantBourse("LICENCE_60_CREDITS"));
-    if (credits >= 30) return EligibiliteResult.eligible(regleBourseService.getMontantBourse("LICENCE_30_CREDITS"));
+    if (credits >= 60) return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.LICENCE_MIN_60_CREDITS));
+    if (credits >= 30) return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.LICENCE_MIN_30_CREDITS));
     return EligibiliteResult.nonEligible(
         String.format("Crédits insuffisants pour Licence. Crédits validés: %d, minimum: 30", credits));
   }
 
   private EligibiliteResult calculerPlafondParCreditsMaster(int credits) {
-    if (credits >= 90) return EligibiliteResult.eligible(regleBourseService.getMontantBourse("MASTER_90_CREDITS"));
-    if (credits >= 45) return EligibiliteResult.eligible(regleBourseService.getMontantBourse("MASTER_45_CREDITS"));
+    if (credits >= 90) return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.MASTER_MIN_90_CREDITS));
+    if (credits >= 45) return EligibiliteResult.eligible(regleBourseService.getValeurCritere(TypeRegleBourse.MASTER_MIN_45_CREDITS));
     return EligibiliteResult.nonEligible(
         String.format("Crédits insuffisants pour Master. Crédits validés: %d, minimum: 45", credits));
   }

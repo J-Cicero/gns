@@ -1,5 +1,6 @@
 package com.backend.gns.student.application.dtos.responses;
 
+import com.backend.gns.student.domain.enums.TypeRegleBourse;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.Builder;
@@ -7,10 +8,8 @@ import lombok.Builder;
 @Builder
 public record RegleBourseDbsResponse(
     UUID trackingId,
-    String libelle,
-    String codeUnique,
-    BigDecimal valeurNumerique,
-    String valeurTextuelle,
+    TypeRegleBourse typeRegle,
+    BigDecimal valeurCritere,
     boolean estActif,
     String description
 ) {}

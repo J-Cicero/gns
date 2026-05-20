@@ -3,6 +3,7 @@ package com.backend.gns.student.domain.models;
 import com.backend.gns.Shared.user.domain.models.User;
 import com.backend.gns.Shared.domain.enums.KycStatus;
 import com.backend.gns.Shared.wallet.domain.models.Wallet;
+import com.backend.gns.Shared.domain.models.Universite ;
 import jakarta.persistence.Column;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
@@ -49,6 +50,6 @@ public class Student extends User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "universite_id")
-    private com.backend.gns.Shared.domain.models.Universite universite;
+    private Universite universite;
 
 }

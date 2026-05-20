@@ -17,4 +17,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
   Long countByStatutKYC(KycStatus statut);
 
   Page<Student> findByStatutKYCOrderByCreatedAtAsc(KycStatus statut, Pageable pageable);
+
+  Page<Student> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 }

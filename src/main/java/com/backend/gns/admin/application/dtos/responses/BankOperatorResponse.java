@@ -1,9 +1,7 @@
 package com.backend.gns.admin.application.dtos.responses;
 
-import com.backend.gns.Shared.user.domain.enums.UserRole;
-import lombok.Builder;
-
 import java.util.UUID;
+import lombok.Builder;
 
 @Builder
 public record BankOperatorResponse(
@@ -11,7 +9,6 @@ public record BankOperatorResponse(
     String email,
     String nom,
     String prenom,
-    UserRole role,
     Boolean estActif,
     String telephone,
     UUID walletTrackingId

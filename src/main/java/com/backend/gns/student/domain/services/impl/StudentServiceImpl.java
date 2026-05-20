@@ -8,6 +8,7 @@ import com.backend.gns.Shared.wallet.domain.enums.WalletStatus;
 import com.backend.gns.Shared.wallet.domain.enums.WalletType;
 import com.backend.gns.Shared.exception.ResourceNotFoundException;
 import com.backend.gns.Shared.domain.services.ParametreGnsService;
+import com.backend.gns.Shared.domain.enums.TypeParametreGns;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.Shared.wallet.domain.models.Wallet;
 import com.backend.gns.student.domain.services.StudentService;
@@ -56,23 +57,23 @@ public class StudentServiceImpl implements StudentService {
   public StudentResponse create(StudentRequest request) {
     log.info("Création d'un étudiant: {} {}", request.prenom(), request.nom());
 
+    Student student = studentMapper.toEntity(request);
+    
+    // Initialisation du Wallet via Cascade
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
-    wallet.setTypeWallet(WalletType.STUDENT_36k);
+    wallet.setTypeWallet(WalletType.STUDENT_36k); // Type par défaut, sera mis à jour lors de l'inscription
     wallet.setStatutWallet(WalletStatus.INACTIF);
     wallet.setSolde(BigDecimal.ZERO);
     
-    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal("MONTANT_DEFAUT_WALLET");
+    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
     wallet.setPlafond(plafondDefaut);
-    
     wallet.setDateCreation(LocalDateTime.now());
-    Wallet savedWallet = walletRepository.save(wallet);
-
-    Student student = studentMapper.toEntity(request);
-    student.setWallet(savedWallet);
+    
+    student.setWallet(wallet);
 
     Student savedStudent = studentRepository.save(student);
-    log.info("Étudiant créé avec succès, trackingId: {}", savedStudent.getTrackingId());
+    log.info("Étudiant créé avec succès avec son Wallet, trackingId: {}", savedStudent.getTrackingId());
     return studentMapper.toResponse(savedStudent);
   }
 
@@ -138,6 +139,14 @@ public class StudentServiceImpl implements StudentService {
   public Page<StudentResponse> findAll(Pageable pageable) {
     log.debug("Récupération de tous les étudiants, page: {}", pageable.getPageNumber());
     return studentRepository.findAll(normalize(pageable)).map(studentMapper::toResponse);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<StudentResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable) {
+    log.debug("Recherche étudiants par université trackingId: {}", universiteTrackingId);
+    return studentRepository.findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
+        .map(studentMapper::toResponse);
   }
 
   @Override

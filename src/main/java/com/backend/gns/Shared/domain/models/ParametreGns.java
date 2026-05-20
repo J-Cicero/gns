@@ -1,5 +1,6 @@
 package com.backend.gns.Shared.domain.models;
 
+import com.backend.gns.Shared.domain.enums.TypeParametreGns;
 import com.backend.gns.Shared.utils.BaseEntity;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -20,11 +21,12 @@ public class ParametreGns extends BaseEntity {
     @Column(length = 36, nullable = false, unique = true, updatable = false)
     private UUID trackingId = UUID.randomUUID();
 
-    @Column(nullable = false, unique = true)
-    private String cle; // ex: "TAUX_COMMISSION_PAIEMENT", "FRAIS_REVIENT_CARTE"
+    @Enumerated(EnumType.STRING)
+    @Column(name = "nom_parametre", nullable = false, unique = true, length = 50)
+    private TypeParametreGns nomParametre;
 
-    @Column(nullable = false)
-    private String valeur;
+    @Column(name = "valeur_parametre", nullable = false)
+    private String valeurParametre;
 
     @Column(nullable = false)
     private boolean estActif = true;

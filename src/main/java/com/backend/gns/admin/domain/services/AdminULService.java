@@ -18,4 +18,6 @@ public interface AdminULService {
     void delete(UUID trackingId);
     
     Page<AdminULResponse> findAll(Pageable pageable);
+
+    Page<AdminULResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 }

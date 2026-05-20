@@ -1,6 +1,5 @@
 package com.backend.gns.student.application.dtos.requests;
 
-import com.backend.gns.Shared.user.domain.enums.UserRole;
 import com.backend.gns.Shared.domain.enums.KycStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,7 +11,6 @@ public record StudentRequest(
     String password,
     String nom,
     String prenom,
-    UserRole role,
     Boolean estActif,
     String telephone,
     LocalDateTime dateNaissance,
@@ -20,6 +18,6 @@ public record StudentRequest(
     KycStatus statutKYC,
     UUID walletTrackingId,
     UUID banqueEtudiantTrackingId,
+    UUID universiteTrackingId,
     String pinCode
 ) {}
-

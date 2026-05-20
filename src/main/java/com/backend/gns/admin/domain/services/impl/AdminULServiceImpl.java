@@ -97,4 +97,12 @@ public class AdminULServiceImpl implements AdminULService {
     log.debug("Récupération de tous les AdminUL, page: {}", pageable.getPageNumber());
     return adminULRepository.findAll(normalize(pageable)).map(adminULMapper::toResponse);
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<AdminULResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable) {
+    log.debug("Recherche AdminUL par université trackingId: {}", universiteTrackingId);
+    return adminULRepository.findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
+        .map(adminULMapper::toResponse);
+  }
 }

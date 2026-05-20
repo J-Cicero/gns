@@ -4,6 +4,7 @@ import com.backend.gns.admin.application.dtos.requests.BankOperatorRequest;
 import com.backend.gns.admin.application.dtos.responses.BankOperatorResponse;
 import com.backend.gns.admin.domain.models.BankOperator;
 import com.backend.gns.Shared.wallet.domain.models.Wallet;
+import com.backend.gns.Shared.user.domain.enums.UserRole;
 import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class BankOperatorMapper {
         bankOperator.setPassword(request.password());
         bankOperator.setNom(request.nom());
         bankOperator.setPrenom(request.prenom());
-        bankOperator.setRole(request.role());
+        bankOperator.setRole(UserRole.ADMIN_BANQUE);
         bankOperator.setEstActif(request.estActif());
         bankOperator.setTelephone(request.telephone());
 
@@ -51,7 +52,6 @@ public class BankOperatorMapper {
                 .email(bankOperator.getEmail())
                 .nom(bankOperator.getNom())
                 .prenom(bankOperator.getPrenom())
-                .role(bankOperator.getRole())
                 .estActif(bankOperator.isEstActif())
                 .telephone(bankOperator.getTelephone())
                 .walletTrackingId(bankOperator.getWallet() != null ? bankOperator.getWallet().getTrackingId() : null)

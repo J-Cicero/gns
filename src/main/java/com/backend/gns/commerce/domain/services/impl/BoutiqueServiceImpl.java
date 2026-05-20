@@ -71,25 +71,17 @@ public class BoutiqueServiceImpl implements BoutiqueService {
       boutique.setMerchant(merchant);
     }
 
-    // Créer un Wallet pour la boutique avec type BOUTIQUE si pas fourni
+    // Créer un Wallet pour la boutique si pas fourni via Cascade
     if (request.walletTrackingId() == null) {
-      WalletRequest walletRequest =
-          WalletRequest.builder()
-              .typeWallet(WalletType.BOUTIQUE)
-              .statutWallet(WalletStatus.ACTIF)
-              .solde(BigDecimal.ZERO)
-              .plafond(BigDecimal.ZERO)
-              .estVerrouille(false)
-              .dateCreation(LocalDateTime.now())
-              .build();
-      walletService.create(walletRequest);
-
-      // Récupérer le dernier wallet créé et l'associer à la boutique
-      var wallets = walletRepository.findByTypeWallet(WalletType.BOUTIQUE, Pageable.unpaged());
-      if (wallets.hasContent()) {
-        Wallet wallet = wallets.getContent().get(wallets.getContent().size() - 1);
-        boutique.setWallet(wallet);
-      }
+      Wallet wallet = new Wallet();
+      wallet.setTrackingId(UUID.randomUUID());
+      wallet.setTypeWallet(WalletType.BOUTIQUE);
+      wallet.setStatutWallet(WalletStatus.ACTIF);
+      wallet.setSolde(BigDecimal.ZERO);
+      wallet.setPlafond(BigDecimal.ZERO);
+      wallet.setDateCreation(LocalDateTime.now());
+      
+      boutique.setWallet(wallet);
     } else {
       Wallet wallet =
           walletRepository

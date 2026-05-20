@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface AdminULRepository extends JpaRepository<AdminUL, Long> {
     Optional<AdminUL> findByTrackingId(UUID trackingId);
+    org.springframework.data.domain.Page<AdminUL> findByUniversiteTrackingId(UUID universiteTrackingId, org.springframework.data.domain.Pageable pageable);
 }

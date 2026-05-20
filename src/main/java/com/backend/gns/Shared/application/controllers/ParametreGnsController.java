@@ -2,9 +2,7 @@ package com.backend.gns.Shared.application.controllers;
 
 import com.backend.gns.Shared.application.dtos.requests.ParametreGnsRequest;
 import com.backend.gns.Shared.application.dtos.responses.ParametreGnsResponse;
-import com.backend.gns.Shared.domain.models.ParametreGns;
-import com.backend.gns.Shared.application.mappers.ParametreGnsMapper;
-import com.backend.gns.Shared.infrastructure.repositories.ParametreGnsRepository;
+import com.backend.gns.Shared.domain.services.ParametreGnsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
@@ -22,27 +20,31 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ParametreGnsController {
 
-    private final ParametreGnsRepository repository;
-    private final ParametreGnsMapper mapper;
+    private final ParametreGnsService service;
 
     @PostMapping
-    @Operation(summary = "Créer un paramètre")
-    public ResponseEntity<ParametreGnsResponse> create(@RequestBody ParametreGnsRequest request) {
-        ParametreGns entity = mapper.toEntity(request);
-        ParametreGns saved = repository.save(entity);
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(saved));
+    @Operation(summary = "Créer ou mettre à jour un paramètre (Unicité garantie)")
+    public ResponseEntity<ParametreGnsResponse> saveOrUpdate(@RequestBody ParametreGnsRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.saveOrUpdate(request));
     }
 
     @GetMapping("/{trackingId}")
     public ResponseEntity<ParametreGnsResponse> findByTrackingId(@PathVariable UUID trackingId) {
-        return repository.findByTrackingId(trackingId)
-            .map(mapper::toResponse)
+        return service.findByTrackingId(trackingId)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
     public ResponseEntity<Page<ParametreGnsResponse>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(repository.findAll(pageable).map(mapper::toResponse));
+        return ResponseEntity.ok(service.findAll(pageable));
+    }
+
+    @GetMapping("/type/{type}")
+    @Operation(summary = "Rechercher par type de paramètre")
+    public ResponseEntity<ParametreGnsResponse> findByNom(@PathVariable com.backend.gns.Shared.domain.enums.TypeParametreGns type) {
+        return service.findByNomParametre(type)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 }

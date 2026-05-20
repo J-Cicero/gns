@@ -1,39 +1,80 @@
 package com.backend.gns.Shared.domain.services.impl;
 
+import com.backend.gns.Shared.application.dtos.requests.ParametreGnsRequest;
+import com.backend.gns.Shared.application.dtos.responses.ParametreGnsResponse;
+import com.backend.gns.Shared.application.mappers.ParametreGnsMapper;
+import com.backend.gns.Shared.domain.enums.TypeParametreGns;
 import com.backend.gns.Shared.domain.models.ParametreGns;
 import com.backend.gns.Shared.domain.services.ParametreGnsService;
 import com.backend.gns.Shared.infrastructure.repositories.ParametreGnsRepository;
 import com.backend.gns.Shared.exception.ResourceNotFoundException;
 import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class ParametreGnsServiceImpl implements ParametreGnsService {
 
     private final ParametreGnsRepository repository;
+    private final ParametreGnsMapper mapper;
 
-    public ParametreGnsServiceImpl(ParametreGnsRepository repository) {
-        this.repository = repository;
+    @Override
+    @Transactional
+    public ParametreGnsResponse saveOrUpdate(ParametreGnsRequest request) {
+        return repository.findByNomParametreAndEstActifTrue(request.nomParametre())
+                .map(existing -> {
+                    existing.setValeurParametre(request.valeurParametre());
+                    existing.setDescription(request.description());
+                    existing.setEstActif(request.estActif());
+                    return mapper.toResponse(repository.save(existing));
+                })
+                .orElseGet(() -> {
+                    ParametreGns entity = mapper.toEntity(request);
+                    return mapper.toResponse(repository.save(entity));
+                });
     }
 
     @Override
     @Transactional(readOnly = true)
-    public String getValeur(String cle) {
-        return repository.findByCleAndEstActifTrue(cle)
-                .map(ParametreGns::getValeur)
-                .orElseThrow(() -> new ResourceNotFoundException("Paramètre GNS non trouvé: " + cle));
+    public Optional<ParametreGnsResponse> findByTrackingId(UUID trackingId) {
+        return repository.findByTrackingId(trackingId).map(mapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public BigDecimal getValeurAsBigDecimal(String cle) {
-        return new BigDecimal(getValeur(cle));
+    public Page<ParametreGnsResponse> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(mapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Integer getValeurAsInteger(String cle) {
-        return Integer.parseInt(getValeur(cle));
+    public Optional<ParametreGnsResponse> findByNomParametre(TypeParametreGns nom) {
+        return repository.findByNomParametreAndEstActifTrue(nom).map(mapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getValeur(TypeParametreGns type) {
+        return repository.findByNomParametreAndEstActifTrue(type)
+                .map(ParametreGns::getValeurParametre)
+                .orElseThrow(() -> new ResourceNotFoundException("Paramètre GNS non trouvé: " + type));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal getValeurAsBigDecimal(TypeParametreGns type) {
+        return new BigDecimal(getValeur(type));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getValeurAsInteger(TypeParametreGns type) {
+        return Integer.parseInt(getValeur(type));
     }
 }

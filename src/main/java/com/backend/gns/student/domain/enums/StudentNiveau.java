@@ -9,5 +9,5 @@ public enum StudentNiveau {
     M1_ANNEE,
     M2_ANNEE,
     M3_ANNEE,
-    DOCTORAT
+    
 }

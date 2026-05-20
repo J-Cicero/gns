@@ -22,5 +22,7 @@ public interface StudentService {
 
   Page<StudentResponse> findAll(Pageable pageable);
 
+  Page<StudentResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
+
   boolean verifyPin(UUID studentTrackingId, String pinCode);
 }

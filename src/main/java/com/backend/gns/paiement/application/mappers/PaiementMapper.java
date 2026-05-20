@@ -8,6 +8,7 @@ import com.backend.gns.Shared.wallet.domain.models.Wallet;
 import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
 import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
 import com.backend.gns.Shared.domain.services.ParametreGnsService;
+import com.backend.gns.Shared.domain.enums.TypeParametreGns;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ public class PaiementMapper {
     paiement.setTrackingId(UUID.randomUUID());
     paiement.setMontantDebite(request.montantDebite());
     // Commission is calculated dynamically
-    BigDecimal taux = parametreGnsService.getValeurAsBigDecimal("TAUX_COMMISSION_PAIEMENT");
+    BigDecimal taux = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.TAUX_COMMISSION_PAIEMENT);
     BigDecimal commission = request.montantDebite().multiply(taux);
     paiement.setCommission(commission);
     // montantNetBoutique is montantDebite - commission

@@ -67,4 +67,10 @@ public class AdminULController {
         Page<AdminULResponse> responses = adminULService.findAll(pageable);
         return ResponseEntity.ok(responses);
     }
+
+    @GetMapping("/universite/{universiteTrackingId}")
+    @Operation(summary = "Récupérer les administrateurs par université")
+    public ResponseEntity<Page<AdminULResponse>> findByUniversite(@PathVariable UUID universiteTrackingId, Pageable pageable) {
+        return ResponseEntity.ok(adminULService.findByUniversiteTrackingId(universiteTrackingId, pageable));
+    }
 }

@@ -5,16 +5,10 @@ import com.backend.gns.Shared.wallet.application.dtos.responses.VersementRespons
 import com.backend.gns.Shared.wallet.application.mappers.VersementMapper;
 import com.backend.gns.Shared.wallet.domain.enums.VersementStatut;
 import com.backend.gns.Shared.wallet.domain.enums.VersementType;
-import com.backend.gns.admin.domain.models.Admin;
 import com.backend.gns.Shared.wallet.domain.models.Versement;
 import com.backend.gns.Shared.wallet.domain.services.VersementService;
-import com.backend.gns.Shared.wallet.domain.services.WalletService;
-import com.backend.gns.admin.infrastructure.repositories.AdminRepository;
-import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.Shared.wallet.infrastructure.repositories.VersementRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,15 +25,14 @@ public class VersementServiceImpl implements VersementService {
 
   private final VersementRepository versementRepository;
   private final VersementMapper versementMapper;
-  private final WalletService walletService;
 
   public VersementServiceImpl(
       VersementRepository versementRepository,
-      VersementMapper versementMapper,
-      WalletService walletService) {
+      VersementMapper versementMapper
+      ) {
     this.versementRepository = versementRepository;
     this.versementMapper = versementMapper;
-    this.walletService = walletService;
+  
   }
 
   private Pageable normalize(Pageable pageable) {

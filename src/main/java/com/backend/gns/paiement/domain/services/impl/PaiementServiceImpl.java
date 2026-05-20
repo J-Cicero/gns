@@ -9,6 +9,7 @@ import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.paiement.domain.services.PaiementService;
 import com.backend.gns.paiement.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.Shared.domain.services.ParametreGnsService;
+import com.backend.gns.Shared.domain.enums.TypeParametreGns;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -64,7 +65,7 @@ public class PaiementServiceImpl implements PaiementService {
 
     paiement.setMontantDebite(request.montantDebite());
     // Recalculate commission and montantNetBoutique dynamically
-    BigDecimal taux = parametreGnsService.getValeurAsBigDecimal("TAUX_COMMISSION_PAIEMENT");
+    BigDecimal taux = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.TAUX_COMMISSION_PAIEMENT);
     BigDecimal commission = request.montantDebite().multiply(taux);
     paiement.setCommission(commission);
     paiement.setMontantNetBoutique(request.montantDebite().subtract(commission));

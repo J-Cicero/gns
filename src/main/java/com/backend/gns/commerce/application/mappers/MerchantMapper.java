@@ -3,6 +3,7 @@ package com.backend.gns.commerce.application.mappers;
 import com.backend.gns.commerce.application.dtos.requests.MerchantRequest;
 import com.backend.gns.commerce.application.dtos.responses.MerchantResponse;
 import com.backend.gns.commerce.domain.models.Merchant;
+import com.backend.gns.Shared.user.domain.enums.UserRole;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ public class MerchantMapper {
     merchant.setPassword(request.password());
     merchant.setNom(request.nom());
     merchant.setPrenom(request.prenom());
-    merchant.setRole(request.role());
+    merchant.setRole(UserRole.COMMERCANT);
     merchant.setEstActif(request.estActif());
     merchant.setTelephone(request.telephone());
     merchant.setDateNaissance(request.dateNaissance());
@@ -38,7 +39,6 @@ public class MerchantMapper {
         .email(merchant.getEmail())
         .nom(merchant.getNom())
         .prenom(merchant.getPrenom())
-        .role(merchant.getRole())
         .estActif(merchant.isEstActif())
         .telephone(merchant.getTelephone())
         .dateNaissance(merchant.getDateNaissance())
@@ -55,7 +55,7 @@ public class MerchantMapper {
     merchant.setEmail(response.email());
     merchant.setNom(response.nom());
     merchant.setPrenom(response.prenom());
-    merchant.setRole(response.role());
+    merchant.setRole(UserRole.COMMERCANT);
     merchant.setEstActif(response.estActif());
     merchant.setTelephone(response.telephone());
     merchant.setDateNaissance(response.dateNaissance());

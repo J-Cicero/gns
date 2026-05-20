@@ -5,29 +5,50 @@ import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.enums.StudentNiveau;
 import com.backend.gns.student.domain.services.EligibiliteService;
+import com.backend.gns.student.domain.services.RegleBourseDbsService;
+import com.backend.gns.student.domain.enums.TypeRegleBourse;
 import com.backend.gns.Shared.domain.enums.KycStatus;
 import com.backend.gns.student.domain.enums.MandatStatut;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("EligibiliteService - Vérification d'Éligibilité Étudiante")
 class EligibiliteServiceImplTest {
 
     private EligibiliteService eligibiliteService;
+    
+    @Mock
+    private RegleBourseDbsService regleBourseService;
+    
     private Student student;
     private InscriptionAnnuelle inscription;
     private BanqueEtudiant banque;
 
     @BeforeEach
     void setup() {
-        eligibiliteService = new EligibiliteServiceImpl();
+        eligibiliteService = new EligibiliteServiceImpl(regleBourseService);
+
+        // Configuration par défaut des mocks
+        lenient().when(regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.AGE_MAX_LICENCE)).thenReturn(25);
+        lenient().when(regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.AGE_MAX_MASTER)).thenReturn(30);
+        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MONTANT_STANDARD)).thenReturn(BigDecimal.valueOf(36000));
+        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MONTANT_SUPERIEUR)).thenReturn(BigDecimal.valueOf(54000));
+        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.LICENCE_MIN_30_CREDITS)).thenReturn(BigDecimal.valueOf(36000));
+        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.LICENCE_MIN_60_CREDITS)).thenReturn(BigDecimal.valueOf(54000));
+        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.MASTER_MIN_45_CREDITS)).thenReturn(BigDecimal.valueOf(36000));
+        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.MASTER_MIN_90_CREDITS)).thenReturn(BigDecimal.valueOf(54000));
 
         // Créer un étudiant de base (22 ans, KYC validé, etc)
         student = new Student();
@@ -63,7 +84,7 @@ class EligibiliteServiceImplTest {
     }
 
     @Test
-    @DisplayName("L1 avec mention ASSEZ_BIEN → 54 000 FCFA")
+    @DisplayName("L1 avec mention ASSEZ_BIEN → 36 000 FCFA")
     void testL1AssezBienEligible() {
         inscription.setNiveau(StudentNiveau.L1_ANNEE);
         inscription.setMentionBac("ASSEZ_BIEN");
@@ -71,7 +92,7 @@ class EligibiliteServiceImplTest {
         EligibiliteService.EligibiliteResult result = eligibiliteService.verifierEligibilite(student, inscription, banque);
 
         assertTrue(result.estEligible);
-        assertEquals(BigDecimal.valueOf(54000), result.plafondAccorde);
+        assertEquals(BigDecimal.valueOf(36000), result.plafondAccorde);
     }
 
     @Test
@@ -190,7 +211,7 @@ class EligibiliteServiceImplTest {
     @Test
     @DisplayName("Licence avec 25 ans → Éligible")
     void testLicenceAge25Eligible() {
-        student.setDateNaissance(LocalDateTime.of(2001, 5, 11, 0, 0)); // Exactement 25 ans
+        student.setDateNaissance(LocalDateTime.now().minusYears(25)); // Exactement 25 ans
 
         EligibiliteService.EligibiliteResult result = eligibiliteService.verifierEligibilite(student, inscription, banque);
 
@@ -200,7 +221,7 @@ class EligibiliteServiceImplTest {
     @Test
     @DisplayName("Licence avec 26 ans → Non éligible")
     void testLicenceAge26NonEligible() {
-        student.setDateNaissance(LocalDateTime.of(2000, 5, 11, 0, 0)); // 26 ans
+        student.setDateNaissance(LocalDateTime.now().minusYears(26)); // 26 ans
 
         EligibiliteService.EligibiliteResult result = eligibiliteService.verifierEligibilite(student, inscription, banque);
 
@@ -211,7 +232,7 @@ class EligibiliteServiceImplTest {
     @Test
     @DisplayName("Master avec 30 ans → Éligible")
     void testMasterAge30Eligible() {
-        student.setDateNaissance(LocalDateTime.of(1996, 5, 11, 0, 0)); // 30 ans
+        student.setDateNaissance(LocalDateTime.now().minusYears(30)); // 30 ans
         inscription.setNiveau(StudentNiveau.M1_ANNEE);
 
         EligibiliteService.EligibiliteResult result = eligibiliteService.verifierEligibilite(student, inscription, banque);
@@ -222,7 +243,7 @@ class EligibiliteServiceImplTest {
     @Test
     @DisplayName("Master avec 31 ans → Non éligible")
     void testMasterAge31NonEligible() {
-        student.setDateNaissance(LocalDateTime.of(1995, 5, 11, 0, 0)); // 31 ans
+        student.setDateNaissance(LocalDateTime.now().minusYears(31)); // 31 ans
         inscription.setNiveau(StudentNiveau.M1_ANNEE);
 
         EligibiliteService.EligibiliteResult result = eligibiliteService.verifierEligibilite(student, inscription, banque);
@@ -271,7 +292,7 @@ class EligibiliteServiceImplTest {
     @Test
     @DisplayName("Mandat non validé → Non éligible")
     void testMandatNonValideNonEligible() {
-        banque.setMandatStatut(MandatStatut.VALIDE);
+        banque.setMandatStatut(MandatStatut.EN_ATTENTE_DEPOT); 
 
         EligibiliteService.EligibiliteResult result = eligibiliteService.verifierEligibilite(student, inscription, banque);
 
@@ -363,7 +384,7 @@ class EligibiliteServiceImplTest {
     void testTousCriteresOK() {
         inscription.setNiveau(StudentNiveau.L1_ANNEE);
         inscription.setMentionBac("PASSABLE");
-        student.setDateNaissance(LocalDateTime.of(2002, 1, 15, 0, 0));
+        student.setDateNaissance(LocalDateTime.now().minusYears(22));
         student.setStatutKYC(KycStatus.VALIDEE);
         banque.setMandatSigne(true);
         banque.setMandatStatut(MandatStatut.VALIDE);

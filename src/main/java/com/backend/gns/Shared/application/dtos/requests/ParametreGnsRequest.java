@@ -1,11 +1,12 @@
 package com.backend.gns.Shared.application.dtos.requests;
 
+import com.backend.gns.Shared.domain.enums.TypeParametreGns;
 import jakarta.validation.constraints.NotBlank;
-import java.util.UUID;
+import jakarta.validation.constraints.NotNull;
 
 public record ParametreGnsRequest(
-    @NotBlank String cle,
-    @NotBlank String valeur,
+    @NotNull TypeParametreGns nomParametre,
+    @NotBlank String valeurParametre,
     String description,
     boolean estActif
 ) {}

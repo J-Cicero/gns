@@ -13,10 +13,8 @@ public class RegleBourseDbsMapper {
         if (request == null) return null;
         RegleBourseDbs entity = new RegleBourseDbs();
         entity.setTrackingId(UUID.randomUUID());
-        entity.setLibelle(request.libelle());
-        entity.setCodeUnique(request.codeUnique());
-        entity.setValeurNumerique(request.valeurNumerique());
-        entity.setValeurTextuelle(request.valeurTextuelle());
+        entity.setTypeRegle(request.typeRegle());
+        entity.setValeurCritere(request.valeurCritere());
         entity.setEstActif(request.estActif());
         entity.setDescription(request.description());
         return entity;
@@ -26,10 +24,8 @@ public class RegleBourseDbsMapper {
         if (entity == null) return null;
         return RegleBourseDbsResponse.builder()
             .trackingId(entity.getTrackingId())
-            .libelle(entity.getLibelle())
-            .codeUnique(entity.getCodeUnique())
-            .valeurNumerique(entity.getValeurNumerique())
-            .valeurTextuelle(entity.getValeurTextuelle())
+            .typeRegle(entity.getTypeRegle())
+            .valeurCritere(entity.getValeurCritere())
             .estActif(entity.isEstActif())
             .description(entity.getDescription())
             .build();

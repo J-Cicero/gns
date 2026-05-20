@@ -1,7 +1,7 @@
 package com.backend.gns.student.domain.models;
 
 import com.backend.gns.Shared.utils.BaseEntity;
-import com.backend.gns.student.domain.enums.StudentNiveau;
+import com.backend.gns.student.domain.enums.TypeRegleBourse;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -22,17 +22,12 @@ public class RegleBourseDbs extends BaseEntity {
     @Column(length = 36, nullable = false, unique = true, updatable = false)
     private UUID trackingId = UUID.randomUUID();
 
-    @Column(nullable = false)
-    private String libelle; // ex: "L1 Passable", "L2 30-59 crédits", "Age Max Licence"
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type_regle", nullable = false, unique = true, length = 50)
+    private TypeRegleBourse typeRegle;
 
-    @Column(nullable = false, unique = true)
-    private String codeUnique; // ex: "L1_PASSABLE", "AGE_MAX_LICENCE"
-
-    @Column(precision = 10, scale = 2)
-    private BigDecimal valeurNumerique; // Pour les montants ou les âges
-
-    @Column
-    private String valeurTextuelle; // Pour des conditions spécifiques si besoin
+    @Column(name = "valeur_critere", precision = 10, scale = 2, nullable = false)
+    private BigDecimal valeurCritere;
 
     @Column(nullable = false)
     private boolean estActif = true;
