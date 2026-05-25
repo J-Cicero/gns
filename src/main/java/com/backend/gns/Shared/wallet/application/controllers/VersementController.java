@@ -45,7 +45,7 @@ public class VersementController {
   @Operation(summary = "Versement en masse étudiants", description = "Effectue les versements de bourse pour tous les étudiants éligibles d'une année")
   public ResponseEntity<?> effectuerVersementMasseEtudiants(
       @RequestParam UUID scolariteYearTrackingId, 
-      @RequestParam(required = false) BigDecimal montantFixe) {
+      @RequestParam BigDecimal montantFixe) {
     try {
       versementService.effectuerVersementMasseEtudiants(scolariteYearTrackingId, montantFixe);
       return ResponseEntity.ok(Map.of("success", true, "message", "Versements en masse lancés avec succès"));

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relevé mensuel</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f5f5; color:#333 }
+    .container { max-width:700px; margin:0 auto; background:#fff; padding:28px; border-radius:8px }
+    .header{ text-align:center; margin-bottom:20px }
+    .logo{ font-size:24px; color:#1e3a8a; font-weight:700 }
+    .content{ line-height:1.6 }
+    table{ width:100%; border-collapse:collapse; margin-top:12px }
+    table th, table td{ padding:8px; border:1px solid #eee; text-align:left }
+    .footer{ margin-top:20px; font-size:12px; color:#888; text-align:center }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header"><div class="logo">studCash</div></div>
+    <div class="content">
+      <p>Bonjour <span th:text="${nom}">Utilisateur</span>,</p>
+      <p>Voici le relevé de votre activité pour la période <strong th:text="${period}">Mai 2026</strong>.</p>
+
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Description</th><th>Montant</th><th>Solde</th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${rows}">
+            <td th:text="${row.date}">2026-05-01</td>
+            <td th:text="${row.desc}">Paiement</td>
+            <td th:text="${row.amount}">-1000</td>
+            <td th:text="${row.balance}">5000</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Pour toute question, répondez à cet email ou contactez le support.</p>
+    </div>
+    <div class="footer"><p>© 2026 studCash</p></div>
+  </div>
+</body>
+</html>

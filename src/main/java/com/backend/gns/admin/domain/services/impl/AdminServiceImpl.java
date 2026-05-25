@@ -4,7 +4,7 @@ import com.backend.gns.admin.application.dtos.requests.AdminRequest;
 import com.backend.gns.admin.application.dtos.responses.AdminResponse;
 import com.backend.gns.admin.application.mappers.AdminMapper;
 import com.backend.gns.Shared.exception.ResourceNotFoundException;
-import com.backend.gns.admin.domain.models.Admin;
+import com.backend.gns.Shared.user.domain.models.Admin;
 import com.backend.gns.admin.domain.services.AdminService;
 import com.backend.gns.admin.infrastructure.repositories.AdminRepository;
 import java.util.Optional;

@@ -1,8 +1,9 @@
 package com.backend.gns.Shared.wallet.domain.enums;
 
 public enum WalletType {
-  STUDENT_36k,
-  STUDENT_54k,
+  STUDENT,
   BOUTIQUE,
-  UL
+  UNIVERSITY,
+  ADMIN,
+  BANK_OPERATOR
 }

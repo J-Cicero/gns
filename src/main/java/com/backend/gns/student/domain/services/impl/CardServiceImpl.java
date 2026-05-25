@@ -10,6 +10,7 @@ import com.backend.gns.student.domain.services.CardService;
 import com.backend.gns.student.infrastructure.repositories.CardRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -55,6 +56,15 @@ public class CardServiceImpl implements CardService {
                 + "Veuillez déclarer la carte existante comme perdue avant de créer une nouvelle carte active.");
       }
     }
+
+    // Génération automatique du code QR si non fourni
+    if (card.getQrCodeStatique() == null || card.getQrCodeStatique().isEmpty()) {
+        String uniqueRef = "STC-" + card.getStudent().getTrackingId().toString().substring(0, 8).toUpperCase() 
+                + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        card.setQrCodeStatique(uniqueRef);
+    }
+    
+    card.setDateEmission(LocalDateTime.now());
 
     Card savedCard = cardRepository.save(card);
     return cardMapper.toResponse(savedCard);

@@ -29,6 +29,9 @@ public class RegleBourseDbs extends BaseEntity {
     @Column(name = "valeur_critere", precision = 10, scale = 2, nullable = false)
     private BigDecimal valeurCritere;
 
+    @Column(name = "montant_bourse_associe", precision = 10, scale = 2)
+    private BigDecimal montantBourseAssocie;
+
     @Column(nullable = false)
     private boolean estActif = true;
 

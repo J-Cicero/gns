@@ -17,6 +17,7 @@ import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -184,5 +185,24 @@ public class BoutiqueServiceImpl implements BoutiqueService {
   @Transactional(readOnly = true)
   public Page<BoutiqueResponse> findAll(Pageable pageable) {
     return boutiqueRepository.findAll(normalize(pageable)).map(boutiqueMapper::toResponse);
+  }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BoutiqueResponse> getBoutiquesEnAlerteQuota(BigDecimal seuilPourcentage, Pageable pageable) {
+    return boutiqueRepository.findAll(normalize(pageable))
+        .map(b -> {
+            if (b.getWallet() != null) {
+          BigDecimal plafond = b.getWallet().getPlafond();
+          BigDecimal solde = b.getWallet().getSolde();
+          if (plafond.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal ratio = solde.divide(plafond, 2, RoundingMode.HALF_UP);
+                    if (ratio.compareTo(seuilPourcentage) <= 0) {
+                        return boutiqueMapper.toResponse(b);
+                    }
+                }
+            }
+            return null;
+        });
   }
 }

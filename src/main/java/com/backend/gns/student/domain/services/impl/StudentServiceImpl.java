@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,7 @@ public class StudentServiceImpl implements StudentService {
   private final StudentRepository studentRepository;
   private final StudentMapper studentMapper;
   private final WalletRepository walletRepository;
+  private final com.backend.gns.student.infrastructure.repositories.CardRepository cardRepository;
   private final ParametreGnsService parametreGnsService;
 
   private Pageable normalize(Pageable pageable) {
@@ -62,7 +65,8 @@ public class StudentServiceImpl implements StudentService {
     // Initialisation du Wallet via Cascade
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
-    wallet.setTypeWallet(WalletType.STUDENT_36k); // Type par défaut, sera mis à jour lors de l'inscription
+    wallet.setTypeWallet(WalletType.STUDENT);
+ // Type par défaut, sera mis à jour lors de l'inscription
     wallet.setStatutWallet(WalletStatus.INACTIF);
     wallet.setSolde(BigDecimal.ZERO);
     
@@ -161,5 +165,36 @@ public class StudentServiceImpl implements StudentService {
     }
 
     return student.getPinCode().equals(pinCode);
+  }
+
+  @Override
+  public long countAll() {
+    return studentRepository.count();
+  }
+
+  @Override
+  public long countByEstActif(boolean active) {
+    return studentRepository.countByEstActif(active);
+  }
+
+  @Override
+  public long countByStatutKYC(KycStatus kycStatus) {
+    return studentRepository.countByStatutKYC(kycStatus);
+  }
+
+  @Override
+  public Map<String, Object> getCard(UUID studentTrackingId) {
+    Student student = findStudentOrThrow(studentTrackingId);
+    Page<com.backend.gns.student.domain.models.Card> page = cardRepository.findByStudent(student, PageRequest.of(0, 1));
+    if (page.hasContent()) {
+      com.backend.gns.student.domain.models.Card c = page.getContent().get(0);
+      Map<String, Object> map = new HashMap<>();
+      map.put("trackingId", c.getTrackingId());
+      map.put("qrCodeStatique", c.getQrCodeStatique());
+      map.put("statut", c.getStatut());
+      map.put("dateEmission", c.getDateEmission());
+      return map;
+    }
+    throw new ResourceNotFoundException("Carte non trouvée pour cet étudiant");
   }
 }

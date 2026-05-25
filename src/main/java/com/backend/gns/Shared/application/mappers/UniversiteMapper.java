@@ -4,6 +4,7 @@ import com.backend.gns.Shared.application.dtos.requests.UniversiteRequest;
 import com.backend.gns.Shared.application.dtos.responses.UniversiteResponse;
 import com.backend.gns.Shared.domain.models.Universite;
 import java.util.UUID;
+import java.math.BigDecimal;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,6 +29,8 @@ public class UniversiteMapper {
             .nom(entity.getNom())
             .ville(entity.getVille())
             .estActive(entity.isEstActive())
+            .walletTrackingId(entity.getWallet() != null ? entity.getWallet().getTrackingId() : null)
+            .soldeWallet(entity.getWallet() != null ? entity.getWallet().getSolde() : BigDecimal.ZERO)
             .build();
     }
 }

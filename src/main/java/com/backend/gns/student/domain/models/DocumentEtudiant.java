@@ -40,6 +40,10 @@ public class DocumentEtudiant extends BaseEntity {
     private UUID trackingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    private Student student;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inscription_id")
     private InscriptionAnnuelle inscription;
 
@@ -47,8 +51,14 @@ public class DocumentEtudiant extends BaseEntity {
     @Column(length = 30, nullable = false)
     private TypeDocument type;
 
-    @Column(length = 255, nullable = false)
-    private String cheminFichier;
+    @Column(length = 500, nullable = false)
+    private String urlFichier;
+
+    @Column(length = 100)
+    private String publicIdCloudinary;
+
+    @Column
+    private Double scoreFiabilite; // Score 0-100
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)

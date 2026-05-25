@@ -24,6 +24,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -72,11 +74,13 @@ public class User extends BaseEntity {
   @Column(length = 20)
   private String telephone;
 
-  @Column(nullable = false)
+  @Column(nullable = false, updatable = false)
+  @CreatedDate
+  @CreationTimestamp
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime dateInscription;
 
-  @Column(nullable = false)
+  @Column(nullable = true)
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime dateNaissance;
 

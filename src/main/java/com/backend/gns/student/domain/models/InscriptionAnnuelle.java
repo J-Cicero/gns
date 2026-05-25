@@ -50,8 +50,12 @@ public class InscriptionAnnuelle extends BaseEntity {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @Column(length = 20, nullable = false)
-    private String anneeAcademique;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "scolarite_year_id", nullable = false)
+    private ScolariteYear scolariteYear;
+
+    @Column(nullable = false)
+    private boolean estInscritDefinitif = true; // Par défaut à true pour la V1
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)

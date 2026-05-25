@@ -6,5 +6,5 @@ public enum  UserRole {
   ADMIN_GNS,
   ADMIN_BANQUE,
   ADMIN_DBS,
-  ADMIN_UL
+  UNIVERSITY_ADMIN
 }

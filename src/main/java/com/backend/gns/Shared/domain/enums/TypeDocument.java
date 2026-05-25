@@ -4,5 +4,6 @@ public enum TypeDocument {
     RELEVE_BAC,
     SOUCHE_TAMPONNEE,
     RELEVE_NOTES,
-    FICHE_UE
+    FICHE_UE,
+    PIECE_IDENTITE
 }

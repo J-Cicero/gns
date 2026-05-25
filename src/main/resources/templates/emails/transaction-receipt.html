@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reçu de transaction</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f5f5; color:#333 }
+    .container { max-width:600px; margin:0 auto; background:#fff; padding:32px; border-radius:8px }
+    .header{ text-align:center; margin-bottom:20px }
+    .logo{ font-size:24px; color:#1e3a8a; font-weight:700 }
+    .content{ line-height:1.6 }
+    .summary{ margin-top:12px; border-collapse:collapse; width:100% }
+    .summary td{ padding:8px; border:1px solid #eee }
+    .footer{ margin-top:20px; font-size:12px; color:#888; text-align:center }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header"><div class="logo">studCash</div></div>
+    <div class="content">
+      <p>Bonjour <span th:text="${nom}">Utilisateur</span>,</p>
+      <p>Merci pour votre paiement. Voici le reçu :</p>
+
+      <table class="summary">
+        <tr><td>Référence</td><td th:text="${transactionId}">TX123</td></tr>
+        <tr><td>Montant</td><td th:text="${amount}">1000</td></tr>
+        <tr><td>Portefeuille</td><td th:text="${walletName}">Portefeuille</td></tr>
+        <tr><td>Destinataire</td><td th:text="${merchant}">Boutique</td></tr>
+        <tr><td>Date</td><td th:text="${date}">2026-05-25</td></tr>
+      </table>
+
+      <p>Vous pouvez consulter l'historique de vos transactions depuis l'application.</p>
+    </div>
+    <div class="footer"><p>© 2026 studCash</p></div>
+  </div>
+</body>
+</html>

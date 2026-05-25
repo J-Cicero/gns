@@ -11,14 +11,17 @@ import com.backend.gns.student.domain.enums.StudentNiveau;
 import com.backend.gns.Shared.domain.enums.TypeDocument;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
-import com.backend.gns.student.infrastructure.repositories.BanqueEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +42,10 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
   private final DocumentEtudiantMapper documentMapper;
   private final CloudinaryStorageService cloudinaryService;
   private final GeminiExtractionService geminiService;
+  private final StudentRepository studentRepository;
   private final InscriptionAnnuelleRepository inscriptionRepository;
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ScolariteYearRepository scolariteYearRepository;
+  private final ObjectMapper objectMapper;
 
   public DocumentEtudiantServiceImpl(
       DocumentEtudiantRepository documentRepository,
@@ -49,12 +54,16 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
       GeminiExtractionService geminiService,
       StudentRepository studentRepository,
       InscriptionAnnuelleRepository inscriptionRepository,
-      BanqueEtudiantRepository banqueEtudiantRepository) {
+      ScolariteYearRepository scolariteYearRepository,
+      ObjectMapper objectMapper) {
     this.documentRepository = documentRepository;
     this.documentMapper = documentMapper;
     this.cloudinaryService = cloudinaryService;
     this.geminiService = geminiService;
+    this.studentRepository = studentRepository;
     this.inscriptionRepository = inscriptionRepository;
+    this.scolariteYearRepository = scolariteYearRepository;
+    this.objectMapper = objectMapper;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -69,80 +78,69 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
       UUID inscriptionTrackingId,
       TypeDocument typeDocument) {
 
-    log.info("Début upload document - Student: {}, Type: {}", inscriptionTrackingId, typeDocument);
+    log.info("Début upload document - Inscription: {}, Type: {}", inscriptionTrackingId, typeDocument);
 
-    
-    InscriptionAnnuelle inscription = 
-        inscriptionRepository
+    InscriptionAnnuelle inscription = inscriptionRepository
             .findByTrackingId(inscriptionTrackingId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException("Étudiant non trouvé : " + inscriptionTrackingId));
+            .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée"));
 
-     String urlFichier = cloudinaryService.upload(fichier, inscription.getStudent().getTrackingId().toString());
-    log.info("Document uploadé sur Cloudinary : {}", urlFichier);
+    Student student = inscription.getStudent();
+
+    Map<String, String> uploadResult = cloudinaryService.upload(fichier, student.getTrackingId().toString());
+    String urlFichier = uploadResult.get("url");
+    String publicId = uploadResult.get("publicId");
 
     ExtractionResultat extraction = geminiService.extraire(urlFichier, typeDocument);
-    log.info("Données extraites par Gemini : {}", extraction);
-
-    String donneesJson = toJson(extraction);
+    log.info("Données extraites : {}", extraction);
 
     DocumentEtudiant document = new DocumentEtudiant();
     document.setTrackingId(UUID.randomUUID());
+    document.setStudent(student);
     document.setInscription(inscription);
     document.setType(typeDocument);
-    document.setCheminFichier(urlFichier);
+    document.setUrlFichier(urlFichier);
+    document.setPublicIdCloudinary(publicId);
     document.setStatut(StatutDocument.EN_ATTENTE);
     document.setDateDepot(LocalDateTime.now());
-    document.setDonneesExtraites(donneesJson);
-
-    documentRepository.save(document);
-    log.info("Document enregistré en BDD : {}", document.getTrackingId());
-
-    // 7. Pré-remplir InscriptionAnnuelle avec les données extraites
-    // L'admin validera ou corrigera ensuite
-    if (inscription != null) {
-        boolean inscriptionModifiee = false;
-
-        if (extraction.niveau() != null) {
-          try {
-            inscription.setNiveau(StudentNiveau.valueOf(extraction.niveau()));
-            inscriptionModifiee = true;
-            log.info("Niveau mis à jour : {}", extraction.niveau());
-          } catch (IllegalArgumentException ignored) {
-            log.warn("Valeur niveau invalide retournée par Gemini : {}", extraction.niveau());
-          }
-        }
-        if (extraction.creditsTotalValides() != null) {
-          inscription.setCreditsTotalValides(extraction.creditsTotalValides());
-          inscriptionModifiee = true;
-          log.info("Credits mis à jour : {}", extraction.creditsTotalValides());
-        }
-        if (extraction.moyenneBac() != null) {
-          inscription.setMoyenneBac(extraction.moyenneBac());
-          inscriptionModifiee = true;
-          log.info("Moyenne BAC mise à jour : {}", extraction.moyenneBac());
-        }
-        if (inscriptionModifiee) {
-          inscriptionRepository.save(inscription);
-          log.info("Inscription mise à jour avec les données extraites");
-        }
+    document.setScoreFiabilite(extraction.scoreFiabilite());
+    
+    try {
+        document.setDonneesExtraites(objectMapper.writeValueAsString(extraction));
+    } catch (Exception e) {
+        log.error("Erreur conversion JSON : {}", e.getMessage());
     }
 
-    log.info("Upload document terminé avec succès");
-    return documentMapper.toResponse(document);
+    DocumentEtudiant saved = documentRepository.save(document);
+
+    // Mise à jour automatique de l'inscription
+    updateInscriptionFromExtraction(inscription, extraction);
+
+    return documentMapper.toResponse(saved);
   }
 
+  private void updateInscriptionFromExtraction(InscriptionAnnuelle ins, ExtractionResultat extraction) {
+    boolean modifie = false;
+    if (extraction.creditsTotalValides() != null) {
+        ins.setCreditsTotalValides(extraction.creditsTotalValides());
+        modifie = true;
+    }
+    if (extraction.moyenneBac() != null) {
+        ins.setMoyenneBac(extraction.moyenneBac());
+        modifie = true;
+    }
+    if (modifie) {
+        inscriptionRepository.save(ins);
+        log.info("Inscription {} mise à jour via OCR", ins.getTrackingId());
+    }
+  }
 
-  //crud
   @Override
   @Transactional
   public DocumentEtudiantResponse create(DocumentEtudiantRequest request) {
     DocumentEtudiant document = documentMapper.toEntity(request);
     document.setDateDepot(LocalDateTime.now());
     document.setStatut(StatutDocument.EN_ATTENTE);
-    DocumentEtudiant savedDocument = documentRepository.save(document);
-    return documentMapper.toResponse(savedDocument);
+    return documentMapper.toResponse(documentRepository.save(document));
   }
 
   @Override
@@ -153,81 +151,55 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
   @Override
   @Transactional
   public DocumentEtudiantResponse update(UUID trackingId, DocumentEtudiantRequest request) {
-    DocumentEtudiant document =
-        documentRepository
-            .findByTrackingId(trackingId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Document non trouvé avec trackingId: " + trackingId));
+    DocumentEtudiant document = documentRepository.findByTrackingId(trackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Document non trouvé"));
 
     document.setType(request.type());
-    document.setCheminFichier(request.cheminFichier());
+    document.setUrlFichier(request.cheminFichier()); // Assuming cheminFichier is the URL in DTO
     document.setDonneesExtraites(request.donneesExtraites());
 
-    DocumentEtudiant updatedDocument = documentRepository.save(document);
-    return documentMapper.toResponse(updatedDocument);
+    return documentMapper.toResponse(documentRepository.save(document));
   }
 
   @Override
   @Transactional
   public void delete(UUID trackingId) {
-    DocumentEtudiant document =
-        documentRepository
-            .findByTrackingId(trackingId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Document non trouvé avec trackingId: " + trackingId));
+    DocumentEtudiant document = documentRepository.findByTrackingId(trackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Document non trouvé"));
+    
+    try {
+        if (document.getPublicIdCloudinary() != null) {
+            cloudinaryService.supprimer(document.getPublicIdCloudinary());
+        }
+    } catch (Exception e) {
+        log.warn("Erreur suppression Cloudinary : {}", e.getMessage());
+    }
+    
     documentRepository.delete(document);
   }
 
   @Override
-  public Page<DocumentEtudiantResponse> findByStudentTrackingId(
-      UUID studentTrackingId, Pageable pageable) {
-    Pageable normalized = normalize(pageable);
-    return documentRepository
-        .findByStudentTrackingId(studentTrackingId, normalized)
-        .map(documentMapper::toResponse);
+  public Page<DocumentEtudiantResponse> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable) {
+    return documentRepository.findByStudentTrackingId(studentTrackingId, normalize(pageable)).map(documentMapper::toResponse);
   }
 
   @Override
-  public Page<DocumentEtudiantResponse> findByInscriptionTrackingId(
-      UUID inscriptionTrackingId, Pageable pageable) {
-    Pageable normalized = normalize(pageable);
-    return documentRepository
-        .findByInscriptionTrackingId(inscriptionTrackingId, normalized)
-        .map(documentMapper::toResponse);
+  public Page<DocumentEtudiantResponse> findByInscriptionTrackingId(UUID inscriptionTrackingId, Pageable pageable) {
+    return documentRepository.findByInscriptionTrackingId(inscriptionTrackingId, normalize(pageable)).map(documentMapper::toResponse);
   }
 
   @Override
-  public Page<DocumentEtudiantResponse> findByStudentAndStatut(
-      UUID studentTrackingId, StatutDocument statut, Pageable pageable) {
-    Pageable normalized = normalize(pageable);
-    return documentRepository
-        .findByStudentAndStatut(studentTrackingId, statut, normalized)
-        .map(documentMapper::toResponse);
+  public Page<DocumentEtudiantResponse> findByStudentAndStatut(UUID studentTrackingId, StatutDocument statut, Pageable pageable) {
+    return documentRepository.findByStudentAndStatut(studentTrackingId, statut, normalize(pageable)).map(documentMapper::toResponse);
   }
 
   @Override
   public Page<DocumentEtudiantResponse> findByStatut(StatutDocument statut, Pageable pageable) {
-    Pageable normalized = normalize(pageable);
-    return documentRepository.findByStatut(statut, normalized).map(documentMapper::toResponse);
+    return documentRepository.findByStatut(statut, normalize(pageable)).map(documentMapper::toResponse);
   }
 
   @Override
   public Page<DocumentEtudiantResponse> findAll(Pageable pageable) {
-    Pageable normalized = normalize(pageable);
-    return documentRepository.findAll(normalized).map(documentMapper::toResponse);
-  }
-
-  
-  private String toJson(Object obj) {
-    try {
-      return objectMapper.writeValueAsString(obj);
-    } catch (Exception e) {
-      log.error("Erreur conversion JSON : {}", e.getMessage());
-      return "{}";
-    }
+    return documentRepository.findAll(normalize(pageable)).map(documentMapper::toResponse);
   }
 }

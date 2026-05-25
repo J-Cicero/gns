@@ -2,7 +2,7 @@ package com.backend.gns.admin.application.mappers;
 
 import com.backend.gns.admin.application.dtos.requests.AdminRequest;
 import com.backend.gns.admin.application.dtos.responses.AdminResponse;
-import com.backend.gns.admin.domain.models.Admin;
+import com.backend.gns.Shared.user.domain.models.Admin;
 import com.backend.gns.Shared.user.domain.enums.UserRole;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ public class AdminMapper {
     admin.setNom(request.nom());
     admin.setPrenom(request.prenom());
     admin.setRole(UserRole.ADMIN_GNS);
-    admin.setEstActif(request.estActif());
+    admin.setEstActif(Boolean.TRUE.equals(request.estActif()));
     admin.setTelephone(request.telephone());
     admin.setDateNaissance(request.dateNaissance());
     admin.setNumeroCompte(request.numeroCompte());

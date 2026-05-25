@@ -48,7 +48,7 @@ public class Commande extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "student_id", nullable = false)
   private Student student;
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "boutique_id", nullable = false)
   private Boutique boutique;
 

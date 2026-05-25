@@ -1,6 +1,7 @@
 package com.backend.gns.Shared.application.dtos.responses;
 
 import java.util.UUID;
+import java.math.BigDecimal;
 import lombok.Builder;
 
 @Builder
@@ -9,5 +10,7 @@ public record UniversiteResponse(
     String code,
     String nom,
     String ville,
-    boolean estActive
+    boolean estActive,
+    UUID walletTrackingId,
+    BigDecimal soldeWallet
 ) {}

@@ -27,6 +27,9 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
   @Query("SELECT p FROM Paiement p WHERE p.commande.trackingId = :trackingId ORDER BY p.date DESC")
   Page<Paiement> findByCommandeTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 
+  @Query("SELECT p FROM Paiement p WHERE p.commande.student.universite.trackingId = :universiteTrackingId ORDER BY p.date DESC")
+  Page<Paiement> findByUniversiteTrackingId(@Param("universiteTrackingId") UUID universiteTrackingId, Pageable pageable);
+
   Long countByStatutPaiement(PaiementStatut statutPaiement);
 
   @Query("SELECT SUM(p.montantDebite) FROM Paiement p WHERE p.statutPaiement = :statut")

@@ -4,6 +4,8 @@ import com.backend.gns.Shared.application.dtos.requests.UniversiteRequest;
 import com.backend.gns.Shared.application.dtos.responses.UniversiteResponse;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,4 +14,5 @@ public interface UniversiteService {
     Optional<UniversiteResponse> findByTrackingId(UUID trackingId);
     Page<UniversiteResponse> findAll(Pageable pageable);
     void delete(UUID trackingId);
+    List<Map<String, Object>> getSummaryStats();
 }

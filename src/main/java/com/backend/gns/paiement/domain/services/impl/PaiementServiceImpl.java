@@ -8,6 +8,10 @@ import com.backend.gns.paiement.domain.enums.PaiementType;
 import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.paiement.domain.services.PaiementService;
 import com.backend.gns.paiement.infrastructure.repositories.PaiementRepository;
+import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
+import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
+import com.backend.gns.paiement.domain.models.Commande;
+import com.backend.gns.Shared.wallet.domain.models.Wallet;
 import com.backend.gns.Shared.domain.services.ParametreGnsService;
 import com.backend.gns.Shared.domain.enums.TypeParametreGns;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,11 +30,20 @@ public class PaiementServiceImpl implements PaiementService {
   private static final int DEFAULT_PAGE_SIZE = 10;
 
   private final PaiementRepository paiementRepository;
+  private final CommandeRepository commandeRepository;
+  private final WalletRepository walletRepository;
   private final PaiementMapper paiementMapper;
   private final ParametreGnsService parametreGnsService;
 
-  public PaiementServiceImpl(PaiementRepository paiementRepository, PaiementMapper paiementMapper, ParametreGnsService parametreGnsService) {
+  public PaiementServiceImpl(
+      PaiementRepository paiementRepository,
+      CommandeRepository commandeRepository,
+      WalletRepository walletRepository,
+      PaiementMapper paiementMapper,
+      ParametreGnsService parametreGnsService) {
     this.paiementRepository = paiementRepository;
+    this.commandeRepository = commandeRepository;
+    this.walletRepository = walletRepository;
     this.paiementMapper = paiementMapper;
     this.parametreGnsService = parametreGnsService;
   }
@@ -43,7 +56,29 @@ public class PaiementServiceImpl implements PaiementService {
   @Override
   @Transactional
   public PaiementResponse create(PaiementRequest request) {
-    Paiement paiement = paiementMapper.toEntity(request);
+    Commande commande = null;
+    if (request.commandeTrackingId() != null) {
+      commande =
+          commandeRepository
+              .findByTrackingId(request.commandeTrackingId())
+              .orElseThrow(
+                  () ->
+                      new EntityNotFoundException(
+                          "Commande non trouvée avec l'ID: " + request.commandeTrackingId()));
+    }
+
+    Wallet wallet = null;
+    if (request.walletTrackingId() != null) {
+      wallet =
+          walletRepository
+              .findByTrackingId(request.walletTrackingId())
+              .orElseThrow(
+                  () ->
+                      new EntityNotFoundException(
+                          "Portefeuille non trouvé avec l'ID: " + request.walletTrackingId()));
+    }
+
+    Paiement paiement = paiementMapper.toEntity(request, commande, wallet);
     Paiement savedPaiement = paiementRepository.save(paiement);
     return paiementMapper.toResponse(savedPaiement);
   }
@@ -143,5 +178,12 @@ public class PaiementServiceImpl implements PaiementService {
   @Transactional(readOnly = true)
   public Page<PaiementResponse> findAll(Pageable pageable) {
     return paiementRepository.findAll(normalize(pageable)).map(paiementMapper::toResponse);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<PaiementResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable) {
+    return paiementRepository.findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
+        .map(paiementMapper::toResponse);
   }
 }

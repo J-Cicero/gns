@@ -13,6 +13,9 @@ import lombok.Builder;
 public record InscriptionAnnuelleResponse(
     UUID trackingId,
     UUID studentTrackingId,
+    String studentNom,
+    String studentPrenom,
+    String numEtudiantUniv,
     String anneeAcademique,
     StudentNiveau niveau,
     int creditsTotalValides,
@@ -22,5 +25,6 @@ public record InscriptionAnnuelleResponse(
     StatutInscription statut,
     SourceVerification source,
     LocalDateTime dateActivation,
-    BigDecimal plafondAccorde
+    BigDecimal plafondAccorde,
+    boolean estInscritDefinitif
 ) {}

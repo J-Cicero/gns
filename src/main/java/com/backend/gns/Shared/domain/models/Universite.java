@@ -31,4 +31,8 @@ public class Universite extends BaseEntity {
 
     @Column(nullable = false)
     private boolean estActive = true;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "wallet_id")
+    private com.backend.gns.Shared.wallet.domain.models.Wallet wallet;
 }

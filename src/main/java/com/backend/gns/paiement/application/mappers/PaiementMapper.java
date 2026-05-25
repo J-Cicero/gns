@@ -5,8 +5,6 @@ import com.backend.gns.paiement.application.dtos.responses.PaiementResponse;
 import com.backend.gns.paiement.domain.models.Commande;
 import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.Shared.wallet.domain.models.Wallet;
-import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
-import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
 import com.backend.gns.Shared.domain.services.ParametreGnsService;
 import com.backend.gns.Shared.domain.enums.TypeParametreGns;
 import java.math.BigDecimal;
@@ -16,17 +14,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaiementMapper {
 
-  private final CommandeRepository commandeRepository;
-  private final WalletRepository walletRepository;
   private final ParametreGnsService parametreGnsService;
 
-  public PaiementMapper(CommandeRepository commandeRepository, WalletRepository walletRepository, ParametreGnsService parametreGnsService) {
-    this.commandeRepository = commandeRepository;
-    this.walletRepository = walletRepository;
+  public PaiementMapper(ParametreGnsService parametreGnsService) {
     this.parametreGnsService = parametreGnsService;
   }
 
-  public Paiement toEntity(PaiementRequest request) {
+  public Paiement toEntity(PaiementRequest request, Commande commande, Wallet wallet) {
     if (request == null) {
       throw new IllegalArgumentException("La requête PaiementRequest ne peut pas être nulle");
     }
@@ -44,27 +38,8 @@ public class PaiementMapper {
     paiement.setTypePaiement(request.typePaiement());
     paiement.setStatutPaiement(request.statutPaiement());
 
-    if (request.commandeTrackingId() != null) {
-      Commande commande =
-          commandeRepository
-              .findByTrackingId(request.commandeTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Commande non trouvée avec l'ID: " + request.commandeTrackingId()));
-      paiement.setCommande(commande);
-    }
-
-    if (request.walletTrackingId() != null) {
-      Wallet wallet =
-          walletRepository
-              .findByTrackingId(request.walletTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: " + request.walletTrackingId()));
-      paiement.setWallet(wallet);
-    }
+    paiement.setCommande(commande);
+    paiement.setWallet(wallet);
 
     return paiement;
   }
@@ -89,7 +64,7 @@ public class PaiementMapper {
         .build();
   }
 
-  public Paiement toEntityFromResponse(PaiementResponse response) {
+  public Paiement toEntityFromResponse(PaiementResponse response, Commande commande, Wallet wallet) {
     if (response == null) {
       throw new IllegalArgumentException("La réponse PaiementResponse ne peut pas être nulle");
     }
@@ -102,27 +77,8 @@ public class PaiementMapper {
     paiement.setTypePaiement(response.typePaiement());
     paiement.setStatutPaiement(response.statutPaiement());
 
-    if (response.commandeTrackingId() != null) {
-      Commande commande =
-          commandeRepository
-              .findByTrackingId(response.commandeTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Commande non trouvée avec l'ID: " + response.commandeTrackingId()));
-      paiement.setCommande(commande);
-    }
-
-    if (response.walletTrackingId() != null) {
-      Wallet wallet =
-          walletRepository
-              .findByTrackingId(response.walletTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: " + response.walletTrackingId()));
-      paiement.setWallet(wallet);
-    }
+    paiement.setCommande(commande);
+    paiement.setWallet(wallet);
 
     return paiement;
   }

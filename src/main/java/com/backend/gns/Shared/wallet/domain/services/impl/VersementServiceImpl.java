@@ -7,17 +7,36 @@ import com.backend.gns.Shared.wallet.domain.enums.VersementStatut;
 import com.backend.gns.Shared.wallet.domain.enums.VersementType;
 import com.backend.gns.Shared.wallet.domain.models.Versement;
 import com.backend.gns.Shared.wallet.domain.services.VersementService;
+import com.backend.gns.Shared.wallet.domain.services.WalletService;
 import com.backend.gns.Shared.wallet.infrastructure.repositories.VersementRepository;
+import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
+import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.paiement.domain.services.ScolariteService;
+import com.backend.gns.student.domain.enums.TypeBourse;
+import com.backend.gns.student.domain.models.InscriptionAnnuelle;
+import com.backend.gns.student.domain.models.ScolariteYear;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.domain.services.EligibiliteService;
+import com.backend.gns.student.domain.services.EligibiliteService.EligibiliteResult;
+import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
+import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Slf4j
 @Service
 public class VersementServiceImpl implements VersementService {
 
@@ -25,14 +44,34 @@ public class VersementServiceImpl implements VersementService {
 
   private final VersementRepository versementRepository;
   private final VersementMapper versementMapper;
+  private final StudentRepository studentRepository;
+  private final BoutiqueRepository boutiqueRepository;
+  private final EligibiliteService eligibiliteService;
+  private final WalletService walletService;
+  private final ScolariteYearRepository scolariteYearRepository;
+  private final InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
+  private final ScolariteService scolariteService;
 
   public VersementServiceImpl(
       VersementRepository versementRepository,
-      VersementMapper versementMapper
+      VersementMapper versementMapper,
+      StudentRepository studentRepository,
+      BoutiqueRepository boutiqueRepository,
+      EligibiliteService eligibiliteService,
+      WalletService walletService,
+      ScolariteYearRepository scolariteYearRepository,
+      InscriptionAnnuelleRepository inscriptionAnnuelleRepository,
+      ScolariteService scolariteService
       ) {
     this.versementRepository = versementRepository;
     this.versementMapper = versementMapper;
-  
+    this.studentRepository = studentRepository;
+    this.boutiqueRepository = boutiqueRepository;
+    this.eligibiliteService = eligibiliteService;
+    this.walletService = walletService;
+    this.scolariteYearRepository = scolariteYearRepository;
+    this.inscriptionAnnuelleRepository = inscriptionAnnuelleRepository;
+    this.scolariteService = scolariteService;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -115,4 +154,73 @@ public class VersementServiceImpl implements VersementService {
     return versementRepository.findAll(normalize(pageable)).map(versementMapper::toResponse);
   }
 
+  @Override
+  @Transactional
+  public void effectuerVersementMasseEtudiants(UUID scolariteYearTrackingId, BigDecimal montantFixe) {
+    ScolariteYear year = scolariteYearRepository.findByTrackingId(scolariteYearTrackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Année scolaire non trouvée"));
+
+    List<InscriptionAnnuelle> inscriptions = inscriptionAnnuelleRepository.findAllByScolariteYear(year);
+
+    for (InscriptionAnnuelle ins : inscriptions) {
+        Student student = ins.getStudent();
+        
+        EligibiliteResult result = 
+            eligibiliteService.verifierEligibilite(student, ins, student.getBanqueEtudiant());
+
+        if (result.estEligible) {
+            BigDecimal montantAVerser = (montantFixe != null) ? montantFixe : result.plafondAccorde;
+            
+            if (student.getWallet() != null) {
+                try {
+                    // 1. Créditer le wallet
+                    walletService.crediter(student.getWallet().getTrackingId(), montantAVerser);
+                    
+                    // 2. Créer l'historique de versement
+                    Versement v = new Versement();
+                    v.setWallet(student.getWallet());
+                    v.setMontantVerse(montantAVerser);
+                    v.setDateVersement(LocalDateTime.now());
+                    v.setStatut(VersementStatut.VALIDEE);
+                    v.setTypeVersement(ins.getTypeBourse() == TypeBourse.BOURSE_DBS_54k ? 
+                        VersementType.BOURSE_DBS_54k : VersementType.BOURSE_DBS_36k);
+                    versementRepository.save(v);
+
+                    // 3. Rembourser automatiquement les dettes de scolarité
+                    scolariteService.rembourserPretsEnAttente(student.getTrackingId(), montantAVerser);
+                    
+                    log.info("Versement réussi pour {}", student.getNom());
+                } catch (Exception e) {
+                    log.error("Échec versement pour {}: {}", student.getNom(), e.getMessage());
+                }
+            }
+        }
+    }
+  }
+
+  @Override
+  @Transactional
+  public void effectuerVersementMasseBoutiques(BigDecimal seuil, BigDecimal montantQuota) {
+    List<Boutique> boutiques = boutiqueRepository.findAll();
+    
+    for (Boutique boutique : boutiques) {
+        if (boutique.getWallet() != null && boutique.getWallet().getSolde().compareTo(seuil) <= 0) {
+            try {
+                walletService.crediter(boutique.getWallet().getTrackingId(), montantQuota);
+                
+                Versement v = new Versement();
+                v.setWallet(boutique.getWallet());
+                v.setMontantVerse(montantQuota);
+                v.setDateVersement(LocalDateTime.now());
+                v.setStatut(VersementStatut.VALIDEE);
+                v.setTypeVersement(VersementType.RECHARGE_QUOTA_BOUTIQUE);
+                versementRepository.save(v);
+                
+                log.info("Quota rechargé pour boutique {}", boutique.getNomBoutique());
+            } catch (Exception e) {
+                log.error("Échec recharge boutique {}: {}", boutique.getNomBoutique(), e.getMessage());
+            }
+        }
+    }
+  }
 }

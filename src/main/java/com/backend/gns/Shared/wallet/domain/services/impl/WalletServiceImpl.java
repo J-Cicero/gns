@@ -45,6 +45,20 @@ public class WalletServiceImpl implements WalletService {
         });
   }
 
+  private void ensureWalletCanReceiveFunds(Wallet wallet) {
+    if (wallet.getStatutWallet() == WalletStatus.GELE || wallet.getStatutWallet() == WalletStatus.BLOQUE) {
+      throw new IllegalStateException(
+          "Crédit refusé : le wallet est gelé ou bloqué (" + wallet.getStatutWallet() + ")");
+    }
+  }
+
+  private void ensureWalletCanSpend(Wallet wallet) {
+    if (wallet.getStatutWallet() != WalletStatus.ACTIF) {
+      throw new IllegalStateException(
+          "Débit refusé : le wallet doit être actif (statut actuel: " + wallet.getStatutWallet() + ")");
+    }
+  }
+
 
   @Override
   @Transactional
@@ -144,6 +158,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     Wallet wallet = findWalletOrThrow(walletTrackingId);
+    ensureWalletCanReceiveFunds(wallet);
 
     BigDecimal nouveauSolde = wallet.getSolde().add(montant);
 
@@ -167,6 +182,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     Wallet wallet = findWalletOrThrow(walletTrackingId);
+    ensureWalletCanSpend(wallet);
     if (wallet.getSolde().compareTo(montant) < 0) {
       throw new IllegalStateException(
           "Solde insuffisant. Solde actuel: " + wallet.getSolde() + ", Montant demandé: " + montant);

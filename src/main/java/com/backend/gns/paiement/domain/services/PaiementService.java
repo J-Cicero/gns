@@ -32,4 +32,6 @@ public interface PaiementService {
   Page<PaiementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable);
 
   Page<PaiementResponse> findAll(Pageable pageable);
+
+  Page<PaiementResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 }

@@ -2,6 +2,7 @@ package com.backend.gns.student.infrastructure.repositories;
 
 import com.backend.gns.student.domain.enums.StatutDocument;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,10 @@ public interface DocumentEtudiantRepository extends JpaRepository<DocumentEtudia
 
   Optional<DocumentEtudiant> findByTrackingId(UUID trackingId);
 
-    @Query("SELECT d FROM DocumentEtudiant d WHERE d.inscription.student.trackingId = :studentTrackingId")
+    @Query("SELECT d FROM DocumentEtudiant d WHERE d.student.trackingId = :studentTrackingId")
+    List<DocumentEtudiant> findByStudentTrackingId(@Param("studentTrackingId") UUID studentTrackingId);
+
+  @Query("SELECT d FROM DocumentEtudiant d WHERE d.inscription.student.trackingId = :studentTrackingId")
   Page<DocumentEtudiant> findByStudentTrackingId(
       @Param("studentTrackingId") UUID studentTrackingId, Pageable pageable);
 

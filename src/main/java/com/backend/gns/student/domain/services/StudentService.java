@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.util.Map;
 
 public interface StudentService {
 
@@ -25,4 +26,10 @@ public interface StudentService {
   Page<StudentResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 
   boolean verifyPin(UUID studentTrackingId, String pinCode);
+
+  Map<String, Object> getCard(UUID studentTrackingId);
+
+  long countAll();
+  long countByEstActif(boolean active);
+  long countByStatutKYC(KycStatus kycStatus);
 }

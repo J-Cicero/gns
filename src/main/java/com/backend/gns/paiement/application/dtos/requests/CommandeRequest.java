@@ -13,5 +13,6 @@ public record CommandeRequest(
     UUID boutiqueTrackingId,
     BigDecimal montantTotal,
     LocalDateTime dateCommande,
+    String pinCode,
     CommandeStatut statut) {}
 

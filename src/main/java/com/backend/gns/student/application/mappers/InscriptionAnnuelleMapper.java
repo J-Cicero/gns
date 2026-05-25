@@ -23,7 +23,6 @@ public class InscriptionAnnuelleMapper {
 
     InscriptionAnnuelle inscription = new InscriptionAnnuelle();
     inscription.setTrackingId(UUID.randomUUID());
-    inscription.setAnneeAcademique(request.anneeAcademique());
     inscription.setNiveau(request.niveau());
     inscription.setCreditsTotalValides(request.creditsTotalValides());
     inscription.setMoyenneBac(request.moyenneBac());
@@ -55,7 +54,10 @@ public class InscriptionAnnuelleMapper {
     return InscriptionAnnuelleResponse.builder()
         .trackingId(inscription.getTrackingId())
         .studentTrackingId(inscription.getStudent() != null ? inscription.getStudent().getTrackingId() : null)
-        .anneeAcademique(inscription.getAnneeAcademique())
+        .studentNom(inscription.getStudent() != null ? inscription.getStudent().getNom() : null)
+        .studentPrenom(inscription.getStudent() != null ? inscription.getStudent().getPrenom() : null)
+        .numEtudiantUniv(inscription.getStudent() != null ? inscription.getStudent().getNumEtudiantUniv() : null)
+        .anneeAcademique(inscription.getScolariteYear() != null ? inscription.getScolariteYear().getLibelle() : null)
         .niveau(inscription.getNiveau())
         .creditsTotalValides(inscription.getCreditsTotalValides())
         .moyenneBac(inscription.getMoyenneBac())
@@ -65,6 +67,7 @@ public class InscriptionAnnuelleMapper {
         .source(inscription.getSource())
         .dateActivation(inscription.getDateActivation())
         .plafondAccorde(inscription.getPlafondAccorde())
+        .estInscritDefinitif(inscription.isEstInscritDefinitif())
         .build();
   }
 }

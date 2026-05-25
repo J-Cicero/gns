@@ -66,6 +66,9 @@ public class BanqueEtudiant extends BaseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") 
     private LocalDateTime mandatValideLeDate;
 
+    @Column(nullable = false)
+    private boolean virementEffectue = false;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false, unique = true)
     private Student student;

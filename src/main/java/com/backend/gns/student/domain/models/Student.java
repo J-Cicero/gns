@@ -30,15 +30,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Student extends User {
 
-    @Column(length = 50, nullable = false, unique = true)
-    private String numEtudiantUL;
+    @Column(length = 50, nullable = true, unique = true)
+    private String numEtudiantUniv;
 
-    @Column(name = "pin_code", length = 60, nullable = false)
+    @Column(name = "pin_code", length = 60, nullable = true)
     private String pinCode;
 
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
+    @Column(length = 20, nullable = true)
     private KycStatus statutKYC;
 
     @OneToOne(mappedBy = "student", optional = true)
@@ -47,6 +47,9 @@ public class Student extends User {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
+
+    @OneToOne(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "universite_id")

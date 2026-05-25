@@ -3,6 +3,7 @@ package com.backend.gns.Shared.wallet.infrastructure.repositories;
 import com.backend.gns.Shared.wallet.domain.enums.VersementStatut;
 import com.backend.gns.Shared.wallet.domain.enums.VersementType;
 import com.backend.gns.Shared.wallet.domain.models.Versement;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -24,4 +25,6 @@ public interface VersementRepository extends JpaRepository<Versement, Long> {
   Page<Versement> findByTypeVersement(VersementType typeVersement, Pageable pageable);
 
   Long countByStatut(VersementStatut statut);
+  @Query("SELECT SUM(v.montantVerse) FROM Versement v")
+  BigDecimal sumAllMontants();
 }

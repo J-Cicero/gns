@@ -16,5 +16,6 @@ public record DocumentEtudiantResponse(
     String commentaireRejet,
     LocalDateTime dateDepot,
     LocalDateTime dateValidation,
-    String donneesExtraites
+    String donneesExtraites,
+    Double scoreFiabilite
 ) {}

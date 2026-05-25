@@ -26,4 +26,6 @@ public interface InscriptionAnnuelleService {
   Page<InscriptionAnnuelleResponse> findByStatut(StatutInscription statut, Pageable pageable);
 
   Page<InscriptionAnnuelleResponse> findAll(Pageable pageable);
+
+  Page<InscriptionAnnuelleResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 }

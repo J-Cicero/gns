@@ -11,6 +11,7 @@ import com.backend.gns.student.infrastructure.repositories.BanqueEtudiantReposit
 import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
 import com.backend.gns.Shared.infrastructure.repositories.UniversiteRepository;
 import java.util.UUID;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,7 @@ public class StudentMapper {
     student.setTelephone(request.telephone());
     student.setDateNaissance(request.dateNaissance());
     student.setStatutKYC(request.statutKYC());
-    student.setNumEtudiantUL(request.numEtudiantUL());
+    student.setNumEtudiantUniv(request.numEtudiantUniv());
 
     if (request.pinCode() != null && !request.pinCode().isEmpty()) {
       student.setPinCode(request.pinCode());
@@ -90,10 +91,12 @@ public class StudentMapper {
         .telephone(student.getTelephone())
         .dateNaissance(student.getDateNaissance())
         .statutKYC(student.getStatutKYC())
-        .numEtudiantUL(student.getNumEtudiantUL())
+        .numEtudiantUniv(student.getNumEtudiantUniv())
         .walletTrackingId(student.getWallet() != null ? student.getWallet().getTrackingId() : null)
+        .solde(student.getWallet() != null ? student.getWallet().getSolde() : BigDecimal.ZERO)
         .banqueEtudiantTrackingId(student.getBanqueEtudiant() != null ? student.getBanqueEtudiant().getTrackingId() : null)
         .universiteTrackingId(student.getUniversite() != null ? student.getUniversite().getTrackingId() : null)
+        .universiteNom(student.getUniversite() != null ? student.getUniversite().getNom() : null)
         .pinCode(student.getPinCode())
         .build();
   }
@@ -113,7 +116,7 @@ public class StudentMapper {
     student.setTelephone(response.telephone());
     student.setDateNaissance(response.dateNaissance());
     student.setStatutKYC(response.statutKYC());
-    student.setNumEtudiantUL(response.numEtudiantUL());
+    student.setNumEtudiantUniv(response.numEtudiantUniv());
 
     if (response.walletTrackingId() != null) {
       Wallet wallet =

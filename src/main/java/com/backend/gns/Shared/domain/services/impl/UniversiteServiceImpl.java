@@ -4,16 +4,23 @@ import com.backend.gns.Shared.application.dtos.requests.UniversiteRequest;
 import com.backend.gns.Shared.application.dtos.responses.UniversiteResponse;
 import com.backend.gns.Shared.application.mappers.UniversiteMapper;
 import com.backend.gns.Shared.domain.models.Universite;
-import com.backend.gns.Shared.domain.services.UniversiteService;
 import com.backend.gns.Shared.infrastructure.repositories.UniversiteRepository;
-import com.backend.gns.Shared.exception.ResourceNotFoundException;
-import java.util.Optional;
-import java.util.UUID;
+import com.backend.gns.Shared.domain.services.UniversiteService;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.UUID;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +28,8 @@ public class UniversiteServiceImpl implements UniversiteService {
 
     private final UniversiteRepository repository;
     private final UniversiteMapper mapper;
+    private final StudentRepository studentRepository;
+    private final InscriptionAnnuelleRepository inscriptionRepository;
 
     @Override
     @Transactional
@@ -45,7 +54,19 @@ public class UniversiteServiceImpl implements UniversiteService {
     @Transactional
     public void delete(UUID trackingId) {
         Universite entity = repository.findByTrackingId(trackingId)
-            .orElseThrow(() -> new ResourceNotFoundException("Université non trouvée"));
+                .orElseThrow(() -> new RuntimeException("Université non trouvée"));
         repository.delete(entity);
+    }
+
+    @Override
+    public List<Map<String, Object>> getSummaryStats() {
+        return repository.findAll().stream().map(u -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("trackingId", u.getTrackingId());
+            map.put("nom", u.getNom());
+            map.put("code", u.getCode());
+            map.put("nbEtudiants", studentRepository.countByUniversite(u));
+            return map;
+        }).collect(Collectors.toList());
     }
 }

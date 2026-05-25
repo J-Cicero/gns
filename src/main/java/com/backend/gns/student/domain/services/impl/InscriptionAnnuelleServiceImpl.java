@@ -5,13 +5,16 @@ import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleRes
 import com.backend.gns.student.application.mappers.InscriptionAnnuelleMapper;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
+import com.backend.gns.student.domain.models.ScolariteYear;
+import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.InscriptionAnnuelleService;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
+import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,19 +22,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleService {
 
   private static final int DEFAULT_PAGE_SIZE = 10;
 
   private final InscriptionAnnuelleRepository inscriptionRepository;
   private final InscriptionAnnuelleMapper inscriptionMapper;
-
-  public InscriptionAnnuelleServiceImpl(
-      InscriptionAnnuelleRepository inscriptionRepository,
-      InscriptionAnnuelleMapper inscriptionMapper) {
-    this.inscriptionRepository = inscriptionRepository;
-    this.inscriptionMapper = inscriptionMapper;
-  }
+  private final StudentRepository studentRepository;
+  private final ScolariteYearRepository scolariteYearRepository;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -42,32 +41,30 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Transactional
   public InscriptionAnnuelleResponse create(InscriptionAnnuelleRequest request) {
     InscriptionAnnuelle inscription = inscriptionMapper.toEntity(request);
-    inscription.setDateActivation(LocalDateTime.now());
-    inscription.setPlafondAccorde(BigDecimal.ZERO);
+    
+    ScolariteYear year = scolariteYearRepository.findByEstOuverteTrue()
+        .orElseThrow(() -> new IllegalStateException("Aucune année scolaire ouverte"));
+    inscription.setScolariteYear(year);
+
     InscriptionAnnuelle savedInscription = inscriptionRepository.save(inscription);
     return inscriptionMapper.toResponse(savedInscription);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Optional<InscriptionAnnuelleResponse> findByTrackingId(UUID trackingId) {
-    return inscriptionRepository
-        .findByTrackingId(trackingId)
-        .map(inscriptionMapper::toResponse);
+    return inscriptionRepository.findByTrackingId(trackingId).map(inscriptionMapper::toResponse);
   }
 
   @Override
   @Transactional
-  public InscriptionAnnuelleResponse update(
-      UUID trackingId, InscriptionAnnuelleRequest request) {
+  public InscriptionAnnuelleResponse update(UUID trackingId, InscriptionAnnuelleRequest request) {
     InscriptionAnnuelle inscription =
         inscriptionRepository
             .findByTrackingId(trackingId)
             .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Inscription non trouvée avec trackingId: " + trackingId));
+                () -> new EntityNotFoundException("Inscription non trouvée avec l'ID: " + trackingId));
 
-    inscription.setAnneeAcademique(request.anneeAcademique());
     inscription.setNiveau(request.niveau());
     inscription.setCreditsTotalValides(request.creditsTotalValides());
     inscription.setMoyenneBac(request.moyenneBac());
@@ -87,43 +84,44 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
         inscriptionRepository
             .findByTrackingId(trackingId)
             .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Inscription non trouvée avec trackingId: " + trackingId));
+                () -> new EntityNotFoundException("Inscription non trouvée avec l'ID: " + trackingId));
     inscriptionRepository.delete(inscription);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Page<InscriptionAnnuelleResponse> findByStudentTrackingId(
       UUID studentTrackingId, Pageable pageable) {
-    Pageable normalized = normalize(pageable);
     return inscriptionRepository
-        .findByStudentTrackingId(studentTrackingId, normalized)
+        .findByStudentTrackingId(studentTrackingId, normalize(pageable))
         .map(inscriptionMapper::toResponse);
   }
 
   @Override
   public Optional<InscriptionAnnuelleResponse> findByStudentAndAnnee(
       UUID studentTrackingId, String anneeAcademique) {
-    return inscriptionRepository
-        .findByStudentAndAnnee(studentTrackingId, anneeAcademique)
-        .map(inscriptionMapper::toResponse);
+    return Optional.empty(); 
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Page<InscriptionAnnuelleResponse> findByStatut(
       StatutInscription statut, Pageable pageable) {
-    Pageable normalized = normalize(pageable);
     return inscriptionRepository
-        .findByStatut(statut, normalized)
+        .findByStatut(statut, normalize(pageable))
         .map(inscriptionMapper::toResponse);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Page<InscriptionAnnuelleResponse> findAll(Pageable pageable) {
-    Pageable normalized = normalize(pageable);
-    return inscriptionRepository
-        .findAll(normalized)
+    return inscriptionRepository.findAll(normalize(pageable)).map(inscriptionMapper::toResponse);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<InscriptionAnnuelleResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable) {
+    return inscriptionRepository.findByStudentUniversiteTrackingId(universiteTrackingId, normalize(pageable))
         .map(inscriptionMapper::toResponse);
   }
 }

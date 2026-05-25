@@ -22,11 +22,13 @@ public interface CommandeService {
 
   Page<CommandeResponse> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable);
 
+  Page<CommandeResponse> findByBoutiqueTrackingId(UUID boutiqueTrackingId, Pageable pageable);
+
   Page<CommandeResponse> findByMerchantTrackingId(UUID merchantTrackingId, Pageable pageable);
 
   Page<CommandeResponse> findByCommandeStatut(CommandeStatut commandeStatut, Pageable pageable);
 
   Page<CommandeResponse> findAll(Pageable pageable);
 
-  void payerCommande(UUID commandeTrackingId);
+  void payerCommande(UUID commandeTrackingId, String pinCode);
 }

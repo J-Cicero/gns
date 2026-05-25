@@ -6,8 +6,6 @@ import com.backend.gns.paiement.domain.enums.CommandeStatut;
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.paiement.domain.models.Commande;
 import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
@@ -15,16 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommandeMapper {
 
-  private final StudentRepository studentRepository;
-  private final BoutiqueRepository boutiqueRepository;
-
-  public CommandeMapper(
-      StudentRepository studentRepository, BoutiqueRepository boutiqueRepository) {
-    this.studentRepository = studentRepository;
-    this.boutiqueRepository = boutiqueRepository;
-  }
-
-  public Commande toEntity(CommandeRequest request) {
+  public Commande toEntity(CommandeRequest request, Student student, Boutique boutique) {
     if (request == null) {
       throw new IllegalArgumentException("La requête CommandeRequest ne peut pas être nulle");
     }
@@ -37,27 +26,8 @@ public class CommandeMapper {
     commande.setStatut(CommandeStatut.EN_ATTENTE);
     commande.setMontantTotal(request.montantTotal());
 
-    if (request.studentTrackingId() != null) {
-      Student student =
-          studentRepository
-              .findByTrackingId(request.studentTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Étudiant non trouvé avec l'ID: " + request.studentTrackingId()));
-      commande.setStudent(student);
-    }
-
-    if (request.boutiqueTrackingId() != null) {
-      Boutique boutique =
-          boutiqueRepository
-              .findByTrackingId(request.boutiqueTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Boutique non trouvée avec l'ID: " + request.boutiqueTrackingId()));
-      commande.setBoutique(boutique);
-    }
+    commande.setStudent(student);
+    commande.setBoutique(boutique);
 
     return commande;
   }
@@ -80,7 +50,7 @@ public class CommandeMapper {
         .build();
   }
 
-  public Commande toEntityFromResponse(CommandeResponse response) {
+  public Commande toEntityFromResponse(CommandeResponse response, Student student, Boutique boutique) {
     if (response == null) {
       throw new IllegalArgumentException("La réponse CommandeResponse ne peut pas être nulle");
     }
@@ -92,27 +62,8 @@ public class CommandeMapper {
     commande.setMontantTotal(response.montantTotal());
     commande.setStatut(response.statut() != null ? response.statut() : CommandeStatut.EN_ATTENTE);
 
-    if (response.studentTrackingId() != null) {
-      Student student =
-          studentRepository
-              .findByTrackingId(response.studentTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Étudiant non trouvé avec l'ID: " + response.studentTrackingId()));
-      commande.setStudent(student);
-    }
-
-    if (response.boutiqueTrackingId() != null) {
-      Boutique boutique =
-          boutiqueRepository
-              .findByTrackingId(response.boutiqueTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Boutique non trouvée avec l'ID: " + response.boutiqueTrackingId()));
-      commande.setBoutique(boutique);
-    }
+    commande.setStudent(student);
+    commande.setBoutique(boutique);
 
     return commande;
   }

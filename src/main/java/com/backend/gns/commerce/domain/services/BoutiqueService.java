@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.math.BigDecimal;
 
 public interface BoutiqueService {
 
@@ -25,4 +26,6 @@ public interface BoutiqueService {
   Page<BoutiqueResponse> findByStatutKYC(KycStatus statutKYC, Pageable pageable);
 
   Page<BoutiqueResponse> findAll(Pageable pageable);
+
+  Page<BoutiqueResponse> getBoutiquesEnAlerteQuota(BigDecimal seuilPourcentage, Pageable pageable);
 }

@@ -24,15 +24,14 @@ public class DocumentEtudiantMapper {
     DocumentEtudiant document = new DocumentEtudiant();
     document.setTrackingId(UUID.randomUUID());
     document.setType(request.type());
-    document.setCheminFichier(request.cheminFichier());
+    document.setUrlFichier(request.cheminFichier());
     document.setDonneesExtraites(request.donneesExtraites());
 
-    
     if (request.inscriptionTrackingId() != null) {
       InscriptionAnnuelle inscription =
           inscriptionAnnuelleRepository
               .findByTrackingId(request.inscriptionTrackingId())
-              .orElse(null); // orElse(null) because it's nullable
+              .orElse(null);
       document.setInscription(inscription);
     }
 
@@ -49,12 +48,13 @@ public class DocumentEtudiantMapper {
         .trackingId(document.getTrackingId())
         .inscriptionTrackingId(document.getInscription() != null ? document.getInscription().getTrackingId() : null) 
         .type(document.getType())
-        .cheminFichier(document.getCheminFichier())
+        .cheminFichier(document.getUrlFichier())
         .statut(document.getStatut())
         .commentaireRejet(document.getCommentaireRejet())
         .dateDepot(document.getDateDepot())
         .dateValidation(document.getDateValidation())
         .donneesExtraites(document.getDonneesExtraites())
+        .scoreFiabilite(document.getScoreFiabilite())
         .build();
   }
 }

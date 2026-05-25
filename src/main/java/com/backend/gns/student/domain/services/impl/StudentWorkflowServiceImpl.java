@@ -54,12 +54,7 @@ public class StudentWorkflowServiceImpl implements StudentWorkflowService {
                 wallet.setPlafond(result.plafondAccorde);
                 wallet.setStatutWallet(WalletStatus.ACTIF);
                 
-                // Logique de type de Wallet (basée sur le montant par exemple)
-                if (result.plafondAccorde.compareTo(new BigDecimal("36000")) <= 0) {
-                    wallet.setTypeWallet(WalletType.STUDENT_36k);
-                } else {
-                    wallet.setTypeWallet(WalletType.STUDENT_54k);
-                }
+                wallet.setTypeWallet(WalletType.STUDENT);
                 
                 log.info("Wallet activé pour l'étudiant {}: Type={}, Plafond={}", 
                         inscription.getStudent().getTrackingId(), wallet.getTypeWallet(), wallet.getPlafond());

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carte prête</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f5f5; color:#333 }
+    .container { max-width:600px; margin:0 auto; background:#fff; padding:32px; border-radius:8px }
+    .header{ text-align:center; margin-bottom:20px }
+    .logo{ font-size:24px; color:#1e3a8a; font-weight:700 }
+    .content{ line-height:1.6 }
+    .cta { margin-top:16px }
+    .footer{ margin-top:20px; font-size:12px; color:#888; text-align:center }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header"><div class="logo">studCash</div></div>
+    <div class="content">
+      <p>Bonjour <span th:text="${nom}">Utilisateur</span>,</p>
+      <p>Votre carte a été émise et est prête à être récupérée.</p>
+      <p>Type : <strong th:text="${cardType}">Carte</strong></p>
+      <p>Lieu de retrait : <span th:text="${pickupLocation}">Bureau</span></p>
+      <p>Date disponible : <span th:text="${availableDate}">2026-05-26</span></p>
+      <div class="cta">
+        <a th:href="${instructionsUrl}" style="display:inline-block;padding:10px 14px;background:#1e3a8a;color:#fff;text-decoration:none;border-radius:4px">Voir instructions</a>
+      </div>
+    </div>
+    <div class="footer"><p>© 2026 studCash</p></div>
+  </div>
+</body>
+</html>

@@ -5,6 +5,7 @@ import com.backend.gns.Shared.wallet.application.dtos.responses.VersementRespons
 import com.backend.gns.Shared.wallet.domain.enums.VersementStatut;
 import com.backend.gns.Shared.wallet.domain.enums.VersementType;
 import java.math.BigDecimal;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -27,4 +28,8 @@ public interface VersementService {
   Page<VersementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable);
 
   Page<VersementResponse> findAll(Pageable pageable);
+
+  void effectuerVersementMasseEtudiants(UUID scolariteYearTrackingId, BigDecimal montantFixe);
+
+  void effectuerVersementMasseBoutiques(BigDecimal seuil, BigDecimal montantQuota);
 }

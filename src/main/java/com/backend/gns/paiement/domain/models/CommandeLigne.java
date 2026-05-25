@@ -36,11 +36,11 @@ public class CommandeLigne extends BaseEntity {
   @Column(nullable = false, unique = true, updatable = false)
   private UUID trackingId;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "commande_id", nullable = false)
   private Commande commande;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id", nullable = false)
   private Product product;
 
