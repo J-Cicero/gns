@@ -15,9 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/commande-lignes")
+@RequestMapping("/commande-lignes")
 @Tag(name = "COMMANDE_LIGNE", description = "Gestion des lignes de commande")
-@CrossOrigin("*")
 public class CommandeLigneController {
 
   private final CommandeLigneService commandeLigneService;

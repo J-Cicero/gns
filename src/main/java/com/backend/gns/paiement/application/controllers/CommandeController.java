@@ -16,9 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/commandes")
+@RequestMapping("/commandes")
 @Tag(name = "COMMANDE", description = "Gestion des commandes")
-@CrossOrigin("*")
 public class CommandeController {
 
   private final CommandeService commandeService;
@@ -141,9 +140,14 @@ public class CommandeController {
   @ApiResponse(responseCode = "200", description = "Commande payée avec succès")
   @ApiResponse(responseCode = "404", description = "Commande non trouvée")
   @ApiResponse(responseCode = "400", description = "Solde insuffisant ou erreur de paiement")
-  public ResponseEntity<?> payerCommande(@PathVariable UUID trackingId) {
+  public ResponseEntity<?> payerCommande(@PathVariable UUID trackingId, @RequestBody Map<String, String> body) {
     try {
-      commandeService.payerCommande(trackingId);
+      String pinCode = body.get("pinCode");
+      if (pinCode == null || pinCode.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(Map.of("error", "MISSING_PIN", "message", "Le code PIN est requis pour le paiement"));
+      }
+      commandeService.payerCommande(trackingId, pinCode);
       return ResponseEntity.ok(Map.of("success", true, "message", "Commande payée avec succès"));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)

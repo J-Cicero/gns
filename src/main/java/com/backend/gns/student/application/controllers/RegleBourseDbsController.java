@@ -16,11 +16,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/regles-bourse-dbs")
+@RequestMapping("/regles-bourse-dbs")
 @Tag(name = "REGLES BOURSE DBS", description = "Gestion des règles d'éligibilité (Admin DBS)")
-@CrossOrigin("*")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN_GNS')")
 public class RegleBourseDbsController {
 
     private final RegleBourseDbsService service;

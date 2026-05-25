@@ -15,9 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/products")
 @Tag(name = "PRODUCT", description = "Gestion des produits")
-@CrossOrigin("*")
 public class ProductController {
 
   private final ProductService productService;

@@ -18,15 +18,40 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/students")
+@RequestMapping("/students")
 @Tag(name = "STUDENT", description = "Gestion des étudiants")
-@CrossOrigin("*")
 public class StudentController {
 
   private final StudentService studentService;
+  private final com.backend.gns.student.domain.services.DocumentEtudiantService documentService;
 
-  public StudentController(StudentService studentService) {
+  public StudentController(
+      StudentService studentService,
+      com.backend.gns.student.domain.services.DocumentEtudiantService documentService) {
     this.studentService = studentService;
+    this.documentService = documentService;
+  }
+
+  @PostMapping("/{trackingId}/documents/upload")
+  @Operation(summary = "Uploader un document pour un étudiant", description = "Upload un document et lance l'OCR IA")
+  public ResponseEntity<?> uploadDocument(
+      @PathVariable UUID trackingId,
+      @RequestParam("fichier") org.springframework.web.multipart.MultipartFile fichier,
+      @RequestParam("inscriptionTrackingId") UUID inscriptionTrackingId,
+      @RequestParam("typeDocument") com.backend.gns.Shared.domain.enums.TypeDocument typeDocument) {
+    try {
+      var response = documentService.uploadDocument(fichier, inscriptionTrackingId, typeDocument);
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "UPLOAD_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/{trackingId}/documents")
+  @Operation(summary = "Récupérer les documents d'un étudiant")
+  public ResponseEntity<?> getDocuments(@PathVariable UUID trackingId, Pageable pageable) {
+    return ResponseEntity.ok(documentService.findByStudentTrackingId(trackingId, pageable));
   }
 
   @PostMapping
@@ -115,6 +140,23 @@ public class StudentController {
     }
   }
 
+
+  @GetMapping("/stats")
+  @Operation(summary = "Récupérer les statistiques des étudiants")
+  public ResponseEntity<Map<String, Object>> getStats() {
+    return ResponseEntity.ok(Map.of(
+        "totalStudents", studentService.countAll(),
+        "activeStudents", studentService.countByEstActif(true),
+        "blockedStudents", studentService.countByEstActif(false),
+        "verifiedKyc", studentService.countByStatutKYC(KycStatus.VALIDEE)
+    ));
+  }
+
+  @GetMapping("/{trackingId}/card")
+  @Operation(summary = "Récupérer la carte d'un étudiant")
+  public ResponseEntity<?> getCard(@PathVariable UUID trackingId) {
+    return ResponseEntity.ok(studentService.getCard(trackingId));
+  }
 
   @GetMapping("/universite/{universiteTrackingId}")
   @Operation(summary = "Récupérer les étudiants par université")

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/paiements")
+@RequestMapping("/paiements")
 @Tag(name = "PAIEMENT", description = "Gestion des paiements")
-@CrossOrigin("*")
 public class PaiementController {
 
   private final PaiementService paiementService;
@@ -206,5 +206,15 @@ public class PaiementController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
     }
+  }
+
+  @GetMapping("/universite/{universiteTrackingId}")
+  @Operation(summary = "Récupérer les paiements d'une université")
+  public ResponseEntity<Page<PaiementResponse>> findByUniversite(
+      @PathVariable UUID universiteTrackingId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return ResponseEntity.ok(paiementService.findByUniversiteTrackingId(universiteTrackingId, pageable));
   }
 }

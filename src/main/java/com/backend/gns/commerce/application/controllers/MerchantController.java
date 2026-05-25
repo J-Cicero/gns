@@ -15,9 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/merchants")
+@RequestMapping("/merchants")
 @Tag(name = "MERCHANT", description = "Gestion des marchands")
-@CrossOrigin("*")
 public class MerchantController {
 
   private final MerchantService merchantService;

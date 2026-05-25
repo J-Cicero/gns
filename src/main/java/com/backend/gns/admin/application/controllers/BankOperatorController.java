@@ -21,9 +21,8 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/bank-operator")
+@RequestMapping("/bank-operator")
 @Tag(name = "BANK_OPERATOR", description = "Gestion des opérateurs bancaires")
-@CrossOrigin("*")
 @AllArgsConstructor
 public class BankOperatorController {
 

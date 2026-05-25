@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/students/workflow")
+@RequestMapping("/students/workflow")
 @Tag(name = "STUDENT WORKFLOW", description = "Orchestration du cycle de vie étudiant")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class StudentWorkflowController {
 
     private final StudentWorkflowService workflowService;

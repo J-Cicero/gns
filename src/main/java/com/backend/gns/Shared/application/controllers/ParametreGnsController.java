@@ -14,9 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/parametres-gns")
+@RequestMapping("/parametres-gns")
 @Tag(name = "PARAMETRES GNS", description = "Gestion des paramètres système (Admin GNS)")
-@CrossOrigin("*")
 @RequiredArgsConstructor
 public class ParametreGnsController {
 

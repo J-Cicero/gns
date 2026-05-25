@@ -6,6 +6,8 @@ import com.backend.gns.Shared.domain.services.UniversiteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/universites")
+@RequestMapping("/universites")
 @Tag(name = "UNIVERSITES", description = "Gestion des universités")
-@CrossOrigin("*")
 @RequiredArgsConstructor
 public class UniversiteController {
 
@@ -38,5 +39,10 @@ public class UniversiteController {
     @GetMapping
     public ResponseEntity<Page<UniversiteResponse>> findAll(Pageable pageable) {
         return ResponseEntity.ok(service.findAll(pageable));
+    }
+
+    @GetMapping("/summary-stats")
+    public ResponseEntity<List<Map<String, Object>>> getSummaryStats() {
+        return ResponseEntity.ok(service.getSummaryStats());
     }
 }

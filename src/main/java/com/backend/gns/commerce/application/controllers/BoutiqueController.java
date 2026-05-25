@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Map;
 import java.util.UUID;
+import java.math.BigDecimal;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/boutiques")
+@RequestMapping("/boutiques")
 @Tag(name = "BOUTIQUE", description = "Gestion des boutiques")
-@CrossOrigin("*")
 public class BoutiqueController {
 
 	private final BoutiqueService boutiqueService;
@@ -175,6 +175,21 @@ public class BoutiqueController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+		}
+	}
+
+	@GetMapping("/alertes-quota")
+	@Operation(summary = "Récupérer les boutiques en alerte quota")
+	    public ResponseEntity<?> getBoutiquesEnAlerte(
+		    @RequestParam(defaultValue = "0.10") BigDecimal seuil,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		try {
+			Pageable pageable = PageRequest.of(page, size);
+			return ResponseEntity.ok(boutiqueService.getBoutiquesEnAlerteQuota(seuil, pageable));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
 		}
 	}
 }

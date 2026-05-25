@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/banque-etudiants")
+@RequestMapping("/banque-etudiants")
 @Tag(name = "BANQUE_ETUDIANT", description = "Gestion des informations bancaires des étudiants")
-@CrossOrigin("*")
 @AllArgsConstructor
 public class BanqueEtudiantController {
 

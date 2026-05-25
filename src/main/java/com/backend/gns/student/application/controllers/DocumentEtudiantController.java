@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/documents")
+@RequestMapping("/documents")
 @Tag(name = "DOCUMENT_ETUDIANT", description = "Gestion des documents étudiants")
 public class DocumentEtudiantController {
 

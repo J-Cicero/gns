@@ -15,15 +15,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admins")
+@RequestMapping("/admins")
 @Tag(name = "ADMIN", description = "Gestion des administrateurs")
-@CrossOrigin("*")
 public class AdminController {
 
   private final AdminService adminService;
+  private final com.backend.gns.admin.domain.services.DashboardService dashboardService;
 
-  public AdminController(AdminService adminService) {
+  public AdminController(AdminService adminService, com.backend.gns.admin.domain.services.DashboardService dashboardService) {
     this.adminService = adminService;
+    this.dashboardService = dashboardService;
+  }
+
+  @GetMapping("/global-stats")
+  @Operation(summary = "Récupérer les statistiques globales du dashboard GNS")
+  public ResponseEntity<?> getGlobalStats() {
+    return ResponseEntity.ok(dashboardService.getGlobalStats());
+  }
+
+  @GetMapping("/flux-mensuel")
+  @Operation(summary = "Récupérer le flux financier mensuel sur 12 mois")
+  public ResponseEntity<?> getFluxMensuel() {
+    return ResponseEntity.ok(dashboardService.getFluxMensuel());
   }
 
   @PostMapping

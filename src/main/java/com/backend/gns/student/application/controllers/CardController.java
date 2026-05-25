@@ -16,9 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/cards")
+@RequestMapping("/cards")
 @Tag(name = "CARD", description = "Gestion des cartes physiques PVC")
-@CrossOrigin("*")
 public class CardController {
 
   private final CardService cardService;

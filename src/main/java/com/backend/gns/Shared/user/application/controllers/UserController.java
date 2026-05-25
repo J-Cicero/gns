@@ -84,10 +84,18 @@ public class UserController {
   }
 
   @DeleteMapping("/delete/{trackingId}")
-  @Operation(summary = "Delete a user", description = "Deletes a user by trackingId")
-  @ApiResponse(responseCode = "200", description = "User deleted successfully")
   public ResponseEntity<Void> deleteUser(@PathVariable UUID trackingId) {
     userService.deleteUser(trackingId);
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/profile")
+  @Operation(summary = "Get current user profile")
+  public ResponseEntity<UserResponse> getProfile() {
+    // In a real app we would get this from SecurityContext
+    // For now we return the first one or a 404
+    return userService.getAllUsers(0, 1).getContent().stream().findFirst()
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
   }
 }
