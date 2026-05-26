@@ -75,6 +75,30 @@ public class InscriptionAnnuelleController {
     }
   }
 
+  @PatchMapping("/{trackingId}/statut")
+  @Operation(summary = "Mettre à jour le statut", description = "Mettre à jour uniquement le statut d'une inscription")
+  public ResponseEntity<?> updateStatus(@PathVariable UUID trackingId, @RequestParam StatutInscription statut) {
+    try {
+      InscriptionAnnuelleResponse response = inscriptionService.updateStatus(trackingId, statut);
+      return ResponseEntity.ok(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PatchMapping("/{trackingId}/definitif")
+  @Operation(summary = "Mettre à jour l'inscription définitive", description = "Mettre à jour le marqueur estInscritDefinitif d'une inscription")
+  public ResponseEntity<?> updateDefinitif(@PathVariable UUID trackingId, @RequestParam boolean estInscritDefinitif) {
+    try {
+      InscriptionAnnuelleResponse response = inscriptionService.updateDefinitif(trackingId, estInscritDefinitif);
+      return ResponseEntity.ok(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
+  }
+
   @DeleteMapping("/{trackingId}")
   @Operation(summary = "Supprimer une inscription", description = "Supprime une inscription par son ID")
   @ApiResponse(responseCode = "204", description = "Inscription supprimée avec succès")

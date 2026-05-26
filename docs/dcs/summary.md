@@ -6,11 +6,11 @@ Projet: GNS (StudCash)
 ## 1) Modules principaux et entités observées
 
 - Shared (code transverse)
-  - `BaseEntity`, `Wallet` (réfactorisé vers Shared), `ParametreGns`, éléments sécurité (`UserPrincipal`, `SecurityConfig`), mappers/utilitaires.
-  - Users transverses: `User` (abstraite) → sous-types: `Admin`, `AdminUL`, `BankOperator`.
+  - `BaseEntity`, `Wallet` (classe unique simplifiée), `ParametreGns`, éléments sécurité (`UserPrincipal`, `SecurityConfig`), mappers/utilitaires.
+  - Users transverses: `User` (abstraite) → sous-types: `Admin`, `UniversityAdmin`, `BankOperator`.
 
 - Student
-  - Entités: `Student`, `ScolariteYear`, `DocumentEtudiant`, `DocumentRequis`, `InscriptionAnnuelle`, `Card`, `BanqueEtudiant`, `RegleBourseDbs`, `StudentWallet`.
+  - Entités: `Student`, `ScolariteYear`, `DocumentEtudiant`, `DocumentRequis`, `InscriptionAnnuelle`, `Card`, `BanqueEtudiant`, `RegleBourseDbs`.
 
 - Commerce
   - Entités: `Merchant`, `Boutique`, `Product`.
@@ -20,7 +20,7 @@ Projet: GNS (StudCash)
 
 - Observations supplémentaires
   - Beaucoup d'entités héritent de `BaseEntity` (audit).
-  - Wallet a besoin d'un discriminateur (ownerType) ou de sous-classes (`StudentWallet`, `BoutiqueWallet`, `AdminWallet`).
+  - Wallet est une entité unique avec un `WalletType`, gérée automatiquement par les services (StudentService, BoutiqueService, etc.) via Cascade JPA.
   - Certains fichiers (controllers) utilisaient `@CrossOrigin("*")` — risque de sécurité identifié.
 
 ## 2) Modèle de rôles et attribution d'accès (comment c'est implémenté)
@@ -53,8 +53,8 @@ Projet: GNS (StudCash)
 1. Uniformiser les rôles (enum + constantes) — évite mismatch.
 2. Ajouter `@PreAuthorize` sur endpoints sensibles et revoir tous les controllers exposés.
 3. Retirer `@CrossOrigin("*")` et mettre une configuration CORS restrictive.
-4. Refactor Wallet (discriminateur ou sous-classes) pour clarifier la propriété.
-5. Ajouter tests d'accès pour chaque rôle (integration tests) et un audit des endpoints non protégés.
+4. Ajouter tests d'accès pour chaque rôle (integration tests) et un audit des endpoints non protégés.
 
 ---
 Résumé généré automatiquement par analyse du code source et de la documentation du projet.
+*Note: Le refactor Wallet vers une classe unique a été effectué le 2026-05-26.*

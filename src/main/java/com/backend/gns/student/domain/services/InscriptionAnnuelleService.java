@@ -16,6 +16,10 @@ public interface InscriptionAnnuelleService {
 
   InscriptionAnnuelleResponse update(UUID trackingId, InscriptionAnnuelleRequest request);
 
+  InscriptionAnnuelleResponse updateStatus(UUID trackingId, StatutInscription statut);
+
+  InscriptionAnnuelleResponse updateDefinitif(UUID trackingId, boolean estInscritDefinitif);
+
   void delete(UUID trackingId);
 
   Page<InscriptionAnnuelleResponse> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable);

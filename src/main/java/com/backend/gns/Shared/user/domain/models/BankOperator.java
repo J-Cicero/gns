@@ -34,7 +34,7 @@ public class BankOperator extends User {
     @Column(nullable = true)
     private Banque banquePartenaire;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = jakarta.persistence.CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "wallet_id", unique = true)
     private Wallet wallet;
 }

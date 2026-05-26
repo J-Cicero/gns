@@ -3,10 +3,17 @@ package com.backend.gns.admin.domain.services.impl;
 import com.backend.gns.admin.application.dtos.requests.UniversityAdminRequest;
 import com.backend.gns.admin.application.dtos.responses.UniversityAdminResponse;
 import com.backend.gns.admin.application.mappers.UniversityAdminMapper;
+import com.backend.gns.Shared.domain.enums.TypeParametreGns;
+import com.backend.gns.Shared.domain.services.ParametreGnsService;
 import com.backend.gns.Shared.exception.ResourceNotFoundException;
 import com.backend.gns.Shared.user.domain.models.UniversityAdmin;
+import com.backend.gns.Shared.wallet.domain.enums.WalletStatus;
+import com.backend.gns.Shared.wallet.domain.enums.WalletType;
+import com.backend.gns.Shared.wallet.domain.models.Wallet;
 import com.backend.gns.admin.domain.services.UniversityAdminService;
 import com.backend.gns.admin.infrastructure.repositories.UniversityAdminRepository;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +33,7 @@ public class UniversityAdminServiceImpl implements UniversityAdminService {
 
   private final UniversityAdminRepository universityAdminRepository;
   private final UniversityAdminMapper universityAdminMapper;
+  private final ParametreGnsService parametreGnsService;
 
   // ─────────────────────────────────────────────
   // Utilitaires privés
@@ -51,9 +59,23 @@ public class UniversityAdminServiceImpl implements UniversityAdminService {
     log.info("Création d'un UniversityAdmin: {} {}", request.prenom(), request.nom());
 
     UniversityAdmin universityAdmin = universityAdminMapper.toEntity(request);
+    
+    // Initialisation du Wallet via Cascade
+    Wallet wallet = new Wallet();
+    wallet.setTrackingId(UUID.randomUUID());
+    wallet.setTypeWallet(WalletType.UNIVERSITY); // Ou ADMIN_UL selon l'énumération
+    wallet.setStatutWallet(WalletStatus.ACTIF);
+    wallet.setSolde(BigDecimal.ZERO);
+    
+    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
+    wallet.setPlafond(plafondDefaut);
+    wallet.setDateCreation(LocalDateTime.now());
+    
+    universityAdmin.setWallet(wallet);
+
     UniversityAdmin savedUniversityAdmin = universityAdminRepository.save(universityAdmin);
 
-    log.info("UniversityAdmin créé avec succès, trackingId: {}", savedUniversityAdmin.getTrackingId());
+    log.info("UniversityAdmin créé avec succès avec son Wallet, trackingId: {}", savedUniversityAdmin.getTrackingId());
     return universityAdminMapper.toResponse(savedUniversityAdmin);
   }
 

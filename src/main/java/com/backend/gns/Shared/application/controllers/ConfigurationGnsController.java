@@ -1,6 +1,6 @@
 package com.backend.gns.Shared.application.controllers;
 
-import com.backend.gns.Shared.application.services.ConfigurationService;
+import com.backend.gns.Shared.application.services.ConfigurationGnsService;
 import com.backend.gns.Shared.domain.models.ConfigurationGns;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ConfigurationGnsController {
 
-    private final ConfigurationService configurationService;
+    private final ConfigurationGnsService configurationService;
 
     @GetMapping
     @Operation(summary = "Lister toutes les configurations")

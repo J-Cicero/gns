@@ -3,10 +3,17 @@ package com.backend.gns.admin.domain.services.impl;
 import com.backend.gns.admin.application.dtos.requests.BankOperatorRequest;
 import com.backend.gns.admin.application.dtos.responses.BankOperatorResponse;
 import com.backend.gns.admin.application.mappers.BankOperatorMapper;
+import com.backend.gns.Shared.domain.enums.TypeParametreGns;
+import com.backend.gns.Shared.domain.services.ParametreGnsService;
 import com.backend.gns.Shared.exception.ResourceNotFoundException;
 import com.backend.gns.Shared.user.domain.models.BankOperator;
+import com.backend.gns.Shared.wallet.domain.enums.WalletStatus;
+import com.backend.gns.Shared.wallet.domain.enums.WalletType;
+import com.backend.gns.Shared.wallet.domain.models.Wallet;
 import com.backend.gns.admin.domain.services.BankOperatorService;
 import com.backend.gns.Shared.user.infrastructure.repositories.BankOperatorRepository;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +33,7 @@ public class BankOperatorServiceImpl implements BankOperatorService {
 
   private final BankOperatorRepository bankOperatorRepository;
   private final BankOperatorMapper bankOperatorMapper;
+  private final ParametreGnsService parametreGnsService;
 
   // ─────────────────────────────────────────────
   // Utilitaires privés
@@ -52,9 +60,23 @@ public class BankOperatorServiceImpl implements BankOperatorService {
     log.info("Création d'un opérateur bancaire: {} {}", request.prenom(), request.nom());
 
     BankOperator bankOperator = bankOperatorMapper.toEntity(request);
+    
+    // Initialisation du Wallet via Cascade
+    Wallet wallet = new Wallet();
+    wallet.setTrackingId(UUID.randomUUID());
+    wallet.setTypeWallet(WalletType.BANK_OPERATOR);
+    wallet.setStatutWallet(WalletStatus.ACTIF);
+    wallet.setSolde(BigDecimal.ZERO);
+    
+    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
+    wallet.setPlafond(plafondDefaut);
+    wallet.setDateCreation(LocalDateTime.now());
+    
+    bankOperator.setWallet(wallet);
+
     BankOperator savedBankOperator = bankOperatorRepository.save(bankOperator);
 
-    log.info("Opérateur bancaire créé avec succès, trackingId: {}", savedBankOperator.getTrackingId());
+    log.info("Opérateur bancaire créé avec succès avec son Wallet, trackingId: {}", savedBankOperator.getTrackingId());
     return bankOperatorMapper.toResponse(savedBankOperator);
   }
 

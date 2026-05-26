@@ -79,6 +79,24 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
 
   @Override
   @Transactional
+  public InscriptionAnnuelleResponse updateStatus(UUID trackingId, StatutInscription statut) {
+    InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
+        .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée avec l'ID: " + trackingId));
+    inscription.setStatut(statut);
+    return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
+  }
+
+  @Override
+  @Transactional
+  public InscriptionAnnuelleResponse updateDefinitif(UUID trackingId, boolean estInscritDefinitif) {
+    InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
+        .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée avec l'ID: " + trackingId));
+    inscription.setEstInscritDefinitif(estInscritDefinitif);
+    return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
+  }
+
+  @Override
+  @Transactional
   public void delete(UUID trackingId) {
     InscriptionAnnuelle inscription =
         inscriptionRepository

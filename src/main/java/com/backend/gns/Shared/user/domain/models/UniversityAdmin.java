@@ -28,7 +28,7 @@ public class UniversityAdmin extends User {
     @Column(unique = true, nullable = true)
     private String numeroCompte;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = jakarta.persistence.CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "wallet_id", unique = true)
     private Wallet wallet;
 

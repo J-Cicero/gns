@@ -3,10 +3,17 @@ package com.backend.gns.admin.domain.services.impl;
 import com.backend.gns.admin.application.dtos.requests.AdminRequest;
 import com.backend.gns.admin.application.dtos.responses.AdminResponse;
 import com.backend.gns.admin.application.mappers.AdminMapper;
+import com.backend.gns.Shared.domain.enums.TypeParametreGns;
+import com.backend.gns.Shared.domain.services.ParametreGnsService;
 import com.backend.gns.Shared.exception.ResourceNotFoundException;
 import com.backend.gns.Shared.user.domain.models.Admin;
+import com.backend.gns.Shared.wallet.domain.enums.WalletStatus;
+import com.backend.gns.Shared.wallet.domain.enums.WalletType;
+import com.backend.gns.Shared.wallet.domain.models.Wallet;
 import com.backend.gns.admin.domain.services.AdminService;
 import com.backend.gns.admin.infrastructure.repositories.AdminRepository;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +33,7 @@ public class AdminServiceImpl implements AdminService {
 
   private final AdminRepository adminRepository;
   private final AdminMapper adminMapper;
+  private final ParametreGnsService parametreGnsService;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -46,9 +54,22 @@ public class AdminServiceImpl implements AdminService {
   public AdminResponse create(AdminRequest request) {
     log.info("Création d'un admin: {}", request.email());
     Admin admin = adminMapper.toEntity(request);
-    Admin savedAdmin = adminRepository.save(admin);
 
-    log.info("Admin créé avec succès, trackingId: {}", savedAdmin.getTrackingId());
+    // Initialisation du Wallet via Cascade
+    Wallet wallet = new Wallet();
+    wallet.setTrackingId(UUID.randomUUID());
+    wallet.setTypeWallet(WalletType.ADMIN);
+    wallet.setStatutWallet(WalletStatus.ACTIF);
+    wallet.setSolde(BigDecimal.ZERO);
+    
+    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
+    wallet.setPlafond(plafondDefaut);
+    wallet.setDateCreation(LocalDateTime.now());
+    
+    admin.setWallet(wallet);
+
+    Admin savedAdmin = adminRepository.save(admin);
+    log.info("Admin créé avec succès avec son Wallet, trackingId: {}", savedAdmin.getTrackingId());
     return adminMapper.toResponse(savedAdmin);
   }
 

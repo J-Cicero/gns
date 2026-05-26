@@ -1,6 +1,6 @@
 package com.backend.gns.Shared.application.services.impl;
 
-import com.backend.gns.Shared.application.services.ConfigurationService;
+import com.backend.gns.Shared.application.services.ConfigurationGnsService;
 import com.backend.gns.Shared.domain.models.ConfigurationGns;
 import com.backend.gns.Shared.infrastructure.repositories.ConfigurationGnsRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ConfigurationServiceImpl implements ConfigurationService {
+public class ConfigurationGnsServiceImpl implements ConfigurationGnsService {
 
     private final ConfigurationGnsRepository configurationGnsRepository;
 

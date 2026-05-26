@@ -1,6 +1,7 @@
 package com.backend.gns.Shared.domain.models;
 
 import com.backend.gns.Shared.utils.BaseEntity;
+import com.backend.gns.Shared.wallet.domain.models.Wallet;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.*;
@@ -21,7 +22,7 @@ public class Universite extends BaseEntity {
     private UUID trackingId = UUID.randomUUID();
 
     @Column(length = 10, nullable = false, unique = true)
-    private String code; // UL, UK
+    private String code; 
 
     @Column(length = 100, nullable = false)
     private String nom;
@@ -34,5 +35,5 @@ public class Universite extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "wallet_id")
-    private com.backend.gns.Shared.wallet.domain.models.Wallet wallet;
+    private Wallet wallet;
 }
