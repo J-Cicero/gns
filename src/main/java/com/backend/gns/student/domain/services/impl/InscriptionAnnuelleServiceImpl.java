@@ -83,6 +83,22 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
         .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée avec l'ID: " + trackingId));
     inscription.setStatut(statut);
+    
+    // Synchronize Student KYC status with DBS Decision
+    if (statut == StatutInscription.ACTIVE) {
+        Student student = inscription.getStudent();
+        if (student != null) {
+            student.setStatutKYC(com.backend.gns.Shared.domain.enums.KycStatus.VALIDEE);
+            studentRepository.save(student);
+        }
+    } else if (statut == StatutInscription.REJETEE) {
+        Student student = inscription.getStudent();
+        if (student != null) {
+            student.setStatutKYC(com.backend.gns.Shared.domain.enums.KycStatus.REJETE);
+            studentRepository.save(student);
+        }
+    }
+    
     return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
   }
 

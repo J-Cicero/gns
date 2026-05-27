@@ -72,9 +72,10 @@ public class BankPortalServiceImpl implements BankPortalService {
                     s.getNumEtudiantUniv(),
                     bourseTotale,
                     depenses,
-                    soldeActuel // Ce qui reste sur le wallet est ce qui doit être liquidé à la fin ?
+                    soldeActuel, // Ce qui reste sur le wallet est ce qui doit être liquidé à la fin ?
                                // Ou plutôt ce qui reste de la bourse non encore chargée sur StudCash ?
                                // Selon ton explication : BourseTotale - DépensesStudCash = Reste envoyé sur compte étudiant
+                    be.isVirementEffectue()
                 ));
             }
         }

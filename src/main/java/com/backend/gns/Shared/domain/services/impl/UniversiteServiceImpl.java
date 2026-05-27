@@ -88,6 +88,7 @@ public class UniversiteServiceImpl implements UniversiteService {
             map.put("nom", u.getNom());
             map.put("code", u.getCode());
             map.put("nbEtudiants", studentRepository.countByUniversite(u));
+            map.put("nbEligibles", studentRepository.countByUniversiteAndStatutKYC(u, com.backend.gns.Shared.domain.enums.KycStatus.VALIDEE));
             return map;
         }).collect(Collectors.toList());
     }

@@ -14,7 +14,8 @@ public interface BankPortalService {
         String numEtudiant,
         BigDecimal bourseTotale,
         BigDecimal depensesStudCash,
-        BigDecimal resteAPayer
+        BigDecimal resteAPayer,
+        boolean virementEffectue
     ) {}
 
     List<StudentLiquidationInfo> getStudentsForBank(UUID bankOperatorTrackingId);

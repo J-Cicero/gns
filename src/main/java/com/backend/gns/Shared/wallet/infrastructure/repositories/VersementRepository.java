@@ -24,6 +24,8 @@ public interface VersementRepository extends JpaRepository<Versement, Long> {
 
   Page<Versement> findByTypeVersement(VersementType typeVersement, Pageable pageable);
 
+  java.util.List<Versement> findByDateVersementBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
+
   Long countByStatut(VersementStatut statut);
   @Query("SELECT SUM(v.montantVerse) FROM Versement v")
   BigDecimal sumAllMontants();
