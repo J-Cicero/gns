@@ -7,6 +7,7 @@ import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
 import com.backend.gns.student.application.mappers.StudentMapper;
+import com.backend.gns.student.domain.models.Card;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.StudentService;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
@@ -192,10 +193,9 @@ public class StudentServiceImpl implements StudentService {
   @Override
   public Map<String, Object> getCard(UUID studentTrackingId) {
     Student student = findStudentOrThrow(studentTrackingId);
-    Page<com.backend.gns.student.domain.models.Card> page =
-        cardRepository.findByStudent(student, PageRequest.of(0, 1));
+    Page<Card> page = cardRepository.findByStudent(student, PageRequest.of(0, 1));
     if (page.hasContent()) {
-      com.backend.gns.student.domain.models.Card c = page.getContent().get(0);
+      Card c = page.getContent().get(0);
       Map<String, Object> map = new HashMap<>();
       map.put("trackingId", c.getTrackingId());
       map.put("qrCodeStatique", c.getQrCodeStatique());

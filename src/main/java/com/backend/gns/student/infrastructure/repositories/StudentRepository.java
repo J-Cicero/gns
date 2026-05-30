@@ -7,7 +7,8 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
+import org.springframework.data.jpa.repository.Query;
+import com.backend.gns.student.domain.models.Universite;
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
   Optional<Student> findByTrackingId(UUID trackingId);
@@ -22,8 +23,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
   Page<Student> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 
-  long countByUniversite(com.backend.gns.student.domain.models.Universite universite);
+  long countByUniversite(Universite universite);
 
-  long countByUniversiteAndStatutKYC(
-      com.backend.gns.student.domain.models.Universite universite, KycStatus statut);
+  @Query("SELECT COUNT(s) FROM Student s WHERE s.universite = :universite AND s.statutKYC = :statut")
+  Long countByUniversiteAndStatutKYC(
+      Universite universite, KycStatus statut);
 }

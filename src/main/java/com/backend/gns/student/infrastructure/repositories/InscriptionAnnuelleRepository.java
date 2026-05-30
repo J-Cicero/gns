@@ -2,6 +2,8 @@ package com.backend.gns.student.infrastructure.repositories;
 
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
+import com.backend.gns.student.domain.models.ScolariteYear;
+import com.backend.gns.student.domain.models.Student;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,11 +26,11 @@ public interface InscriptionAnnuelleRepository extends JpaRepository<Inscription
       @Param("studentTrackingId") UUID studentTrackingId, @Param("annee") String annee);
 
   Optional<InscriptionAnnuelle> findByStudentAndScolariteYear(
-      com.backend.gns.student.domain.models.Student student,
-      com.backend.gns.student.domain.models.ScolariteYear scolariteYear);
+      Student student,
+      ScolariteYear scolariteYear);
 
   List<InscriptionAnnuelle> findAllByScolariteYear(
-      com.backend.gns.student.domain.models.ScolariteYear scolariteYear);
+      ScolariteYear scolariteYear);
 
   Page<InscriptionAnnuelle> findByStatut(StatutInscription statut, Pageable pageable);
 

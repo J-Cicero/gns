@@ -5,6 +5,8 @@ import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.paiement.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
+import com.backend.gns.wallet.domain.models.Versement;
+import com.backend.gns.paiement.domain.models.Paiement;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,9 +95,9 @@ public class DashboardServiceImpl implements DashboardService {
             .withNano(0);
     java.time.LocalDateTime endOfYear = startOfYear.plusYears(1).minusNanos(1);
 
-    List<com.backend.gns.wallet.domain.models.Versement> versements =
+    List<Versement> versements =
         versementRepository.findByDateVersementBetween(startOfYear, endOfYear);
-    List<com.backend.gns.paiement.domain.models.Paiement> paiements =
+    List<Paiement> paiements =
         paiementRepository.findByDateBetween(startOfYear, endOfYear);
 
     BigDecimal[] boursesParMois = new BigDecimal[12];
@@ -106,14 +108,14 @@ public class DashboardServiceImpl implements DashboardService {
       paiementsParMois[i] = BigDecimal.ZERO;
     }
 
-    for (com.backend.gns.wallet.domain.models.Versement v : versements) {
+    for (Versement v : versements) {
       if (v.getDateVersement() != null && v.getMontantVerse() != null) {
         int month = v.getDateVersement().getMonthValue() - 1;
         boursesParMois[month] = boursesParMois[month].add(v.getMontantVerse());
       }
     }
 
-    for (com.backend.gns.paiement.domain.models.Paiement p : paiements) {
+    for (Paiement p : paiements) {
       if (p.getDate() != null && p.getMontantDebite() != null) {
         int month = p.getDate().getMonthValue() - 1;
         paiementsParMois[month] = paiementsParMois[month].add(p.getMontantDebite());
