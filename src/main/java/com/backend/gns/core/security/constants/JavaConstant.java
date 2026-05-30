@@ -33,7 +33,9 @@ public class JavaConstant {
     API_BASE_URL + "/wallets/**",
     API_BASE_URL + "/versements/**",
     API_BASE_URL + "/universites/**",
-    API_BASE_URL + "/parametres-gns/**"
+    API_BASE_URL + "/parametres-gns/**",
+    API_BASE_URL + "/scolarite-years/**",
+    API_BASE_URL + "/documents-requis/**"
   };
 
   // URLs pour ETUDIANT.
@@ -47,7 +49,9 @@ public class JavaConstant {
     API_BASE_URL + "/documents/**",
     API_BASE_URL + "/cards/**",
     API_BASE_URL + "/inscriptions/**",
-    API_BASE_URL + "/scolarite/**"
+    API_BASE_URL + "/scolarite/**",
+    API_BASE_URL + "/scolarite-years/**",
+    API_BASE_URL + "/documents-requis/**"
   };
 
   // URLs pour COMMERCANT.

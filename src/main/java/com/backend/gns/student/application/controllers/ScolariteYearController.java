@@ -1,44 +1,59 @@
 package com.backend.gns.student.application.controllers;
 
-import com.backend.gns.student.domain.models.ScolariteYear;
-import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
+import com.backend.gns.student.application.dtos.requests.ScolariteYearRequest;
+import com.backend.gns.student.application.dtos.responses.ScolariteYearResponse;
+import com.backend.gns.student.domain.services.ScolariteYearService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/scolarite-years")
+@RequestMapping("/api/scolarite-years")
 @Tag(name = "SCOLARITE_YEAR", description = "Gestion des années scolaires")
 @RequiredArgsConstructor
 public class ScolariteYearController {
 
-  private final ScolariteYearRepository repository;
+  private final ScolariteYearService scolariteYearService;
 
-  @GetMapping
-  @Operation(summary = "Lister toutes les années scolaires")
-  public ResponseEntity<List<ScolariteYear>> findAll() {
-    return ResponseEntity.ok(repository.findAll());
+  @PostMapping
+  @Operation(summary = "Créer une année scolaire")
+  public ResponseEntity<ScolariteYearResponse> create(@RequestBody ScolariteYearRequest request) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(scolariteYearService.create(request));
   }
 
-  @GetMapping("/active")
-  @Operation(summary = "Récupérer l'année scolaire active")
-  public ResponseEntity<ScolariteYear> findActive() {
-    return repository
-        .findByEstOuverteTrue()
+  @GetMapping("/{trackingId}")
+  public ResponseEntity<ScolariteYearResponse> getByTrackingId(@PathVariable UUID trackingId) {
+    return scolariteYearService
+        .findByTrackingId(trackingId)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
 
-  @PostMapping
-  @Operation(summary = "Créer une année scolaire")
-  public ResponseEntity<ScolariteYear> create(@RequestBody ScolariteYear scolariteYear) {
-    if (scolariteYear.getTrackingId() == null) {
-      scolariteYear.setTrackingId(UUID.randomUUID());
-    }
-    return ResponseEntity.ok(repository.save(scolariteYear));
+  @GetMapping("/active")
+  @Operation(summary = "Récupérer l'année scolaire active")
+  public ResponseEntity<ScolariteYearResponse> getActiveYear() {
+    return scolariteYearService
+        .findActiveYear()
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
+
+  @PostMapping("/{trackingId}/cloturer")
+  @Operation(summary = "Clôturer une année et ouvrir la suivante")
+  public ResponseEntity<ScolariteYearResponse> cloturerEtOuvrirNouvelle(
+      @PathVariable UUID trackingId, @RequestBody ScolariteYearRequest request) {
+    return ResponseEntity.ok(scolariteYearService.cloturerEtOuvrirNouvelle(trackingId, request));
+  }
+
+  @GetMapping
+  @Operation(summary = "Lister toutes les années scolaires")
+  public ResponseEntity<Page<ScolariteYearResponse>> getAll(Pageable pageable) {
+    return ResponseEntity.ok(scolariteYearService.findAll(pageable));
   }
 }
