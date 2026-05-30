@@ -1,8 +1,8 @@
 package com.backend.gns.core.security.config;
 
+import com.backend.gns.core.security.jwt.filters.JwtAuthorizationToken;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,60 +18,75 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.backend.gns.core.security.jwt.filters.JwtAuthorizationToken;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private JwtAuthorizationToken authenticationFilter;
+  private JwtAuthorizationToken authenticationFilter;
 
-    public SecurityConfig(JwtAuthorizationToken authenticationFilter) {
-        this.authenticationFilter = authenticationFilter;
-    }
+  public SecurityConfig(JwtAuthorizationToken authenticationFilter) {
+    this.authenticationFilter = authenticationFilter;
+  }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.PUBLIC_URLS).permitAll()
-                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.ADMIN_URLS).hasRole("ADMIN_GNS")
-                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.ETUDIANT_URLS).hasRole("ETUDIANT")
-                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.COMMERCANT_URLS).hasRole("COMMERCANT")
-                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.BANQUE_URLS).hasRole("BANK_OPERATOR")
-                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.UNIVERSITY_URLS).hasRole("UNIVERSITY_ADMIN")
-                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.DBS_URLS).hasRole("DBS_ADMIN")
-                        .anyRequest().authenticated()
-                );
-        return http.build();
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(csrf -> csrf.disable())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.PUBLIC_URLS)
+                    .permitAll()
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.ADMIN_URLS)
+                    .hasRole("ADMIN_GNS")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.ETUDIANT_URLS)
+                    .hasRole("ETUDIANT")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.COMMERCANT_URLS)
+                    .hasRole("COMMERCANT")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.BANQUE_URLS)
+                    .hasRole("BANK_OPERATOR")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.UNIVERSITY_URLS)
+                    .hasRole("UNIVERSITY_ADMIN")
+                    .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.DBS_URLS)
+                    .hasRole("DBS_ADMIN")
+                    .anyRequest()
+                    .authenticated());
+    return http.build();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(
+      AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
+  }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        // TEMPORAIRE : Autoriser toutes les origines pour les tests
-        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Collections.singletonList("*"));
-        configuration.setExposedHeaders(Arrays.asList("x-auth-token", "authorization", "content-type"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    // TEMPORAIRE : Autoriser toutes les origines pour les tests
+    configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+    configuration.setAllowedMethods(
+        Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(Collections.singletonList("*"));
+    configuration.setExposedHeaders(Arrays.asList("x-auth-token", "authorization", "content-type"));
+    configuration.setAllowCredentials(true);
+    configuration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 }

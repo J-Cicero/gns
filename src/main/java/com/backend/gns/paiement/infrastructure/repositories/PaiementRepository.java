@@ -21,7 +21,8 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
 
   Page<Paiement> findByTypePaiementOrderByDateDesc(PaiementType typePaiement, Pageable pageable);
 
-  java.util.List<Paiement> findByDateBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
+  java.util.List<Paiement> findByDateBetween(
+      java.time.LocalDateTime start, java.time.LocalDateTime end);
 
   @Query("SELECT p FROM Paiement p WHERE p.wallet.trackingId = :trackingId ORDER BY p.date DESC")
   Page<Paiement> findByWalletTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
@@ -29,16 +30,22 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
   @Query("SELECT p FROM Paiement p WHERE p.commande.trackingId = :trackingId ORDER BY p.date DESC")
   Page<Paiement> findByCommandeTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 
-  @Query("SELECT p FROM Paiement p WHERE p.commande.student.universite.trackingId = :universiteTrackingId ORDER BY p.date DESC")
-  Page<Paiement> findByUniversiteTrackingId(@Param("universiteTrackingId") UUID universiteTrackingId, Pageable pageable);
+  @Query(
+      "SELECT p FROM Paiement p WHERE p.commande.student.universite.trackingId = :universiteTrackingId ORDER BY p.date DESC")
+  Page<Paiement> findByUniversiteTrackingId(
+      @Param("universiteTrackingId") UUID universiteTrackingId, Pageable pageable);
 
   Long countByStatutPaiement(PaiementStatut statutPaiement);
 
   @Query("SELECT SUM(p.montantDebite) FROM Paiement p WHERE p.statutPaiement = :statut")
   BigDecimal sumMontantDebiteByStatut(@Param("statut") PaiementStatut statut);
 
-  @Query("SELECT SUM(p.montantDebite) FROM Paiement p WHERE p.date >= :start AND p.date <= :end AND p.statutPaiement = :statut")
-  BigDecimal sumMontantDebiteBetweenDatesAndStatut(@Param("start") java.time.LocalDateTime start, @Param("end") java.time.LocalDateTime end, @Param("statut") PaiementStatut statut);
+  @Query(
+      "SELECT SUM(p.montantDebite) FROM Paiement p WHERE p.date >= :start AND p.date <= :end AND p.statutPaiement = :statut")
+  BigDecimal sumMontantDebiteBetweenDatesAndStatut(
+      @Param("start") java.time.LocalDateTime start,
+      @Param("end") java.time.LocalDateTime end,
+      @Param("statut") PaiementStatut statut);
 
   @Query("SELECT SUM(p.commission) FROM Paiement p WHERE p.statutPaiement = :statut")
   BigDecimal sumCommissionByStatut(@Param("statut") PaiementStatut statut);

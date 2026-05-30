@@ -1,13 +1,13 @@
 package com.backend.gns.student.domain.services;
 
+import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
-import com.backend.gns.core.domain.enums.KycStatus;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.Map;
 
 public interface StudentService {
 
@@ -30,6 +30,8 @@ public interface StudentService {
   Map<String, Object> getCard(UUID studentTrackingId);
 
   long countAll();
+
   long countByEstActif(boolean active);
+
   long countByStatutKYC(KycStatus kycStatus);
 }

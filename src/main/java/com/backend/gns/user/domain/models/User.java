@@ -1,7 +1,7 @@
 package com.backend.gns.user.domain.models;
 
-import com.backend.gns.user.domain.enums.UserRole;
 import com.backend.gns.core.utils.BaseEntity;
+import com.backend.gns.user.domain.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;

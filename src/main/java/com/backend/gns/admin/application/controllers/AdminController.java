@@ -22,7 +22,9 @@ public class AdminController {
   private final AdminService adminService;
   private final com.backend.gns.admin.domain.services.DashboardService dashboardService;
 
-  public AdminController(AdminService adminService, com.backend.gns.admin.domain.services.DashboardService dashboardService) {
+  public AdminController(
+      AdminService adminService,
+      com.backend.gns.admin.domain.services.DashboardService dashboardService) {
     this.adminService = adminService;
     this.dashboardService = dashboardService;
   }

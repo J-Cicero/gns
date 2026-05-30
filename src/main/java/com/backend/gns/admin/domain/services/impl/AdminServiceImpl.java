@@ -3,15 +3,15 @@ package com.backend.gns.admin.domain.services.impl;
 import com.backend.gns.admin.application.dtos.requests.AdminRequest;
 import com.backend.gns.admin.application.dtos.responses.AdminResponse;
 import com.backend.gns.admin.application.mappers.AdminMapper;
+import com.backend.gns.admin.domain.models.Admin;
+import com.backend.gns.admin.domain.services.AdminService;
+import com.backend.gns.admin.infrastructure.repositories.AdminRepository;
+import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
-import com.backend.gns.core.exception.ResourceNotFoundException;
-import com.backend.gns.admin.domain.models.Admin;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.admin.domain.services.AdminService;
-import com.backend.gns.admin.infrastructure.repositories.AdminRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -43,10 +43,11 @@ public class AdminServiceImpl implements AdminService {
   private Admin findAdminOrThrow(UUID trackingId) {
     return adminRepository
         .findByTrackingId(trackingId)
-        .orElseThrow(() -> {
-          log.warn("Admin introuvable avec trackingId: {}", trackingId);
-          return new ResourceNotFoundException("Admin non trouvé avec l'ID: " + trackingId);
-        });
+        .orElseThrow(
+            () -> {
+              log.warn("Admin introuvable avec trackingId: {}", trackingId);
+              return new ResourceNotFoundException("Admin non trouvé avec l'ID: " + trackingId);
+            });
   }
 
   @Override
@@ -61,11 +62,12 @@ public class AdminServiceImpl implements AdminService {
     wallet.setTypeWallet(WalletType.ADMIN);
     wallet.setStatutWallet(WalletStatus.ACTIF);
     wallet.setSolde(BigDecimal.ZERO);
-    
-    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
+
+    BigDecimal plafondDefaut =
+        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
     wallet.setPlafond(plafondDefaut);
     wallet.setDateCreation(LocalDateTime.now());
-    
+
     admin.setWallet(wallet);
 
     Admin savedAdmin = adminRepository.save(admin);

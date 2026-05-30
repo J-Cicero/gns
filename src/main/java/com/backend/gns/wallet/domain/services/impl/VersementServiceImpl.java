@@ -1,15 +1,5 @@
 package com.backend.gns.wallet.domain.services.impl;
 
-import com.backend.gns.wallet.application.dtos.requests.VersementRequest;
-import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
-import com.backend.gns.wallet.application.mappers.VersementMapper;
-import com.backend.gns.wallet.domain.enums.VersementStatut;
-import com.backend.gns.wallet.domain.enums.VersementType;
-import com.backend.gns.wallet.domain.models.Versement;
-import com.backend.gns.wallet.domain.services.VersementService;
-import com.backend.gns.wallet.domain.services.WalletService;
-import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
-import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.paiement.domain.services.ScolariteService;
@@ -22,19 +12,27 @@ import com.backend.gns.student.domain.services.EligibiliteService.EligibiliteRes
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import com.backend.gns.wallet.application.dtos.requests.VersementRequest;
+import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
+import com.backend.gns.wallet.application.mappers.VersementMapper;
+import com.backend.gns.wallet.domain.enums.VersementStatut;
+import com.backend.gns.wallet.domain.enums.VersementType;
+import com.backend.gns.wallet.domain.models.Versement;
+import com.backend.gns.wallet.domain.services.VersementService;
+import com.backend.gns.wallet.domain.services.WalletService;
+import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -61,8 +59,7 @@ public class VersementServiceImpl implements VersementService {
       WalletService walletService,
       ScolariteYearRepository scolariteYearRepository,
       InscriptionAnnuelleRepository inscriptionAnnuelleRepository,
-      ScolariteService scolariteService
-      ) {
+      ScolariteService scolariteService) {
     this.versementRepository = versementRepository;
     this.versementMapper = versementMapper;
     this.studentRepository = studentRepository;
@@ -156,45 +153,51 @@ public class VersementServiceImpl implements VersementService {
 
   @Override
   @Transactional
-  public void effectuerVersementMasseEtudiants(UUID scolariteYearTrackingId, BigDecimal montantFixe) {
-    ScolariteYear year = scolariteYearRepository.findByTrackingId(scolariteYearTrackingId)
+  public void effectuerVersementMasseEtudiants(
+      UUID scolariteYearTrackingId, BigDecimal montantFixe) {
+    ScolariteYear year =
+        scolariteYearRepository
+            .findByTrackingId(scolariteYearTrackingId)
             .orElseThrow(() -> new EntityNotFoundException("Année scolaire non trouvée"));
 
-    List<InscriptionAnnuelle> inscriptions = inscriptionAnnuelleRepository.findAllByScolariteYear(year);
+    List<InscriptionAnnuelle> inscriptions =
+        inscriptionAnnuelleRepository.findAllByScolariteYear(year);
 
     for (InscriptionAnnuelle ins : inscriptions) {
-        Student student = ins.getStudent();
-        
-        EligibiliteResult result = 
-            eligibiliteService.verifierEligibilite(student, ins, student.getBanqueEtudiant());
+      Student student = ins.getStudent();
 
-        if (result.estEligible) {
-            BigDecimal montantAVerser = (montantFixe != null) ? montantFixe : result.plafondAccorde;
-            
-            if (student.getWallet() != null) {
-                try {
-                    // 1. Créditer le wallet
-                    walletService.crediter(student.getWallet().getTrackingId(), montantAVerser);
-                    
-                    // 2. Créer l'historique de versement
-                    Versement v = new Versement();
-                    v.setWallet(student.getWallet());
-                    v.setMontantVerse(montantAVerser);
-                    v.setDateVersement(LocalDateTime.now());
-                    v.setStatut(VersementStatut.VALIDEE);
-                    v.setTypeVersement(ins.getTypeBourse() == TypeBourse.BOURSE_DBS_54k ? 
-                        VersementType.BOURSE_DBS_54k : VersementType.BOURSE_DBS_36k);
-                    versementRepository.save(v);
+      EligibiliteResult result =
+          eligibiliteService.verifierEligibilite(student, ins, student.getBanqueEtudiant());
 
-                    // 3. Rembourser automatiquement les dettes de scolarité
-                    scolariteService.rembourserPretsEnAttente(student.getTrackingId(), montantAVerser);
-                    
-                    log.info("Versement réussi pour {}", student.getNom());
-                } catch (Exception e) {
-                    log.error("Échec versement pour {}: {}", student.getNom(), e.getMessage());
-                }
-            }
+      if (result.estEligible) {
+        BigDecimal montantAVerser = (montantFixe != null) ? montantFixe : result.plafondAccorde;
+
+        if (student.getWallet() != null) {
+          try {
+            // 1. Créditer le wallet
+            walletService.crediter(student.getWallet().getTrackingId(), montantAVerser);
+
+            // 2. Créer l'historique de versement
+            Versement v = new Versement();
+            v.setWallet(student.getWallet());
+            v.setMontantVerse(montantAVerser);
+            v.setDateVersement(LocalDateTime.now());
+            v.setStatut(VersementStatut.VALIDEE);
+            v.setTypeVersement(
+                ins.getTypeBourse() == TypeBourse.BOURSE_DBS_54k
+                    ? VersementType.BOURSE_DBS_54k
+                    : VersementType.BOURSE_DBS_36k);
+            versementRepository.save(v);
+
+            // 3. Rembourser automatiquement les dettes de scolarité
+            scolariteService.rembourserPretsEnAttente(student.getTrackingId(), montantAVerser);
+
+            log.info("Versement réussi pour {}", student.getNom());
+          } catch (Exception e) {
+            log.error("Échec versement pour {}: {}", student.getNom(), e.getMessage());
+          }
         }
+      }
     }
   }
 
@@ -202,25 +205,25 @@ public class VersementServiceImpl implements VersementService {
   @Transactional
   public void effectuerVersementMasseBoutiques(BigDecimal seuil, BigDecimal montantQuota) {
     List<Boutique> boutiques = boutiqueRepository.findAll();
-    
+
     for (Boutique boutique : boutiques) {
-        if (boutique.getWallet() != null && boutique.getWallet().getSolde().compareTo(seuil) <= 0) {
-            try {
-                walletService.crediter(boutique.getWallet().getTrackingId(), montantQuota);
-                
-                Versement v = new Versement();
-                v.setWallet(boutique.getWallet());
-                v.setMontantVerse(montantQuota);
-                v.setDateVersement(LocalDateTime.now());
-                v.setStatut(VersementStatut.VALIDEE);
-                v.setTypeVersement(VersementType.RECHARGE_QUOTA_BOUTIQUE);
-                versementRepository.save(v);
-                
-                log.info("Quota rechargé pour boutique {}", boutique.getNomBoutique());
-            } catch (Exception e) {
-                log.error("Échec recharge boutique {}: {}", boutique.getNomBoutique(), e.getMessage());
-            }
+      if (boutique.getWallet() != null && boutique.getWallet().getSolde().compareTo(seuil) <= 0) {
+        try {
+          walletService.crediter(boutique.getWallet().getTrackingId(), montantQuota);
+
+          Versement v = new Versement();
+          v.setWallet(boutique.getWallet());
+          v.setMontantVerse(montantQuota);
+          v.setDateVersement(LocalDateTime.now());
+          v.setStatut(VersementStatut.VALIDEE);
+          v.setTypeVersement(VersementType.RECHARGE_QUOTA_BOUTIQUE);
+          versementRepository.save(v);
+
+          log.info("Quota rechargé pour boutique {}", boutique.getNomBoutique());
+        } catch (Exception e) {
+          log.error("Échec recharge boutique {}: {}", boutique.getNomBoutique(), e.getMessage());
         }
+      }
     }
   }
 }

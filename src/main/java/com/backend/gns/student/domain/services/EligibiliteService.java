@@ -7,7 +7,8 @@ import java.math.BigDecimal;
 
 public interface EligibiliteService {
 
-  EligibiliteResult verifierEligibilite(Student student, InscriptionAnnuelle inscription, BanqueEtudiant banque);
+  EligibiliteResult verifierEligibilite(
+      Student student, InscriptionAnnuelle inscription, BanqueEtudiant banque);
 
   class EligibiliteResult {
     public final boolean estEligible;

@@ -6,8 +6,4 @@ import lombok.Builder;
 
 @Builder
 public record PretScolariteRequest(
-    UUID studentTrackingId,
-    UUID universiteTrackingId,
-    BigDecimal montant,
-    String description
-) {}
+    UUID studentTrackingId, UUID universiteTrackingId, BigDecimal montant, String description) {}

@@ -94,7 +94,8 @@ public class UserController {
   public ResponseEntity<UserResponse> getProfile() {
     // In a real app we would get this from SecurityContext
     // For now we return the first one or a 404
-    return userService.getAllUsers(0, 1).getContent().stream().findFirst()
+    return userService.getAllUsers(0, 1).getContent().stream()
+        .findFirst()
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }

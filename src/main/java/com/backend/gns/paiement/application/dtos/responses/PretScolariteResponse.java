@@ -15,5 +15,4 @@ public record PretScolariteResponse(
     BigDecimal montant,
     boolean estRembourse,
     String description,
-    LocalDateTime createdAt
-) {}
+    LocalDateTime createdAt) {}

@@ -25,7 +25,6 @@ public class CardMapper {
     card.setQrCodeStatique(request.qrCodeStatique());
     card.setStatut(request.cardStatus());
 
-
     if (request.studentTrackingId() != null) {
       Student student =
           studentRepository

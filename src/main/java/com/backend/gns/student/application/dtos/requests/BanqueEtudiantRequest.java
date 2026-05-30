@@ -2,10 +2,9 @@ package com.backend.gns.student.application.dtos.requests;
 
 import com.backend.gns.core.domain.enums.Banque;
 import com.backend.gns.student.domain.enums.MandatStatut;
-import lombok.Builder;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.Builder;
 
 @Builder
 public record BanqueEtudiantRequest(
@@ -16,7 +15,4 @@ public record BanqueEtudiantRequest(
     boolean mandatSigne,
     LocalDateTime mandatTimestamp,
     String lieuEnregistrement,
-    LocalDateTime mandatValideLeDate
-) {}
-
-
+    LocalDateTime mandatValideLeDate) {}

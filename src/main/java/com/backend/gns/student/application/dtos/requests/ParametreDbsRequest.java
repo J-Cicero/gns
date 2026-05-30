@@ -10,5 +10,4 @@ public record ParametreDbsRequest(
     @NotNull TypeParametreDbs nomParametre,
     @NotBlank String valeurParametre,
     @NotNull Boolean estActif,
-    String description
-) {}
+    String description) {}

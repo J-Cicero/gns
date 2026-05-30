@@ -1,7 +1,6 @@
 @ApplicationModule(
     displayName = "Portefeuille",
-    allowedDependencies = {"core"}
-)
+    allowedDependencies = {"core"})
 package com.backend.gns.wallet;
 
 import org.springframework.modulith.ApplicationModule;

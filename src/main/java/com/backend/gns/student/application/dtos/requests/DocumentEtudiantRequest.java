@@ -1,8 +1,7 @@
 package com.backend.gns.student.application.dtos.requests;
 
-import com.backend.gns.student.domain.enums.StatutDocument;
 import com.backend.gns.core.domain.enums.TypeDocument;
-
+import com.backend.gns.student.domain.enums.StatutDocument;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
@@ -16,6 +15,4 @@ public record DocumentEtudiantRequest(
     String commentaireRejet,
     LocalDateTime dateDepot,
     LocalDateTime dateValidation,
-    String donneesExtraites
-) {}
-
+    String donneesExtraites) {}

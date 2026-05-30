@@ -38,8 +38,7 @@ public class InscriptionAnnuelleMapper {
               .orElseThrow(
                   () ->
                       new IllegalArgumentException(
-                          "Étudiant non trouvé avec trackingId: "
-                              + request.studentTrackingId()));
+                          "Étudiant non trouvé avec trackingId: " + request.studentTrackingId()));
       inscription.setStudent(student);
     }
 
@@ -53,11 +52,17 @@ public class InscriptionAnnuelleMapper {
 
     return InscriptionAnnuelleResponse.builder()
         .trackingId(inscription.getTrackingId())
-        .studentTrackingId(inscription.getStudent() != null ? inscription.getStudent().getTrackingId() : null)
+        .studentTrackingId(
+            inscription.getStudent() != null ? inscription.getStudent().getTrackingId() : null)
         .studentNom(inscription.getStudent() != null ? inscription.getStudent().getNom() : null)
-        .studentPrenom(inscription.getStudent() != null ? inscription.getStudent().getPrenom() : null)
-        .numEtudiantUniv(inscription.getStudent() != null ? inscription.getStudent().getNumEtudiantUniv() : null)
-        .anneeAcademique(inscription.getScolariteYear() != null ? inscription.getScolariteYear().getLibelle() : null)
+        .studentPrenom(
+            inscription.getStudent() != null ? inscription.getStudent().getPrenom() : null)
+        .numEtudiantUniv(
+            inscription.getStudent() != null ? inscription.getStudent().getNumEtudiantUniv() : null)
+        .anneeAcademique(
+            inscription.getScolariteYear() != null
+                ? inscription.getScolariteYear().getLibelle()
+                : null)
         .niveau(inscription.getNiveau())
         .creditsTotalValides(inscription.getCreditsTotalValides())
         .moyenneBac(inscription.getMoyenneBac())

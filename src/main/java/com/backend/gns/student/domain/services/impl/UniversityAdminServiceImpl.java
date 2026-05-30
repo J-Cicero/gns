@@ -1,17 +1,17 @@
 package com.backend.gns.student.domain.services.impl;
 
+import com.backend.gns.core.exception.ResourceNotFoundException;
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.UniversityAdminRequest;
 import com.backend.gns.student.application.dtos.responses.UniversityAdminResponse;
 import com.backend.gns.student.application.mappers.UniversityAdminMapper;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
-import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.student.domain.models.UniversityAdmin;
+import com.backend.gns.student.domain.services.UniversityAdminService;
+import com.backend.gns.student.infrastructure.repositories.UniversityAdminRepository;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.student.domain.services.UniversityAdminService;
-import com.backend.gns.student.infrastructure.repositories.UniversityAdminRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -47,10 +47,12 @@ public class UniversityAdminServiceImpl implements UniversityAdminService {
   private UniversityAdmin findUniversityAdminOrThrow(UUID trackingId) {
     return universityAdminRepository
         .findByTrackingId(trackingId)
-        .orElseThrow(() -> {
-          log.warn("UniversityAdmin introuvable avec trackingId: {}", trackingId);
-          return new ResourceNotFoundException("UniversityAdmin non trouvé avec l'ID: " + trackingId);
-        });
+        .orElseThrow(
+            () -> {
+              log.warn("UniversityAdmin introuvable avec trackingId: {}", trackingId);
+              return new ResourceNotFoundException(
+                  "UniversityAdmin non trouvé avec l'ID: " + trackingId);
+            });
   }
 
   @Override
@@ -59,23 +61,26 @@ public class UniversityAdminServiceImpl implements UniversityAdminService {
     log.info("Création d'un UniversityAdmin: {} {}", request.prenom(), request.nom());
 
     UniversityAdmin universityAdmin = universityAdminMapper.toEntity(request);
-    
+
     // Initialisation du Wallet via Cascade
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
     wallet.setTypeWallet(WalletType.UNIVERSITY); // Ou ADMIN_UL selon l'énumération
     wallet.setStatutWallet(WalletStatus.ACTIF);
     wallet.setSolde(BigDecimal.ZERO);
-    
-    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
+
+    BigDecimal plafondDefaut =
+        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
     wallet.setPlafond(plafondDefaut);
     wallet.setDateCreation(LocalDateTime.now());
-    
+
     universityAdmin.setWallet(wallet);
 
     UniversityAdmin savedUniversityAdmin = universityAdminRepository.save(universityAdmin);
 
-    log.info("UniversityAdmin créé avec succès avec son Wallet, trackingId: {}", savedUniversityAdmin.getTrackingId());
+    log.info(
+        "UniversityAdmin créé avec succès avec son Wallet, trackingId: {}",
+        savedUniversityAdmin.getTrackingId());
     return universityAdminMapper.toResponse(savedUniversityAdmin);
   }
 
@@ -83,7 +88,9 @@ public class UniversityAdminServiceImpl implements UniversityAdminService {
   @Transactional(readOnly = true)
   public Optional<UniversityAdminResponse> findByTrackingId(UUID trackingId) {
     log.debug("Recherche UniversityAdmin par trackingId: {}", trackingId);
-    return universityAdminRepository.findByTrackingId(trackingId).map(universityAdminMapper::toResponse);
+    return universityAdminRepository
+        .findByTrackingId(trackingId)
+        .map(universityAdminMapper::toResponse);
   }
 
   @Override
@@ -117,14 +124,18 @@ public class UniversityAdminServiceImpl implements UniversityAdminService {
   @Transactional(readOnly = true)
   public Page<UniversityAdminResponse> findAll(Pageable pageable) {
     log.debug("Récupération de tous les UniversityAdmin, page: {}", pageable.getPageNumber());
-    return universityAdminRepository.findAll(normalize(pageable)).map(universityAdminMapper::toResponse);
+    return universityAdminRepository
+        .findAll(normalize(pageable))
+        .map(universityAdminMapper::toResponse);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Page<UniversityAdminResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable) {
+  public Page<UniversityAdminResponse> findByUniversiteTrackingId(
+      UUID universiteTrackingId, Pageable pageable) {
     log.debug("Recherche UniversityAdmin par université trackingId: {}", universiteTrackingId);
-    return universityAdminRepository.findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
+    return universityAdminRepository
+        .findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
         .map(universityAdminMapper::toResponse);
   }
 }

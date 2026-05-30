@@ -1,10 +1,10 @@
 package com.backend.gns.commerce.domain.models;
 
-import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.wallet.domain.models.Wallet;
-import jakarta.persistence.Column;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -33,37 +33,37 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Boutique extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(length = 36, nullable = false, unique = true, updatable = false)
-    private UUID trackingId;
+  @Column(length = 36, nullable = false, unique = true, updatable = false)
+  private UUID trackingId;
 
-    @Column(length = 100, nullable = false)
-    private String nomBoutique;
+  @Column(length = 100, nullable = false)
+  private String nomBoutique;
 
-    @Column(length = 100, nullable = false)
-    private String categorieShop;
+  @Column(length = 100, nullable = false)
+  private String categorieShop;
 
-    @Column(length = 255, nullable = false)
-    private String cheminCarteEDJ;
+  @Column(length = 255, nullable = false)
+  private String cheminCarteEDJ;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
-    private KycStatus statutKYC;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20, nullable = false)
+  private KycStatus statutKYC;
 
-    @Column(length = 40)
-    private Double latitude;
+  @Column(length = 40)
+  private Double latitude;
 
-    @Column(length = 40)
-    private Double longitude;
+  @Column(length = 40)
+  private Double longitude;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "merchant_id", nullable = false)
-    private Merchant merchant;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "merchant_id", nullable = false)
+  private Merchant merchant;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "wallet_id")
-    private Wallet wallet;
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinColumn(name = "wallet_id")
+  private Wallet wallet;
 }

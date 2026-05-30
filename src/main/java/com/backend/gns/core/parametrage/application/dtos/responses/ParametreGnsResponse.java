@@ -10,5 +10,4 @@ public record ParametreGnsResponse(
     TypeParametreGns nomParametre,
     String valeurParametre,
     String description,
-    boolean estActif
-) {}
+    boolean estActif) {}

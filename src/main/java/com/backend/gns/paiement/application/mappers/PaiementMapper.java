@@ -1,12 +1,12 @@
 package com.backend.gns.paiement.application.mappers;
 
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.paiement.application.dtos.requests.PaiementRequest;
 import com.backend.gns.paiement.application.dtos.responses.PaiementResponse;
 import com.backend.gns.paiement.domain.models.Commande;
 import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,8 @@ public class PaiementMapper {
     paiement.setTrackingId(UUID.randomUUID());
     paiement.setMontantDebite(request.montantDebite());
     // Commission is calculated dynamically
-    BigDecimal taux = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.TAUX_COMMISSION_PAIEMENT);
+    BigDecimal taux =
+        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.TAUX_COMMISSION_PAIEMENT);
     BigDecimal commission = request.montantDebite().multiply(taux);
     paiement.setCommission(commission);
     // montantNetBoutique is montantDebite - commission
@@ -64,7 +65,8 @@ public class PaiementMapper {
         .build();
   }
 
-  public Paiement toEntityFromResponse(PaiementResponse response, Commande commande, Wallet wallet) {
+  public Paiement toEntityFromResponse(
+      PaiementResponse response, Commande commande, Wallet wallet) {
     if (response == null) {
       throw new IllegalArgumentException("La réponse PaiementResponse ne peut pas être nulle");
     }

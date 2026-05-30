@@ -1,9 +1,9 @@
 package com.backend.gns.student.domain.services.impl;
 
+import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.student.application.dtos.requests.BanqueEtudiantRequest;
 import com.backend.gns.student.application.dtos.responses.BanqueEtudiantResponse;
 import com.backend.gns.student.application.mappers.BanqueEtudiantMapper;
-import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.student.domain.models.BanqueEtudiant;
 import com.backend.gns.student.domain.services.BanqueEtudiantService;
 import com.backend.gns.student.infrastructure.repositories.BanqueEtudiantRepository;
@@ -39,13 +39,15 @@ public class BanqueEtudiantServiceImpl implements BanqueEtudiantService {
   private BanqueEtudiant findBanqueEtudiantOrThrow(UUID trackingId) {
     return banqueEtudiantRepository
         .findByTrackingId(trackingId)
-        .orElseThrow(() -> {
-          log.warn("BanqueEtudiant introuvable avec trackingId: {}", trackingId);
-          return new ResourceNotFoundException(
-              "BanqueEtudiant non trouvée avec l'ID: " + trackingId);
-        });
+        .orElseThrow(
+            () -> {
+              log.warn("BanqueEtudiant introuvable avec trackingId: {}", trackingId);
+              return new ResourceNotFoundException(
+                  "BanqueEtudiant non trouvée avec l'ID: " + trackingId);
+            });
   }
-   @Transactional
+
+  @Transactional
   public BanqueEtudiantResponse create(BanqueEtudiantRequest request) {
     log.info("Création d'une BanqueEtudiant, banque: {}", request.banque());
 
@@ -94,12 +96,15 @@ public class BanqueEtudiantServiceImpl implements BanqueEtudiantService {
   @Transactional(readOnly = true)
   public Page<BanqueEtudiantResponse> findAll(Pageable pageable) {
     log.debug("Récupération de toutes les BanqueEtudiant, page: {}", pageable.getPageNumber());
-    return banqueEtudiantRepository.findAll(normalize(pageable)).map(banqueEtudiantMapper::toResponse);
+    return banqueEtudiantRepository
+        .findAll(normalize(pageable))
+        .map(banqueEtudiantMapper::toResponse);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Page<BanqueEtudiantResponse> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable) {
+  public Page<BanqueEtudiantResponse> findByStudentTrackingId(
+      UUID studentTrackingId, Pageable pageable) {
     log.debug("Recherche BanqueEtudiant par studentTrackingId: {}", studentTrackingId);
     return banqueEtudiantRepository
         .findByStudentTrackingId(studentTrackingId, normalize(pageable))

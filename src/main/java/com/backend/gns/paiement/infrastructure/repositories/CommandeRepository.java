@@ -16,12 +16,17 @@ public interface CommandeRepository extends JpaRepository<Commande, Long> {
 
   Page<Commande> findByStatut(CommandeStatut statut, Pageable pageable);
 
-  @Query("SELECT c FROM Commande c WHERE c.student.trackingId = :trackingId ORDER BY c.dateCommande DESC")
+  @Query(
+      "SELECT c FROM Commande c WHERE c.student.trackingId = :trackingId ORDER BY c.dateCommande DESC")
   Page<Commande> findByStudentTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 
-  @Query("SELECT c FROM Commande c WHERE c.boutique.trackingId = :boutiqueTrackingId ORDER BY c.dateCommande DESC")
-  Page<Commande> findByBoutiqueTrackingId(@Param("boutiqueTrackingId") UUID boutiqueTrackingId, Pageable pageable);
+  @Query(
+      "SELECT c FROM Commande c WHERE c.boutique.trackingId = :boutiqueTrackingId ORDER BY c.dateCommande DESC")
+  Page<Commande> findByBoutiqueTrackingId(
+      @Param("boutiqueTrackingId") UUID boutiqueTrackingId, Pageable pageable);
 
-  @Query("SELECT c FROM Commande c WHERE c.boutique.merchant.trackingId = :merchantTrackingId ORDER BY c.dateCommande DESC")
-  Page<Commande> findByMerchantTrackingId(@Param("merchantTrackingId") UUID merchantTrackingId, Pageable pageable);
+  @Query(
+      "SELECT c FROM Commande c WHERE c.boutique.merchant.trackingId = :merchantTrackingId ORDER BY c.dateCommande DESC")
+  Page<Commande> findByMerchantTrackingId(
+      @Param("merchantTrackingId") UUID merchantTrackingId, Pageable pageable);
 }

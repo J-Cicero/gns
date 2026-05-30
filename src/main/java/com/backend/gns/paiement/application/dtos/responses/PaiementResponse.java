@@ -18,5 +18,4 @@ public record PaiementResponse(
     BigDecimal montantNetBoutique, // added
     LocalDateTime date,
     PaiementType typePaiement,
-    PaiementStatut statutPaiement
-) {}
+    PaiementStatut statutPaiement) {}

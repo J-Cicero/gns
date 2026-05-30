@@ -8,5 +8,4 @@ public record ParametreGnsRequest(
     @NotNull TypeParametreGns nomParametre,
     @NotBlank String valeurParametre,
     String description,
-    boolean estActif
-) {}
+    boolean estActif) {}

@@ -215,6 +215,7 @@ public class PaiementController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     Pageable pageable = PageRequest.of(page, size);
-    return ResponseEntity.ok(paiementService.findByUniversiteTrackingId(universiteTrackingId, pageable));
+    return ResponseEntity.ok(
+        paiementService.findByUniversiteTrackingId(universiteTrackingId, pageable));
   }
 }

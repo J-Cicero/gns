@@ -3,15 +3,15 @@ package com.backend.gns.admin.domain.services.impl;
 import com.backend.gns.admin.application.dtos.requests.BankOperatorRequest;
 import com.backend.gns.admin.application.dtos.responses.BankOperatorResponse;
 import com.backend.gns.admin.application.mappers.BankOperatorMapper;
+import com.backend.gns.admin.domain.models.BankOperator;
+import com.backend.gns.admin.domain.services.BankOperatorService;
+import com.backend.gns.admin.infrastructure.repositories.BankOperatorRepository;
+import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
-import com.backend.gns.core.exception.ResourceNotFoundException;
-import com.backend.gns.admin.domain.models.BankOperator;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.admin.domain.services.BankOperatorService;
-import com.backend.gns.admin.infrastructure.repositories.BankOperatorRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -47,11 +47,12 @@ public class BankOperatorServiceImpl implements BankOperatorService {
   private BankOperator findBankOperatorOrThrow(UUID trackingId) {
     return bankOperatorRepository
         .findByTrackingId(trackingId)
-        .orElseThrow(() -> {
-          log.warn("Opérateur bancaire introuvable avec trackingId: {}", trackingId);
-          return new ResourceNotFoundException(
-              "Opérateur bancaire non trouvé avec l'ID: " + trackingId);
-        });
+        .orElseThrow(
+            () -> {
+              log.warn("Opérateur bancaire introuvable avec trackingId: {}", trackingId);
+              return new ResourceNotFoundException(
+                  "Opérateur bancaire non trouvé avec l'ID: " + trackingId);
+            });
   }
 
   @Override
@@ -60,23 +61,26 @@ public class BankOperatorServiceImpl implements BankOperatorService {
     log.info("Création d'un opérateur bancaire: {} {}", request.prenom(), request.nom());
 
     BankOperator bankOperator = bankOperatorMapper.toEntity(request);
-    
+
     // Initialisation du Wallet via Cascade
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
     wallet.setTypeWallet(WalletType.BANK_OPERATOR);
     wallet.setStatutWallet(WalletStatus.ACTIF);
     wallet.setSolde(BigDecimal.ZERO);
-    
-    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
+
+    BigDecimal plafondDefaut =
+        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
     wallet.setPlafond(plafondDefaut);
     wallet.setDateCreation(LocalDateTime.now());
-    
+
     bankOperator.setWallet(wallet);
 
     BankOperator savedBankOperator = bankOperatorRepository.save(bankOperator);
 
-    log.info("Opérateur bancaire créé avec succès avec son Wallet, trackingId: {}", savedBankOperator.getTrackingId());
+    log.info(
+        "Opérateur bancaire créé avec succès avec son Wallet, trackingId: {}",
+        savedBankOperator.getTrackingId());
     return bankOperatorMapper.toResponse(savedBankOperator);
   }
 

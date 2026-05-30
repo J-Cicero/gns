@@ -23,6 +23,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
   Page<Student> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 
   long countByUniversite(com.backend.gns.student.domain.models.Universite universite);
-  
-  long countByUniversiteAndStatutKYC(com.backend.gns.student.domain.models.Universite universite, KycStatus statut);
+
+  long countByUniversiteAndStatutKYC(
+      com.backend.gns.student.domain.models.Universite universite, KycStatus statut);
 }

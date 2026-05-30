@@ -1,12 +1,12 @@
 package com.backend.gns.paiement.application.mappers;
 
+import com.backend.gns.commerce.domain.models.Product;
+import com.backend.gns.commerce.infrastructure.repositories.ProductRepository;
 import com.backend.gns.paiement.application.dtos.requests.CommandeLigneRequest;
 import com.backend.gns.paiement.application.dtos.responses.CommandeLigneResponse;
 import com.backend.gns.paiement.domain.models.Commande;
 import com.backend.gns.paiement.domain.models.CommandeLigne;
-import com.backend.gns.commerce.domain.models.Product;
 import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
-import com.backend.gns.commerce.infrastructure.repositories.ProductRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 

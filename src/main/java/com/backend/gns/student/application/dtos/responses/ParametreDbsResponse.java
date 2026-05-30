@@ -10,5 +10,4 @@ public record ParametreDbsResponse(
     TypeParametreDbs nomParametre,
     String valeurParametre,
     boolean estActif,
-    String description
-) {}
+    String description) {}

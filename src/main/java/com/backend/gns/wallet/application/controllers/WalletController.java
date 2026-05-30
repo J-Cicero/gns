@@ -30,43 +30,48 @@ public class WalletController {
   @Operation(summary = "Créer un portefeuille", description = "Crée un nouveau portefeuille")
   @ApiResponse(responseCode = "201", description = "Portefeuille créé avec succès")
   public ResponseEntity<?> create(@RequestBody WalletRequest request) {
-      try {
-          WalletResponse response = walletService.create(request);
-          return ResponseEntity.status(HttpStatus.CREATED).body(response);
-      } catch (Exception e) {
-          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                  .body(Map.of("error", "CREATION_FAILED", "message", e.getMessage()));
-      }
+    try {
+      WalletResponse response = walletService.create(request);
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "CREATION_FAILED", "message", e.getMessage()));
+    }
   }
 
   @PutMapping("/{trackingId}")
-  @Operation(summary = "Mettre à jour un portefeuille", description = "Mettre à jour les informations d'un portefeuille")
+  @Operation(
+      summary = "Mettre à jour un portefeuille",
+      description = "Mettre à jour les informations d'un portefeuille")
   @ApiResponse(responseCode = "200", description = "Portefeuille mis à jour avec succès")
   @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
-  public ResponseEntity<?> update(@PathVariable UUID trackingId, @RequestBody WalletRequest request) {
-      try {
-          WalletResponse response = walletService.update(trackingId, request);
-          return ResponseEntity.ok(response);
-      } catch (Exception e) {
-          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                  .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
-      }
+  public ResponseEntity<?> update(
+      @PathVariable UUID trackingId, @RequestBody WalletRequest request) {
+    try {
+      WalletResponse response = walletService.update(trackingId, request);
+      return ResponseEntity.ok(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
   }
 
   @DeleteMapping("/{trackingId}")
-  @Operation(summary = "Supprimer un portefeuille", description = "Supprime un portefeuille par son ID")
+  @Operation(
+      summary = "Supprimer un portefeuille",
+      description = "Supprime un portefeuille par son ID")
   @ApiResponse(responseCode = "204", description = "Portefeuille supprimé avec succès")
   @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
   public ResponseEntity<?> delete(@PathVariable UUID trackingId) {
-      try {
-          walletService.delete(trackingId);
-          return ResponseEntity.noContent().build();
-      } catch (Exception e) {
-          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                  .body(Map.of("error", "DELETE_FAILED", "message", e.getMessage()));
-      }
+    try {
+      walletService.delete(trackingId);
+      return ResponseEntity.noContent().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "DELETE_FAILED", "message", e.getMessage()));
+    }
   }
-  
+
   @GetMapping("/{trackingId}")
   @Operation(
       summary = "Récupérer un portefeuille",

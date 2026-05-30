@@ -1,10 +1,10 @@
 package com.backend.gns.student.application.controllers;
 
+import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
-import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.student.domain.services.StudentService;
-import com.backend.gns.core.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +33,9 @@ public class StudentController {
   }
 
   @PostMapping("/{trackingId}/documents/upload")
-  @Operation(summary = "Uploader un document pour un étudiant", description = "Upload un document et lance l'OCR IA")
+  @Operation(
+      summary = "Uploader un document pour un étudiant",
+      description = "Upload un document et lance l'OCR IA")
   public ResponseEntity<?> uploadDocument(
       @PathVariable UUID trackingId,
       @RequestParam("fichier") org.springframework.web.multipart.MultipartFile fichier,
@@ -70,7 +72,8 @@ public class StudentController {
     return studentService
         .findByTrackingId(trackingId)
         .map(ResponseEntity::ok)
-        .orElseThrow(() -> new ResourceNotFoundException("Étudiant non trouvé avec l'ID: " + trackingId));
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Étudiant non trouvé avec l'ID: " + trackingId));
   }
 
   @PutMapping("/{trackingId}")
@@ -140,16 +143,15 @@ public class StudentController {
     }
   }
 
-
   @GetMapping("/stats")
   @Operation(summary = "Récupérer les statistiques des étudiants")
   public ResponseEntity<Map<String, Object>> getStats() {
-    return ResponseEntity.ok(Map.of(
-        "totalStudents", studentService.countAll(),
-        "activeStudents", studentService.countByEstActif(true),
-        "blockedStudents", studentService.countByEstActif(false),
-        "verifiedKyc", studentService.countByStatutKYC(KycStatus.VALIDEE)
-    ));
+    return ResponseEntity.ok(
+        Map.of(
+            "totalStudents", studentService.countAll(),
+            "activeStudents", studentService.countByEstActif(true),
+            "blockedStudents", studentService.countByEstActif(false),
+            "verifiedKyc", studentService.countByStatutKYC(KycStatus.VALIDEE)));
   }
 
   @GetMapping("/{trackingId}/card")
@@ -160,7 +162,9 @@ public class StudentController {
 
   @GetMapping("/universite/{universiteTrackingId}")
   @Operation(summary = "Récupérer les étudiants par université")
-  public ResponseEntity<Page<StudentResponse>> findByUniversite(@PathVariable UUID universiteTrackingId, Pageable pageable) {
-    return ResponseEntity.ok(studentService.findByUniversiteTrackingId(universiteTrackingId, pageable));
+  public ResponseEntity<Page<StudentResponse>> findByUniversite(
+      @PathVariable UUID universiteTrackingId, Pageable pageable) {
+    return ResponseEntity.ok(
+        studentService.findByUniversiteTrackingId(universiteTrackingId, pageable));
   }
 }

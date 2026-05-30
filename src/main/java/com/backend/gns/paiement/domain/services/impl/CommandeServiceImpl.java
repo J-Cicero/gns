@@ -1,15 +1,15 @@
 package com.backend.gns.paiement.domain.services.impl;
 
+import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.paiement.application.dtos.requests.CommandeRequest;
 import com.backend.gns.paiement.application.dtos.responses.CommandeResponse;
 import com.backend.gns.paiement.application.mappers.CommandeMapper;
 import com.backend.gns.paiement.domain.enums.CommandeStatut;
 import com.backend.gns.paiement.domain.models.Commande;
-import com.backend.gns.commerce.domain.models.Boutique;
-import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.paiement.domain.services.CommandeService;
 import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
-import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.wallet.domain.services.WalletService;
 import jakarta.persistence.EntityNotFoundException;
@@ -61,9 +61,13 @@ public class CommandeServiceImpl implements CommandeService {
   @Override
   @Transactional
   public CommandeResponse create(CommandeRequest request) {
-    Student student = studentRepository.findByTrackingId(request.studentTrackingId())
+    Student student =
+        studentRepository
+            .findByTrackingId(request.studentTrackingId())
             .orElseThrow(() -> new EntityNotFoundException("Étudiant non trouvé"));
-    Boutique boutique = boutiqueRepository.findByTrackingId(request.boutiqueTrackingId())
+    Boutique boutique =
+        boutiqueRepository
+            .findByTrackingId(request.boutiqueTrackingId())
             .orElseThrow(() -> new EntityNotFoundException("Boutique non trouvée"));
 
     Commande commande = commandeMapper.toEntity(request, student, boutique);
@@ -86,9 +90,7 @@ public class CommandeServiceImpl implements CommandeService {
         commandeRepository
             .findByTrackingId(trackingId)
             .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Commande non trouvée avec l'ID: " + trackingId));
+                () -> new EntityNotFoundException("Commande non trouvée avec l'ID: " + trackingId));
 
     commande.setStatut(request.statut());
     Commande updatedCommande = commandeRepository.save(commande);
@@ -102,9 +104,7 @@ public class CommandeServiceImpl implements CommandeService {
         commandeRepository
             .findByTrackingId(trackingId)
             .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Commande non trouvée avec l'ID: " + trackingId));
+                () -> new EntityNotFoundException("Commande non trouvée avec l'ID: " + trackingId));
     commandeRepository.delete(commande);
   }
 
@@ -145,8 +145,7 @@ public class CommandeServiceImpl implements CommandeService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<CommandeResponse> findByStatut(
-      CommandeStatut statut, Pageable pageable) {
+  public Page<CommandeResponse> findByStatut(CommandeStatut statut, Pageable pageable) {
     return commandeRepository
         .findByStatut(statut, normalize(pageable))
         .map(commandeMapper::toResponse);
@@ -176,11 +175,11 @@ public class CommandeServiceImpl implements CommandeService {
 
     // Validation du Code PIN
     if (student.getPinCode() == null) {
-        throw new IllegalStateException("Le code PIN n'est pas configuré pour cet étudiant");
+      throw new IllegalStateException("Le code PIN n'est pas configuré pour cet étudiant");
     }
 
     if (!passwordEncoder.matches(pinCode, student.getPinCode())) {
-        throw new IllegalArgumentException("Code PIN incorrect");
+      throw new IllegalArgumentException("Code PIN incorrect");
     }
 
     Boutique boutique = commande.getBoutique();

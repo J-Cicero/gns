@@ -19,5 +19,4 @@ public record StudentRequest(
     UUID walletTrackingId,
     UUID banqueEtudiantTrackingId,
     UUID universiteTrackingId,
-    String pinCode
-) {}
+    String pinCode) {}

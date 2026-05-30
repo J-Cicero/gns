@@ -14,23 +14,22 @@ import lombok.*;
 @AllArgsConstructor
 public class ParametreGns extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(length = 36, nullable = false, unique = true, updatable = false)
-    private UUID trackingId = UUID.randomUUID();
+  @Column(length = 36, nullable = false, unique = true, updatable = false)
+  private UUID trackingId = UUID.randomUUID();
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "nom_parametre", nullable = false, unique = true, length = 50)
-    private TypeParametreGns nomParametre;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "nom_parametre", nullable = false, unique = true, length = 50)
+  private TypeParametreGns nomParametre;
 
-    @Column(name = "valeur_parametre", nullable = false)
-    private String valeurParametre;
+  @Column(name = "valeur_parametre", nullable = false)
+  private String valeurParametre;
 
-    @Column(nullable = false)
-    private boolean estActif = true;
+  @Column(nullable = false)
+  private boolean estActif = true;
 
-    @Column
-    private String description;
+  @Column private String description;
 }

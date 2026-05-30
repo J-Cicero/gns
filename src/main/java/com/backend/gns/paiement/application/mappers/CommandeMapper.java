@@ -1,9 +1,9 @@
 package com.backend.gns.paiement.application.mappers;
 
+import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.paiement.application.dtos.requests.CommandeRequest;
 import com.backend.gns.paiement.application.dtos.responses.CommandeResponse;
 import com.backend.gns.paiement.domain.enums.CommandeStatut;
-import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.paiement.domain.models.Commande;
 import com.backend.gns.student.domain.models.Student;
 import java.time.LocalDateTime;
@@ -50,7 +50,8 @@ public class CommandeMapper {
         .build();
   }
 
-  public Commande toEntityFromResponse(CommandeResponse response, Student student, Boutique boutique) {
+  public Commande toEntityFromResponse(
+      CommandeResponse response, Student student, Boutique boutique) {
     if (response == null) {
       throw new IllegalArgumentException("La réponse CommandeResponse ne peut pas être nulle");
     }

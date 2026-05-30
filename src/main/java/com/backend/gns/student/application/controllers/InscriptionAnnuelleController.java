@@ -28,7 +28,9 @@ public class InscriptionAnnuelleController {
   }
 
   @PostMapping
-  @Operation(summary = "Créer une inscription", description = "Crée une nouvelle inscription annuelle")
+  @Operation(
+      summary = "Créer une inscription",
+      description = "Crée une nouvelle inscription annuelle")
   @ApiResponse(responseCode = "201", description = "Inscription créée avec succès")
   public ResponseEntity<?> create(@RequestBody InscriptionAnnuelleRequest request) {
     try {
@@ -41,7 +43,9 @@ public class InscriptionAnnuelleController {
   }
 
   @GetMapping("/{trackingId}")
-  @Operation(summary = "Récupérer une inscription", description = "Récupère une inscription par son ID")
+  @Operation(
+      summary = "Récupérer une inscription",
+      description = "Récupère une inscription par son ID")
   @ApiResponse(responseCode = "200", description = "Inscription trouvée")
   @ApiResponse(responseCode = "404", description = "Inscription non trouvée")
   public ResponseEntity<?> findByTrackingId(@PathVariable UUID trackingId) {
@@ -76,8 +80,11 @@ public class InscriptionAnnuelleController {
   }
 
   @PatchMapping("/{trackingId}/statut")
-  @Operation(summary = "Mettre à jour le statut", description = "Mettre à jour uniquement le statut d'une inscription")
-  public ResponseEntity<?> updateStatus(@PathVariable UUID trackingId, @RequestParam StatutInscription statut) {
+  @Operation(
+      summary = "Mettre à jour le statut",
+      description = "Mettre à jour uniquement le statut d'une inscription")
+  public ResponseEntity<?> updateStatus(
+      @PathVariable UUID trackingId, @RequestParam StatutInscription statut) {
     try {
       InscriptionAnnuelleResponse response = inscriptionService.updateStatus(trackingId, statut);
       return ResponseEntity.ok(response);
@@ -88,10 +95,14 @@ public class InscriptionAnnuelleController {
   }
 
   @PatchMapping("/{trackingId}/definitif")
-  @Operation(summary = "Mettre à jour l'inscription définitive", description = "Mettre à jour le marqueur estInscritDefinitif d'une inscription")
-  public ResponseEntity<?> updateDefinitif(@PathVariable UUID trackingId, @RequestParam boolean estInscritDefinitif) {
+  @Operation(
+      summary = "Mettre à jour l'inscription définitive",
+      description = "Mettre à jour le marqueur estInscritDefinitif d'une inscription")
+  public ResponseEntity<?> updateDefinitif(
+      @PathVariable UUID trackingId, @RequestParam boolean estInscritDefinitif) {
     try {
-      InscriptionAnnuelleResponse response = inscriptionService.updateDefinitif(trackingId, estInscritDefinitif);
+      InscriptionAnnuelleResponse response =
+          inscriptionService.updateDefinitif(trackingId, estInscritDefinitif);
       return ResponseEntity.ok(response);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -100,7 +111,9 @@ public class InscriptionAnnuelleController {
   }
 
   @DeleteMapping("/{trackingId}")
-  @Operation(summary = "Supprimer une inscription", description = "Supprime une inscription par son ID")
+  @Operation(
+      summary = "Supprimer une inscription",
+      description = "Supprime une inscription par son ID")
   @ApiResponse(responseCode = "204", description = "Inscription supprimée avec succès")
   @ApiResponse(responseCode = "404", description = "Inscription non trouvée")
   public ResponseEntity<?> delete(@PathVariable UUID trackingId) {
@@ -130,7 +143,9 @@ public class InscriptionAnnuelleController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(
                 Map.of(
-                    "error", "NOT_FOUND", "message",
+                    "error",
+                    "NOT_FOUND",
+                    "message",
                     "Aucune inscription trouvée pour cet étudiant"));
       }
       return ResponseEntity.ok(responses);
@@ -176,10 +191,7 @@ public class InscriptionAnnuelleController {
       var responses = inscriptionService.findByStatut(statut, pageable);
       if (!responses.hasContent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(
-                Map.of(
-                    "error", "NOT_FOUND", "message",
-                    "Aucune inscription avec ce statut"));
+            .body(Map.of("error", "NOT_FOUND", "message", "Aucune inscription avec ce statut"));
       }
       return ResponseEntity.ok(responses);
     } catch (Exception e) {
@@ -217,6 +229,7 @@ public class InscriptionAnnuelleController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     Pageable pageable = PageRequest.of(page, size);
-    return ResponseEntity.ok(inscriptionService.findByUniversiteTrackingId(universiteTrackingId, pageable));
+    return ResponseEntity.ok(
+        inscriptionService.findByUniversiteTrackingId(universiteTrackingId, pageable));
   }
 }

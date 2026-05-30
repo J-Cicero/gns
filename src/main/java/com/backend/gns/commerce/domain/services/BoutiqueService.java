@@ -3,11 +3,11 @@ package com.backend.gns.commerce.domain.services;
 import com.backend.gns.commerce.application.dtos.requests.BoutiqueRequest;
 import com.backend.gns.commerce.application.dtos.responses.BoutiqueResponse;
 import com.backend.gns.core.domain.enums.KycStatus;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.math.BigDecimal;
 
 public interface BoutiqueService {
 

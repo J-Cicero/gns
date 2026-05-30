@@ -1,14 +1,13 @@
 package com.backend.gns.student.infrastructure.repositories;
 
 import com.backend.gns.student.domain.enums.CardStatut;
+import com.backend.gns.student.domain.models.Card;
 import com.backend.gns.student.domain.models.Student;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.backend.gns.student.domain.models.Card;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
 

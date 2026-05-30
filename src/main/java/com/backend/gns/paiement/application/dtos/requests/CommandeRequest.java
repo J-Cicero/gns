@@ -15,4 +15,3 @@ public record CommandeRequest(
     LocalDateTime dateCommande,
     String pinCode,
     CommandeStatut statut) {}
-

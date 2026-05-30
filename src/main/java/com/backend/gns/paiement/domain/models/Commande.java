@@ -1,9 +1,9 @@
 package com.backend.gns.paiement.domain.models;
 
+import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.paiement.domain.enums.CommandeStatut;
 import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.commerce.domain.models.Boutique;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,6 +48,7 @@ public class Commande extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "student_id", nullable = false)
   private Student student;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "boutique_id", nullable = false)
   private Boutique boutique;
@@ -62,5 +63,4 @@ public class Commande extends BaseEntity {
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
   private CommandeStatut statut;
-
 }

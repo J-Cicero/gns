@@ -22,7 +22,8 @@ public interface InscriptionAnnuelleService {
 
   void delete(UUID trackingId);
 
-  Page<InscriptionAnnuelleResponse> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable);
+  Page<InscriptionAnnuelleResponse> findByStudentTrackingId(
+      UUID studentTrackingId, Pageable pageable);
 
   Optional<InscriptionAnnuelleResponse> findByStudentAndAnnee(
       UUID studentTrackingId, String anneeAcademique);
@@ -31,5 +32,6 @@ public interface InscriptionAnnuelleService {
 
   Page<InscriptionAnnuelleResponse> findAll(Pageable pageable);
 
-  Page<InscriptionAnnuelleResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
+  Page<InscriptionAnnuelleResponse> findByUniversiteTrackingId(
+      UUID universiteTrackingId, Pageable pageable);
 }

@@ -41,9 +41,11 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Transactional
   public InscriptionAnnuelleResponse create(InscriptionAnnuelleRequest request) {
     InscriptionAnnuelle inscription = inscriptionMapper.toEntity(request);
-    
-    ScolariteYear year = scolariteYearRepository.findByEstOuverteTrue()
-        .orElseThrow(() -> new IllegalStateException("Aucune année scolaire ouverte"));
+
+    ScolariteYear year =
+        scolariteYearRepository
+            .findByEstOuverteTrue()
+            .orElseThrow(() -> new IllegalStateException("Aucune année scolaire ouverte"));
     inscription.setScolariteYear(year);
 
     InscriptionAnnuelle savedInscription = inscriptionRepository.save(inscription);
@@ -63,7 +65,9 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
         inscriptionRepository
             .findByTrackingId(trackingId)
             .orElseThrow(
-                () -> new EntityNotFoundException("Inscription non trouvée avec l'ID: " + trackingId));
+                () ->
+                    new EntityNotFoundException(
+                        "Inscription non trouvée avec l'ID: " + trackingId));
 
     inscription.setNiveau(request.niveau());
     inscription.setCreditsTotalValides(request.creditsTotalValides());
@@ -80,33 +84,43 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Override
   @Transactional
   public InscriptionAnnuelleResponse updateStatus(UUID trackingId, StatutInscription statut) {
-    InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
-        .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée avec l'ID: " + trackingId));
+    InscriptionAnnuelle inscription =
+        inscriptionRepository
+            .findByTrackingId(trackingId)
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        "Inscription non trouvée avec l'ID: " + trackingId));
     inscription.setStatut(statut);
-    
+
     // Synchronize Student KYC status with DBS Decision
     if (statut == StatutInscription.ACTIVE) {
-        Student student = inscription.getStudent();
-        if (student != null) {
-            student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.VALIDEE);
-            studentRepository.save(student);
-        }
+      Student student = inscription.getStudent();
+      if (student != null) {
+        student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.VALIDEE);
+        studentRepository.save(student);
+      }
     } else if (statut == StatutInscription.REJETEE) {
-        Student student = inscription.getStudent();
-        if (student != null) {
-            student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.REJETE);
-            studentRepository.save(student);
-        }
+      Student student = inscription.getStudent();
+      if (student != null) {
+        student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.REJETE);
+        studentRepository.save(student);
+      }
     }
-    
+
     return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
   }
 
   @Override
   @Transactional
   public InscriptionAnnuelleResponse updateDefinitif(UUID trackingId, boolean estInscritDefinitif) {
-    InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
-        .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée avec l'ID: " + trackingId));
+    InscriptionAnnuelle inscription =
+        inscriptionRepository
+            .findByTrackingId(trackingId)
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        "Inscription non trouvée avec l'ID: " + trackingId));
     inscription.setEstInscritDefinitif(estInscritDefinitif);
     return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
   }
@@ -118,7 +132,9 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
         inscriptionRepository
             .findByTrackingId(trackingId)
             .orElseThrow(
-                () -> new EntityNotFoundException("Inscription non trouvée avec l'ID: " + trackingId));
+                () ->
+                    new EntityNotFoundException(
+                        "Inscription non trouvée avec l'ID: " + trackingId));
     inscriptionRepository.delete(inscription);
   }
 
@@ -134,7 +150,7 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Override
   public Optional<InscriptionAnnuelleResponse> findByStudentAndAnnee(
       UUID studentTrackingId, String anneeAcademique) {
-    return Optional.empty(); 
+    return Optional.empty();
   }
 
   @Override
@@ -154,8 +170,10 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
 
   @Override
   @Transactional(readOnly = true)
-  public Page<InscriptionAnnuelleResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable) {
-    return inscriptionRepository.findByStudentUniversiteTrackingId(universiteTrackingId, normalize(pageable))
+  public Page<InscriptionAnnuelleResponse> findByUniversiteTrackingId(
+      UUID universiteTrackingId, Pageable pageable) {
+    return inscriptionRepository
+        .findByStudentUniversiteTrackingId(universiteTrackingId, normalize(pageable))
         .map(inscriptionMapper::toResponse);
   }
 }

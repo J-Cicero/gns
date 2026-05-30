@@ -13,5 +13,4 @@ public record AdminResponse(
     Boolean estActif,
     String telephone,
     LocalDateTime dateNaissance,
-    String numeroCompte
-) {}
+    String numeroCompte) {}

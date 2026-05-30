@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -36,9 +36,9 @@ public class GeminiExtractionService {
   }
 
   public record ExtractionResultat(
-      String niveau, 
-      Integer creditsTotalValides, 
-      BigDecimal moyenneBac, 
+      String niveau,
+      Integer creditsTotalValides,
+      BigDecimal moyenneBac,
       String anneeObtention,
       BigDecimal montantScolarite,
       String nomComplet,
@@ -52,16 +52,34 @@ public class GeminiExtractionService {
       Map<String, Object> body =
           Map.of(
               "contents",
-              List.of(Map.of("parts", List.of(
-                          Map.of("inline_data", Map.of("mime_type", "image/jpeg", "data", telechargerEtEncoder(urlImage))),
+              List.of(
+                  Map.of(
+                      "parts",
+                      List.of(
+                          Map.of(
+                              "inline_data",
+                              Map.of(
+                                  "mime_type",
+                                  "image/jpeg",
+                                  "data",
+                                  telechargerEtEncoder(urlImage))),
                           Map.of("text", prompt)))));
 
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);
 
-      String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + apiKey;
+      String url =
+          "https://generativelanguage.googleapis.com/v1beta/models/"
+              + model
+              + ":generateContent?key="
+              + apiKey;
 
-      ResponseEntity<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(body, headers), new ParameterizedTypeReference<Map<String, Object>>() {});
+      ResponseEntity<Map<String, Object>> response =
+          restTemplate.exchange(
+              url,
+              HttpMethod.POST,
+              new HttpEntity<>(body, headers),
+              new ParameterizedTypeReference<Map<String, Object>>() {});
 
       String texte = extraireTexte(response.getBody());
       return parseResultat(texte);
@@ -73,11 +91,16 @@ public class GeminiExtractionService {
 
   private String buildPrompt(TypeDocument typeDoc) {
     return switch (typeDoc) {
-      case RELEVE_BAC -> "Analyse ce relevé du BAC. Retourne JSON: {\"moyenneBac\": 13.5, \"anneeObtention\": \"2023\", \"nomComplet\": \"...\"}";
-      case FICHE_UE -> "Analyse cette fiche UE. Retourne JSON: {\"niveau\": \"L1\", \"montantScolarite\": 25000, \"creditsTotalValides\": 30}";
-      case RELEVE_NOTES -> "Analyse ce relevé notes. Retourne JSON: {\"niveau\": \"L2\", \"creditsTotalValides\": 60}";
-      case SOUCHE_TAMPONNEE -> "Analyse ce mandat. Retourne JSON: {\"documentStatus\": \"valide\", \"nomBanque\": \"...\"}";
-      case PIECE_IDENTITE -> "Analyse cette ID. Retourne JSON: {\"nomComplet\": \"...\", \"dateNaissance\": \"YYYY-MM-DD\"}";
+      case RELEVE_BAC ->
+          "Analyse ce relevé du BAC. Retourne JSON: {\"moyenneBac\": 13.5, \"anneeObtention\": \"2023\", \"nomComplet\": \"...\"}";
+      case FICHE_UE ->
+          "Analyse cette fiche UE. Retourne JSON: {\"niveau\": \"L1\", \"montantScolarite\": 25000, \"creditsTotalValides\": 30}";
+      case RELEVE_NOTES ->
+          "Analyse ce relevé notes. Retourne JSON: {\"niveau\": \"L2\", \"creditsTotalValides\": 60}";
+      case SOUCHE_TAMPONNEE ->
+          "Analyse ce mandat. Retourne JSON: {\"documentStatus\": \"valide\", \"nomBanque\": \"...\"}";
+      case PIECE_IDENTITE ->
+          "Analyse cette ID. Retourne JSON: {\"nomComplet\": \"...\", \"dateNaissance\": \"YYYY-MM-DD\"}";
     };
   }
 
@@ -88,7 +111,13 @@ public class GeminiExtractionService {
 
   private String extraireTexte(Map<String, Object> response) {
     JsonNode root = objectMapper.valueToTree(response);
-    return root.path("candidates").path(0).path("content").path("parts").path(0).path("text").asText("");
+    return root.path("candidates")
+        .path(0)
+        .path("content")
+        .path("parts")
+        .path(0)
+        .path("text")
+        .asText("");
   }
 
   private ExtractionResultat parseResultat(String json) {
@@ -97,10 +126,22 @@ public class GeminiExtractionService {
       JsonNode node = objectMapper.readTree(clean);
       return new ExtractionResultat(
           node.has("niveau") ? node.get("niveau").asText(null) : null,
-          node.has("creditsTotalValides") ? (node.get("creditsTotalValides").isNull() ? null : node.get("creditsTotalValides").asInt()) : null,
-          node.has("moyenneBac") ? (node.get("moyenneBac").isNull() ? null : new BigDecimal(node.get("moyenneBac").asText())) : null,
+          node.has("creditsTotalValides")
+              ? (node.get("creditsTotalValides").isNull()
+                  ? null
+                  : node.get("creditsTotalValides").asInt())
+              : null,
+          node.has("moyenneBac")
+              ? (node.get("moyenneBac").isNull()
+                  ? null
+                  : new BigDecimal(node.get("moyenneBac").asText()))
+              : null,
           node.has("anneeObtention") ? node.get("anneeObtention").asText(null) : null,
-          node.has("montantScolarite") ? (node.get("montantScolarite").isNull() ? null : new BigDecimal(node.get("montantScolarite").asText())) : null,
+          node.has("montantScolarite")
+              ? (node.get("montantScolarite").isNull()
+                  ? null
+                  : new BigDecimal(node.get("montantScolarite").asText()))
+              : null,
           node.has("nomComplet") ? node.get("nomComplet").asText(null) : null,
           node.has("dateNaissance") ? node.get("dateNaissance").asText(null) : null,
           node.has("scoreFiabilite") ? node.get("scoreFiabilite").asDouble() : 95.0);

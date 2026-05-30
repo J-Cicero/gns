@@ -19,31 +19,35 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ParametreGnsController {
 
-    private final ParametreGnsService service;
+  private final ParametreGnsService service;
 
-    @PostMapping
-    @Operation(summary = "Créer ou mettre à jour un paramètre (Unicité garantie)")
-    public ResponseEntity<ParametreGnsResponse> saveOrUpdate(@RequestBody ParametreGnsRequest request) {
-        return ResponseEntity.status(HttpStatus.OK).body(service.saveOrUpdate(request));
-    }
+  @PostMapping
+  @Operation(summary = "Créer ou mettre à jour un paramètre (Unicité garantie)")
+  public ResponseEntity<ParametreGnsResponse> saveOrUpdate(
+      @RequestBody ParametreGnsRequest request) {
+    return ResponseEntity.status(HttpStatus.OK).body(service.saveOrUpdate(request));
+  }
 
-    @GetMapping("/{trackingId}")
-    public ResponseEntity<ParametreGnsResponse> findByTrackingId(@PathVariable UUID trackingId) {
-        return service.findByTrackingId(trackingId)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
+  @GetMapping("/{trackingId}")
+  public ResponseEntity<ParametreGnsResponse> findByTrackingId(@PathVariable UUID trackingId) {
+    return service
+        .findByTrackingId(trackingId)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
 
-    @GetMapping
-    public ResponseEntity<Page<ParametreGnsResponse>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(service.findAll(pageable));
-    }
+  @GetMapping
+  public ResponseEntity<Page<ParametreGnsResponse>> findAll(Pageable pageable) {
+    return ResponseEntity.ok(service.findAll(pageable));
+  }
 
-    @GetMapping("/type/{type}")
-    @Operation(summary = "Rechercher par type de paramètre")
-    public ResponseEntity<ParametreGnsResponse> findByNom(@PathVariable com.backend.gns.core.parametrage.domain.enums.TypeParametreGns type) {
-        return service.findByNomParametre(type)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
+  @GetMapping("/type/{type}")
+  @Operation(summary = "Rechercher par type de paramètre")
+  public ResponseEntity<ParametreGnsResponse> findByNom(
+      @PathVariable com.backend.gns.core.parametrage.domain.enums.TypeParametreGns type) {
+    return service
+        .findByNomParametre(type)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
 }

@@ -3,10 +3,10 @@ package com.backend.gns.commerce.domain.services.impl;
 import com.backend.gns.commerce.application.dtos.requests.MerchantRequest;
 import com.backend.gns.commerce.application.dtos.responses.MerchantResponse;
 import com.backend.gns.commerce.application.mappers.MerchantMapper;
-import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.commerce.domain.models.Merchant;
 import com.backend.gns.commerce.domain.services.MerchantService;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
+import com.backend.gns.core.exception.ResourceNotFoundException;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -35,18 +35,17 @@ public class MerchantServiceImpl implements MerchantService {
   private Merchant findMerchantOrThrow(UUID trackingId) {
     return merchantRepository
         .findByTrackingId(trackingId)
-        .orElseThrow(() -> {
-          log.warn("Marchand introuvable avec trackingId: {}", trackingId);
-          return new ResourceNotFoundException("Marchand non trouvé avec l'ID: " + trackingId);
-        });
+        .orElseThrow(
+            () -> {
+              log.warn("Marchand introuvable avec trackingId: {}", trackingId);
+              return new ResourceNotFoundException("Marchand non trouvé avec l'ID: " + trackingId);
+            });
   }
 
   @Override
   @Transactional
   public MerchantResponse create(MerchantRequest request) {
     log.info("Création d'un marchand: {} {}", request.prenom(), request.nom());
-
-  
 
     Merchant merchant = merchantMapper.toEntity(request);
     Merchant savedMerchant = merchantRepository.save(merchant);

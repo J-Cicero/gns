@@ -55,5 +55,4 @@ public class Wallet extends BaseEntity {
   @Column
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime dateCreation;
-
 }

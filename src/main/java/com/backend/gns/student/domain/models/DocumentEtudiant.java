@@ -1,8 +1,8 @@
 package com.backend.gns.student.domain.models;
 
+import com.backend.gns.core.domain.enums.TypeDocument;
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.student.domain.enums.StatutDocument;
-import com.backend.gns.core.domain.enums.TypeDocument;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -32,47 +32,45 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class DocumentEtudiant extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(length = 36, nullable = false, unique = true, updatable = false)
-    private UUID trackingId;
+  @Column(length = 36, nullable = false, unique = true, updatable = false)
+  private UUID trackingId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
-    private Student student;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "student_id")
+  private Student student;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inscription_id")
-    private InscriptionAnnuelle inscription;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inscription_id")
+  private InscriptionAnnuelle inscription;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 30, nullable = false)
-    private TypeDocument type;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 30, nullable = false)
+  private TypeDocument type;
 
-    @Column(length = 500, nullable = false)
-    private String urlFichier;
+  @Column(length = 500, nullable = false)
+  private String urlFichier;
 
-    @Column(length = 100)
-    private String publicIdCloudinary;
+  @Column(length = 100)
+  private String publicIdCloudinary;
 
-    @Column
-    private Double scoreFiabilite; // Score 0-100
+  @Column private Double scoreFiabilite; // Score 0-100
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
-    private StatutDocument statut;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20, nullable = false)
+  private StatutDocument statut;
 
-    @Column(length = 255)
-    private String commentaireRejet;
+  @Column(length = 255)
+  private String commentaireRejet;
 
-    @Column(nullable = false)
-    private LocalDateTime dateDepot;
+  @Column(nullable = false)
+  private LocalDateTime dateDepot;
 
-    @Column
-    private LocalDateTime dateValidation;
+  @Column private LocalDateTime dateValidation;
 
-    @Column(columnDefinition = "jsonb")
-    private String donneesExtraites;
+  @Column(columnDefinition = "jsonb")
+  private String donneesExtraites;
 }

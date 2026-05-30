@@ -12,5 +12,4 @@ public record AdminRequest(
     Boolean estActif,
     String telephone,
     LocalDateTime dateNaissance,
-    String numeroCompte
-) {}
+    String numeroCompte) {}

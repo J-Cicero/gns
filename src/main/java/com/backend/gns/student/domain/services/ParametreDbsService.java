@@ -10,11 +10,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ParametreDbsService {
-    ParametreDbsResponse saveOrUpdate(ParametreDbsRequest request);
-    Optional<ParametreDbsResponse> findByTrackingId(UUID trackingId);
-    Page<ParametreDbsResponse> findAll(Pageable pageable);
-    Optional<ParametreDbsResponse> findByNomParametre(TypeParametreDbs nom);
-    String getValeur(TypeParametreDbs type);
-    BigDecimal getValeurAsBigDecimal(TypeParametreDbs type);
-    Integer getValeurAsInteger(TypeParametreDbs type);
+  ParametreDbsResponse saveOrUpdate(ParametreDbsRequest request);
+
+  Optional<ParametreDbsResponse> findByTrackingId(UUID trackingId);
+
+  Page<ParametreDbsResponse> findAll(Pageable pageable);
+
+  Optional<ParametreDbsResponse> findByNomParametre(TypeParametreDbs nom);
+
+  String getValeur(TypeParametreDbs type);
+
+  BigDecimal getValeurAsBigDecimal(TypeParametreDbs type);
+
+  Integer getValeurAsInteger(TypeParametreDbs type);
 }

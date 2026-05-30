@@ -1,7 +1,7 @@
 package com.backend.gns.paiement.domain.models;
 
-import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.commerce.domain.models.Product;
+import com.backend.gns.core.utils.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;

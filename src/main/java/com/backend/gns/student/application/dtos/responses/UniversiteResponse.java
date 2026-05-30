@@ -1,7 +1,7 @@
 package com.backend.gns.student.application.dtos.responses;
 
-import java.util.UUID;
 import java.math.BigDecimal;
+import java.util.UUID;
 import lombok.Builder;
 
 @Builder
@@ -12,5 +12,4 @@ public record UniversiteResponse(
     String ville,
     boolean estActive,
     UUID walletTrackingId,
-    BigDecimal soldeWallet
-) {}
+    BigDecimal soldeWallet) {}

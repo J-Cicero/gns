@@ -4,7 +4,7 @@ import com.backend.gns.student.domain.enums.SourceVerification;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.StudentNiveau;
 import com.backend.gns.student.domain.enums.TypeBourse;
-import java.math.BigDecimal; 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
@@ -26,5 +26,4 @@ public record InscriptionAnnuelleResponse(
     SourceVerification source,
     LocalDateTime dateActivation,
     BigDecimal plafondAccorde,
-    boolean estInscritDefinitif
-) {}
+    boolean estInscritDefinitif) {}

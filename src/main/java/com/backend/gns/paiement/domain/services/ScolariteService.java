@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ScolariteService {
-    PretScolariteResponse demanderPretScolarite(UUID studentTrackingId, UUID universiteTrackingId, BigDecimal montant);
-    void rembourserPretsEnAttente(UUID studentTrackingId, BigDecimal montantDisponible);
-    List<PretScolariteResponse> findByUniversite(UUID universiteTrackingId);
+  PretScolariteResponse demanderPretScolarite(
+      UUID studentTrackingId, UUID universiteTrackingId, BigDecimal montant);
+
+  void rembourserPretsEnAttente(UUID studentTrackingId, BigDecimal montantDisponible);
+
+  List<PretScolariteResponse> findByUniversite(UUID universiteTrackingId);
 }

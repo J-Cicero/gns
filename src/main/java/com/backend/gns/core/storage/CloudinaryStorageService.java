@@ -3,11 +3,10 @@ package com.backend.gns.core.storage;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import java.io.IOException;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CloudinaryStorageService {
@@ -18,18 +17,21 @@ public class CloudinaryStorageService {
     this.cloudinary = cloudinary;
   }
 
-    public Map<String, String> upload(MultipartFile fichier, String trackingId) {
+  public Map<String, String> upload(MultipartFile fichier, String trackingId) {
     try {
-        Map<String, Object> params = ObjectUtils.asMap(
-          "folder", "studcash/documents/" + trackingId,
-          "resource_type", "auto",
-          "use_filename", true,
-          "unique_filename", true
-      );
-        Map<String, Object> result = cloudinary.uploader()
-          .upload(fichier.getBytes(), params);
+      Map<String, Object> params =
+          ObjectUtils.asMap(
+              "folder",
+              "studcash/documents/" + trackingId,
+              "resource_type",
+              "auto",
+              "use_filename",
+              true,
+              "unique_filename",
+              true);
+      Map<String, Object> result = cloudinary.uploader().upload(fichier.getBytes(), params);
 
-        Map<String, String> response = new HashMap<>();
+      Map<String, String> response = new HashMap<>();
       response.put("url", (String) result.get("secure_url"));
       response.put("publicId", (String) result.get("public_id"));
       return response;

@@ -1,15 +1,15 @@
 package com.backend.gns.student.domain.services.impl;
 
 import com.backend.gns.core.exception.ResourceNotFoundException;
-import com.backend.gns.wallet.domain.enums.WalletStatus;
-import com.backend.gns.wallet.domain.enums.WalletType;
-import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleResponse;
 import com.backend.gns.student.application.mappers.InscriptionAnnuelleMapper;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.services.EligibiliteService;
 import com.backend.gns.student.domain.services.StudentWorkflowService;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
+import com.backend.gns.wallet.domain.enums.WalletType;
+import com.backend.gns.wallet.domain.models.Wallet;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,51 +22,59 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StudentWorkflowServiceImpl implements StudentWorkflowService {
 
-    private final InscriptionAnnuelleRepository inscriptionRepository;
-    private final InscriptionAnnuelleMapper inscriptionMapper;
-    private final EligibiliteService eligibiliteService;
+  private final InscriptionAnnuelleRepository inscriptionRepository;
+  private final InscriptionAnnuelleMapper inscriptionMapper;
+  private final EligibiliteService eligibiliteService;
 
-    @Override
-    @Transactional
-    public InscriptionAnnuelleResponse validerEtActiverInscription(UUID inscriptionTrackingId) {
-        log.info("Démarrage du workflow de validation pour l'inscription: {}", inscriptionTrackingId);
+  @Override
+  @Transactional
+  public InscriptionAnnuelleResponse validerEtActiverInscription(UUID inscriptionTrackingId) {
+    log.info("Démarrage du workflow de validation pour l'inscription: {}", inscriptionTrackingId);
 
-        // 1. Récupérer l'inscription
-        InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(inscriptionTrackingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Inscription non trouvée: " + inscriptionTrackingId));
+    // 1. Récupérer l'inscription
+    InscriptionAnnuelle inscription =
+        inscriptionRepository
+            .findByTrackingId(inscriptionTrackingId)
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        "Inscription non trouvée: " + inscriptionTrackingId));
 
-        // 2. Vérifier l'éligibilité (Appel du service métier)
-        EligibiliteService.EligibiliteResult result = eligibiliteService.verifierEligibilite(
-                inscription.getStudent(),
-                inscription,
-                inscription.getStudent().getBanqueEtudiant()
-        );
+    // 2. Vérifier l'éligibilité (Appel du service métier)
+    EligibiliteService.EligibiliteResult result =
+        eligibiliteService.verifierEligibilite(
+            inscription.getStudent(), inscription, inscription.getStudent().getBanqueEtudiant());
 
-        if (result.estEligible) {
-            log.info("Étudiant éligible. Plafond accordé: {}", result.plafondAccorde);
-            
-            // 3. Mise à jour de l'inscription
-            inscription.setPlafondAccorde(result.plafondAccorde);
-            
-            // 4. Mise à jour du Wallet de l'étudiant
-            Wallet wallet = inscription.getStudent().getWallet();
-            if (wallet != null) {
-                wallet.setPlafond(result.plafondAccorde);
-                wallet.setStatutWallet(WalletStatus.ACTIF);
-                
-                wallet.setTypeWallet(WalletType.STUDENT);
-                
-                log.info("Wallet activé pour l'étudiant {}: Type={}, Plafond={}", 
-                        inscription.getStudent().getTrackingId(), wallet.getTypeWallet(), wallet.getPlafond());
-            }
-        } else {
-            log.warn("Étudiant non éligible pour l'inscription {}. Motif: {}", 
-                    inscriptionTrackingId, result.motifRejet);
-            inscription.setPlafondAccorde(BigDecimal.ZERO);
-            // On peut décider de laisser le wallet INACTIF ou de le passer en standard sans bourse
-        }
+    if (result.estEligible) {
+      log.info("Étudiant éligible. Plafond accordé: {}", result.plafondAccorde);
 
-        InscriptionAnnuelle savedInscription = inscriptionRepository.save(inscription);
-        return inscriptionMapper.toResponse(savedInscription);
+      // 3. Mise à jour de l'inscription
+      inscription.setPlafondAccorde(result.plafondAccorde);
+
+      // 4. Mise à jour du Wallet de l'étudiant
+      Wallet wallet = inscription.getStudent().getWallet();
+      if (wallet != null) {
+        wallet.setPlafond(result.plafondAccorde);
+        wallet.setStatutWallet(WalletStatus.ACTIF);
+
+        wallet.setTypeWallet(WalletType.STUDENT);
+
+        log.info(
+            "Wallet activé pour l'étudiant {}: Type={}, Plafond={}",
+            inscription.getStudent().getTrackingId(),
+            wallet.getTypeWallet(),
+            wallet.getPlafond());
+      }
+    } else {
+      log.warn(
+          "Étudiant non éligible pour l'inscription {}. Motif: {}",
+          inscriptionTrackingId,
+          result.motifRejet);
+      inscription.setPlafondAccorde(BigDecimal.ZERO);
+      // On peut décider de laisser le wallet INACTIF ou de le passer en standard sans bourse
     }
+
+    InscriptionAnnuelle savedInscription = inscriptionRepository.save(inscription);
+    return inscriptionMapper.toResponse(savedInscription);
+  }
 }

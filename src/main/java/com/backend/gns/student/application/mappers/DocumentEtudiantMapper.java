@@ -39,14 +39,15 @@ public class DocumentEtudiantMapper {
   }
 
   public DocumentEtudiantResponse toResponse(DocumentEtudiant document) {
-     if (document == null) {
+    if (document == null) {
       throw new IllegalArgumentException(
           "La requête DocumentEtudiantRequest ne peut pas être nulle");
     }
 
     return DocumentEtudiantResponse.builder()
         .trackingId(document.getTrackingId())
-        .inscriptionTrackingId(document.getInscription() != null ? document.getInscription().getTrackingId() : null) 
+        .inscriptionTrackingId(
+            document.getInscription() != null ? document.getInscription().getTrackingId() : null)
         .type(document.getType())
         .cheminFichier(document.getUrlFichier())
         .statut(document.getStatut())

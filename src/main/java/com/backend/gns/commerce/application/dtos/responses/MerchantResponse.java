@@ -12,5 +12,4 @@ public record MerchantResponse(
     String prenom,
     Boolean estActif,
     String telephone,
-    LocalDateTime dateNaissance
-) {}
+    LocalDateTime dateNaissance) {}

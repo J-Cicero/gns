@@ -29,9 +29,7 @@ public class CardServiceImpl implements CardService {
   private final StudentRepository studentRepository;
 
   public CardServiceImpl(
-      CardRepository cardRepository,
-      CardMapper cardMapper,
-      StudentRepository studentRepository) {
+      CardRepository cardRepository, CardMapper cardMapper, StudentRepository studentRepository) {
     this.cardRepository = cardRepository;
     this.cardMapper = cardMapper;
     this.studentRepository = studentRepository;
@@ -59,11 +57,14 @@ public class CardServiceImpl implements CardService {
 
     // Génération automatique du code QR si non fourni
     if (card.getQrCodeStatique() == null || card.getQrCodeStatique().isEmpty()) {
-        String uniqueRef = "STC-" + card.getStudent().getTrackingId().toString().substring(0, 8).toUpperCase() 
-                + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        card.setQrCodeStatique(uniqueRef);
+      String uniqueRef =
+          "STC-"
+              + card.getStudent().getTrackingId().toString().substring(0, 8).toUpperCase()
+              + "-"
+              + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+      card.setQrCodeStatique(uniqueRef);
     }
-    
+
     card.setDateEmission(LocalDateTime.now());
 
     Card savedCard = cardRepository.save(card);
@@ -88,7 +89,7 @@ public class CardServiceImpl implements CardService {
     if (CardStatut.ACTIVE.equals(request.cardStatus())
         && !CardStatut.ACTIVE.equals(card.getStatut())) {
       long activeCardCount =
-        cardRepository.countByStudentAndStatut(card.getStudent(), CardStatut.ACTIVE);
+          cardRepository.countByStudentAndStatut(card.getStudent(), CardStatut.ACTIVE);
       if (activeCardCount > 0) {
         throw new IllegalStateException(
             "L'étudiant possède déjà une carte active. "
@@ -152,8 +153,7 @@ public class CardServiceImpl implements CardService {
             .findByTrackingId(cardTrackingId)
             .orElseThrow(
                 () ->
-                    new EntityNotFoundException(
-                        "Carte non trouvée avec l'ID: " + cardTrackingId));
+                    new EntityNotFoundException("Carte non trouvée avec l'ID: " + cardTrackingId));
 
     card.setStatut(CardStatut.INACTIVE);
     Card updatedCard = cardRepository.save(card);

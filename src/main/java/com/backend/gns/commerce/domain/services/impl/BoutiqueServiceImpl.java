@@ -1,19 +1,18 @@
 package com.backend.gns.commerce.domain.services.impl;
 
 import com.backend.gns.commerce.application.dtos.requests.BoutiqueRequest;
-import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
 import com.backend.gns.commerce.application.dtos.responses.BoutiqueResponse;
 import com.backend.gns.commerce.application.mappers.BoutiqueMapper;
+import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.commerce.domain.models.Merchant;
+import com.backend.gns.commerce.domain.services.BoutiqueService;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
-import com.backend.gns.commerce.domain.models.Boutique;
-import com.backend.gns.commerce.domain.models.Merchant;
 import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.commerce.domain.services.BoutiqueService;
 import com.backend.gns.wallet.domain.services.WalletService;
-import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
@@ -81,7 +80,7 @@ public class BoutiqueServiceImpl implements BoutiqueService {
       wallet.setSolde(BigDecimal.ZERO);
       wallet.setPlafond(BigDecimal.ZERO);
       wallet.setDateCreation(LocalDateTime.now());
-      
+
       boutique.setWallet(wallet);
     } else {
       Wallet wallet =
@@ -187,22 +186,25 @@ public class BoutiqueServiceImpl implements BoutiqueService {
     return boutiqueRepository.findAll(normalize(pageable)).map(boutiqueMapper::toResponse);
   }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<BoutiqueResponse> getBoutiquesEnAlerteQuota(BigDecimal seuilPourcentage, Pageable pageable) {
-    return boutiqueRepository.findAll(normalize(pageable))
-        .map(b -> {
-            if (b.getWallet() != null) {
-          BigDecimal plafond = b.getWallet().getPlafond();
-          BigDecimal solde = b.getWallet().getSolde();
-          if (plafond.compareTo(BigDecimal.ZERO) > 0) {
-            BigDecimal ratio = solde.divide(plafond, 2, RoundingMode.HALF_UP);
-                    if (ratio.compareTo(seuilPourcentage) <= 0) {
-                        return boutiqueMapper.toResponse(b);
-                    }
+  @Override
+  @Transactional(readOnly = true)
+  public Page<BoutiqueResponse> getBoutiquesEnAlerteQuota(
+      BigDecimal seuilPourcentage, Pageable pageable) {
+    return boutiqueRepository
+        .findAll(normalize(pageable))
+        .map(
+            b -> {
+              if (b.getWallet() != null) {
+                BigDecimal plafond = b.getWallet().getPlafond();
+                BigDecimal solde = b.getWallet().getSolde();
+                if (plafond.compareTo(BigDecimal.ZERO) > 0) {
+                  BigDecimal ratio = solde.divide(plafond, 2, RoundingMode.HALF_UP);
+                  if (ratio.compareTo(seuilPourcentage) <= 0) {
+                    return boutiqueMapper.toResponse(b);
+                  }
                 }
-            }
-            return null;
-        });
+              }
+              return null;
+            });
   }
 }

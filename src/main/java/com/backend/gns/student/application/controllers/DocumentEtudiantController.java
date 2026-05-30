@@ -1,9 +1,9 @@
 package com.backend.gns.student.application.controllers;
 
+import com.backend.gns.core.domain.enums.TypeDocument;
 import com.backend.gns.student.application.dtos.requests.DocumentEtudiantRequest;
 import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.student.domain.enums.StatutDocument;
-import com.backend.gns.core.domain.enums.TypeDocument;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -106,9 +106,7 @@ public class DocumentEtudiantController {
       if (!responses.hasContent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(
-                Map.of(
-                    "error", "NOT_FOUND", "message",
-                    "Aucun document trouvé pour cet étudiant"));
+                Map.of("error", "NOT_FOUND", "message", "Aucun document trouvé pour cet étudiant"));
       }
       return ResponseEntity.ok(responses);
     } catch (Exception e) {
@@ -134,7 +132,9 @@ public class DocumentEtudiantController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(
                 Map.of(
-                    "error", "NOT_FOUND", "message",
+                    "error",
+                    "NOT_FOUND",
+                    "message",
                     "Aucun document trouvé pour cette inscription"));
       }
       return ResponseEntity.ok(responses);
@@ -157,14 +157,10 @@ public class DocumentEtudiantController {
       @RequestParam(defaultValue = "10") int size) {
     try {
       Pageable pageable = PageRequest.of(page, size);
-      var responses =
-          documentService.findByStudentAndStatut(studentTrackingId, statut, pageable);
+      var responses = documentService.findByStudentAndStatut(studentTrackingId, statut, pageable);
       if (!responses.hasContent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(
-                Map.of(
-                    "error", "NOT_FOUND", "message",
-                    "Aucun document trouvé avec ce statut"));
+            .body(Map.of("error", "NOT_FOUND", "message", "Aucun document trouvé avec ce statut"));
       }
       return ResponseEntity.ok(responses);
     } catch (Exception e) {
@@ -188,10 +184,7 @@ public class DocumentEtudiantController {
       var responses = documentService.findByStatut(statut, pageable);
       if (!responses.hasContent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(
-                Map.of(
-                    "error", "NOT_FOUND", "message",
-                    "Aucun document avec ce statut"));
+            .body(Map.of("error", "NOT_FOUND", "message", "Aucun document avec ce statut"));
       }
       return ResponseEntity.ok(responses);
     } catch (Exception e) {
@@ -241,8 +234,7 @@ public class DocumentEtudiantController {
       }
 
       DocumentEtudiantResponse response =
-          documentService.uploadDocument(
-              fichier, inscriptionTrackingId, typeDocument);
+          documentService.uploadDocument(fichier, inscriptionTrackingId, typeDocument);
 
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (IllegalArgumentException e) {

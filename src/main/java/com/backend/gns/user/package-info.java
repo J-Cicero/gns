@@ -1,7 +1,6 @@
 @ApplicationModule(
     displayName = "Utilisateurs IAM",
-    allowedDependencies = {"core"}
-)
+    allowedDependencies = {"core"})
 package com.backend.gns.user;
 
 import org.springframework.modulith.ApplicationModule;

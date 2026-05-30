@@ -25,7 +25,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-
 @Entity
 @Table(name = "VERSEMENT")
 @Getter
@@ -35,21 +34,21 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Versement extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, unique = true, updatable = false)
-    private UUID trackingId;
+  @Column(nullable = false, unique = true, updatable = false)
+  private UUID trackingId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wallet_id", nullable = false)
-    private Wallet wallet;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "wallet_id", nullable = false)
+  private Wallet wallet;
 
-    @Column(nullable = false)
-    private BigDecimal montantVerse;
+  @Column(nullable = false)
+  private BigDecimal montantVerse;
 
-   @Column
+  @Column
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime dateVersement;
 
@@ -60,5 +59,4 @@ public class Versement extends BaseEntity {
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
   private VersementStatut statut;
-
 }

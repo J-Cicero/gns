@@ -13,5 +13,4 @@ public record VersementRequest(
     BigDecimal montantVerse,
     VersementType typeVersement,
     LocalDateTime dateVersement,
-    VersementStatut statut
-) {}
+    VersementStatut statut) {}

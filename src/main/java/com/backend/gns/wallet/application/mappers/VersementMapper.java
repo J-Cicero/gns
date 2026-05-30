@@ -4,7 +4,6 @@ import com.backend.gns.wallet.application.dtos.requests.VersementRequest;
 import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
 import com.backend.gns.wallet.domain.models.Versement;
 import com.backend.gns.wallet.domain.models.Wallet;
-
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;

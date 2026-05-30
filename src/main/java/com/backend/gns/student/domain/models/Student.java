@@ -1,11 +1,10 @@
 package com.backend.gns.student.domain.models;
 
-import com.backend.gns.user.domain.models.User;
 import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.user.domain.models.User;
 import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.student.domain.models.Universite ;
-import jakarta.persistence.Column;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -30,29 +29,27 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Student extends User {
 
-    @Column(length = 50, nullable = true, unique = true)
-    private String numEtudiantUniv;
+  @Column(length = 50, nullable = true, unique = true)
+  private String numEtudiantUniv;
 
-    @Column(name = "pin_code", length = 60, nullable = true)
-    private String pinCode;
+  @Column(name = "pin_code", length = 60, nullable = true)
+  private String pinCode;
 
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20, nullable = true)
+  private KycStatus statutKYC;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = true)
-    private KycStatus statutKYC;
+  @OneToOne(mappedBy = "student", optional = true)
+  private BanqueEtudiant banqueEtudiant;
 
-    @OneToOne(mappedBy = "student", optional = true)
-    private BanqueEtudiant banqueEtudiant;
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinColumn(name = "wallet_id")
+  private Wallet wallet;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "wallet_id")
-    private Wallet wallet;
+  @OneToOne(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private Card card;
 
-    @OneToOne(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Card card;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "universite_id")
-    private Universite universite;
-
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "universite_id")
+  private Universite universite;
 }

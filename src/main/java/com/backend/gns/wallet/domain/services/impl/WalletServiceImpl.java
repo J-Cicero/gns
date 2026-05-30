@@ -30,7 +30,6 @@ public class WalletServiceImpl implements WalletService {
   private final WalletRepository walletRepository;
   private final WalletMapper walletMapper;
 
-
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
     return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
@@ -39,14 +38,17 @@ public class WalletServiceImpl implements WalletService {
   private Wallet findWalletOrThrow(UUID trackingId) {
     return walletRepository
         .findByTrackingId(trackingId)
-        .orElseThrow(() -> {
-          log.warn("Portefeuille introuvable avec trackingId: {}", trackingId);
-          return new ResourceNotFoundException("Portefeuille non trouvé avec l'ID: " + trackingId);
-        });
+        .orElseThrow(
+            () -> {
+              log.warn("Portefeuille introuvable avec trackingId: {}", trackingId);
+              return new ResourceNotFoundException(
+                  "Portefeuille non trouvé avec l'ID: " + trackingId);
+            });
   }
 
   private void ensureWalletCanReceiveFunds(Wallet wallet) {
-    if (wallet.getStatutWallet() == WalletStatus.GELE || wallet.getStatutWallet() == WalletStatus.BLOQUE) {
+    if (wallet.getStatutWallet() == WalletStatus.GELE
+        || wallet.getStatutWallet() == WalletStatus.BLOQUE) {
       throw new IllegalStateException(
           "Crédit refusé : le wallet est gelé ou bloqué (" + wallet.getStatutWallet() + ")");
     }
@@ -55,10 +57,11 @@ public class WalletServiceImpl implements WalletService {
   private void ensureWalletCanSpend(Wallet wallet) {
     if (wallet.getStatutWallet() != WalletStatus.ACTIF) {
       throw new IllegalStateException(
-          "Débit refusé : le wallet doit être actif (statut actuel: " + wallet.getStatutWallet() + ")");
+          "Débit refusé : le wallet doit être actif (statut actuel: "
+              + wallet.getStatutWallet()
+              + ")");
     }
   }
-
 
   @Override
   @Transactional
@@ -185,7 +188,10 @@ public class WalletServiceImpl implements WalletService {
     ensureWalletCanSpend(wallet);
     if (wallet.getSolde().compareTo(montant) < 0) {
       throw new IllegalStateException(
-          "Solde insuffisant. Solde actuel: " + wallet.getSolde() + ", Montant demandé: " + montant);
+          "Solde insuffisant. Solde actuel: "
+              + wallet.getSolde()
+              + ", Montant demandé: "
+              + montant);
     }
 
     BigDecimal nouveauSolde = wallet.getSolde().subtract(montant);

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ParametreGnsRepository extends JpaRepository<ParametreGns, Long> {
-    Optional<ParametreGns> findByTrackingId(UUID trackingId);
-    Optional<ParametreGns> findByNomParametreAndEstActifTrue(TypeParametreGns nomParametre);
+  Optional<ParametreGns> findByTrackingId(UUID trackingId);
+
+  Optional<ParametreGns> findByNomParametreAndEstActifTrue(TypeParametreGns nomParametre);
 }

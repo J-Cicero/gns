@@ -1,19 +1,19 @@
 package com.backend.gns.paiement.domain.services.impl;
 
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.paiement.application.dtos.requests.PaiementRequest;
 import com.backend.gns.paiement.application.dtos.responses.PaiementResponse;
 import com.backend.gns.paiement.application.mappers.PaiementMapper;
 import com.backend.gns.paiement.domain.enums.PaiementStatut;
 import com.backend.gns.paiement.domain.enums.PaiementType;
+import com.backend.gns.paiement.domain.models.Commande;
 import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.paiement.domain.services.PaiementService;
-import com.backend.gns.paiement.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
-import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
-import com.backend.gns.paiement.domain.models.Commande;
+import com.backend.gns.paiement.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -100,7 +100,8 @@ public class PaiementServiceImpl implements PaiementService {
 
     paiement.setMontantDebite(request.montantDebite());
     // Recalculate commission and montantNetBoutique dynamically
-    BigDecimal taux = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.TAUX_COMMISSION_PAIEMENT);
+    BigDecimal taux =
+        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.TAUX_COMMISSION_PAIEMENT);
     BigDecimal commission = request.montantDebite().multiply(taux);
     paiement.setCommission(commission);
     paiement.setMontantNetBoutique(request.montantDebite().subtract(commission));
@@ -182,8 +183,10 @@ public class PaiementServiceImpl implements PaiementService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<PaiementResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable) {
-    return paiementRepository.findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
+  public Page<PaiementResponse> findByUniversiteTrackingId(
+      UUID universiteTrackingId, Pageable pageable) {
+    return paiementRepository
+        .findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
         .map(paiementMapper::toResponse);
   }
 }

@@ -20,31 +20,32 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ScolariteController {
 
-    private final ScolariteService scolariteService;
+  private final ScolariteService scolariteService;
 
-    @PostMapping("/prets")
-    @Operation(summary = "Demander un prêt scolarité", description = "L'étudiant demande à payer sa scolarité via StudCash sans avoir de solde")
-    @ApiResponse(responseCode = "201", description = "Prêt accordé et Université créditée")
-    public ResponseEntity<?> demanderPret(@RequestBody PretScolariteRequest request) {
-        try {
-            PretScolariteResponse response = scolariteService.demanderPretScolarite(
-                request.studentTrackingId(),
-                request.universiteTrackingId(),
-                request.montant()
-            );
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", "PRECONDITION_FAILED", "message", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "LOAN_REQUEST_FAILED", "message", e.getMessage()));
-        }
+  @PostMapping("/prets")
+  @Operation(
+      summary = "Demander un prêt scolarité",
+      description = "L'étudiant demande à payer sa scolarité via StudCash sans avoir de solde")
+  @ApiResponse(responseCode = "201", description = "Prêt accordé et Université créditée")
+  public ResponseEntity<?> demanderPret(@RequestBody PretScolariteRequest request) {
+    try {
+      PretScolariteResponse response =
+          scolariteService.demanderPretScolarite(
+              request.studentTrackingId(), request.universiteTrackingId(), request.montant());
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "PRECONDITION_FAILED", "message", e.getMessage()));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "LOAN_REQUEST_FAILED", "message", e.getMessage()));
     }
+  }
 
-    @GetMapping("/universite/{universiteTrackingId}")
-    @Operation(summary = "Récupérer les prêts scolarité d'une université")
-    public ResponseEntity<List<PretScolariteResponse>> findByUniversite(@PathVariable UUID universiteTrackingId) {
-        return ResponseEntity.ok(scolariteService.findByUniversite(universiteTrackingId));
-    }
+  @GetMapping("/universite/{universiteTrackingId}")
+  @Operation(summary = "Récupérer les prêts scolarité d'une université")
+  public ResponseEntity<List<PretScolariteResponse>> findByUniversite(
+      @PathVariable UUID universiteTrackingId) {
+    return ResponseEntity.ok(scolariteService.findByUniversite(universiteTrackingId));
+  }
 }

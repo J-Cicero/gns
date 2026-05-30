@@ -1,7 +1,7 @@
 package com.backend.gns.commerce.infrastructure.repositories;
 
-import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.core.domain.enums.KycStatus;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

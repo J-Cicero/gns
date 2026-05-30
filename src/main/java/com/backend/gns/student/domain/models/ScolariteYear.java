@@ -14,25 +14,25 @@ import lombok.*;
 @AllArgsConstructor
 public class ScolariteYear extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(length = 36, nullable = false, unique = true, updatable = false)
-    private UUID trackingId = UUID.randomUUID();
+  @Column(length = 36, nullable = false, unique = true, updatable = false)
+  private UUID trackingId = UUID.randomUUID();
 
-    @Column(length = 20, nullable = false, unique = true)
-    private String libelle; // e.g., "2025-2026"
+  @Column(length = 20, nullable = false, unique = true)
+  private String libelle; // e.g., "2025-2026"
 
-    @Column(nullable = false)
-    private LocalDate dateDebut;
+  @Column(nullable = false)
+  private LocalDate dateDebut;
 
-    @Column(nullable = false)
-    private LocalDate dateFin;
+  @Column(nullable = false)
+  private LocalDate dateFin;
 
-    @Column(nullable = false)
-    private boolean estOuverte = true;
+  @Column(nullable = false)
+  private boolean estOuverte = true;
 
-    @Column(nullable = false)
-    private boolean estCloturee = false;
+  @Column(nullable = false)
+  private boolean estCloturee = false;
 }

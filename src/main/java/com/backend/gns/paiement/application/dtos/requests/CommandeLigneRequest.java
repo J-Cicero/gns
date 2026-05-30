@@ -6,7 +6,4 @@ import lombok.Builder;
 
 @Builder
 public record CommandeLigneRequest(
-    UUID trackingCommandeId,
-    UUID trackingProductId, 
-    int quantite, 
-    BigDecimal prixUnitaire) {}
+    UUID trackingCommandeId, UUID trackingProductId, int quantite, BigDecimal prixUnitaire) {}

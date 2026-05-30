@@ -2,22 +2,20 @@ package com.backend.gns.student.domain.services.impl;
 
 import com.backend.gns.core.ai.GeminiExtractionService;
 import com.backend.gns.core.ai.GeminiExtractionService.ExtractionResultat;
+import com.backend.gns.core.domain.enums.TypeDocument;
 import com.backend.gns.core.storage.CloudinaryStorageService;
 import com.backend.gns.student.application.dtos.requests.DocumentEtudiantRequest;
 import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.student.application.mappers.DocumentEtudiantMapper;
 import com.backend.gns.student.domain.enums.StatutDocument;
-import com.backend.gns.student.domain.enums.StudentNiveau;
-import com.backend.gns.core.domain.enums.TypeDocument;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
-import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
@@ -74,19 +72,20 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
   @Override
   @Transactional
   public DocumentEtudiantResponse uploadDocument(
-      MultipartFile fichier,
-      UUID inscriptionTrackingId,
-      TypeDocument typeDocument) {
+      MultipartFile fichier, UUID inscriptionTrackingId, TypeDocument typeDocument) {
 
-    log.info("Début upload document - Inscription: {}, Type: {}", inscriptionTrackingId, typeDocument);
+    log.info(
+        "Début upload document - Inscription: {}, Type: {}", inscriptionTrackingId, typeDocument);
 
-    InscriptionAnnuelle inscription = inscriptionRepository
+    InscriptionAnnuelle inscription =
+        inscriptionRepository
             .findByTrackingId(inscriptionTrackingId)
             .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée"));
 
     Student student = inscription.getStudent();
 
-    Map<String, String> uploadResult = cloudinaryService.upload(fichier, student.getTrackingId().toString());
+    Map<String, String> uploadResult =
+        cloudinaryService.upload(fichier, student.getTrackingId().toString());
     String urlFichier = uploadResult.get("url");
     String publicId = uploadResult.get("publicId");
 
@@ -103,11 +102,11 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     document.setStatut(StatutDocument.EN_ATTENTE);
     document.setDateDepot(LocalDateTime.now());
     document.setScoreFiabilite(extraction.scoreFiabilite());
-    
+
     try {
-        document.setDonneesExtraites(objectMapper.writeValueAsString(extraction));
+      document.setDonneesExtraites(objectMapper.writeValueAsString(extraction));
     } catch (Exception e) {
-        log.error("Erreur conversion JSON : {}", e.getMessage());
+      log.error("Erreur conversion JSON : {}", e.getMessage());
     }
 
     DocumentEtudiant saved = documentRepository.save(document);
@@ -118,19 +117,20 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     return documentMapper.toResponse(saved);
   }
 
-  private void updateInscriptionFromExtraction(InscriptionAnnuelle ins, ExtractionResultat extraction) {
+  private void updateInscriptionFromExtraction(
+      InscriptionAnnuelle ins, ExtractionResultat extraction) {
     boolean modifie = false;
     if (extraction.creditsTotalValides() != null) {
-        ins.setCreditsTotalValides(extraction.creditsTotalValides());
-        modifie = true;
+      ins.setCreditsTotalValides(extraction.creditsTotalValides());
+      modifie = true;
     }
     if (extraction.moyenneBac() != null) {
-        ins.setMoyenneBac(extraction.moyenneBac());
-        modifie = true;
+      ins.setMoyenneBac(extraction.moyenneBac());
+      modifie = true;
     }
     if (modifie) {
-        inscriptionRepository.save(ins);
-        log.info("Inscription {} mise à jour via OCR", ins.getTrackingId());
+      inscriptionRepository.save(ins);
+      log.info("Inscription {} mise à jour via OCR", ins.getTrackingId());
     }
   }
 
@@ -151,7 +151,9 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
   @Override
   @Transactional
   public DocumentEtudiantResponse update(UUID trackingId, DocumentEtudiantRequest request) {
-    DocumentEtudiant document = documentRepository.findByTrackingId(trackingId)
+    DocumentEtudiant document =
+        documentRepository
+            .findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Document non trouvé"));
 
     document.setType(request.type());
@@ -164,38 +166,51 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
   @Override
   @Transactional
   public void delete(UUID trackingId) {
-    DocumentEtudiant document = documentRepository.findByTrackingId(trackingId)
+    DocumentEtudiant document =
+        documentRepository
+            .findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Document non trouvé"));
-    
+
     try {
-        if (document.getPublicIdCloudinary() != null) {
-            cloudinaryService.supprimer(document.getPublicIdCloudinary());
-        }
+      if (document.getPublicIdCloudinary() != null) {
+        cloudinaryService.supprimer(document.getPublicIdCloudinary());
+      }
     } catch (Exception e) {
-        log.warn("Erreur suppression Cloudinary : {}", e.getMessage());
+      log.warn("Erreur suppression Cloudinary : {}", e.getMessage());
     }
-    
+
     documentRepository.delete(document);
   }
 
   @Override
-  public Page<DocumentEtudiantResponse> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable) {
-    return documentRepository.findByStudentTrackingId(studentTrackingId, normalize(pageable)).map(documentMapper::toResponse);
+  public Page<DocumentEtudiantResponse> findByStudentTrackingId(
+      UUID studentTrackingId, Pageable pageable) {
+    return documentRepository
+        .findByStudentTrackingId(studentTrackingId, normalize(pageable))
+        .map(documentMapper::toResponse);
   }
 
   @Override
-  public Page<DocumentEtudiantResponse> findByInscriptionTrackingId(UUID inscriptionTrackingId, Pageable pageable) {
-    return documentRepository.findByInscriptionTrackingId(inscriptionTrackingId, normalize(pageable)).map(documentMapper::toResponse);
+  public Page<DocumentEtudiantResponse> findByInscriptionTrackingId(
+      UUID inscriptionTrackingId, Pageable pageable) {
+    return documentRepository
+        .findByInscriptionTrackingId(inscriptionTrackingId, normalize(pageable))
+        .map(documentMapper::toResponse);
   }
 
   @Override
-  public Page<DocumentEtudiantResponse> findByStudentAndStatut(UUID studentTrackingId, StatutDocument statut, Pageable pageable) {
-    return documentRepository.findByStudentAndStatut(studentTrackingId, statut, normalize(pageable)).map(documentMapper::toResponse);
+  public Page<DocumentEtudiantResponse> findByStudentAndStatut(
+      UUID studentTrackingId, StatutDocument statut, Pageable pageable) {
+    return documentRepository
+        .findByStudentAndStatut(studentTrackingId, statut, normalize(pageable))
+        .map(documentMapper::toResponse);
   }
 
   @Override
   public Page<DocumentEtudiantResponse> findByStatut(StatutDocument statut, Pageable pageable) {
-    return documentRepository.findByStatut(statut, normalize(pageable)).map(documentMapper::toResponse);
+    return documentRepository
+        .findByStatut(statut, normalize(pageable))
+        .map(documentMapper::toResponse);
   }
 
   @Override

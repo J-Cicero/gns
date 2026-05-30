@@ -15,15 +15,16 @@ public interface DocumentEtudiantRepository extends JpaRepository<DocumentEtudia
 
   Optional<DocumentEtudiant> findByTrackingId(UUID trackingId);
 
-    @Query("SELECT d FROM DocumentEtudiant d WHERE d.student.trackingId = :studentTrackingId")
-    List<DocumentEtudiant> findByStudentTrackingId(@Param("studentTrackingId") UUID studentTrackingId);
+  @Query("SELECT d FROM DocumentEtudiant d WHERE d.student.trackingId = :studentTrackingId")
+  List<DocumentEtudiant> findByStudentTrackingId(
+      @Param("studentTrackingId") UUID studentTrackingId);
 
-  @Query("SELECT d FROM DocumentEtudiant d WHERE d.inscription.student.trackingId = :studentTrackingId")
+  @Query(
+      "SELECT d FROM DocumentEtudiant d WHERE d.inscription.student.trackingId = :studentTrackingId")
   Page<DocumentEtudiant> findByStudentTrackingId(
       @Param("studentTrackingId") UUID studentTrackingId, Pageable pageable);
 
-  @Query(
-      "SELECT d FROM DocumentEtudiant d WHERE d.inscription.trackingId = :inscriptionTrackingId")
+  @Query("SELECT d FROM DocumentEtudiant d WHERE d.inscription.trackingId = :inscriptionTrackingId")
   Page<DocumentEtudiant> findByInscriptionTrackingId(
       @Param("inscriptionTrackingId") UUID inscriptionTrackingId, Pageable pageable);
 

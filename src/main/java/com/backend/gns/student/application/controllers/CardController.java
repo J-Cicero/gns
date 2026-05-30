@@ -27,9 +27,13 @@ public class CardController {
   }
 
   @PostMapping
-  @Operation(summary = "Créer une carte", description = "Crée une nouvelle carte physique pour un étudiant")
+  @Operation(
+      summary = "Créer une carte",
+      description = "Crée une nouvelle carte physique pour un étudiant")
   @ApiResponse(responseCode = "201", description = "Carte créée avec succès")
-  @ApiResponse(responseCode = "400", description = "Données invalides ou étudiant a déjà une carte active")
+  @ApiResponse(
+      responseCode = "400",
+      description = "Données invalides ou étudiant a déjà une carte active")
   public ResponseEntity<?> create(@RequestBody CardRequest request) {
     try {
       CardResponse response = cardService.create(request);
@@ -67,8 +71,7 @@ public class CardController {
       description = "Mettre à jour les informations d'une carte")
   @ApiResponse(responseCode = "200", description = "Carte mise à jour avec succès")
   @ApiResponse(responseCode = "404", description = "Carte non trouvée")
-  public ResponseEntity<?> update(
-      @PathVariable UUID trackingId, @RequestBody CardRequest request) {
+  public ResponseEntity<?> update(@PathVariable UUID trackingId, @RequestBody CardRequest request) {
     try {
       CardResponse response = cardService.update(trackingId, request);
       return ResponseEntity.ok(response);
@@ -110,7 +113,8 @@ public class CardController {
       var responses = cardService.findByStudentTrackingId(studentTrackingId, pageable);
       if (!responses.hasContent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(Map.of("error", "NOT_FOUND", "message", "Aucune carte trouvée pour cet étudiant"));
+            .body(
+                Map.of("error", "NOT_FOUND", "message", "Aucune carte trouvée pour cet étudiant"));
       }
       return ResponseEntity.ok(responses);
     } catch (Exception e) {
@@ -134,12 +138,7 @@ public class CardController {
       var responses = cardService.findByCardStatus(cardStatus, pageable);
       if (!responses.hasContent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(
-                Map.of(
-                    "error",
-                    "NOT_FOUND",
-                    "message",
-                    "Aucune carte trouvée avec ce statut"));
+            .body(Map.of("error", "NOT_FOUND", "message", "Aucune carte trouvée avec ce statut"));
       }
       return ResponseEntity.ok(responses);
     } catch (Exception e) {
@@ -151,13 +150,15 @@ public class CardController {
   @PostMapping("/{trackingId}/declare-lost")
   @Operation(
       summary = "Déclarer une carte comme perdue",
-      description = "Marque une carte comme PERDUE et permet la création d'une nouvelle carte active")
+      description =
+          "Marque une carte comme PERDUE et permet la création d'une nouvelle carte active")
   @ApiResponse(responseCode = "200", description = "Carte marquée comme perdue")
   @ApiResponse(responseCode = "404", description = "Carte non trouvée")
   public ResponseEntity<?> declareCardLost(@PathVariable UUID trackingId) {
     try {
       CardResponse response = cardService.declareCardLost(trackingId);
-      return ResponseEntity.ok(Map.of("success", true, "message", "Carte déclarée comme perdue", "card", response));
+      return ResponseEntity.ok(
+          Map.of("success", true, "message", "Carte déclarée comme perdue", "card", response));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "DECLARE_LOST_FAILED", "message", e.getMessage()));

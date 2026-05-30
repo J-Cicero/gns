@@ -1,25 +1,25 @@
 package com.backend.gns.student.domain.services.impl;
 
+import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.core.exception.ResourceNotFoundException;
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
 import com.backend.gns.student.application.mappers.StudentMapper;
-import com.backend.gns.core.domain.enums.KycStatus;
-import com.backend.gns.wallet.domain.enums.WalletStatus;
-import com.backend.gns.wallet.domain.enums.WalletType;
-import com.backend.gns.core.exception.ResourceNotFoundException;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.student.domain.services.StudentService;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
+import com.backend.gns.wallet.domain.enums.WalletType;
+import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.Map;
-import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -49,10 +49,11 @@ public class StudentServiceImpl implements StudentService {
   private Student findStudentOrThrow(UUID trackingId) {
     return studentRepository
         .findByTrackingId(trackingId)
-        .orElseThrow(() -> {
-          log.warn("Étudiant introuvable avec trackingId: {}", trackingId);
-          return new ResourceNotFoundException("Étudiant non trouvé avec l'ID: " + trackingId);
-        });
+        .orElseThrow(
+            () -> {
+              log.warn("Étudiant introuvable avec trackingId: {}", trackingId);
+              return new ResourceNotFoundException("Étudiant non trouvé avec l'ID: " + trackingId);
+            });
   }
 
   @Override
@@ -61,23 +62,25 @@ public class StudentServiceImpl implements StudentService {
     log.info("Création d'un étudiant: {} {}", request.prenom(), request.nom());
 
     Student student = studentMapper.toEntity(request);
-    
+
     // Initialisation du Wallet via Cascade
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
     wallet.setTypeWallet(WalletType.STUDENT);
- // Type par défaut, sera mis à jour lors de l'inscription
+    // Type par défaut, sera mis à jour lors de l'inscription
     wallet.setStatutWallet(WalletStatus.INACTIF);
     wallet.setSolde(BigDecimal.ZERO);
-    
-    BigDecimal plafondDefaut = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
+
+    BigDecimal plafondDefaut =
+        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
     wallet.setPlafond(plafondDefaut);
     wallet.setDateCreation(LocalDateTime.now());
-    
+
     student.setWallet(wallet);
 
     Student savedStudent = studentRepository.save(student);
-    log.info("Étudiant créé avec succès avec son Wallet, trackingId: {}", savedStudent.getTrackingId());
+    log.info(
+        "Étudiant créé avec succès avec son Wallet, trackingId: {}", savedStudent.getTrackingId());
     return studentMapper.toResponse(savedStudent);
   }
 
@@ -110,8 +113,10 @@ public class StudentServiceImpl implements StudentService {
       Wallet wallet =
           walletRepository
               .findByTrackingId(request.walletTrackingId())
-              .orElseThrow(() -> new ResourceNotFoundException(
-                  "Portefeuille non trouvé avec l'ID: " + request.walletTrackingId()));
+              .orElseThrow(
+                  () ->
+                      new ResourceNotFoundException(
+                          "Portefeuille non trouvé avec l'ID: " + request.walletTrackingId()));
       student.setWallet(wallet);
     }
 
@@ -147,9 +152,11 @@ public class StudentServiceImpl implements StudentService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<StudentResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable) {
+  public Page<StudentResponse> findByUniversiteTrackingId(
+      UUID universiteTrackingId, Pageable pageable) {
     log.debug("Recherche étudiants par université trackingId: {}", universiteTrackingId);
-    return studentRepository.findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
+    return studentRepository
+        .findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
         .map(studentMapper::toResponse);
   }
 
@@ -185,7 +192,8 @@ public class StudentServiceImpl implements StudentService {
   @Override
   public Map<String, Object> getCard(UUID studentTrackingId) {
     Student student = findStudentOrThrow(studentTrackingId);
-    Page<com.backend.gns.student.domain.models.Card> page = cardRepository.findByStudent(student, PageRequest.of(0, 1));
+    Page<com.backend.gns.student.domain.models.Card> page =
+        cardRepository.findByStudent(student, PageRequest.of(0, 1));
     if (page.hasContent()) {
       com.backend.gns.student.domain.models.Card c = page.getContent().get(0);
       Map<String, Object> map = new HashMap<>();

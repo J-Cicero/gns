@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ParametreDbsRepository extends JpaRepository<ParametreDbs, Long> {
-    Optional<ParametreDbs> findByTrackingId(UUID trackingId);
-    Optional<ParametreDbs> findByNomParametre(TypeParametreDbs nomParametre);
+  Optional<ParametreDbs> findByTrackingId(UUID trackingId);
+
+  Optional<ParametreDbs> findByNomParametre(TypeParametreDbs nomParametre);
 }

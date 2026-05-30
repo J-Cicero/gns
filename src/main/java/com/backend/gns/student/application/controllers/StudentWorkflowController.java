@@ -4,11 +4,10 @@ import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleRes
 import com.backend.gns.student.domain.services.StudentWorkflowService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/students/workflow")
@@ -16,12 +15,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StudentWorkflowController {
 
-    private final StudentWorkflowService workflowService;
+  private final StudentWorkflowService workflowService;
 
-    @PostMapping("/validate-enrollment/{inscriptionTrackingId}")
-    @Operation(summary = "Valider et Activer une inscription", 
-               description = "Déclenche l'éligibilité et active le portefeuille de l'étudiant si éligible")
-    public ResponseEntity<InscriptionAnnuelleResponse> validerEtActiver(@PathVariable UUID inscriptionTrackingId) {
-        return ResponseEntity.ok(workflowService.validerEtActiverInscription(inscriptionTrackingId));
-    }
+  @PostMapping("/validate-enrollment/{inscriptionTrackingId}")
+  @Operation(
+      summary = "Valider et Activer une inscription",
+      description = "Déclenche l'éligibilité et active le portefeuille de l'étudiant si éligible")
+  public ResponseEntity<InscriptionAnnuelleResponse> validerEtActiver(
+      @PathVariable UUID inscriptionTrackingId) {
+    return ResponseEntity.ok(workflowService.validerEtActiverInscription(inscriptionTrackingId));
+  }
 }
