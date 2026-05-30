@@ -226,4 +226,43 @@ public class VersementServiceImpl implements VersementService {
       }
     }
   }
+
+  @Override
+  @Transactional
+  public void remiseAZeroMasseEtudiants(UUID scolariteYearTrackingId) {
+    ScolariteYear year =
+        scolariteYearRepository
+            .findByTrackingId(scolariteYearTrackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Année scolaire non trouvée"));
+
+    List<InscriptionAnnuelle> inscriptions =
+        inscriptionAnnuelleRepository.findAllByScolariteYear(year);
+
+    for (InscriptionAnnuelle ins : inscriptions) {
+      if (ins.getStudent().getWallet() != null) {
+        try {
+          walletService.remettreAZero(ins.getStudent().getWallet().getTrackingId());
+          log.info("Portefeuille remis à zéro pour l'étudiant {}", ins.getStudent().getNom());
+        } catch (Exception e) {
+          log.error("Échec remise à zéro pour {}: {}", ins.getStudent().getNom(), e.getMessage());
+        }
+      }
+    }
+  }
+
+  @Override
+  @Transactional
+  public void remiseAZeroMasseBoutiques() {
+    List<Boutique> boutiques = boutiqueRepository.findAll();
+    for (Boutique boutique : boutiques) {
+      if (boutique.getWallet() != null) {
+        try {
+          walletService.remettreAZero(boutique.getWallet().getTrackingId());
+          log.info("Quota remis à zéro pour la boutique {}", boutique.getNomBoutique());
+        } catch (Exception e) {
+          log.error("Échec remise à zéro boutique {}: {}", boutique.getNomBoutique(), e.getMessage());
+        }
+      }
+    }
+  }
 }

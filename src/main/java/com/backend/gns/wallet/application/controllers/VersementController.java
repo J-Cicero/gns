@@ -76,6 +76,37 @@ public class VersementController {
     }
   }
 
+  @PostMapping("/masse/reset/etudiants")
+  @Operation(
+      summary = "Remise à zéro bourses étudiants",
+      description = "Remet à zéro tous les portefeuilles des étudiants de l'année scolaire")
+  public ResponseEntity<?> remiseAZeroMasseEtudiants(
+      @RequestParam UUID scolariteYearTrackingId) {
+    try {
+      versementService.remiseAZeroMasseEtudiants(scolariteYearTrackingId);
+      return ResponseEntity.ok(
+          Map.of("success", true, "message", "Remise à zéro lancée avec succès pour les étudiants"));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "MASS_RESET_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/masse/reset/boutiques")
+  @Operation(
+      summary = "Remise à zéro quotas boutiques",
+      description = "Remet à zéro tous les quotas de toutes les boutiques")
+  public ResponseEntity<?> remiseAZeroMasseBoutiques() {
+    try {
+      versementService.remiseAZeroMasseBoutiques();
+      return ResponseEntity.ok(
+          Map.of("success", true, "message", "Remise à zéro lancée avec succès pour les boutiques"));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "MASS_RESET_FAILED", "message", e.getMessage()));
+    }
+  }
+
   @GetMapping("/{trackingId}")
   @Operation(summary = "Récupérer un versement", description = "Récupère un versement par son ID")
   @ApiResponse(responseCode = "200", description = "Versement trouvé")

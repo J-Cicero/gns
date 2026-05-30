@@ -31,4 +31,8 @@ public interface VersementService {
   void effectuerVersementMasseEtudiants(UUID scolariteYearTrackingId, BigDecimal montantFixe);
 
   void effectuerVersementMasseBoutiques(BigDecimal seuil, BigDecimal montantQuota);
+
+  void remiseAZeroMasseEtudiants(UUID scolariteYearTrackingId);
+
+  void remiseAZeroMasseBoutiques();
 }
