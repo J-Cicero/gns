@@ -36,6 +36,7 @@ public class WalletMapper {
         .trackingId(wallet.getTrackingId())
         .typeWallet(wallet.getTypeWallet())
         .statutWallet(wallet.getStatutWallet())
+        .niveauSolde(wallet.getNiveauSolde())
         .solde(wallet.getSolde())
         .plafond(wallet.getPlafond())
         .dateCreation(wallet.getDateCreation())
@@ -51,6 +52,7 @@ public class WalletMapper {
     wallet.setTrackingId(response.trackingId());
     wallet.setTypeWallet(response.typeWallet());
     wallet.setStatutWallet(response.statutWallet());
+    wallet.setNiveauSolde(response.niveauSolde());
     wallet.setSolde(response.solde());
     wallet.setPlafond(response.plafond());
     wallet.setDateCreation(response.dateCreation());

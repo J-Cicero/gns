@@ -1,5 +1,6 @@
 package com.backend.gns.wallet.infrastructure.repositories;
 
+import com.backend.gns.wallet.domain.enums.WalletFundingLevel;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Wallet;
@@ -22,6 +23,9 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
   // Rechercher un portefeuille par son statut
   Page<Wallet> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
+
+  // Rechercher un portefeuille par son niveau de solde
+  Page<Wallet> findByNiveauSolde(WalletFundingLevel niveauSolde, Pageable pageable);
 
   @Query("SELECT w FROM Wallet w WHERE w.solde < :amount ORDER BY w.solde ASC")
   Page<Wallet> findBySoldeLessThan(@Param("amount") BigDecimal amount, Pageable pageable);

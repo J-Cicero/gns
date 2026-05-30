@@ -11,7 +11,12 @@ import com.backend.gns.student.domain.services.InscriptionAnnuelleService;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
+import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +36,8 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   private final InscriptionAnnuelleMapper inscriptionMapper;
   private final StudentRepository studentRepository;
   private final ScolariteYearRepository scolariteYearRepository;
+  private final ParametreGnsService parametreGnsService;
+  private final WalletRepository walletRepository;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -48,8 +55,28 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
             .orElseThrow(() -> new IllegalStateException("Aucune année scolaire ouverte"));
     inscription.setScolariteYear(year);
 
+    updatePlafondIfBoursier(inscription);
+
     InscriptionAnnuelle savedInscription = inscriptionRepository.save(inscription);
     return inscriptionMapper.toResponse(savedInscription);
+  }
+
+  private void updatePlafondIfBoursier(InscriptionAnnuelle inscription) {
+    if (inscription.isEstBoursier() && inscription.getTypeBourse() != null) {
+      BigDecimal retenue = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.RETENUE_BOURSE_ETUDIANT);
+      if (retenue == null) {
+        retenue = new BigDecimal("4000"); // fallback
+      }
+      BigDecimal nouveauPlafond = inscription.getTypeBourse().getMontant().subtract(retenue);
+      inscription.setPlafondAccorde(nouveauPlafond);
+      
+      Student student = inscription.getStudent();
+      if (student != null && student.getWallet() != null) {
+        Wallet wallet = student.getWallet();
+        wallet.setPlafond(nouveauPlafond);
+        walletRepository.save(wallet);
+      }
+    }
   }
 
   @Override
@@ -76,6 +103,8 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     inscription.setTypeBourse(request.typeBourse());
     inscription.setStatut(request.statut());
     inscription.setSource(request.source());
+
+    updatePlafondIfBoursier(inscription);
 
     InscriptionAnnuelle updatedInscription = inscriptionRepository.save(inscription);
     return inscriptionMapper.toResponse(updatedInscription);

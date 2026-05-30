@@ -6,9 +6,14 @@ import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
 import com.backend.gns.wallet.application.mappers.WalletMapper;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
+import com.backend.gns.wallet.domain.enums.VersementStatut;
+import com.backend.gns.wallet.domain.enums.VersementType;
+import com.backend.gns.wallet.domain.models.Versement;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.domain.services.WalletService;
+import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +34,7 @@ public class WalletServiceImpl implements WalletService {
 
   private final WalletRepository walletRepository;
   private final WalletMapper walletMapper;
+  private final VersementRepository versementRepository;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -128,6 +134,15 @@ public class WalletServiceImpl implements WalletService {
 
   @Override
   @Transactional(readOnly = true)
+  public Page<WalletResponse> findByNiveauSolde(com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde, Pageable pageable) {
+    log.debug("Recherche portefeuilles par niveau: {}", niveauSolde);
+    return walletRepository
+        .findByNiveauSolde(niveauSolde, normalize(pageable))
+        .map(walletMapper::toResponse);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public Page<WalletResponse> findBySoldeLessThan(BigDecimal amount, Pageable pageable) {
     log.debug("Recherche portefeuilles avec solde < {}", amount);
     return walletRepository
@@ -198,5 +213,47 @@ public class WalletServiceImpl implements WalletService {
     wallet.setSolde(nouveauSolde);
     walletRepository.save(wallet);
     log.info("Débit effectué. Nouveau solde: {}, trackingId: {}", nouveauSolde, walletTrackingId);
+  }
+
+  @Override
+  @Transactional
+  public void remettreAZero(UUID walletTrackingId) {
+    log.info("Remise à zéro du portefeuille trackingId: {}", walletTrackingId);
+    Wallet wallet = findWalletOrThrow(walletTrackingId);
+    
+    BigDecimal soldeActuel = wallet.getSolde();
+    if (soldeActuel.compareTo(BigDecimal.ZERO) == 0) {
+      log.info("Le portefeuille est déjà à 0.");
+      return;
+    }
+
+    // Remise à zéro
+    wallet.setSolde(BigDecimal.ZERO);
+    walletRepository.save(wallet);
+
+    // Traçabilité de l'opération
+    Versement trace = new Versement();
+    trace.setTrackingId(UUID.randomUUID());
+    trace.setWallet(wallet);
+    trace.setMontantVerse(soldeActuel.negate()); // On enregistre un montant négatif correspondant à la soustraction
+    trace.setDateVersement(LocalDateTime.now());
+    trace.setTypeVersement(VersementType.REMISE_A_ZERO);
+    trace.setStatut(VersementStatut.VALIDEE);
+    versementRepository.save(trace);
+
+    log.info("Portefeuille réinitialisé avec succès.");
+  }
+
+  @Override
+  @Transactional
+  public void remettreAZeroGroupe(java.util.List<UUID> walletTrackingIds) {
+    log.info("Remise à zéro en masse de {} portefeuilles", walletTrackingIds.size());
+    for (UUID id : walletTrackingIds) {
+        try {
+            remettreAZero(id);
+        } catch (Exception e) {
+            log.error("Échec de la remise à zéro pour le portefeuille {}: {}", id, e.getMessage());
+        }
+    }
   }
 }

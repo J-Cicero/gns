@@ -1,9 +1,12 @@
 package com.backend.gns.wallet.domain.models;
 
 import com.backend.gns.core.utils.BaseEntity;
+import com.backend.gns.wallet.domain.enums.WalletFundingLevel;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -46,6 +49,10 @@ public class Wallet extends BaseEntity {
   @Column(nullable = false, length = 20)
   private WalletStatus statutWallet;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private WalletFundingLevel niveauSolde;
+
   @Column(nullable = false)
   private BigDecimal solde;
 
@@ -55,4 +62,23 @@ public class Wallet extends BaseEntity {
   @Column
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime dateCreation;
+
+  @PrePersist
+  @PreUpdate
+  public void calculateFundingLevel() {
+    if (solde == null || solde.compareTo(BigDecimal.ZERO) <= 0) {
+      this.niveauSolde = WalletFundingLevel.EPUISE;
+    } else if (plafond == null || plafond.compareTo(BigDecimal.ZERO) <= 0) {
+      this.niveauSolde = WalletFundingLevel.NORMAL;
+    } else {
+      BigDecimal percentage = solde.divide(plafond, 4, java.math.RoundingMode.HALF_UP);
+      if (percentage.compareTo(new BigDecimal("0.10")) <= 0) {
+        this.niveauSolde = WalletFundingLevel.CRITIQUE;
+      } else if (percentage.compareTo(new BigDecimal("0.30")) <= 0) {
+        this.niveauSolde = WalletFundingLevel.FAIBLE;
+      } else {
+        this.niveauSolde = WalletFundingLevel.NORMAL;
+      }
+    }
+  }
 }

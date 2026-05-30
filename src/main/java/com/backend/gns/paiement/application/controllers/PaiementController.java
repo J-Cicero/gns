@@ -41,6 +41,23 @@ public class PaiementController {
     }
   }
 
+  @PostMapping("/qr-payment")
+  @Operation(summary = "Paiement par Code QR", description = "Le commerçant initie un paiement via scan du QR Code étudiant")
+  @ApiResponse(responseCode = "201", description = "Paiement effectué avec succès")
+  @ApiResponse(responseCode = "400", description = "Solde insuffisant ou QR invalide")
+  public ResponseEntity<?> processQrPayment(@RequestBody com.backend.gns.paiement.application.dtos.requests.QrPaymentRequest request) {
+    try {
+      PaiementResponse response = paiementService.processQrPayment(request);
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (IllegalArgumentException | IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "PAYMENT_REJECTED", "message", e.getMessage()));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "PAYMENT_FAILED", "message", e.getMessage()));
+    }
+  }
+
   @GetMapping("/{trackingId}")
   @Operation(summary = "Récupérer un paiement", description = "Récupère un paiement par son ID")
   @ApiResponse(responseCode = "200", description = "Paiement trouvé")

@@ -2,6 +2,7 @@ package com.backend.gns.wallet.domain.services;
 
 import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
 import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
+import com.backend.gns.wallet.domain.enums.WalletFundingLevel;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import java.math.BigDecimal;
@@ -24,6 +25,8 @@ public interface WalletService {
 
   Page<WalletResponse> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
 
+  Page<WalletResponse> findByNiveauSolde(WalletFundingLevel niveauSolde, Pageable pageable);
+
   Page<WalletResponse> findBySoldeLessThan(BigDecimal amount, Pageable pageable);
 
   Page<WalletResponse> findBySoldeGreaterThan(BigDecimal amount, Pageable pageable);
@@ -33,4 +36,8 @@ public interface WalletService {
   void crediter(UUID walletTrackingId, BigDecimal montant);
 
   void debiter(UUID walletTrackingId, BigDecimal montant);
+
+  void remettreAZero(UUID walletTrackingId);
+
+  void remettreAZeroGroupe(java.util.List<UUID> walletTrackingIds);
 }

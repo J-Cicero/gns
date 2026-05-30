@@ -1,6 +1,7 @@
 package com.backend.gns.paiement.domain.services;
 
 import com.backend.gns.paiement.application.dtos.requests.PaiementRequest;
+import com.backend.gns.paiement.application.dtos.requests.QrPaymentRequest;
 import com.backend.gns.paiement.application.dtos.responses.PaiementResponse;
 import com.backend.gns.paiement.domain.enums.PaiementStatut;
 import com.backend.gns.paiement.domain.enums.PaiementType;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PaiementService {
+
+  PaiementResponse processQrPayment(QrPaymentRequest request);
 
   PaiementResponse create(PaiementRequest request);
 

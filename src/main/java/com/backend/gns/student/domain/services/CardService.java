@@ -12,6 +12,8 @@ public interface CardService {
 
   CardResponse create(CardRequest request);
 
+  CardResponse demanderCarte(UUID studentTrackingId);
+
   Optional<CardResponse> findByTrackingId(UUID trackingId);
 
   CardResponse update(UUID trackingId, CardRequest request);
