@@ -1,6 +1,6 @@
 package com.backend.gns.student.domain.enums;
 
-public enum TypeRegleBourse {
+public enum TypeParametreDbs {
     AGE_MAX_LICENCE,
     MONTANT_TRANCHE_STANDARD,
     MONTANT_TRANCHE_SUPERIEURE,

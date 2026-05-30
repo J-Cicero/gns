@@ -1,6 +1,6 @@
  @ApplicationModule(
     displayName = "Module Étudiant",
-    allowedDependencies = {"Shared.wallet", "Shared"}
+    allowedDependencies = {"Shared"}
  )
  package com.backend.gns.student;
 

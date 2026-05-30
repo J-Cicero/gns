@@ -36,4 +36,3 @@ public class ScolariteYear extends BaseEntity {
     @Column(nullable = false)
     private boolean estCloturee = false;
 }
-v

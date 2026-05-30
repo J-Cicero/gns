@@ -1,6 +1,6 @@
- @ApplicationModule(
-    displayName = "Module Administration",
-    allowedDependencies = {"Shared.wallet", "Shared"}
+@ApplicationModule(
+    displayName = "Module Admin",
+    allowedDependencies = {"student", "Shared"}
  )
  package com.backend.gns.admin;
 

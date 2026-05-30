@@ -5,8 +5,8 @@ import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.enums.StudentNiveau;
 import com.backend.gns.student.domain.services.EligibiliteService;
-import com.backend.gns.student.domain.services.RegleBourseDbsService;
-import com.backend.gns.student.domain.enums.TypeRegleBourse;
+import com.backend.gns.student.domain.services.ParametreDbsService;
+import com.backend.gns.student.domain.enums.TypeParametreDbs;
 import com.backend.gns.Shared.domain.enums.KycStatus;
 import com.backend.gns.student.domain.enums.MandatStatut;
 import com.backend.gns.student.domain.enums.StatutInscription;
@@ -30,7 +30,7 @@ class EligibiliteServiceImplTest {
     private EligibiliteService eligibiliteService;
     
     @Mock
-    private RegleBourseDbsService regleBourseService;
+    private ParametreDbsService regleBourseService;
     
     private Student student;
     private InscriptionAnnuelle inscription;
@@ -44,21 +44,21 @@ class EligibiliteServiceImplTest {
         eligibiliteService = new EligibiliteServiceImpl(regleBourseService);
 
         // Configuration des mocks avec les nouvelles clés
-        lenient().when(regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.AGE_MAX_LICENCE)).thenReturn(26);
-        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.MONTANT_TRANCHE_STANDARD)).thenReturn(MONTANT_STD);
-        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.MONTANT_TRANCHE_SUPERIEURE)).thenReturn(MONTANT_SUP);
+        lenient().when(regleBourseService.getValeurAsInteger(TypeParametreDbs.AGE_MAX_LICENCE)).thenReturn(26);
+        lenient().when(regleBourseService.getValeurAsBigDecimal(TypeParametreDbs.MONTANT_TRANCHE_STANDARD)).thenReturn(MONTANT_STD);
+        lenient().when(regleBourseService.getValeurAsBigDecimal(TypeParametreDbs.MONTANT_TRANCHE_SUPERIEURE)).thenReturn(MONTANT_SUP);
         
-        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MOYENNE_MIN_PASSABLE)).thenReturn(new BigDecimal("10"));
-        lenient().when(regleBourseService.getValeurCritere(TypeRegleBourse.L1_MOYENNE_MIN_MENTION_SUP)).thenReturn(new BigDecimal("12"));
+        lenient().when(regleBourseService.getValeurAsBigDecimal(TypeParametreDbs.L1_MOYENNE_MIN_PASSABLE)).thenReturn(new BigDecimal("10"));
+        lenient().when(regleBourseService.getValeurAsBigDecimal(TypeParametreDbs.L1_MOYENNE_MIN_MENTION_SUP)).thenReturn(new BigDecimal("12"));
 
-        lenient().when(regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.L2_CREDITS_MIN_STANDARD)).thenReturn(25);
-        lenient().when(regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.L2_CREDITS_MIN_SUPERIEUR)).thenReturn(54);
+        lenient().when(regleBourseService.getValeurAsInteger(TypeParametreDbs.L2_CREDITS_MIN_STANDARD)).thenReturn(25);
+        lenient().when(regleBourseService.getValeurAsInteger(TypeParametreDbs.L2_CREDITS_MIN_SUPERIEUR)).thenReturn(54);
 
-        lenient().when(regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.L3_CREDITS_MIN_STANDARD)).thenReturn(50);
-        lenient().when(regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.L3_CREDITS_MIN_SUPERIEUR)).thenReturn(108);
+        lenient().when(regleBourseService.getValeurAsInteger(TypeParametreDbs.L3_CREDITS_MIN_STANDARD)).thenReturn(50);
+        lenient().when(regleBourseService.getValeurAsInteger(TypeParametreDbs.L3_CREDITS_MIN_SUPERIEUR)).thenReturn(108);
 
-        lenient().when(regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.L4_CREDITS_MIN_STANDARD)).thenReturn(80);
-        lenient().when(regleBourseService.getValeurCritereAsInteger(TypeRegleBourse.L5_CREDITS_MIN_STANDARD)).thenReturn(150);
+        lenient().when(regleBourseService.getValeurAsInteger(TypeParametreDbs.L4_CREDITS_MIN_STANDARD)).thenReturn(80);
+        lenient().when(regleBourseService.getValeurAsInteger(TypeParametreDbs.L5_CREDITS_MIN_STANDARD)).thenReturn(150);
 
         // Étudiant de base
         student = new Student();

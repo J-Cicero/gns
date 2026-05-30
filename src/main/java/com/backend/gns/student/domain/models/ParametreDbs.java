@@ -1,19 +1,18 @@
 package com.backend.gns.student.domain.models;
 
 import com.backend.gns.Shared.utils.BaseEntity;
-import com.backend.gns.student.domain.enums.TypeRegleBourse;
+import com.backend.gns.student.domain.enums.TypeParametreDbs;
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.*;
 
 @Entity
-@Table(name = "REGLE_BOURSE_DBS")
+@Table(name = "PARAMETRE_DBS")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegleBourseDbs extends BaseEntity {
+public class ParametreDbs extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,14 +22,11 @@ public class RegleBourseDbs extends BaseEntity {
     private UUID trackingId = UUID.randomUUID();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type_regle", nullable = false, unique = true, length = 50)
-    private TypeRegleBourse typeRegle;
+    @Column(name = "nom_parametre", nullable = false, unique = true, length = 50)
+    private TypeParametreDbs nomParametre;
 
-    @Column(name = "valeur_critere", precision = 10, scale = 2, nullable = false)
-    private BigDecimal valeurCritere;
-
-    @Column(name = "montant_bourse_associe", precision = 10, scale = 2)
-    private BigDecimal montantBourseAssocie;
+    @Column(name = "valeur_parametre", nullable = false)
+    private String valeurParametre;
 
     @Column(nullable = false)
     private boolean estActif = true;

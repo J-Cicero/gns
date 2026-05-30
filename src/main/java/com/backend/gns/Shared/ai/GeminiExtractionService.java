@@ -87,10 +87,8 @@ public class GeminiExtractionService {
   }
 
   private String extraireTexte(Map<String, Object> response) {
-    List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.get("candidates");
-    Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
-    List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-    return (String) parts.get(0).get("text");
+    JsonNode root = objectMapper.valueToTree(response);
+    return root.path("candidates").path(0).path("content").path("parts").path(0).path("text").asText("");
   }
 
   private ExtractionResultat parseResultat(String json) {

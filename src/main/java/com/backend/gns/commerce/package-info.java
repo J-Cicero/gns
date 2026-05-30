@@ -1,6 +1,6 @@
  @ApplicationModule(
     displayName = "Module Commerce",
-    allowedDependencies = {"Shared.wallet", "Shared"}
+    allowedDependencies = {"Shared"}
  )
  package com.backend.gns.commerce;
 
