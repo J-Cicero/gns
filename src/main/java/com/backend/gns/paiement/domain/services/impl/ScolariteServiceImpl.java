@@ -2,8 +2,8 @@ package com.backend.gns.paiement.domain.services.impl;
 
 import com.backend.gns.paiement.application.dtos.responses.PretScolariteResponse;
 import com.backend.gns.paiement.application.mappers.PretScolariteMapper;
-import com.backend.gns.academique.domain.models.Universite;
-import com.backend.gns.academique.infrastructure.repositories.UniversiteRepository;
+import com.backend.gns.student.domain.models.Universite;
+import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import com.backend.gns.wallet.domain.services.WalletService;
 import com.backend.gns.paiement.domain.models.PretScolarite;
 import com.backend.gns.paiement.domain.services.ScolariteService;

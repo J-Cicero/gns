@@ -1,8 +1,8 @@
 package com.backend.gns.user.application.services.impl;
 
 import com.backend.gns.user.application.services.BankPortalService;
-import com.backend.gns.user.domain.models.BankOperator;
-import com.backend.gns.user.infrastructure.repositories.BankOperatorRepository;
+import com.backend.gns.admin.domain.models.BankOperator;
+import com.backend.gns.admin.infrastructure.repositories.BankOperatorRepository;
 import com.backend.gns.paiement.infrastructure.repositories.PaiementRepository;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;

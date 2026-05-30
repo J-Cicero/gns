@@ -2,7 +2,7 @@ package com.backend.gns.admin.application.mappers;
 
 import com.backend.gns.admin.application.dtos.requests.AdminRequest;
 import com.backend.gns.admin.application.dtos.responses.AdminResponse;
-import com.backend.gns.user.domain.models.Admin;
+import com.backend.gns.admin.domain.models.Admin;
 import com.backend.gns.user.domain.enums.UserRole;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

@@ -37,8 +37,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        // TEMPORAIRE : Tout autoriser pour les tests Swagger
-                        .anyRequest().permitAll()
+                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.PUBLIC_URLS).permitAll()
+                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.ADMIN_URLS).hasRole("ADMIN_GNS")
+                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.ETUDIANT_URLS).hasRole("ETUDIANT")
+                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.COMMERCANT_URLS).hasRole("COMMERCANT")
+                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.BANQUE_URLS).hasRole("BANK_OPERATOR")
+                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.UNIVERSITY_URLS).hasRole("UNIVERSITY_ADMIN")
+                        .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.DBS_URLS).hasRole("DBS_ADMIN")
+                        .anyRequest().authenticated()
                 );
         return http.build();
     }

@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,7 +27,6 @@ public class WalletController {
   }
 
   @PostMapping
-  @PreAuthorize("hasAnyRole('ETUDIANT', 'COMMERCANT', 'ADMIN_GNS', 'ADMIN_UL')")
   @Operation(summary = "Créer un portefeuille", description = "Crée un nouveau portefeuille")
   @ApiResponse(responseCode = "201", description = "Portefeuille créé avec succès")
   public ResponseEntity<?> create(@RequestBody WalletRequest request) {
@@ -42,7 +40,6 @@ public class WalletController {
   }
 
   @PutMapping("/{trackingId}")
-  @PreAuthorize("hasAnyRole('ETUDIANT', 'COMMERCANT', 'ADMIN_GNS', 'ADMIN_UL')")
   @Operation(summary = "Mettre à jour un portefeuille", description = "Mettre à jour les informations d'un portefeuille")
   @ApiResponse(responseCode = "200", description = "Portefeuille mis à jour avec succès")
   @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")
@@ -57,7 +54,6 @@ public class WalletController {
   }
 
   @DeleteMapping("/{trackingId}")
-  @PreAuthorize("hasAnyRole('ADMIN_GNS', 'ADMIN_UL')")
   @Operation(summary = "Supprimer un portefeuille", description = "Supprime un portefeuille par son ID")
   @ApiResponse(responseCode = "204", description = "Portefeuille supprimé avec succès")
   @ApiResponse(responseCode = "404", description = "Portefeuille non trouvé")

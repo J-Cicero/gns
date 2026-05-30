@@ -3,7 +3,7 @@ package com.backend.gns.student.domain.models;
 import com.backend.gns.user.domain.models.User;
 import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.academique.domain.models.Universite ;
+import com.backend.gns.student.domain.models.Universite ;
 import jakarta.persistence.Column;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;

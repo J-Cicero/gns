@@ -2,7 +2,7 @@ package com.backend.gns.paiement.domain.models;
 
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.academique.domain.models.Universite;
+import com.backend.gns.student.domain.models.Universite;
 import com.backend.gns.student.domain.models.ScolariteYear;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
