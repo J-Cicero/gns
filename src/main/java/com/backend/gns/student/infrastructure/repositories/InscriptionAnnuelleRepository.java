@@ -19,6 +19,10 @@ public interface InscriptionAnnuelleRepository extends JpaRepository<Inscription
   Page<InscriptionAnnuelle> findByStudentTrackingId(
       @Param("studentTrackingId") UUID studentTrackingId, Pageable pageable);
 
+  @Query("SELECT i FROM InscriptionAnnuelle i WHERE i.student.trackingId = :studentTrackingId AND i.scolariteYear.libelle = :annee")
+  Optional<InscriptionAnnuelle> findByStudentTrackingIdAndAnnee(
+      @Param("studentTrackingId") UUID studentTrackingId, @Param("annee") String annee);
+
   Optional<InscriptionAnnuelle> findByStudentAndScolariteYear(
       com.backend.gns.student.domain.models.Student student,
       com.backend.gns.student.domain.models.ScolariteYear scolariteYear);

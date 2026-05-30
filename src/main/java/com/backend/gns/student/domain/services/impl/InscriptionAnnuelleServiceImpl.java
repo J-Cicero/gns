@@ -179,7 +179,8 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Override
   public Optional<InscriptionAnnuelleResponse> findByStudentAndAnnee(
       UUID studentTrackingId, String anneeAcademique) {
-    return Optional.empty();
+    return inscriptionRepository.findByStudentTrackingIdAndAnnee(studentTrackingId, anneeAcademique)
+        .map(inscriptionMapper::toResponse);
   }
 
   @Override
