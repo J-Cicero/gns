@@ -1,14 +1,14 @@
 package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.Shared.ai.GeminiExtractionService;
-import com.backend.gns.Shared.ai.GeminiExtractionService.ExtractionResultat;
-import com.backend.gns.Shared.storage.CloudinaryStorageService;
+import com.backend.gns.core.ai.GeminiExtractionService;
+import com.backend.gns.core.ai.GeminiExtractionService.ExtractionResultat;
+import com.backend.gns.core.storage.CloudinaryStorageService;
 import com.backend.gns.student.application.dtos.requests.DocumentEtudiantRequest;
 import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.student.application.mappers.DocumentEtudiantMapper;
 import com.backend.gns.student.domain.enums.StatutDocument;
 import com.backend.gns.student.domain.enums.StudentNiveau;
-import com.backend.gns.Shared.domain.enums.TypeDocument;
+import com.backend.gns.core.domain.enums.TypeDocument;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.Student;

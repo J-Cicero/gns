@@ -1,6 +1,6 @@
 package com.backend.gns.commerce.domain.models;
 
-import com.backend.gns.Shared.user.domain.models.User;
+import com.backend.gns.user.domain.models.User;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;

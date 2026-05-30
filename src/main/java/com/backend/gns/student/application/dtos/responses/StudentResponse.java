@@ -1,6 +1,6 @@
 package com.backend.gns.student.application.dtos.responses;
 
-import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.core.domain.enums.KycStatus;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.util.UUID;

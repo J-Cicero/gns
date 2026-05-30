@@ -1,6 +1,6 @@
 package com.backend.gns.student.domain.models;
 
-import com.backend.gns.Shared.utils.BaseEntity;
+import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.student.domain.enums.CardStatut; 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

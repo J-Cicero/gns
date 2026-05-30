@@ -3,7 +3,7 @@ package com.backend.gns.student.application.controllers;
 import com.backend.gns.student.application.dtos.requests.DocumentEtudiantRequest;
 import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.student.domain.enums.StatutDocument;
-import com.backend.gns.Shared.domain.enums.TypeDocument;
+import com.backend.gns.core.domain.enums.TypeDocument;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

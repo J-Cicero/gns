@@ -1,6 +1,6 @@
 package com.backend.gns.admin.infrastructure.repositories;
 
-import com.backend.gns.Shared.user.domain.models.UniversityAdmin;
+import com.backend.gns.user.domain.models.UniversityAdmin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -2,9 +2,9 @@ package com.backend.gns.student.application.controllers;
 
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
-import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.student.domain.services.StudentService;
-import com.backend.gns.Shared.exception.ResourceNotFoundException;
+import com.backend.gns.core.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,7 +38,7 @@ public class StudentController {
       @PathVariable UUID trackingId,
       @RequestParam("fichier") org.springframework.web.multipart.MultipartFile fichier,
       @RequestParam("inscriptionTrackingId") UUID inscriptionTrackingId,
-      @RequestParam("typeDocument") com.backend.gns.Shared.domain.enums.TypeDocument typeDocument) {
+      @RequestParam("typeDocument") com.backend.gns.core.domain.enums.TypeDocument typeDocument) {
     try {
       var response = documentService.uploadDocument(fichier, inscriptionTrackingId, typeDocument);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);

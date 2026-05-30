@@ -2,12 +2,12 @@ package com.backend.gns.admin.application.mappers;
 
 import com.backend.gns.admin.application.dtos.requests.UniversityAdminRequest;
 import com.backend.gns.admin.application.dtos.responses.UniversityAdminResponse;
-import com.backend.gns.Shared.user.domain.models.UniversityAdmin;
-import com.backend.gns.Shared.wallet.domain.models.Wallet;
-import com.backend.gns.Shared.domain.models.Universite;
-import com.backend.gns.Shared.user.domain.enums.UserRole;
-import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
-import com.backend.gns.Shared.infrastructure.repositories.UniversiteRepository;
+import com.backend.gns.user.domain.models.UniversityAdmin;
+import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.academique.domain.models.Universite;
+import com.backend.gns.user.domain.enums.UserRole;
+import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
+import com.backend.gns.academique.infrastructure.repositories.UniversiteRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

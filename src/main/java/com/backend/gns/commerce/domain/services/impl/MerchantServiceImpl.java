@@ -3,7 +3,7 @@ package com.backend.gns.commerce.domain.services.impl;
 import com.backend.gns.commerce.application.dtos.requests.MerchantRequest;
 import com.backend.gns.commerce.application.dtos.responses.MerchantResponse;
 import com.backend.gns.commerce.application.mappers.MerchantMapper;
-import com.backend.gns.Shared.exception.ResourceNotFoundException;
+import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.commerce.domain.models.Merchant;
 import com.backend.gns.commerce.domain.services.MerchantService;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;

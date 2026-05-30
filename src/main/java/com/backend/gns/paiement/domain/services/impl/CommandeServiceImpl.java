@@ -11,7 +11,7 @@ import com.backend.gns.paiement.domain.services.CommandeService;
 import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
-import com.backend.gns.Shared.wallet.domain.services.WalletService;
+import com.backend.gns.wallet.domain.services.WalletService;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

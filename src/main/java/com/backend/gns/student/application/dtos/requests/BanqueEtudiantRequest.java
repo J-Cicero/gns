@@ -1,6 +1,6 @@
 package com.backend.gns.student.application.dtos.requests;
 
-import com.backend.gns.Shared.domain.enums.Banque;
+import com.backend.gns.core.domain.enums.Banque;
 import com.backend.gns.student.domain.enums.MandatStatut;
 import lombok.Builder;
 

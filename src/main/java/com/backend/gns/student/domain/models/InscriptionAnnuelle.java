@@ -1,6 +1,6 @@
 package com.backend.gns.student.domain.models;
 
-import com.backend.gns.Shared.utils.BaseEntity;
+import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.student.domain.enums.SourceVerification;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.StudentNiveau;

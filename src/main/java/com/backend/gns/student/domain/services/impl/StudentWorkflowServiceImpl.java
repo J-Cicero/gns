@@ -1,9 +1,9 @@
 package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.Shared.exception.ResourceNotFoundException;
-import com.backend.gns.Shared.wallet.domain.enums.WalletStatus;
-import com.backend.gns.Shared.wallet.domain.enums.WalletType;
-import com.backend.gns.Shared.wallet.domain.models.Wallet;
+import com.backend.gns.core.exception.ResourceNotFoundException;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
+import com.backend.gns.wallet.domain.enums.WalletType;
+import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleResponse;
 import com.backend.gns.student.application.mappers.InscriptionAnnuelleMapper;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;

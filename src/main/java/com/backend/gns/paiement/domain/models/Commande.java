@@ -1,6 +1,6 @@
 package com.backend.gns.paiement.domain.models;
 
-import com.backend.gns.Shared.utils.BaseEntity;
+import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.paiement.domain.enums.CommandeStatut;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.commerce.domain.models.Boutique;

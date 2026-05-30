@@ -1,6 +1,6 @@
  @ApplicationModule(
     displayName = "Module Étudiant",
-    allowedDependencies = {"Shared"}
+    allowedDependencies = {"core", "parametrage"}
  )
  package com.backend.gns.student;
 

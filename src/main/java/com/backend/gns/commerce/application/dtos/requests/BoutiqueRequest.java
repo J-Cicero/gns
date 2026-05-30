@@ -1,6 +1,6 @@
 package com.backend.gns.commerce.application.dtos.requests;
 
-import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.core.domain.enums.KycStatus;
 import java.util.UUID;
 import lombok.Builder;
 

@@ -2,10 +2,10 @@ package com.backend.gns.admin.application.mappers;
 
 import com.backend.gns.admin.application.dtos.requests.BankOperatorRequest;
 import com.backend.gns.admin.application.dtos.responses.BankOperatorResponse;
-import com.backend.gns.Shared.user.domain.models.BankOperator;
-import com.backend.gns.Shared.wallet.domain.models.Wallet;
-import com.backend.gns.Shared.user.domain.enums.UserRole;
-import com.backend.gns.Shared.wallet.infrastructure.repositories.WalletRepository;
+import com.backend.gns.user.domain.models.BankOperator;
+import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.user.domain.enums.UserRole;
+import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

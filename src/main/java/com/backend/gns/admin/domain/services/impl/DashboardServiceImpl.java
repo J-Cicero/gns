@@ -1,6 +1,6 @@
 package com.backend.gns.admin.domain.services.impl;
 
-import com.backend.gns.Shared.wallet.infrastructure.repositories.VersementRepository;
+import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
 import com.backend.gns.admin.domain.services.DashboardService;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
@@ -35,9 +35,9 @@ public class DashboardServiceImpl implements DashboardService {
         long totalTx = paiementRepository.count();
         stats.put("totalTransactions", totalTx);
         
-        long totalEligibles = studentRepository.countByStatutKYC(com.backend.gns.Shared.domain.enums.KycStatus.VALIDEE);
-        long totalPending = studentRepository.countByStatutKYC(com.backend.gns.Shared.domain.enums.KycStatus.EN_ATTENTE);
-        long totalRejected = studentRepository.countByStatutKYC(com.backend.gns.Shared.domain.enums.KycStatus.REJETE);
+        long totalEligibles = studentRepository.countByStatutKYC(com.backend.gns.core.domain.enums.KycStatus.VALIDEE);
+        long totalPending = studentRepository.countByStatutKYC(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
+        long totalRejected = studentRepository.countByStatutKYC(com.backend.gns.core.domain.enums.KycStatus.REJETE);
         stats.put("totalEligibles", totalEligibles);
         stats.put("totalPending", totalPending);
         
@@ -67,7 +67,7 @@ public class DashboardServiceImpl implements DashboardService {
         java.time.LocalDateTime startOfYear = java.time.LocalDateTime.now().withDayOfYear(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
         java.time.LocalDateTime endOfYear = startOfYear.plusYears(1).minusNanos(1);
 
-        List<com.backend.gns.Shared.wallet.domain.models.Versement> versements = versementRepository.findByDateVersementBetween(startOfYear, endOfYear);
+        List<com.backend.gns.wallet.domain.models.Versement> versements = versementRepository.findByDateVersementBetween(startOfYear, endOfYear);
         List<com.backend.gns.paiement.domain.models.Paiement> paiements = paiementRepository.findByDateBetween(startOfYear, endOfYear);
 
         BigDecimal[] boursesParMois = new BigDecimal[12];
@@ -78,7 +78,7 @@ public class DashboardServiceImpl implements DashboardService {
             paiementsParMois[i] = BigDecimal.ZERO;
         }
 
-        for (com.backend.gns.Shared.wallet.domain.models.Versement v : versements) {
+        for (com.backend.gns.wallet.domain.models.Versement v : versements) {
             if (v.getDateVersement() != null && v.getMontantVerse() != null) {
                 int month = v.getDateVersement().getMonthValue() - 1;
                 boursesParMois[month] = boursesParMois[month].add(v.getMontantVerse());

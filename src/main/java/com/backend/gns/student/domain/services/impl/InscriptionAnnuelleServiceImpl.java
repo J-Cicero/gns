@@ -88,13 +88,13 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     if (statut == StatutInscription.ACTIVE) {
         Student student = inscription.getStudent();
         if (student != null) {
-            student.setStatutKYC(com.backend.gns.Shared.domain.enums.KycStatus.VALIDEE);
+            student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.VALIDEE);
             studentRepository.save(student);
         }
     } else if (statut == StatutInscription.REJETEE) {
         Student student = inscription.getStudent();
         if (student != null) {
-            student.setStatutKYC(com.backend.gns.Shared.domain.enums.KycStatus.REJETE);
+            student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.REJETE);
             studentRepository.save(student);
         }
     }

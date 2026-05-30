@@ -1,0 +1,18 @@
+package com.backend.gns.academique.domain.services;
+
+import com.backend.gns.academique.application.dtos.requests.UniversiteRequest;
+import com.backend.gns.academique.application.dtos.responses.UniversiteResponse;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.List;
+import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+public interface UniversiteService {
+    UniversiteResponse create(UniversiteRequest request);
+    Optional<UniversiteResponse> findByTrackingId(UUID trackingId);
+    Page<UniversiteResponse> findAll(Pageable pageable);
+    void delete(UUID trackingId);
+    List<Map<String, Object>> getSummaryStats();
+}

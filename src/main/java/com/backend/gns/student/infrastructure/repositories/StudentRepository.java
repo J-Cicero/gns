@@ -1,6 +1,6 @@
 package com.backend.gns.student.infrastructure.repositories;
 
-import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.student.domain.models.Student;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,7 +22,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
   Page<Student> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 
-  long countByUniversite(com.backend.gns.Shared.domain.models.Universite universite);
+  long countByUniversite(com.backend.gns.academique.domain.models.Universite universite);
   
-  long countByUniversiteAndStatutKYC(com.backend.gns.Shared.domain.models.Universite universite, KycStatus statut);
+  long countByUniversiteAndStatutKYC(com.backend.gns.academique.domain.models.Universite universite, KycStatus statut);
 }

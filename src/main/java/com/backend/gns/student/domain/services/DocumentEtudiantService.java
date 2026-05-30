@@ -3,7 +3,7 @@ package com.backend.gns.student.domain.services;
 import com.backend.gns.student.application.dtos.requests.DocumentEtudiantRequest;
 import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.student.domain.enums.StatutDocument;
-import com.backend.gns.Shared.domain.enums.TypeDocument;
+import com.backend.gns.core.domain.enums.TypeDocument;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

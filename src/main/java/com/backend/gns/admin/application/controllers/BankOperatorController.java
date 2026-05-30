@@ -3,7 +3,7 @@ package com.backend.gns.admin.application.controllers;
 import com.backend.gns.admin.application.dtos.requests.BankOperatorRequest;
 import com.backend.gns.admin.application.dtos.responses.BankOperatorResponse;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
-import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.admin.domain.services.BankOperatorService;
 import com.backend.gns.student.domain.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;

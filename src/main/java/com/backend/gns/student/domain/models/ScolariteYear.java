@@ -1,6 +1,6 @@
 package com.backend.gns.student.domain.models;
 
-import com.backend.gns.Shared.utils.BaseEntity;
+import com.backend.gns.core.utils.BaseEntity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;

@@ -1,6 +1,6 @@
  @ApplicationModule(
     displayName = "Module Paiement",
-    allowedDependencies = {"student", "commerce", "admin", "Shared"}
+    allowedDependencies = {"student", "commerce", "admin", "core"}
  )
  package com.backend.gns.paiement;
 

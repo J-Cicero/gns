@@ -1,15 +1,15 @@
 package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.Shared.domain.enums.KycStatus;
+import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.student.domain.enums.MandatStatut;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.StudentNiveau;
-import com.backend.gns.student.domain.enums.TypeParametreDbs;
+import com.backend.gns.parametrage.domain.enums.TypeParametreDbs;
 import com.backend.gns.student.domain.models.BanqueEtudiant;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.EligibiliteService;
-import com.backend.gns.student.domain.services.ParametreDbsService;
+import com.backend.gns.parametrage.domain.services.ParametreDbsService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
