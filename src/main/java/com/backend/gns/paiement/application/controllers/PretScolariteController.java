@@ -2,7 +2,7 @@ package com.backend.gns.paiement.application.controllers;
 
 import com.backend.gns.paiement.application.dtos.requests.PretScolariteRequest;
 import com.backend.gns.paiement.application.dtos.responses.PretScolariteResponse;
-import com.backend.gns.paiement.domain.services.ScolariteService;
+import com.backend.gns.paiement.domain.services.PretScolariteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,12 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/scolarite")
-@Tag(name = "SCOLARITE", description = "Gestion des frais de scolarité et prêts anticipés")
+@RequestMapping("/api/pret-scolarite")
+@Tag(name = "PRET_SCOLARITE", description = "Gestion des frais de scolarité et prêts anticipés")
 @RequiredArgsConstructor
-public class ScolariteController {
+public class PretScolariteController {
 
-  private final ScolariteService scolariteService;
+  private final PretScolariteService pretScolariteService;
 
   @PostMapping("/prets")
   @Operation(
@@ -30,7 +30,7 @@ public class ScolariteController {
   public ResponseEntity<?> demanderPret(@RequestBody PretScolariteRequest request) {
     try {
       PretScolariteResponse response =
-          scolariteService.demanderPretScolarite(
+          pretScolariteService.demanderPretScolarite(
               request.studentTrackingId(), request.universiteTrackingId(), request.montant());
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (IllegalStateException e) {
@@ -46,6 +46,6 @@ public class ScolariteController {
   @Operation(summary = "Récupérer les prêts scolarité d'une université")
   public ResponseEntity<List<PretScolariteResponse>> findByUniversite(
       @PathVariable UUID universiteTrackingId) {
-    return ResponseEntity.ok(scolariteService.findByUniversite(universiteTrackingId));
+    return ResponseEntity.ok(pretScolariteService.findByUniversite(universiteTrackingId));
   }
 }

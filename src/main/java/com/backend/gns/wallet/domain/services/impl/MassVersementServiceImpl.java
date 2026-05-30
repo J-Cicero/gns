@@ -2,7 +2,7 @@ package com.backend.gns.wallet.domain.services.impl;
 
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.paiement.domain.services.ScolariteService;
+import com.backend.gns.paiement.domain.services.PretScolariteService;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.models.Student;
@@ -32,7 +32,7 @@ public class MassVersementServiceImpl implements MassVersementService {
   private final EligibiliteService eligibiliteService;
   private final WalletService walletService;
   private final WalletRepository walletRepository;
-  private final ScolariteService scolariteService;
+  private final PretScolariteService pretScolariteService;
   private final BoutiqueRepository boutiqueRepository;
 
   @Override
@@ -62,7 +62,7 @@ public class MassVersementServiceImpl implements MassVersementService {
             walletService.crediter(student.getWallet().getTrackingId(), montantAVerser);
 
             // 2. Rembourser immédiatement les dettes de scolarité
-            scolariteService.rembourserPretsEnAttente(student.getTrackingId(), montantAVerser);
+            pretScolariteService.rembourserPretsEnAttente(student.getTrackingId(), montantAVerser);
 
             log.info("Versement effectué pour l'étudiant {}: {}", student.getNom(), montantAVerser);
           } catch (Exception e) {

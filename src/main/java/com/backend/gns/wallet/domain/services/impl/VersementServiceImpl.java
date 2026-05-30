@@ -2,7 +2,7 @@ package com.backend.gns.wallet.domain.services.impl;
 
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.paiement.domain.services.ScolariteService;
+import com.backend.gns.paiement.domain.services.PretScolariteService;
 import com.backend.gns.student.domain.enums.TypeBourse;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.ScolariteYear;
@@ -48,7 +48,7 @@ public class VersementServiceImpl implements VersementService {
   private final WalletService walletService;
   private final ScolariteYearRepository scolariteYearRepository;
   private final InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
-  private final ScolariteService scolariteService;
+  private final PretScolariteService pretScolariteService;
 
   public VersementServiceImpl(
       VersementRepository versementRepository,
@@ -59,7 +59,7 @@ public class VersementServiceImpl implements VersementService {
       WalletService walletService,
       ScolariteYearRepository scolariteYearRepository,
       InscriptionAnnuelleRepository inscriptionAnnuelleRepository,
-      ScolariteService scolariteService) {
+      PretScolariteService pretScolariteService) {
     this.versementRepository = versementRepository;
     this.versementMapper = versementMapper;
     this.studentRepository = studentRepository;
@@ -68,7 +68,7 @@ public class VersementServiceImpl implements VersementService {
     this.walletService = walletService;
     this.scolariteYearRepository = scolariteYearRepository;
     this.inscriptionAnnuelleRepository = inscriptionAnnuelleRepository;
-    this.scolariteService = scolariteService;
+    this.pretScolariteService = pretScolariteService;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -190,7 +190,7 @@ public class VersementServiceImpl implements VersementService {
             versementRepository.save(v);
 
             // 3. Rembourser automatiquement les dettes de scolarité
-            scolariteService.rembourserPretsEnAttente(student.getTrackingId(), montantAVerser);
+            pretScolariteService.rembourserPretsEnAttente(student.getTrackingId(), montantAVerser);
 
             log.info("Versement réussi pour {}", student.getNom());
           } catch (Exception e) {

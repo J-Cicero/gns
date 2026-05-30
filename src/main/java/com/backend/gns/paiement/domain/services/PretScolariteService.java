@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-public interface ScolariteService {
+public interface PretScolariteService {
   PretScolariteResponse demanderPretScolarite(
       UUID studentTrackingId, UUID universiteTrackingId, BigDecimal montant);
 

@@ -3,7 +3,7 @@ package com.backend.gns.paiement.domain.services.impl;
 import com.backend.gns.paiement.application.dtos.responses.PretScolariteResponse;
 import com.backend.gns.paiement.application.mappers.PretScolariteMapper;
 import com.backend.gns.paiement.domain.models.PretScolarite;
-import com.backend.gns.paiement.domain.services.ScolariteService;
+import com.backend.gns.paiement.domain.services.PretScolariteService;
 import com.backend.gns.paiement.infrastructure.repositories.PretScolariteRepository;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.ScolariteYear;
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ScolariteServiceImpl implements ScolariteService {
+public class PretScolariteServiceImpl implements PretScolariteService {
 
   private final PretScolariteRepository pretScolariteRepository;
   private final StudentRepository studentRepository;
