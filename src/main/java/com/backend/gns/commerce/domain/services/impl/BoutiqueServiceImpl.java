@@ -199,20 +199,7 @@ public class BoutiqueServiceImpl implements BoutiqueService {
   public Page<BoutiqueResponse> getBoutiquesEnAlerteQuota(
       BigDecimal seuilPourcentage, Pageable pageable) {
     return boutiqueRepository
-        .findAll(normalize(pageable))
-        .map(
-            b -> {
-              if (b.getWallet() != null) {
-                BigDecimal plafond = b.getWallet().getPlafond();
-                BigDecimal solde = b.getWallet().getSolde();
-                if (plafond.compareTo(BigDecimal.ZERO) > 0) {
-                  BigDecimal ratio = solde.divide(plafond, 2, RoundingMode.HALF_UP);
-                  if (ratio.compareTo(seuilPourcentage) <= 0) {
-                    return boutiqueMapper.toResponse(b);
-                  }
-                }
-              }
-              return null;
-            });
+        .findBoutiquesEnAlerteQuota(seuilPourcentage, normalize(pageable))
+        .map(boutiqueMapper::toResponse);
   }
 }
