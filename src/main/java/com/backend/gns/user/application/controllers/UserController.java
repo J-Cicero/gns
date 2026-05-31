@@ -46,6 +46,13 @@ public class UserController {
     return ResponseEntity.ok(userService.createUser(request));
   }
 
+  @Operation(summary = "Login user", description = "Authenticates a user and returns a JWT token")
+  @PostMapping("/login")
+  public ResponseEntity<com.backend.gns.user.application.dtos.responses.LoginResponse> login(
+      @RequestBody @Valid com.backend.gns.user.application.dtos.requests.LoginRequest request) {
+    return ResponseEntity.ok(userService.login(request));
+  }
+
   @GetMapping("/get/{trackingId}")
   @Operation(summary = "Get user by trackingId", description = "Get user by trackingId")
   @ApiResponses(

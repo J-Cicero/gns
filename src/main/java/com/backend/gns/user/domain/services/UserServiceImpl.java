@@ -9,10 +9,19 @@ import com.backend.gns.user.infrastructure.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import com.backend.gns.user.application.dtos.requests.LoginRequest;
+import com.backend.gns.user.application.dtos.responses.LoginResponse;
+import com.backend.gns.core.security.jwt.JwtService;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
 
 @AllArgsConstructor
 @Service
@@ -20,6 +29,38 @@ public class UserServiceImpl implements UserService {
 
   private final UserMapper userMapper;
   private final UserRepository userRepository;
+  private final AuthenticationManager authenticationManager;
+  private final JwtService jwtService;
+
+  @Override
+  public LoginResponse login(LoginRequest request) {
+    Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    String jwt = jwtService.generateJwtToken(authentication);
+
+    User user = userRepository.findByEmail(request.email())
+        .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+
+    return new LoginResponse(
+        user.getTrackingId(),
+        jwt,
+        "Bearer",
+        user.getPrenom(),
+        user.getNom(),
+        user.getTelephone(),
+        user.getEmail(),
+        user.getRole().name(),
+        authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList()),
+        "Cameroon", // Default country since there's no country field
+        user.isEstActif()
+    );
+  }
+
+
 
   @Override
   @Transactional
