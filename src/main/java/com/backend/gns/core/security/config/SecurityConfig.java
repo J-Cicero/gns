@@ -45,18 +45,18 @@ public class SecurityConfig {
                     .hasRole("ADMIN_GNS")
                     .requestMatchers(
                         com.backend.gns.core.security.constants.JavaConstant.ETUDIANT_URLS)
-                    .hasRole("ETUDIANT")
+                    .hasAnyRole("ETUDIANT", "ADMIN_GNS")
                     .requestMatchers(
                         com.backend.gns.core.security.constants.JavaConstant.COMMERCANT_URLS)
-                    .hasRole("COMMERCANT")
+                    .hasAnyRole("COMMERCANT", "ADMIN_GNS")
                     .requestMatchers(
                         com.backend.gns.core.security.constants.JavaConstant.BANQUE_URLS)
-                    .hasRole("BANK_OPERATOR")
+                    .hasAnyRole("BANK_OPERATOR", "ADMIN_GNS")
                     .requestMatchers(
                         com.backend.gns.core.security.constants.JavaConstant.UNIVERSITY_URLS)
-                    .hasRole("UNIVERSITY_ADMIN")
+                    .hasAnyRole("UNIVERSITY_ADMIN", "ADMIN_GNS")
                     .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.DBS_URLS)
-                    .hasRole("DBS_ADMIN")
+                    .hasAnyRole("DBS_ADMIN", "ADMIN_GNS")
                     .anyRequest()
                     .authenticated());
     return http.build();

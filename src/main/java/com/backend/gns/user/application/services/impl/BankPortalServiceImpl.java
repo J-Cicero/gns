@@ -51,7 +51,8 @@ public class BankPortalServiceImpl implements BankPortalService {
       BanqueEtudiant be = s.getBanqueEtudiant();
       if (be != null
           && be.getBanque() != null
-          && be.getBanque().name().contains(operator.getNom())) {
+          && operator.getBanquePartenaire() != null
+          && be.getBanque().getId().equals(operator.getBanquePartenaire().getId())) {
 
         BigDecimal bourseTotale = BigDecimal.ZERO;
         if (currentYear != null) {

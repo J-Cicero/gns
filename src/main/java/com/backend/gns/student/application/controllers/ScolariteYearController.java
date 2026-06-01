@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/scolarite-years")
+@RequestMapping("/scolarite-years")
 @Tag(name = "SCOLARITE_YEAR", description = "Gestion des années scolaires")
 @RequiredArgsConstructor
 public class ScolariteYearController {

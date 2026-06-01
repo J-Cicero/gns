@@ -72,9 +72,7 @@ public class StudentServiceImpl implements StudentService {
     wallet.setStatutWallet(WalletStatus.INACTIF);
     wallet.setSolde(BigDecimal.ZERO);
 
-    BigDecimal plafondDefaut =
-        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
-    wallet.setPlafond(plafondDefaut);
+    wallet.setPlafond(BigDecimal.ZERO);
     wallet.setDateCreation(LocalDateTime.now());
 
     student.setWallet(wallet);

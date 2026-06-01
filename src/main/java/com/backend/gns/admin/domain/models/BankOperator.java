@@ -1,6 +1,6 @@
 package com.backend.gns.admin.domain.models;
 
-import com.backend.gns.core.domain.enums.Banque;
+import com.backend.gns.core.domain.models.Banque;
 import com.backend.gns.user.domain.models.User;
 import com.backend.gns.wallet.domain.models.Wallet;
 import jakarta.persistence.Column;
@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +29,8 @@ public class BankOperator extends User {
   @Column(nullable = true, length = 100)
   private String nomBanque;
 
-  @Column(nullable = true)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "banque_partenaire_id", nullable = true)
   private Banque banquePartenaire;
 
   @OneToOne(cascade = jakarta.persistence.CascadeType.ALL, fetch = FetchType.LAZY)

@@ -19,9 +19,17 @@ public class UserMapper {
     user.setNom(request.nom());
     user.setPrenom(request.prenom());
     user.setEmail(request.email());
-    user.setPassword(request.motDePasse());
     user.setTelephone(request.telephone());
-    user.setRole(UserRole.ETUDIANT);
+    // Le mot de passe est géré dans le service pour être haché.
+    if (request.role() != null && !request.role().trim().isEmpty()) {
+      try {
+        user.setRole(UserRole.valueOf(request.role()));
+      } catch (IllegalArgumentException e) {
+        user.setRole(UserRole.ETUDIANT);
+      }
+    } else {
+      user.setRole(UserRole.ETUDIANT);
+    }
     user.setEstActif(true);
     return user;
   }

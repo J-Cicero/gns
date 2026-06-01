@@ -18,10 +18,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @AllArgsConstructor
 @Service
@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   public LoginResponse login(LoginRequest request) {
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public UserResponse createUser(UserRequest request) {
     User user = userMapper.toEntity(request);
-    user.setMotDePasse(request.motDePasse());
+    user.setMotDePasse(passwordEncoder.encode(request.motDePasse()));
     userRepository.save(user);
     return userMapper.toResponse(user);
   }
@@ -93,8 +94,13 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Page<UserResponse> getAllUsers(int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
+    PageRequest pageable = PageRequest.of(page, size);
     return userRepository.findAll(pageable).map(userMapper::toResponse);
+  }
+
+  @Override
+  public java.util.List<UserResponse> searchUsers(String query) {
+    return userRepository.searchUsers(query).stream().map(userMapper::toResponse).toList();
   }
 
   @Override

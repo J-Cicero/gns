@@ -4,6 +4,8 @@ import com.backend.gns.admin.application.dtos.requests.BankOperatorRequest;
 import com.backend.gns.admin.application.dtos.responses.BankOperatorResponse;
 import com.backend.gns.admin.domain.models.BankOperator;
 import com.backend.gns.user.domain.enums.UserRole;
+import com.backend.gns.core.domain.models.Banque;
+import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import java.util.UUID;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 public class BankOperatorMapper {
 
   private final WalletRepository walletRepository;
+  private final BanqueRepository banqueRepository;
 
   public BankOperator toEntity(BankOperatorRequest request) {
     if (request == null) {
@@ -42,6 +45,17 @@ public class BankOperatorMapper {
       bankOperator.setWallet(wallet);
     }
 
+    if (request.banquePartenaireTrackingId() != null) {
+      Banque banque =
+          banqueRepository
+              .findByTrackingId(request.banquePartenaireTrackingId())
+              .orElseThrow(
+                  () ->
+                      new IllegalArgumentException(
+                          "Banque non trouvée avec l'ID: " + request.banquePartenaireTrackingId()));
+      bankOperator.setBanquePartenaire(banque);
+    }
+
     return bankOperator;
   }
 
@@ -59,6 +73,8 @@ public class BankOperatorMapper {
         .telephone(bankOperator.getTelephone())
         .walletTrackingId(
             bankOperator.getWallet() != null ? bankOperator.getWallet().getTrackingId() : null)
+        .banquePartenaireTrackingId(
+            bankOperator.getBanquePartenaire() != null ? bankOperator.getBanquePartenaire().getTrackingId() : null)
         .build();
   }
 }

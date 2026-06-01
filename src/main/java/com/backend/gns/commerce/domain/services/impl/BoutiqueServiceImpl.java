@@ -9,7 +9,6 @@ import com.backend.gns.commerce.domain.services.BoutiqueService;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.core.domain.enums.KycStatus;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
@@ -18,7 +17,6 @@ import com.backend.gns.wallet.domain.services.WalletService;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,8 +35,6 @@ public class BoutiqueServiceImpl implements BoutiqueService {
   private final BoutiqueMapper boutiqueMapper;
   private final MerchantRepository merchantRepository;
   private final WalletRepository walletRepository;
-  private final WalletService walletService;
-  private final ParametreGnsService parametreGnsService;
 
   public BoutiqueServiceImpl(
       BoutiqueRepository boutiqueRepository,
@@ -51,8 +47,6 @@ public class BoutiqueServiceImpl implements BoutiqueService {
     this.boutiqueMapper = boutiqueMapper;
     this.merchantRepository = merchantRepository;
     this.walletRepository = walletRepository;
-    this.walletService = walletService;
-    this.parametreGnsService = parametreGnsService;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -84,9 +78,7 @@ public class BoutiqueServiceImpl implements BoutiqueService {
       wallet.setStatutWallet(WalletStatus.ACTIF);
       wallet.setSolde(BigDecimal.ZERO);
       
-      BigDecimal quotaDefaut = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.QUOTA_DEFAUT_BOUTIQUE);
-      wallet.setPlafond(quotaDefaut != null ? quotaDefaut : BigDecimal.ZERO);
-      
+      wallet.setPlafond(BigDecimal.ZERO);
       wallet.setDateCreation(LocalDateTime.now());
 
       boutique.setWallet(wallet);

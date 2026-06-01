@@ -8,10 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import com.backend.gns.student.domain.models.Universite;
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
   Optional<Student> findByTrackingId(UUID trackingId);
+
+  @Query("SELECT s FROM Student s WHERE s.wallet.trackingId = :walletTrackingId")
+  Optional<Student> findByWalletTrackingId(@Param("walletTrackingId") UUID walletTrackingId);
 
   Optional<Student> findByEmail(String email);
 

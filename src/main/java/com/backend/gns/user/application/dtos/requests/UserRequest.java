@@ -22,4 +22,5 @@ public record UserRequest(
         String email,
     @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caracteres")
         @NotNull(message = "Le mot de passe est obligatoire")
-        String motDePasse) {}
+        String motDePasse,
+    String role) {}

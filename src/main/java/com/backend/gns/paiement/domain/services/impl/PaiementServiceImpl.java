@@ -280,4 +280,18 @@ public class PaiementServiceImpl implements PaiementService {
         .findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
         .map(paiementMapper::toResponse);
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public java.util.Map<String, Object> getStats() {
+    BigDecimal totalVolume = paiementRepository.sumMontantDebiteByStatut(PaiementStatut.VALIDE);
+    BigDecimal totalCommission = paiementRepository.sumCommissionByStatut(PaiementStatut.VALIDE);
+    Long totalCount = paiementRepository.countByStatutPaiement(PaiementStatut.VALIDE);
+
+    return java.util.Map.of(
+        "totalVolume", totalVolume != null ? totalVolume : BigDecimal.ZERO,
+        "totalCommission", totalCommission != null ? totalCommission : BigDecimal.ZERO,
+        "totalCount", totalCount != null ? totalCount : 0L
+    );
+  }
 }

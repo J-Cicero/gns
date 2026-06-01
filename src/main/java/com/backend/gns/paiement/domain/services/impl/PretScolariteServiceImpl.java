@@ -5,11 +5,9 @@ import com.backend.gns.paiement.application.mappers.PretScolariteMapper;
 import com.backend.gns.paiement.domain.models.PretScolarite;
 import com.backend.gns.paiement.domain.services.PretScolariteService;
 import com.backend.gns.paiement.infrastructure.repositories.PretScolariteRepository;
-import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.models.Universite;
-import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
@@ -32,7 +30,7 @@ public class PretScolariteServiceImpl implements PretScolariteService {
   private final PretScolariteRepository pretScolariteRepository;
   private final StudentRepository studentRepository;
   private final UniversiteRepository universiteRepository;
-  private final InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
+
   private final ScolariteYearRepository scolariteYearRepository;
   private final WalletService walletService;
   private final PretScolariteMapper pretScolariteMapper;
@@ -51,21 +49,11 @@ public class PretScolariteServiceImpl implements PretScolariteService {
             .findByTrackingId(universiteTrackingId)
             .orElseThrow(() -> new EntityNotFoundException("Université non trouvée"));
 
-    // Trouver l'année scolaire en cours (ouverte)
     ScolariteYear currentYear =
         scolariteYearRepository
             .findByEstOuverteTrue()
             .orElseThrow(
                 () -> new IllegalStateException("Aucune année scolaire ouverte pour le moment"));
-
-    // Vérifier si l'étudiant est inscrit pour cette année
-    InscriptionAnnuelle inscription =
-        inscriptionAnnuelleRepository
-            .findByStudentAndScolariteYear(student, currentYear)
-            .orElseThrow(
-                () ->
-                    new IllegalStateException(
-                        "L'étudiant n'est pas inscrit pour l'année en cours"));
 
     PretScolarite pret = new PretScolarite();
     pret.setStudent(student);
@@ -77,7 +65,6 @@ public class PretScolariteServiceImpl implements PretScolariteService {
 
     PretScolarite savedPret = pretScolariteRepository.save(pret);
 
-    // Créditer l'Université immédiatement
     if (universite.getWallet() != null) {
       walletService.crediter(universite.getWallet().getTrackingId(), montant);
     } else {

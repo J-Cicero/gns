@@ -29,6 +29,8 @@ public interface InscriptionAnnuelleRepository extends JpaRepository<Inscription
       Student student,
       ScolariteYear scolariteYear);
 
+  Optional<InscriptionAnnuelle> findByStudentAndScolariteYear_EstOuverteTrue(Student student);
+
   List<InscriptionAnnuelle> findAllByScolariteYear(
       ScolariteYear scolariteYear);
 

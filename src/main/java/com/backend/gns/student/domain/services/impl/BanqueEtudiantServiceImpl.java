@@ -7,6 +7,8 @@ import com.backend.gns.student.application.mappers.BanqueEtudiantMapper;
 import com.backend.gns.student.domain.models.BanqueEtudiant;
 import com.backend.gns.student.domain.services.BanqueEtudiantService;
 import com.backend.gns.student.infrastructure.repositories.BanqueEtudiantRepository;
+import com.backend.gns.core.domain.models.Banque;
+import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class BanqueEtudiantServiceImpl implements BanqueEtudiantService {
 
   private final BanqueEtudiantRepository banqueEtudiantRepository;
   private final BanqueEtudiantMapper banqueEtudiantMapper;
+  private final BanqueRepository banqueRepository;
 
   // ─────────────────────────────────────────────
   // Utilitaires privés
@@ -49,7 +52,7 @@ public class BanqueEtudiantServiceImpl implements BanqueEtudiantService {
 
   @Transactional
   public BanqueEtudiantResponse create(BanqueEtudiantRequest request) {
-    log.info("Création d'une BanqueEtudiant, banque: {}", request.banque());
+    log.info("Création d'une BanqueEtudiant, banqueId: {}", request.banqueId());
 
     BanqueEtudiant banqueEtudiant = banqueEtudiantMapper.toEntity(request);
     BanqueEtudiant saved = banqueEtudiantRepository.save(banqueEtudiant);
@@ -74,7 +77,12 @@ public class BanqueEtudiantServiceImpl implements BanqueEtudiantService {
 
     BanqueEtudiant banqueEtudiant = findBanqueEtudiantOrThrow(trackingId);
 
-    banqueEtudiant.setBanque(request.banque());
+    if (request.banqueId() != null) {
+      Banque banque = banqueRepository.findByTrackingId(request.banqueId())
+          .orElseThrow(() -> new IllegalArgumentException("Banque introuvable"));
+      banqueEtudiant.setBanque(banque);
+    }
+    
     banqueEtudiant.setRIB(request.RIB());
     banqueEtudiant.setMandatStatut(request.mandatStatut());
 

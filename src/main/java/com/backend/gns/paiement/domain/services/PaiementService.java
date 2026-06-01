@@ -37,4 +37,6 @@ public interface PaiementService {
   Page<PaiementResponse> findAll(Pageable pageable);
 
   Page<PaiementResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
+
+  java.util.Map<String, Object> getStats();
 }

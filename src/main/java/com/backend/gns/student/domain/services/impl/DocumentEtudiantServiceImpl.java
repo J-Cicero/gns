@@ -40,9 +40,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
   private final DocumentEtudiantMapper documentMapper;
   private final CloudinaryStorageService cloudinaryService;
   private final GeminiExtractionService geminiService;
-  private final StudentRepository studentRepository;
   private final InscriptionAnnuelleRepository inscriptionRepository;
-  private final ScolariteYearRepository scolariteYearRepository;
   private final ObjectMapper objectMapper;
 
   public DocumentEtudiantServiceImpl(
@@ -58,9 +56,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     this.documentMapper = documentMapper;
     this.cloudinaryService = cloudinaryService;
     this.geminiService = geminiService;
-    this.studentRepository = studentRepository;
     this.inscriptionRepository = inscriptionRepository;
-    this.scolariteYearRepository = scolariteYearRepository;
     this.objectMapper = objectMapper;
   }
 

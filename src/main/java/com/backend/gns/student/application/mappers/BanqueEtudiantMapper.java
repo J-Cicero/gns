@@ -4,6 +4,8 @@ import com.backend.gns.student.application.dtos.requests.BanqueEtudiantRequest;
 import com.backend.gns.student.application.dtos.responses.BanqueEtudiantResponse;
 import com.backend.gns.student.domain.models.BanqueEtudiant;
 import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.core.domain.models.Banque;
+import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
@@ -12,9 +14,11 @@ import org.springframework.stereotype.Component;
 public class BanqueEtudiantMapper {
 
   private final StudentRepository studentRepository;
+  private final BanqueRepository banqueRepository;
 
-  public BanqueEtudiantMapper(StudentRepository studentRepository) {
+  public BanqueEtudiantMapper(StudentRepository studentRepository, BanqueRepository banqueRepository) {
     this.studentRepository = studentRepository;
+    this.banqueRepository = banqueRepository;
   }
 
   public BanqueEtudiant toEntity(BanqueEtudiantRequest request) {
@@ -25,7 +29,11 @@ public class BanqueEtudiantMapper {
 
     BanqueEtudiant banqueEtudiant = new BanqueEtudiant();
     banqueEtudiant.setTrackingId(UUID.randomUUID());
-    banqueEtudiant.setBanque(request.banque());
+    if (request.banqueId() != null) {
+      Banque banque = banqueRepository.findByTrackingId(request.banqueId())
+          .orElseThrow(() -> new IllegalArgumentException("Banque introuvable"));
+      banqueEtudiant.setBanque(banque);
+    }
     banqueEtudiant.setRIB(request.RIB());
     banqueEtudiant.setMandatStatut(request.mandatStatut());
     banqueEtudiant.setMandatSigne(request.mandatSigne());
@@ -58,7 +66,8 @@ public class BanqueEtudiantMapper {
             banqueEtudiant.getStudent() != null
                 ? banqueEtudiant.getStudent().getTrackingId()
                 : null)
-        .banque(banqueEtudiant.getBanque())
+        .banqueId(banqueEtudiant.getBanque() != null ? banqueEtudiant.getBanque().getTrackingId() : null)
+        .banqueName(banqueEtudiant.getBanque() != null ? banqueEtudiant.getBanque().getNom() : null)
         .RIB(banqueEtudiant.getRIB())
         .mandatStatut(banqueEtudiant.getMandatStatut())
         .mandatSigne(banqueEtudiant.isMandatSigne())
@@ -77,7 +86,13 @@ public class BanqueEtudiantMapper {
 
     BanqueEtudiant banqueEtudiant = new BanqueEtudiant();
     banqueEtudiant.setTrackingId(response.trackingId());
-    banqueEtudiant.setBanque(response.banque());
+    
+    if (response.banqueId() != null) {
+      Banque banque = banqueRepository.findByTrackingId(response.banqueId())
+          .orElseThrow(() -> new IllegalArgumentException("Banque introuvable"));
+      banqueEtudiant.setBanque(banque);
+    }
+    
     banqueEtudiant.setRIB(response.RIB());
     banqueEtudiant.setMandatStatut(response.mandatStatut());
     banqueEtudiant.setMandatSigne(response.mandatSigne());

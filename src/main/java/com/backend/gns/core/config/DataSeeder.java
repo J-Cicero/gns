@@ -15,6 +15,8 @@ import com.backend.gns.core.parametrage.domain.models.ParametreGns;
 import com.backend.gns.core.parametrage.infrastructure.repositories.ParametreGnsRepository;
 import com.backend.gns.student.domain.enums.TypeParametreDbs;
 import com.backend.gns.student.domain.models.ParametreDbs;
+import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
+import com.backend.gns.core.domain.models.Banque;
 import com.backend.gns.student.infrastructure.repositories.ParametreDbsRepository;
 
 @Component
@@ -26,12 +28,14 @@ public class DataSeeder implements CommandLineRunner {
   private final PasswordEncoder passwordEncoder;
   private final ParametreGnsRepository parametreGnsRepository;
   private final ParametreDbsRepository parametreDbsRepository;
+  private final BanqueRepository banqueRepository;
 
   @Override
   public void run(String... args) throws Exception {
     seedUsers();
     seedParametresGns();
     seedParametresDbs();
+    seedBanques();
   }
 
   private void seedUsers() {
@@ -88,6 +92,30 @@ public class DataSeeder implements CommandLineRunner {
       bankOp.setEstActif(true);
       userRepository.save(bankOp);
 
+      // 5. Étudiant (Student)
+      User student = new User();
+      student.setTrackingId(UUID.randomUUID());
+      student.setNom("L'Étudiant");
+      student.setPrenom("Jean");
+      student.setEmail("student@test.com");
+      student.setMotDePasse(encodedPassword);
+      student.setRole(UserRole.ETUDIANT);
+      student.setTelephone("123456783");
+      student.setEstActif(true);
+      userRepository.save(student);
+
+      // 6. Commerçant (Merchant)
+      User merchant = new User();
+      merchant.setTrackingId(UUID.randomUUID());
+      merchant.setNom("Le Commerçant");
+      merchant.setPrenom("Boutique");
+      merchant.setEmail("merchant@test.com");
+      merchant.setMotDePasse(encodedPassword);
+      merchant.setRole(UserRole.COMMERCANT);
+      merchant.setTelephone("123456784");
+      merchant.setEstActif(true);
+      userRepository.save(merchant);
+
       log.info("Utilisateurs de test créés avec succès ! Mot de passe par défaut: password123");
     } else {
       log.info("La table Users contient déjà des données. Seeding ignoré.");
@@ -119,6 +147,17 @@ public class DataSeeder implements CommandLineRunner {
         param.setDescription("Paramètre DBS: " + type.name());
         parametreDbsRepository.save(param);
       }
+    }
+  }
+
+  private void seedBanques() {
+    if (banqueRepository.count() == 0) {
+      log.info("Création des banques partenaires...");
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "POSTE", "La Poste"));
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "ECOBANK", "Ecobank"));
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "ORABANK", "Orabank"));
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "IBBANK", "IB Bank"));
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "CORISBANK", "Coris Bank"));
     }
   }
 }

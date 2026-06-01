@@ -7,8 +7,6 @@ import com.backend.gns.admin.domain.models.BankOperator;
 import com.backend.gns.admin.domain.services.BankOperatorService;
 import com.backend.gns.admin.infrastructure.repositories.BankOperatorRepository;
 import com.backend.gns.core.exception.ResourceNotFoundException;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Wallet;
@@ -33,7 +31,6 @@ public class BankOperatorServiceImpl implements BankOperatorService {
 
   private final BankOperatorRepository bankOperatorRepository;
   private final BankOperatorMapper bankOperatorMapper;
-  private final ParametreGnsService parametreGnsService;
 
   // ─────────────────────────────────────────────
   // Utilitaires privés
@@ -69,9 +66,7 @@ public class BankOperatorServiceImpl implements BankOperatorService {
     wallet.setStatutWallet(WalletStatus.ACTIF);
     wallet.setSolde(BigDecimal.ZERO);
 
-    BigDecimal plafondDefaut =
-        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
-    wallet.setPlafond(plafondDefaut);
+    wallet.setPlafond(BigDecimal.ZERO);
     wallet.setDateCreation(LocalDateTime.now());
 
     bankOperator.setWallet(wallet);

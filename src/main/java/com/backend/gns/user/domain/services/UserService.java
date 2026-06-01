@@ -18,4 +18,6 @@ public interface UserService {
   void deleteUser(UUID trackingId);
 
   Page<UserResponse> getAllUsers(int page, int size);
+
+  java.util.List<UserResponse> searchUsers(String query);
 }

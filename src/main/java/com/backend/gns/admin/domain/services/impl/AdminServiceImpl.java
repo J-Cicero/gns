@@ -7,8 +7,7 @@ import com.backend.gns.admin.domain.models.Admin;
 import com.backend.gns.admin.domain.services.AdminService;
 import com.backend.gns.admin.infrastructure.repositories.AdminRepository;
 import com.backend.gns.core.exception.ResourceNotFoundException;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
+
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Wallet;
@@ -33,7 +32,6 @@ public class AdminServiceImpl implements AdminService {
 
   private final AdminRepository adminRepository;
   private final AdminMapper adminMapper;
-  private final ParametreGnsService parametreGnsService;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -63,9 +61,7 @@ public class AdminServiceImpl implements AdminService {
     wallet.setStatutWallet(WalletStatus.ACTIF);
     wallet.setSolde(BigDecimal.ZERO);
 
-    BigDecimal plafondDefaut =
-        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
-    wallet.setPlafond(plafondDefaut);
+    wallet.setPlafond(BigDecimal.ZERO);
     wallet.setDateCreation(LocalDateTime.now());
 
     admin.setWallet(wallet);

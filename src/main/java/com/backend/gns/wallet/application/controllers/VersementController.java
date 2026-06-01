@@ -92,6 +92,30 @@ public class VersementController {
     }
   }
 
+  @GetMapping("/masse/preview/etudiants")
+  @Operation(summary = "Prévisualiser les cibles pour étudiants", description = "Retourne la liste des étudiants concernés")
+  public ResponseEntity<?> previewMasseEtudiants(@RequestParam UUID scolariteYearTrackingId) {
+    try {
+      java.util.List<String> names = versementService.previewMasseEtudiants(scolariteYearTrackingId);
+      return ResponseEntity.ok(Map.of("count", names.size(), "names", names));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "PREVIEW_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/masse/preview/boutiques")
+  @Operation(summary = "Prévisualiser les cibles pour boutiques", description = "Retourne la liste des boutiques concernées")
+  public ResponseEntity<?> previewMasseBoutiques(@RequestParam BigDecimal seuil) {
+    try {
+      java.util.List<String> names = versementService.previewMasseBoutiques(seuil);
+      return ResponseEntity.ok(Map.of("count", names.size(), "names", names));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "PREVIEW_FAILED", "message", e.getMessage()));
+    }
+  }
+
   @PostMapping("/masse/reset/boutiques")
   @Operation(
       summary = "Remise à zéro quotas boutiques",

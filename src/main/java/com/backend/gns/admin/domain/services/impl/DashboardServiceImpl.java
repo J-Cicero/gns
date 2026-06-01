@@ -23,6 +23,7 @@ public class DashboardServiceImpl implements DashboardService {
   private final StudentRepository studentRepository;
   private final BoutiqueRepository boutiqueRepository;
   private final PaiementRepository paiementRepository;
+  private final com.backend.gns.student.infrastructure.repositories.UniversiteRepository universiteRepository;
 
   @Override
   public Map<String, Object> getGlobalStats() {
@@ -33,6 +34,7 @@ public class DashboardServiceImpl implements DashboardService {
     long totalStudents = studentRepository.count();
     stats.put("totalStudents", totalStudents);
     stats.put("totalBoutiques", boutiqueRepository.count());
+    stats.put("totalUniversities", universiteRepository.count());
     long totalTx = paiementRepository.count();
     stats.put("totalTransactions", totalTx);
 

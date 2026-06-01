@@ -42,7 +42,6 @@ public class VersementServiceImpl implements VersementService {
 
   private final VersementRepository versementRepository;
   private final VersementMapper versementMapper;
-  private final StudentRepository studentRepository;
   private final BoutiqueRepository boutiqueRepository;
   private final EligibiliteService eligibiliteService;
   private final WalletService walletService;
@@ -62,7 +61,6 @@ public class VersementServiceImpl implements VersementService {
       PretScolariteService pretScolariteService) {
     this.versementRepository = versementRepository;
     this.versementMapper = versementMapper;
-    this.studentRepository = studentRepository;
     this.boutiqueRepository = boutiqueRepository;
     this.eligibiliteService = eligibiliteService;
     this.walletService = walletService;
@@ -225,6 +223,42 @@ public class VersementServiceImpl implements VersementService {
         }
       }
     }
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<String> previewMasseEtudiants(UUID scolariteYearTrackingId) {
+    ScolariteYear year =
+        scolariteYearRepository
+            .findByTrackingId(scolariteYearTrackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Année scolaire non trouvée"));
+
+    List<InscriptionAnnuelle> inscriptions =
+        inscriptionAnnuelleRepository.findAllByScolariteYear(year);
+
+    List<String> eligibleNames = new java.util.ArrayList<>();
+    for (InscriptionAnnuelle ins : inscriptions) {
+      Student student = ins.getStudent();
+      EligibiliteResult result =
+          eligibiliteService.verifierEligibilite(student, ins, student.getBanqueEtudiant());
+      if (result.estEligible && student.getWallet() != null) {
+        eligibleNames.add(student.getNom() + " " + student.getPrenom());
+      }
+    }
+    return eligibleNames;
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<String> previewMasseBoutiques(BigDecimal seuil) {
+    List<Boutique> boutiques = boutiqueRepository.findAll();
+    List<String> eligibleNames = new java.util.ArrayList<>();
+    for (Boutique boutique : boutiques) {
+      if (boutique.getWallet() != null && boutique.getWallet().getSolde().compareTo(seuil) <= 0) {
+        eligibleNames.add(boutique.getNomBoutique());
+      }
+    }
+    return eligibleNames;
   }
 
   @Override

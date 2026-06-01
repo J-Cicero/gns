@@ -4,6 +4,7 @@ import com.backend.gns.paiement.domain.enums.PaiementStatut;
 import com.backend.gns.paiement.domain.enums.PaiementType;
 import com.backend.gns.paiement.domain.models.Paiement;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,15 @@ import org.springframework.data.repository.query.Param;
 public interface PaiementRepository extends JpaRepository<Paiement, Long> {
 
   Optional<Paiement> findByTrackingId(UUID trackingId);
+
+  List<Paiement> findByStudentAndTypePaiementAndStatutPaiement(
+      com.backend.gns.student.domain.models.Student student, 
+      PaiementType typePaiement, 
+      PaiementStatut statutPaiement);
+
+  List<Paiement> findByStudentAndStatutPaiement(
+      com.backend.gns.student.domain.models.Student student, 
+      PaiementStatut statutPaiement);
 
   Page<Paiement> findByStatutPaiementOrderByDateDesc(
       PaiementStatut statutPaiement, Pageable pageable);

@@ -24,6 +24,14 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
   // Rechercher un portefeuille par son statut
   Page<Wallet> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
 
+  // Rechercher un portefeuille par son type et/ou niveau solde
+  @Query("SELECT w FROM Wallet w WHERE " +
+         "(:typeWallet IS NULL OR w.typeWallet = :typeWallet) AND " +
+         "(:niveauSolde IS NULL OR w.niveauSolde = :niveauSolde)")
+  Page<Wallet> findFiltered(@Param("typeWallet") WalletType typeWallet, 
+                            @Param("niveauSolde") WalletFundingLevel niveauSolde, 
+                            Pageable pageable);
+
   // Rechercher un portefeuille par son niveau de solde
   Page<Wallet> findByNiveauSolde(WalletFundingLevel niveauSolde, Pageable pageable);
 

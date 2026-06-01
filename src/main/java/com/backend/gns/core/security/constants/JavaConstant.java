@@ -3,7 +3,7 @@ package com.backend.gns.core.security.constants;
 public class JavaConstant {
 
   public static final String FRONTEND_URL = "*";
-  public static final String API_BASE_URL = "/api";
+  public static final String API_BASE_URL = "";
   public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
 
   public static final String[] PUBLIC_URLS = {
@@ -29,7 +29,6 @@ public class JavaConstant {
     API_BASE_URL + "/documents/validate/**",
     API_BASE_URL + "/documents/reject/**",
     API_BASE_URL + "/scolarite/**",
-    API_BASE_URL + "/regles-bourse-dbs/**",
     API_BASE_URL + "/wallets/**",
     API_BASE_URL + "/versements/**",
     API_BASE_URL + "/universites/**",

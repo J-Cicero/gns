@@ -1,6 +1,6 @@
 package com.backend.gns.student.domain.models;
 
-import com.backend.gns.core.domain.enums.Banque;
+import com.backend.gns.core.domain.models.Banque;
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.student.domain.enums.MandatStatut;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -40,8 +41,8 @@ public class BanqueEtudiant extends BaseEntity {
   @Column(unique = true, nullable = false, updatable = false)
   private UUID trackingId;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "banque_id", nullable = false)
   private Banque banque;
 
   @Column(unique = true, nullable = true)

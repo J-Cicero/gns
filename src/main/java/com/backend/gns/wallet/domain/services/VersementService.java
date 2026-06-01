@@ -32,6 +32,10 @@ public interface VersementService {
 
   void effectuerVersementMasseBoutiques(BigDecimal seuil, BigDecimal montantQuota);
 
+  java.util.List<String> previewMasseEtudiants(UUID scolariteYearTrackingId);
+
+  java.util.List<String> previewMasseBoutiques(BigDecimal seuil);
+
   void remiseAZeroMasseEtudiants(UUID scolariteYearTrackingId);
 
   void remiseAZeroMasseBoutiques();

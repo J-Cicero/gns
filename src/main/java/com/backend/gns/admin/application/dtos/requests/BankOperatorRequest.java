@@ -11,4 +11,5 @@ public record BankOperatorRequest(
     String prenom,
     Boolean estActif,
     String telephone,
-    UUID walletTrackingId) {}
+    UUID walletTrackingId,
+    UUID banquePartenaireTrackingId) {}

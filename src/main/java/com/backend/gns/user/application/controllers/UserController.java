@@ -106,4 +106,13 @@ public class UserController {
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
+
+  @GetMapping("/search")
+  @Operation(
+      summary = "Rechercher des utilisateurs",
+      description = "Recherche des utilisateurs par nom, prénom ou email")
+  @ApiResponse(responseCode = "200", description = "Recherche effectuée avec succès")
+  public ResponseEntity<java.util.List<UserResponse>> searchUsers(@RequestParam String query) {
+    return ResponseEntity.ok(userService.searchUsers(query));
+  }
 }

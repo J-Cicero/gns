@@ -1,9 +1,6 @@
 package com.backend.gns.core.security.jwt.filters;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.OK;
-
-import com.backend.gns.core.security.constants.JavaConstant;
 import com.backend.gns.core.security.jwt.JwtService;
 import com.backend.gns.core.security.userDetailsConf.UserServiceSecure;
 import jakarta.servlet.FilterChain;
@@ -35,38 +32,28 @@ public class JwtAuthorizationToken extends OncePerRequestFilter {
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
-    response.setHeader("Access-Control-Allow-Origin", JavaConstant.FRONTEND_URL);
-    response.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT,OPTIONS");
-    response.setHeader("Access-Control-Allow-Headers", "*");
-    response.setHeader("Access-Control-Allow-Credentials", String.valueOf(true));
-    response.setHeader("Access-Control-Max-Age", String.valueOf(180));
-    if (request.getMethod().equalsIgnoreCase(JavaConstant.OPTIONS_HTTP_METHOD)) {
-      response.setStatus(OK.value());
-      System.out.println("filter 1");
-    } else {
-      String authorizeHeader = request.getHeader(AUTHORIZATION);
-      if (authorizeHeader == null || !authorizeHeader.startsWith(TOKEN_PREFIX)) {
-        filterChain.doFilter(request, response);
-        return;
-      }
-      String token = authorizeHeader.substring(TOKEN_PREFIX.length());
-      String username = jwtService.extractUsername(token);
-      UserDetails userDetails = this.userServiceSecure.loadUserByUsername(username);
-      if (jwtService.isTokenValid(token, userDetails)
-          && SecurityContextHolder.getContext().getAuthentication() == null) {
-        System.out.println("/**********************************************/");
-        System.out.println("The token is valid");
-        System.out.println("/**********************************************/");
-        UsernamePasswordAuthenticationToken authToken =
-            new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
-        System.out.println(authToken.isAuthenticated());
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-      } else {
-        SecurityContextHolder.clearContext();
-      }
+    String authorizeHeader = request.getHeader(AUTHORIZATION);
+    if (authorizeHeader == null || !authorizeHeader.startsWith(TOKEN_PREFIX)) {
       filterChain.doFilter(request, response);
+      return;
     }
+    String token = authorizeHeader.substring(TOKEN_PREFIX.length());
+    String username = jwtService.extractUsername(token);
+    UserDetails userDetails = this.userServiceSecure.loadUserByUsername(username);
+    if (jwtService.isTokenValid(token, userDetails)
+        && SecurityContextHolder.getContext().getAuthentication() == null) {
+      System.out.println("/**********************************************/");
+      System.out.println("The token is valid");
+      System.out.println("/**********************************************/");
+      UsernamePasswordAuthenticationToken authToken =
+          new UsernamePasswordAuthenticationToken(
+              userDetails, null, userDetails.getAuthorities());
+      System.out.println(authToken.isAuthenticated());
+      authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+      SecurityContextHolder.getContext().setAuthentication(authToken);
+    } else {
+      SecurityContextHolder.clearContext();
+    }
+    filterChain.doFilter(request, response);
   }
 }

@@ -1,13 +1,11 @@
 package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.UniversiteRequest;
 import com.backend.gns.student.application.dtos.responses.UniversiteResponse;
 import com.backend.gns.student.application.mappers.UniversiteMapper;
 import com.backend.gns.student.domain.models.Universite;
 import com.backend.gns.student.domain.services.UniversiteService;
-import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
+
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
@@ -34,8 +32,7 @@ public class UniversiteServiceImpl implements UniversiteService {
   private final UniversiteRepository repository;
   private final UniversiteMapper mapper;
   private final StudentRepository studentRepository;
-  private final InscriptionAnnuelleRepository inscriptionRepository;
-  private final ParametreGnsService parametreGnsService;
+
 
   @Override
   @Transactional
@@ -49,9 +46,7 @@ public class UniversiteServiceImpl implements UniversiteService {
     wallet.setStatutWallet(WalletStatus.ACTIF);
     wallet.setSolde(BigDecimal.ZERO);
 
-    BigDecimal plafondDefaut =
-        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
-    wallet.setPlafond(plafondDefaut);
+    wallet.setPlafond(BigDecimal.ZERO);
     wallet.setDateCreation(LocalDateTime.now());
 
     entity.setWallet(wallet);

@@ -116,6 +116,25 @@ public class WalletController {
     }
   }
 
+  @GetMapping("/filter")
+  @Operation(
+      summary = "Filtrer les portefeuilles",
+      description = "Récupère les portefeuilles selon le type et le niveau de solde")
+  public ResponseEntity<?> findFiltered(
+      @RequestParam(required = false) WalletType typeWallet,
+      @RequestParam(required = false) com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    try {
+      Pageable pageable = PageRequest.of(page, size);
+      var responses = walletService.findFiltered(typeWallet, niveauSolde, pageable);
+      return ResponseEntity.ok(responses);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+    }
+  }
+
   @GetMapping
   @Operation(
       summary = "Récupérer tous les portefeuilles",

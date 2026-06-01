@@ -1,8 +1,6 @@
 package com.backend.gns.student.domain.services.impl;
 
 import com.backend.gns.core.exception.ResourceNotFoundException;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.UniversityAdminRequest;
 import com.backend.gns.student.application.dtos.responses.UniversityAdminResponse;
 import com.backend.gns.student.application.mappers.UniversityAdminMapper;
@@ -33,7 +31,6 @@ public class UniversityAdminServiceImpl implements UniversityAdminService {
 
   private final UniversityAdminRepository universityAdminRepository;
   private final UniversityAdminMapper universityAdminMapper;
-  private final ParametreGnsService parametreGnsService;
 
   // ─────────────────────────────────────────────
   // Utilitaires privés
@@ -69,9 +66,7 @@ public class UniversityAdminServiceImpl implements UniversityAdminService {
     wallet.setStatutWallet(WalletStatus.ACTIF);
     wallet.setSolde(BigDecimal.ZERO);
 
-    BigDecimal plafondDefaut =
-        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_DEFAUT_WALLET);
-    wallet.setPlafond(plafondDefaut);
+    wallet.setPlafond(BigDecimal.ZERO);
     wallet.setDateCreation(LocalDateTime.now());
 
     universityAdmin.setWallet(wallet);

@@ -1,0 +1,1195 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< com.backend:gns >---------------------------
+[INFO] Building  0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.4.0:run (default-cli) > test-compile @ gns >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ gns ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 12 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ gns ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ gns ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ gns ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.4.0:run (default-cli) < test-compile @ gns <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.4.0:run (default-cli) @ gns ---
+[INFO] Attaching agents: []
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.0)
+
+2026-05-31T23:01:05.389Z  INFO 610407 --- [gns] [  restartedMain] com.backend.gns.GnsApplication           : Starting GnsApplication using Java 21.0.11 with PID 610407 (/home/jude/Documents/code/gns/target/classes started by jude in /home/jude/Documents/code/gns)
+2026-05-31T23:01:05.393Z DEBUG 610407 --- [gns] [  restartedMain] com.backend.gns.GnsApplication           : Running with Spring Boot v3.4.0, Spring v6.2.0
+2026-05-31T23:01:05.394Z  INFO 610407 --- [gns] [  restartedMain] com.backend.gns.GnsApplication           : The following 1 profile is active: "dev"
+2026-05-31T23:01:05.477Z  INFO 610407 --- [gns] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-05-31T23:01:05.478Z  INFO 610407 --- [gns] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-05-31T23:01:07.143Z  INFO 610407 --- [gns] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-31T23:01:07.348Z  INFO 610407 --- [gns] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 193 ms. Found 24 JPA repository interfaces.
+2026-05-31T23:01:08.268Z  INFO 610407 --- [gns] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-05-31T23:01:08.286Z  INFO 610407 --- [gns] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-31T23:01:08.287Z  INFO 610407 --- [gns] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.33]
+2026-05-31T23:01:08.339Z  INFO 610407 --- [gns] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/api]    : Initializing Spring embedded WebApplicationContext
+2026-05-31T23:01:08.340Z  INFO 610407 --- [gns] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2860 ms
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-05-31T23:01:08.555Z  INFO 610407 --- [gns] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-31T23:01:09.155Z  INFO 610407 --- [gns] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@35ad59df
+2026-05-31T23:01:09.157Z  INFO 610407 --- [gns] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-31T23:01:09.277Z  INFO 610407 --- [gns] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-31T23:01:09.339Z  INFO 610407 --- [gns] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.2.Final
+2026-05-31T23:01:09.378Z  INFO 610407 --- [gns] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-31T23:01:09.814Z  INFO 610407 --- [gns] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-31T23:01:09.889Z  WARN 610407 --- [gns] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-31T23:01:09.910Z  INFO 610407 --- [gns] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.14
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-31T23:01:12.070Z  INFO 610407 --- [gns] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    set client_min_messages = WARNING
+Hibernate: 
+    alter table if exists banque_etudiant 
+       drop constraint if exists FKi8wr12odr1c73t3es86fx7aqr
+Hibernate: 
+    alter table if exists banque_etudiant 
+       drop constraint if exists FK6nh6b9onhnvimp7a41s46f49n
+Hibernate: 
+    alter table if exists boutique 
+       drop constraint if exists FKhbi1axmrawwbpay3bwgiwh5ml
+Hibernate: 
+    alter table if exists boutique 
+       drop constraint if exists FKi4n04fi260sa6x09pvwrjvcdr
+Hibernate: 
+    alter table if exists card 
+       drop constraint if exists FKkh5nvgo2ekto41ssuc8na9vxk
+Hibernate: 
+    alter table if exists commande 
+       drop constraint if exists FK89vuhv3tojxv1bybnfxj6rexb
+Hibernate: 
+    alter table if exists commande 
+       drop constraint if exists FK6o6ed6f3to1ejhr4r86407hfv
+Hibernate: 
+    alter table if exists commande_ligne 
+       drop constraint if exists FKsb3psp81ppbg833yxplm88go
+Hibernate: 
+    alter table if exists commande_ligne 
+       drop constraint if exists FKst6hts2na5xwdc42awhph1fhe
+Hibernate: 
+    alter table if exists document_etudiant 
+       drop constraint if exists FKp1tau5y791d2y321dg4bg7jra
+Hibernate: 
+    alter table if exists document_etudiant 
+       drop constraint if exists FKjr8l6nncplfnfv9maa9plrtrr
+Hibernate: 
+    alter table if exists inscription_annuelle 
+       drop constraint if exists FKfco61n5kp2m4r85bp3p0bn11c
+Hibernate: 
+    alter table if exists inscription_annuelle 
+       drop constraint if exists FK76coh76d0dubuj6fw5au4nfmx
+Hibernate: 
+    alter table if exists paiement 
+       drop constraint if exists FK7154xu8wk0uya9b09dg8pcedm
+Hibernate: 
+    alter table if exists paiement 
+       drop constraint if exists FK8e6he5png6ji1p4gm4ohqs9s8
+Hibernate: 
+    alter table if exists paiement 
+       drop constraint if exists FKda9e2k2qdwcqong5no9hjwanq
+Hibernate: 
+    alter table if exists pret_scolarite 
+       drop constraint if exists FKfqc2w2q1uo0h0mr0g8kjjtloo
+Hibernate: 
+    alter table if exists pret_scolarite 
+       drop constraint if exists FKbsacc6m1ye24t1hqwrs8hdv0y
+Hibernate: 
+    alter table if exists pret_scolarite 
+       drop constraint if exists FKmxukrukvpskjwrkaupd63qjvr
+Hibernate: 
+    alter table if exists product 
+       drop constraint if exists FKdn59x3jqpbvc2aa130sxogo8p
+Hibernate: 
+    alter table if exists universite 
+       drop constraint if exists FKsmkbc7j1ywfp0nwnk6fcm0roi
+Hibernate: 
+    alter table if exists users 
+       drop constraint if exists FK2ndfo1foff7a36v7f6sst12ix
+Hibernate: 
+    alter table if exists users 
+       drop constraint if exists FKpy7fiepk8go1knuqo6pm2uj5c
+Hibernate: 
+    alter table if exists users 
+       drop constraint if exists FKqgrk99lw4csdhdnwsj6vo2xoh
+Hibernate: 
+    alter table if exists versement 
+       drop constraint if exists FKq8lo05mdhej4tdiruodgcd6h7
+Hibernate: 
+    drop table if exists banque cascade
+Hibernate: 
+    drop table if exists banque_etudiant cascade
+Hibernate: 
+    drop table if exists boutique cascade
+Hibernate: 
+    drop table if exists card cascade
+Hibernate: 
+    drop table if exists commande cascade
+Hibernate: 
+    drop table if exists commande_ligne cascade
+Hibernate: 
+    drop table if exists document_etudiant cascade
+Hibernate: 
+    drop table if exists document_requis cascade
+Hibernate: 
+    drop table if exists inscription_annuelle cascade
+Hibernate: 
+    drop table if exists paiement cascade
+Hibernate: 
+    drop table if exists parametre_dbs cascade
+Hibernate: 
+    drop table if exists parametre_gns cascade
+Hibernate: 
+    drop table if exists pret_scolarite cascade
+Hibernate: 
+    drop table if exists product cascade
+Hibernate: 
+    drop table if exists scolarite_year cascade
+Hibernate: 
+    drop table if exists universite cascade
+Hibernate: 
+    drop table if exists users cascade
+Hibernate: 
+    drop table if exists versement cascade
+Hibernate: 
+    drop table if exists wallet cascade
+Hibernate: 
+    create table banque (
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        code varchar(50) not null unique,
+        created_by varchar(100),
+        nom varchar(100) not null,
+        updated_by varchar(100),
+        primary key (id)
+    )
+Hibernate: 
+    create table banque_etudiant (
+        mandat_signe BOOLEAN DEFAULT FALSE not null,
+        virement_effectue boolean not null,
+        banque_id bigint not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        mandat_timestamp timestamp(6),
+        mandat_valide_le_date timestamp(6),
+        student_id bigint not null unique,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        lieu_enregistrement varchar(45),
+        mandat_statut varchar(50) not null check (mandat_statut in ('EN_ATTENTE_DEPOT','DEPOSE','VALIDE','REJETE')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        rib varchar(255) unique,
+        primary key (id)
+    )
+Hibernate: 
+    create table boutique (
+        latitude float(53),
+        longitude float(53),
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        merchant_id bigint not null,
+        updated_at timestamp(6),
+        wallet_id bigint unique,
+        tracking_id uuid not null unique,
+        statutkyc varchar(20) not null check (statutkyc in ('EN_ATTENTE','VALIDEE','REJETE')),
+        categorie_shop varchar(100) not null,
+        created_by varchar(100),
+        nom_boutique varchar(100) not null,
+        updated_by varchar(100),
+        chemin_carteedj varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table card (
+        created_at timestamp(6),
+        date_emission timestamp(6),
+        id bigint generated by default as identity,
+        student_id bigint not null unique,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        statut varchar(50) not null check (statut in ('EN_ATTENTE','EN_CONFECTION','PRETE','ACTIVE','INACTIVE','BLOQUEE')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        qr_code_statique varchar(255) not null unique,
+        primary key (id)
+    )
+Hibernate: 
+    create table commande (
+        montant_total numeric(38,2) not null,
+        boutique_id bigint not null,
+        created_at timestamp(6),
+        date_commande timestamp(6),
+        id bigint generated by default as identity,
+        student_id bigint not null,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        statut varchar(20) check (statut in ('EN_ATTENTE','VALIDEE','ANNULEE')),
+        reference varchar(36) not null unique,
+        created_by varchar(100),
+        updated_by varchar(100),
+        primary key (id)
+    )
+Hibernate: 
+    create table commande_ligne (
+        prix_unitaire numeric(38,2) not null,
+        quantite integer not null,
+        commande_id bigint not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        product_id bigint not null,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        created_by varchar(100),
+        updated_by varchar(100),
+        primary key (id)
+    )
+Hibernate: 
+    create table document_etudiant (
+        score_fiabilite float(53),
+        created_at timestamp(6),
+        date_depot timestamp(6) not null,
+        date_validation timestamp(6),
+        id bigint generated by default as identity,
+        inscription_id bigint,
+        student_id bigint,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        statut varchar(20) not null check (statut in ('EN_ATTENTE','VALIDE','REJETE')),
+        type varchar(30) not null check (type in ('RELEVE_BAC','SOUCHE_TAMPONNEE','RELEVE_NOTES','FICHE_UE','PIECE_IDENTITE')),
+        created_by varchar(100),
+        public_id_cloudinary varchar(100),
+        updated_by varchar(100),
+        url_fichier varchar(500) not null,
+        commentaire_rejet varchar(255),
+        donnees_extraites jsonb,
+        primary key (id)
+    )
+Hibernate: 
+    create table document_requis (
+        est_actif boolean not null,
+        obligatoire boolean not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        created_by varchar(100),
+        updated_by varchar(100),
+        niveau varchar(255) not null check (niveau in ('L1_ANNEE','L2_ANNEE','L3_ANNEE','L4_ANNEE','L5_ANNEE','M1_ANNEE','M2_ANNEE','M3_ANNEE')),
+        type_document varchar(255) not null check (type_document in ('RELEVE_BAC','SOUCHE_TAMPONNEE','RELEVE_NOTES','FICHE_UE','PIECE_IDENTITE')),
+        primary key (id)
+    )
+Hibernate: 
+    create table inscription_annuelle (
+        credits_total_valides integer not null,
+        est_boursier boolean not null,
+        est_inscrit_definitif boolean not null,
+        moyenne_bac numeric(4,2),
+        plafond_accorde numeric(10,2) not null,
+        created_at timestamp(6),
+        date_activation timestamp(6),
+        id bigint generated by default as identity,
+        scolarite_year_id bigint not null,
+        student_id bigint not null,
+        updated_at timestamp(6),
+        niveau varchar(10) not null check (niveau in ('L1_ANNEE','L2_ANNEE','L3_ANNEE','L4_ANNEE','L5_ANNEE','M1_ANNEE','M2_ANNEE','M3_ANNEE')),
+        tracking_id uuid not null unique,
+        source varchar(20) check (source in ('API_UL','MANUELLE')),
+        type_bourse varchar(20) check (type_bourse in ('BOURSE_DBS_36k','BOURSE_DBS_54k')),
+        statut varchar(30) not null check (statut in ('EN_ATTENTE','VERIFIE_UL','DOCUMENTS_EN_COURS','ACTIVE','EXPIREE','REJETEE')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        primary key (id),
+        unique (student_id, annee_academique)
+    )
+2026-05-31T23:01:14.447Z  WARN 610407 --- [gns] [  restartedMain] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+    create table inscription_annuelle (
+        credits_total_valides integer not null,
+        est_boursier boolean not null,
+        est_inscrit_definitif boolean not null,
+        moyenne_bac numeric(4,2),
+        plafond_accorde numeric(10,2) not null,
+        created_at timestamp(6),
+        date_activation timestamp(6),
+        id bigint generated by default as identity,
+        scolarite_year_id bigint not null,
+        student_id bigint not null,
+        updated_at timestamp(6),
+        niveau varchar(10) not null check (niveau in ('L1_ANNEE','L2_ANNEE','L3_ANNEE','L4_ANNEE','L5_ANNEE','M1_ANNEE','M2_ANNEE','M3_ANNEE')),
+        tracking_id uuid not null unique,
+        source varchar(20) check (source in ('API_UL','MANUELLE')),
+        type_bourse varchar(20) check (type_bourse in ('BOURSE_DBS_36k','BOURSE_DBS_54k')),
+        statut varchar(30) not null check (statut in ('EN_ATTENTE','VERIFIE_UL','DOCUMENTS_EN_COURS','ACTIVE','EXPIREE','REJETEE')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        primary key (id),
+        unique (student_id, annee_academique)
+    )" via JDBC [ERROR: column "annee_academique" named in key does not exist
+  Position : 1074]
+
+org.hibernate.tool.schema.spi.CommandAcceptanceException: Error executing DDL "
+    create table inscription_annuelle (
+        credits_total_valides integer not null,
+        est_boursier boolean not null,
+        est_inscrit_definitif boolean not null,
+        moyenne_bac numeric(4,2),
+        plafond_accorde numeric(10,2) not null,
+        created_at timestamp(6),
+        date_activation timestamp(6),
+        id bigint generated by default as identity,
+        scolarite_year_id bigint not null,
+        student_id bigint not null,
+        updated_at timestamp(6),
+        niveau varchar(10) not null check (niveau in ('L1_ANNEE','L2_ANNEE','L3_ANNEE','L4_ANNEE','L5_ANNEE','M1_ANNEE','M2_ANNEE','M3_ANNEE')),
+        tracking_id uuid not null unique,
+        source varchar(20) check (source in ('API_UL','MANUELLE')),
+        type_bourse varchar(20) check (type_bourse in ('BOURSE_DBS_36k','BOURSE_DBS_54k')),
+        statut varchar(30) not null check (statut in ('EN_ATTENTE','VERIFIE_UL','DOCUMENTS_EN_COURS','ACTIVE','EXPIREE','REJETEE')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        primary key (id),
+        unique (student_id, annee_academique)
+    )" via JDBC [ERROR: column "annee_academique" named in key does not exist
+  Position : 1074]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:94) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.Helper.applySqlString(Helper.java:233) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.Helper.applySqlStrings(Helper.java:217) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.createTables(SchemaCreatorImpl.java:428) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.createSequencesTablesConstraints(SchemaCreatorImpl.java:344) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.createFromMetadata(SchemaCreatorImpl.java:239) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.performCreation(SchemaCreatorImpl.java:172) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.doCreation(SchemaCreatorImpl.java:142) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.doCreation(SchemaCreatorImpl.java:118) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:250) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at java.base/java.util.HashMap.forEach(HashMap.java:1429) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1506) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1849) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1798) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:691) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1351) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1181) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1701) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1450) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1568) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1514) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1371) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1568) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1514) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1371) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:204) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:211) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:174) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:169) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:154) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:87) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:266) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:240) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4426) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145) ~[na:na]
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:772) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145) ~[na:na]
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:203) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:415) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:870) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:437) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:128) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:107) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:516) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:222) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:188) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:162) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:621) ~[spring-context-6.2.0.jar:6.2.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.4.0.jar:3.4.0]
+	at com.backend.gns.GnsApplication.main(GnsApplication.java:10) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.4.0.jar:3.4.0]
+Caused by: org.postgresql.util.PSQLException: ERROR: column "annee_academique" named in key does not exist
+  Position : 1074
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2733) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2420) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:372) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:517) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:434) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:356) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:341) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:317) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:312) ~[postgresql-42.7.4.jar:42.7.4]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-5.1.0.jar:na]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:80) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	... 126 common frames omitted
+
+Hibernate: 
+    create table paiement (
+        commission numeric(38,2) not null,
+        montant_debite numeric(38,2) not null,
+        montant_net_boutique numeric(10,2) not null,
+        commande_id bigint not null,
+        created_at timestamp(6),
+        date timestamp(6) not null,
+        id bigint generated by default as identity,
+        student_id bigint not null,
+        updated_at timestamp(6),
+        wallet_id bigint not null,
+        tracking_id uuid not null unique,
+        statut_paiement varchar(20) check (statut_paiement in ('EN_ATTENTE','VALIDE','ANNULEE')),
+        type_paiement varchar(20) check (type_paiement in ('ACHAT','SCOLARITE')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        primary key (id)
+    )
+Hibernate: 
+    create table parametre_dbs (
+        est_actif boolean not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        nom_parametre varchar(50) not null unique check (nom_parametre in ('AGE_MAX_LICENCE','MONTANT_TRANCHE_STANDARD','MONTANT_TRANCHE_SUPERIEURE','L1_MOYENNE_MIN_PASSABLE','L1_MOYENNE_MIN_MENTION_SUP','L2_CREDITS_MIN_STANDARD','L2_CREDITS_MIN_SUPERIEUR','L3_CREDITS_MIN_STANDARD','L3_CREDITS_MIN_SUPERIEUR','L4_CREDITS_MIN_STANDARD','L5_CREDITS_MIN_STANDARD')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        description varchar(255),
+        valeur_parametre varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table parametre_gns (
+        est_actif boolean not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        nom_parametre varchar(50) not null unique check (nom_parametre in ('TAUX_COMMISSION_PAIEMENT','FRAIS_CREATION_CARTE','RETENUE_BOURSE_ETUDIANT')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        description varchar(255),
+        valeur_parametre varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table pret_scolarite (
+        est_rembourse boolean not null,
+        montant numeric(10,2) not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        scolarite_year_id bigint not null,
+        student_id bigint not null,
+        universite_id bigint not null,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        created_by varchar(100),
+        updated_by varchar(100),
+        description varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table product (
+        est_disponible boolean not null,
+        prix numeric(38,2) not null,
+        stock integer not null,
+        boutique_id bigint not null,
+        created_at timestamp(6),
+        date_ajout timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        created_by varchar(100),
+        nom varchar(100) not null,
+        updated_by varchar(100),
+        description TEXT,
+        primary key (id)
+    )
+Hibernate: 
+    create table scolarite_year (
+        date_debut date not null,
+        date_fin date not null,
+        est_cloturee boolean not null,
+        est_ouverte boolean not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        libelle varchar(20) not null unique,
+        created_by varchar(100),
+        updated_by varchar(100),
+        primary key (id)
+    )
+Hibernate: 
+    create table universite (
+        est_active boolean not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        wallet_id bigint unique,
+        code varchar(10) not null unique,
+        tracking_id uuid not null unique,
+        ville varchar(50),
+        created_by varchar(100),
+        nom varchar(100) not null,
+        updated_by varchar(100),
+        primary key (id)
+    )
+Hibernate: 
+    create table users (
+        est_actif boolean not null,
+        banque_partenaire_id bigint,
+        created_at timestamp(6),
+        date_inscription timestamp(6) not null,
+        date_naissance timestamp(6),
+        id bigint generated by default as identity,
+        universite_id bigint,
+        updated_at timestamp(6),
+        wallet_id bigint unique,
+        tracking_id uuid not null unique,
+        numero_compte varchar(20),
+        role varchar(20) check (role in ('ETUDIANT','COMMERCANT','ADMIN_GNS','ADMIN_BANQUE','ADMIN_DBS','UNIVERSITY_ADMIN')),
+        statutkyc varchar(20) check (statutkyc in ('EN_ATTENTE','VALIDEE','REJETE')),
+        telephone varchar(20),
+        user_type varchar(31) not null,
+        num_etudiant_univ varchar(50) unique,
+        pin_code varchar(60),
+        created_by varchar(100),
+        email varchar(100) not null unique,
+        nom varchar(100) not null,
+        nom_banque varchar(100),
+        prenom varchar(100) not null,
+        updated_by varchar(100),
+        password varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table versement (
+        montant_verse numeric(38,2) not null,
+        created_at timestamp(6),
+        date_versement timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        wallet_id bigint not null,
+        tracking_id uuid not null unique,
+        statut varchar(20) check (statut in ('EN_ATTENTE','VALIDEE','ANNULE')),
+        type_versement varchar(30) check (type_versement in ('BOURSE_DBS_36k','BOURSE_DBS_54k','RECHARGE_QUOTA_BOUTIQUE','SCOLARITE_UNIVERSITY','REMISE_A_ZERO')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        primary key (id)
+    )
+Hibernate: 
+    create table wallet (
+        plafond numeric(38,2) not null,
+        solde numeric(38,2) not null,
+        created_at timestamp(6),
+        date_creation timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        tracking_id uuid not null unique,
+        niveau_solde varchar(20) not null check (niveau_solde in ('EPUISE','CRITIQUE','FAIBLE','NORMAL')),
+        statut_wallet varchar(20) not null check (statut_wallet in ('INACTIF','ACTIF','GELE','BLOQUE')),
+        type_wallet varchar(20) not null check (type_wallet in ('STUDENT','BOUTIQUE','UNIVERSITY','ADMIN','BANK_OPERATOR')),
+        created_by varchar(100),
+        updated_by varchar(100),
+        primary key (id)
+    )
+Hibernate: 
+    alter table if exists banque_etudiant 
+       add constraint FKi8wr12odr1c73t3es86fx7aqr 
+       foreign key (banque_id) 
+       references banque
+Hibernate: 
+    alter table if exists banque_etudiant 
+       add constraint FK6nh6b9onhnvimp7a41s46f49n 
+       foreign key (student_id) 
+       references users
+Hibernate: 
+    alter table if exists boutique 
+       add constraint FKhbi1axmrawwbpay3bwgiwh5ml 
+       foreign key (merchant_id) 
+       references users
+Hibernate: 
+    alter table if exists boutique 
+       add constraint FKi4n04fi260sa6x09pvwrjvcdr 
+       foreign key (wallet_id) 
+       references wallet
+Hibernate: 
+    alter table if exists card 
+       add constraint FKkh5nvgo2ekto41ssuc8na9vxk 
+       foreign key (student_id) 
+       references users
+Hibernate: 
+    alter table if exists commande 
+       add constraint FK89vuhv3tojxv1bybnfxj6rexb 
+       foreign key (boutique_id) 
+       references boutique
+Hibernate: 
+    alter table if exists commande 
+       add constraint FK6o6ed6f3to1ejhr4r86407hfv 
+       foreign key (student_id) 
+       references users
+Hibernate: 
+    alter table if exists commande_ligne 
+       add constraint FKsb3psp81ppbg833yxplm88go 
+       foreign key (commande_id) 
+       references commande
+Hibernate: 
+    alter table if exists commande_ligne 
+       add constraint FKst6hts2na5xwdc42awhph1fhe 
+       foreign key (product_id) 
+       references product
+Hibernate: 
+    alter table if exists document_etudiant 
+       add constraint FKp1tau5y791d2y321dg4bg7jra 
+       foreign key (inscription_id) 
+       references inscription_annuelle
+2026-05-31T23:01:16.711Z  WARN 610407 --- [gns] [  restartedMain] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+    alter table if exists document_etudiant 
+       add constraint FKp1tau5y791d2y321dg4bg7jra 
+       foreign key (inscription_id) 
+       references inscription_annuelle" via JDBC [ERROR: relation "inscription_annuelle" does not exist]
+
+org.hibernate.tool.schema.spi.CommandAcceptanceException: Error executing DDL "
+    alter table if exists document_etudiant 
+       add constraint FKp1tau5y791d2y321dg4bg7jra 
+       foreign key (inscription_id) 
+       references inscription_annuelle" via JDBC [ERROR: relation "inscription_annuelle" does not exist]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:94) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.Helper.applySqlString(Helper.java:233) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.Helper.applySqlStrings(Helper.java:217) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.createForeignKeys(SchemaCreatorImpl.java:305) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.createFromMetadata(SchemaCreatorImpl.java:251) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.performCreation(SchemaCreatorImpl.java:172) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.doCreation(SchemaCreatorImpl.java:142) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.internal.SchemaCreatorImpl.doCreation(SchemaCreatorImpl.java:118) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:250) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at java.base/java.util.HashMap.forEach(HashMap.java:1429) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1506) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1849) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1798) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:691) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1351) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1181) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1701) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1450) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1568) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1514) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1371) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1568) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1514) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1371) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:288) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:204) ~[spring-beans-6.2.0.jar:6.2.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:211) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:174) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:169) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:154) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:87) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:266) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:240) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4426) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145) ~[na:na]
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:772) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145) ~[na:na]
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:203) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:415) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:870) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:437) ~[tomcat-embed-core-10.1.33.jar:10.1.33]
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:128) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:107) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:516) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:222) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:188) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:162) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:621) ~[spring-context-6.2.0.jar:6.2.0]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.4.0.jar:3.4.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.4.0.jar:3.4.0]
+	at com.backend.gns.GnsApplication.main(GnsApplication.java:10) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.4.0.jar:3.4.0]
+Caused by: org.postgresql.util.PSQLException: ERROR: relation "inscription_annuelle" does not exist
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2733) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2420) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:372) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:517) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:434) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:356) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:341) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:317) ~[postgresql-42.7.4.jar:42.7.4]
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:312) ~[postgresql-42.7.4.jar:42.7.4]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-5.1.0.jar:na]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:80) ~[hibernate-core-6.6.2.Final.jar:6.6.2.Final]
+	... 125 common frames omitted
+
+Hibernate: 
+    alter table if exists document_etudiant 
+       add constraint FKjr8l6nncplfnfv9maa9plrtrr 
+       foreign key (student_id) 
+       references users
+Hibernate: 
+    alter table if exists inscription_annuelle 
+       add constraint FKfco61n5kp2m4r85bp3p0bn11c 
+       foreign key (scolarite_year_id) 
+       references scolarite_year
+Hibernate: 
+    alter table if exists inscription_annuelle 
+       add constraint FK76coh76d0dubuj6fw5au4nfmx 
+       foreign key (student_id) 
+       references users
+Hibernate: 
+    alter table if exists paiement 
+       add constraint FK7154xu8wk0uya9b09dg8pcedm 
+       foreign key (commande_id) 
+       references commande
+Hibernate: 
+    alter table if exists paiement 
+       add constraint FK8e6he5png6ji1p4gm4ohqs9s8 
+       foreign key (student_id) 
+       references users
+Hibernate: 
+    alter table if exists paiement 
+       add constraint FKda9e2k2qdwcqong5no9hjwanq 
+       foreign key (wallet_id) 
+       references wallet
+Hibernate: 
+    alter table if exists pret_scolarite 
+       add constraint FKfqc2w2q1uo0h0mr0g8kjjtloo 
+       foreign key (scolarite_year_id) 
+       references scolarite_year
+Hibernate: 
+    alter table if exists pret_scolarite 
+       add constraint FKbsacc6m1ye24t1hqwrs8hdv0y 
+       foreign key (student_id) 
+       references users
+Hibernate: 
+    alter table if exists pret_scolarite 
+       add constraint FKmxukrukvpskjwrkaupd63qjvr 
+       foreign key (universite_id) 
+       references universite
+Hibernate: 
+    alter table if exists product 
+       add constraint FKdn59x3jqpbvc2aa130sxogo8p 
+       foreign key (boutique_id) 
+       references boutique
+Hibernate: 
+    alter table if exists universite 
+       add constraint FKsmkbc7j1ywfp0nwnk6fcm0roi 
+       foreign key (wallet_id) 
+       references wallet
+Hibernate: 
+    alter table if exists users 
+       add constraint FK2ndfo1foff7a36v7f6sst12ix 
+       foreign key (wallet_id) 
+       references wallet
+Hibernate: 
+    alter table if exists users 
+       add constraint FKpy7fiepk8go1knuqo6pm2uj5c 
+       foreign key (banque_partenaire_id) 
+       references banque
+Hibernate: 
+    alter table if exists users 
+       add constraint FKqgrk99lw4csdhdnwsj6vo2xoh 
+       foreign key (universite_id) 
+       references universite
+Hibernate: 
+    alter table if exists versement 
+       add constraint FKq8lo05mdhej4tdiruodgcd6h7 
+       foreign key (wallet_id) 
+       references wallet
+2026-05-31T23:01:16.863Z  INFO 610407 --- [gns] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-31T23:01:17.146Z  INFO 610407 --- [gns] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-05-31T23:01:18.047Z DEBUG 610407 --- [gns] [  restartedMain] c.b.g.c.s.j.f.JwtAuthorizationToken      : Filter 'jwtAuthorizationToken' configured for use
+2026-05-31T23:01:19.825Z  INFO 610407 --- [gns] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userServiceSecure
+2026-05-31T23:01:20.025Z  WARN 610407 --- [gns] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-31T23:01:20.601Z DEBUG 610407 --- [gns] [  restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthorizationToken, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-05-31T23:01:20.999Z  INFO 610407 --- [gns] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-05-31T23:01:21.070Z  INFO 610407 --- [gns] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/api'
+2026-05-31T23:01:21.088Z  INFO 610407 --- [gns] [  restartedMain] o.s.s.config.TaskSchedulerRouter         : No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+2026-05-31T23:01:21.094Z  INFO 610407 --- [gns] [  restartedMain] com.backend.gns.GnsApplication           : Started GnsApplication in 16.311 seconds (process running for 16.936)
+Hibernate: 
+    select
+        count(*) 
+    from
+        users u1_0
+2026-05-31T23:01:21.199Z  INFO 610407 --- [gns] [  restartedMain] com.backend.gns.core.config.DataSeeder   : Table Users vide. Création des utilisateurs de test...
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, created_by, date_inscription, date_naissance, email, est_actif, nom, password, prenom, role, telephone, tracking_id, updated_at, updated_by, user_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'User')
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, created_by, date_inscription, date_naissance, email, est_actif, nom, password, prenom, role, telephone, tracking_id, updated_at, updated_by, user_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'User')
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, created_by, date_inscription, date_naissance, email, est_actif, nom, password, prenom, role, telephone, tracking_id, updated_at, updated_by, user_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'User')
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, created_by, date_inscription, date_naissance, email, est_actif, nom, password, prenom, role, telephone, tracking_id, updated_at, updated_by, user_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'User')
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, created_by, date_inscription, date_naissance, email, est_actif, nom, password, prenom, role, telephone, tracking_id, updated_at, updated_by, user_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'User')
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, created_by, date_inscription, date_naissance, email, est_actif, nom, password, prenom, role, telephone, tracking_id, updated_at, updated_by, user_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'User')
+2026-05-31T23:01:21.467Z  INFO 610407 --- [gns] [  restartedMain] com.backend.gns.core.config.DataSeeder   : Utilisateurs de test créés avec succès ! Mot de passe par défaut: password123
+Hibernate: 
+    select
+        count(*) 
+    from
+        parametre_gns pg1_0
+2026-05-31T23:01:21.472Z  INFO 610407 --- [gns] [  restartedMain] com.backend.gns.core.config.DataSeeder   : Création des Paramètres GNS par défaut...
+Hibernate: 
+    insert 
+    into
+        parametre_gns
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_gns
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_gns
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        count(*) 
+    from
+        parametre_dbs pd1_0
+2026-05-31T23:01:21.686Z  INFO 610407 --- [gns] [  restartedMain] com.backend.gns.core.config.DataSeeder   : Création des Paramètres DBS par défaut...
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        parametre_dbs
+        (created_at, created_by, description, est_actif, nom_parametre, tracking_id, updated_at, updated_by, valeur_parametre) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        count(*) 
+    from
+        banque b1_0
+2026-05-31T23:01:21.826Z  INFO 610407 --- [gns] [  restartedMain] com.backend.gns.core.config.DataSeeder   : Création des banques partenaires...
+Hibernate: 
+    insert 
+    into
+        banque
+        (code, created_at, created_by, nom, tracking_id, updated_at, updated_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        banque
+        (code, created_at, created_by, nom, tracking_id, updated_at, updated_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        banque
+        (code, created_at, created_by, nom, tracking_id, updated_at, updated_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        banque
+        (code, created_at, created_by, nom, tracking_id, updated_at, updated_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        banque
+        (code, created_at, created_by, nom, tracking_id, updated_at, updated_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  06:11 min
+[INFO] Finished at: 2026-05-31T23:07:11Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.4.0:run (default-cli) on project gns: Process terminated with exit code: 137 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

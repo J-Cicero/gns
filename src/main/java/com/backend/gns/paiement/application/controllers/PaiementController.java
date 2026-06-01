@@ -235,4 +235,10 @@ public class PaiementController {
     return ResponseEntity.ok(
         paiementService.findByUniversiteTrackingId(universiteTrackingId, pageable));
   }
+
+  @GetMapping("/stats")
+  @Operation(summary = "Récupérer les statistiques globales des paiements")
+  public ResponseEntity<Map<String, Object>> getStats() {
+    return ResponseEntity.ok(paiementService.getStats());
+  }
 }

@@ -125,6 +125,15 @@ public class WalletServiceImpl implements WalletService {
 
   @Override
   @Transactional(readOnly = true)
+  public Page<WalletResponse> findFiltered(WalletType typeWallet, com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde, Pageable pageable) {
+    log.debug("Recherche portefeuilles filtres: type={}, niveau={}", typeWallet, niveauSolde);
+    return walletRepository
+        .findFiltered(typeWallet, niveauSolde, normalize(pageable))
+        .map(walletMapper::toResponse);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public Page<WalletResponse> findByStatutWallet(WalletStatus statutWallet, Pageable pageable) {
     log.debug("Recherche portefeuilles par statut: {}", statutWallet);
     return walletRepository

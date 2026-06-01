@@ -9,15 +9,24 @@ import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.wallet.domain.models.Wallet;
 import java.math.BigDecimal;
 import java.util.UUID;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PaiementMapper {
 
   private final ParametreGnsService parametreGnsService;
+  private final BoutiqueRepository boutiqueRepository;
+  private final UniversiteRepository universiteRepository;
 
-  public PaiementMapper(ParametreGnsService parametreGnsService) {
+  public PaiementMapper(
+      ParametreGnsService parametreGnsService,
+      BoutiqueRepository boutiqueRepository,
+      UniversiteRepository universiteRepository) {
     this.parametreGnsService = parametreGnsService;
+    this.boutiqueRepository = boutiqueRepository;
+    this.universiteRepository = universiteRepository;
   }
 
   public Paiement toEntity(PaiementRequest request, Commande commande, Wallet wallet) {
@@ -50,6 +59,33 @@ public class PaiementMapper {
       throw new IllegalArgumentException("L'entité Paiement ne peut pas être nulle");
     }
 
+    String senderName = null;
+    if (paiement.getStudent() != null) {
+      senderName = paiement.getStudent().getNom() + " " + paiement.getStudent().getPrenom();
+    }
+
+    String receiverName = null;
+    String receiverType = null;
+    if (paiement.getWallet() != null) {
+      if (paiement.getWallet().getTypeWallet() == com.backend.gns.wallet.domain.enums.WalletType.BOUTIQUE) {
+        boutiqueRepository.findByWalletTrackingId(paiement.getWallet().getTrackingId())
+            .ifPresent(boutique -> {
+              // Hacky way to set effectively final variables in lambda is not needed if we do:
+            });
+        com.backend.gns.commerce.domain.models.Boutique boutique = boutiqueRepository.findByWalletTrackingId(paiement.getWallet().getTrackingId()).orElse(null);
+        if (boutique != null) {
+            receiverName = boutique.getNomBoutique();
+            receiverType = "Boutique";
+        }
+      } else if (paiement.getWallet().getTypeWallet() == com.backend.gns.wallet.domain.enums.WalletType.UNIVERSITY) {
+        com.backend.gns.student.domain.models.Universite universite = universiteRepository.findByWalletTrackingId(paiement.getWallet().getTrackingId()).orElse(null);
+        if (universite != null) {
+            receiverName = universite.getNom();
+            receiverType = "Université";
+        }
+      }
+    }
+
     return PaiementResponse.builder()
         .trackingId(paiement.getTrackingId())
         .commission(paiement.getCommission())
@@ -62,6 +98,9 @@ public class PaiementMapper {
             paiement.getCommande() != null ? paiement.getCommande().getTrackingId() : null)
         .walletTrackingId(
             paiement.getWallet() != null ? paiement.getWallet().getTrackingId() : null)
+        .senderName(senderName)
+        .receiverName(receiverName)
+        .receiverType(receiverType)
         .build();
   }
 
