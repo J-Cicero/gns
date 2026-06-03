@@ -51,12 +51,32 @@ public class SecurityConfig {
                     .hasAnyRole("COMMERCANT", "ADMIN_GNS")
                     .requestMatchers(
                         com.backend.gns.core.security.constants.JavaConstant.BANQUE_URLS)
-                    .hasAnyRole("BANK_OPERATOR", "ADMIN_GNS")
+                    .hasAnyRole("ADMIN_BANQUE", "ADMIN_GNS")
                     .requestMatchers(
                         com.backend.gns.core.security.constants.JavaConstant.UNIVERSITY_URLS)
                     .hasAnyRole("UNIVERSITY_ADMIN", "ADMIN_GNS")
-                    .requestMatchers(com.backend.gns.core.security.constants.JavaConstant.DBS_URLS)
-                    .hasAnyRole("DBS_ADMIN", "ADMIN_GNS")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.DBS_URLS)
+                    .hasAnyRole("ADMIN_DBS", "ADMIN_GNS")
+                    // Rôles pour les URLs partagées
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.WALLETS_URLS)
+                    .hasAnyRole("ETUDIANT", "ADMIN_BANQUE", "ADMIN_GNS")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.VERSEMENTS_URLS)
+                    .hasAnyRole("ADMIN_BANQUE", "ADMIN_GNS")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.PAIEMENTS_URLS)
+                    .hasAnyRole("ETUDIANT", "UNIVERSITY_ADMIN", "ADMIN_GNS")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.COMMANDES_URLS)
+                    .hasAnyRole("ETUDIANT", "COMMERCANT", "ADMIN_GNS")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.STATS_URLS)
+                    .hasAnyRole("UNIVERSITY_ADMIN", "ADMIN_DBS", "ADMIN_GNS")
+                    .requestMatchers(
+                        com.backend.gns.core.security.constants.JavaConstant.UNIVERSITES_URLS)
+                    .hasAnyRole("ADMIN_GNS", "ADMIN_DBS", "UNIVERSITY_ADMIN", "ETUDIANT")
                     .anyRequest()
                     .authenticated());
     return http.build();

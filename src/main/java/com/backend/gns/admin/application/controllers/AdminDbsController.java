@@ -19,7 +19,6 @@ public class AdminDbsController {
   private final AdminDbsService adminDbsService;
 
   @GetMapping("/students/stats")
-  @PreAuthorize("hasRole('ADMIN_DBS')")
   public ResponseEntity<Page<StudentDbsStatsResponse>> getStudentStats(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "50") int size) {
