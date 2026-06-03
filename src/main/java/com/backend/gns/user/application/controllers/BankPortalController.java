@@ -60,4 +60,38 @@ public class BankPortalController {
           .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
     }
   }
+
+  @GetMapping("/are-wallets-frozen")
+  @Operation(summary = "Vérifier si tous les portefeuilles étudiants sont gelés")
+  public ResponseEntity<?> areWalletsFrozen() {
+    try {
+      boolean frozen = bankPortalService.areStudentWalletsFrozen();
+      return ResponseEntity.ok(Map.of("walletsFrozen", frozen));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/reversements")
+  @Operation(summary = "Somme des scolarités à reverser aux universités")
+  public ResponseEntity<?> getUniversityReversements(@RequestParam UUID bankOperatorTrackingId) {
+    try {
+      return ResponseEntity.ok(bankPortalService.getUniversityReversementsForBank(bankOperatorTrackingId));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/info")
+  @Operation(summary = "Informations sur la banque partenaire associée")
+  public ResponseEntity<?> getBanqueInfo(@RequestParam UUID bankOperatorTrackingId) {
+    try {
+      return ResponseEntity.ok(bankPortalService.getBanqueInfo(bankOperatorTrackingId));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
+    }
+  }
 }

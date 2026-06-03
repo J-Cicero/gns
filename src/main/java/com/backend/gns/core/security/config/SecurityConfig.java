@@ -59,6 +59,8 @@ public class SecurityConfig {
                         com.backend.gns.core.security.constants.JavaConstant.DBS_URLS)
                     .hasAnyRole("ADMIN_DBS", "ADMIN_GNS")
                     // Rôles pour les URLs partagées
+                    .requestMatchers("/wallets/freeze-all")
+                    .hasRole("ADMIN_GNS")
                     .requestMatchers(
                         com.backend.gns.core.security.constants.JavaConstant.WALLETS_URLS)
                     .hasAnyRole("ETUDIANT", "ADMIN_BANQUE", "ADMIN_GNS")

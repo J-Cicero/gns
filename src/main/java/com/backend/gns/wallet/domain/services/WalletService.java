@@ -42,4 +42,6 @@ public interface WalletService {
   void remettreAZero(UUID walletTrackingId);
 
   void remettreAZeroGroupe(java.util.List<UUID> walletTrackingIds);
+
+  void gelerTousLesWalletsEtudiant(boolean geler);
 }

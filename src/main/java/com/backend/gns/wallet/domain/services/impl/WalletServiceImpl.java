@@ -265,4 +265,18 @@ public class WalletServiceImpl implements WalletService {
         }
     }
   }
+
+  @Override
+  @Transactional
+  public void gelerTousLesWalletsEtudiant(boolean geler) {
+    WalletStatus targetStatus = geler ? WalletStatus.GELE : WalletStatus.ACTIF;
+    java.util.List<Wallet> wallets = walletRepository.findAll().stream()
+        .filter(w -> w.getTypeWallet() == WalletType.STUDENT)
+        .toList();
+    for (Wallet w : wallets) {
+      w.setStatutWallet(targetStatus);
+      walletRepository.save(w);
+    }
+    log.info("Tous les portefeuilles étudiants ont été mis à jour avec le statut: {}", targetStatus);
+  }
 }

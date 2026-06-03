@@ -156,4 +156,16 @@ public class WalletController {
           .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
     }
   }
+
+  @PostMapping("/freeze-all")
+  @Operation(summary = "Geler ou dégeler tous les portefeuilles étudiants (pour la réconciliation)")
+  public ResponseEntity<?> gelerTousLesWallets(@RequestParam boolean geler) {
+    try {
+      walletService.gelerTousLesWalletsEtudiant(geler);
+      return ResponseEntity.ok(Map.of("success", true, "message", "Statut de tous les portefeuilles étudiants mis à jour avec succès."));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
+  }
 }
