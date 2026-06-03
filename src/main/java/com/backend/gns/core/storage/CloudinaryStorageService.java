@@ -29,7 +29,7 @@ public class CloudinaryStorageService {
               true,
               "unique_filename",
               true);
-      Map<String, Object> result = cloudinary.uploader().upload(fichier.getBytes(), params);
+      Map<?, ?> result = cloudinary.uploader().upload(fichier.getBytes(), params);
 
       Map<String, String> response = new HashMap<>();
       response.put("url", (String) result.get("secure_url"));
