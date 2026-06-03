@@ -16,7 +16,9 @@ public interface BankPortalService {
       BigDecimal resteAPayer,
       boolean virementEffectue,
       String typeBourse,
-      String urlSoucheTamponnee) {}
+      String urlSoucheTamponnee,
+      boolean inscritAnnuel,
+      boolean inscritDefinitif) {}
 
   List<StudentLiquidationInfo> getStudentsForBank(UUID bankOperatorTrackingId);
 

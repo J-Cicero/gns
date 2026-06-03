@@ -74,10 +74,14 @@ public class BankPortalServiceImpl implements BankPortalService {
 
         BigDecimal bourseTotale = BigDecimal.ZERO;
         String typeBourseStr = "AUCUNE";
+        boolean inscritAnnuel = false;
+        boolean inscritDefinitif = false;
         if (currentYear != null) {
           var insOpt = inscriptionAnnuelleRepository.findByStudentAndScolariteYear(s, currentYear);
           if (insOpt.isPresent()) {
             InscriptionAnnuelle ins = insOpt.get();
+            inscritAnnuel = true;
+            inscritDefinitif = ins.isEstInscritDefinitif();
             bourseTotale = ins.getPlafondAccorde();
             if (ins.getTypeBourse() != null) {
               typeBourseStr = ins.getTypeBourse().name();
@@ -111,7 +115,9 @@ public class BankPortalServiceImpl implements BankPortalService {
                 soldeActuel,
                 be.isVirementEffectue(),
                 typeBourseStr,
-                urlSouche));
+                urlSouche,
+                inscritAnnuel,
+                inscritDefinitif));
       }
     }
     return results;

@@ -44,7 +44,7 @@ public class Paiement extends BaseEntity {
   private UUID trackingId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "commande_id", nullable = false)
+  @JoinColumn(name = "commande_id", nullable = true)
   private Commande commande;
 
   @ManyToOne(fetch = FetchType.LAZY)
