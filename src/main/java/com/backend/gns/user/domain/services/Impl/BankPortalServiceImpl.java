@@ -1,4 +1,4 @@
-package com.backend.gns.user.application.services.impl;
+package com.backend.gns.user.domain.services.Impl;
 
 import com.backend.gns.admin.domain.models.BankOperator;
 import com.backend.gns.admin.infrastructure.repositories.BankOperatorRepository;
@@ -12,7 +12,7 @@ import com.backend.gns.student.infrastructure.repositories.BanqueEtudiantReposit
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
-import com.backend.gns.user.application.services.BankPortalService;
+import com.backend.gns.user.domain.services.BankPortalService;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Wallet;
@@ -70,10 +70,6 @@ public class BankPortalServiceImpl implements BankPortalService {
             .findByTrackingId(bankOperatorTrackingId)
             .orElseThrow(() -> new EntityNotFoundException("Opérateur bancaire non trouvé"));
 
-    // Normalement on filtrerait par la banque de l'opérateur
-    // Ici on va chercher tous les étudiants dont la banqueEtudiant.nomBanque correspondrait
-    // ou via une relation directe si on l'ajoute plus tard.
-
     List<Student> students = studentRepository.findAll(); // À filtrer par banque plus tard
     List<StudentLiquidationInfo> results = new ArrayList<>();
 
@@ -103,9 +99,6 @@ public class BankPortalServiceImpl implements BankPortalService {
           }
         }
 
-        // Dépenses = ce qui a été retiré du wallet de l'étudiant
-        // Le solde actuel du wallet étudiant = Bourse - Dépenses
-        // Donc Dépenses = Bourse - SoldeActuel
         BigDecimal soldeActuel = s.getWallet() != null ? s.getWallet().getSolde() : BigDecimal.ZERO;
         BigDecimal depenses = bourseTotale.subtract(soldeActuel);
         if (depenses.compareTo(BigDecimal.ZERO) < 0) depenses = BigDecimal.ZERO;
@@ -117,6 +110,9 @@ public class BankPortalServiceImpl implements BankPortalService {
             .map(DocumentEtudiant::getUrlFichier)
             .findFirst()
             .orElse(null);
+
+        UUID walletTrackingId = s.getWallet() != null ? s.getWallet().getTrackingId() : null;
+        String walletStatus = s.getWallet() != null && s.getWallet().getStatutWallet() != null ? s.getWallet().getStatutWallet().name() : "INCONNU";
 
         results.add(
             new StudentLiquidationInfo(
@@ -131,7 +127,10 @@ public class BankPortalServiceImpl implements BankPortalService {
                 typeBourseStr,
                 urlSouche,
                 inscritAnnuel,
-                inscritDefinitif));
+                inscritDefinitif,
+                walletTrackingId,
+                walletStatus,
+                be.getRIB() != null ? be.getRIB() : "Non renseigné"));
       }
     }
     return results;
@@ -258,13 +257,18 @@ public class BankPortalServiceImpl implements BankPortalService {
     for (Boutique b : boutiques) {
       BigDecimal solde = b.getWallet() != null ? b.getWallet().getSolde() : BigDecimal.ZERO;
       String proprietaire = b.getMerchant() != null ? (b.getMerchant().getNom() + " " + b.getMerchant().getPrenom()) : "Inconnu";
+      UUID walletTrackingId = b.getWallet() != null ? b.getWallet().getTrackingId() : null;
+      String walletStatus = b.getWallet() != null && b.getWallet().getStatutWallet() != null ? b.getWallet().getStatutWallet().name() : "INCONNU";
+
       results.add(new BoutiqueLiquidationInfo(
           b.getTrackingId(),
           b.getNomBoutique(),
           b.getCategorieShop(),
           b.getNumeroCompte() != null ? b.getNumeroCompte() : "Non renseigné",
           solde,
-          proprietaire
+          proprietaire,
+          walletTrackingId,
+          walletStatus
       ));
     }
     return results;
@@ -390,5 +394,59 @@ public class BankPortalServiceImpl implements BankPortalService {
     }
     bank.setLogoUrl(logoUrl);
     banqueRepository.save(bank);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<BoutiqueVersementInfo> getBoutiqueVersementsForBank(UUID bankOperatorTrackingId) {
+    BankOperator operator =
+        bankOperatorRepository
+            .findByTrackingId(bankOperatorTrackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Opérateur bancaire non trouvé"));
+
+    Banque bank = operator.getBanquePartenaire();
+    if (bank == null) {
+      return new java.util.ArrayList<>();
+    }
+
+    List<Boutique> boutiques = boutiqueRepository.findAll().stream()
+        .filter(b -> b.getBanquePartenaire() != null 
+                  && b.getBanquePartenaire().getId().equals(bank.getId()))
+        .toList();
+
+    java.util.Map<UUID, Boutique> walletToBoutiqueMap = new java.util.HashMap<>();
+    for (Boutique b : boutiques) {
+      if (b.getWallet() != null) {
+        walletToBoutiqueMap.put(b.getWallet().getTrackingId(), b);
+      }
+    }
+
+    List<UUID> boutiqueWalletIds = boutiques.stream()
+        .map(b -> b.getWallet() != null ? b.getWallet().getTrackingId() : null)
+        .filter(id -> id != null)
+        .toList();
+
+    List<Versement> versements = versementRepository.findAll().stream()
+        .filter(v -> v.getWallet() != null && boutiqueWalletIds.contains(v.getWallet().getTrackingId()))
+        .toList();
+
+    List<BoutiqueVersementInfo> results = new java.util.ArrayList<>();
+    for (Versement v : versements) {
+      Boutique b = walletToBoutiqueMap.get(v.getWallet().getTrackingId());
+      if (b != null) {
+        String proprietaire = b.getMerchant() != null ? (b.getMerchant().getNom() + " " + b.getMerchant().getPrenom()) : "Inconnu";
+        results.add(new BoutiqueVersementInfo(
+            v.getTrackingId(),
+            b.getNomBoutique(),
+            proprietaire,
+            b.getNumeroCompte() != null ? b.getNumeroCompte() : "Non renseigné",
+            v.getMontantVerse(),
+            v.getDateVersement(),
+            v.getTypeVersement() != null ? v.getTypeVersement().name() : "INCONNU",
+            v.getStatut() != null ? v.getStatut().name() : "INCONNU"
+        ));
+      }
+    }
+    return results;
   }
 }

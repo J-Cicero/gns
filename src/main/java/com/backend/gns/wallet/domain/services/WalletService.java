@@ -6,6 +6,7 @@ import com.backend.gns.wallet.domain.enums.WalletFundingLevel;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -41,7 +42,7 @@ public interface WalletService {
 
   void remettreAZero(UUID walletTrackingId);
 
-  void remettreAZeroGroupe(java.util.List<UUID> walletTrackingIds);
+  void remettreAZeroGroupe(List<UUID> walletTrackingIds);
 
   void gelerTousLesWalletsEtudiant(boolean geler);
 }

@@ -1,4 +1,4 @@
-package com.backend.gns.user.application.services;
+package com.backend.gns.user.domain.services;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,7 +18,10 @@ public interface BankPortalService {
       String typeBourse,
       String urlSoucheTamponnee,
       boolean inscritAnnuel,
-      boolean inscritDefinitif) {}
+      boolean inscritDefinitif,
+      UUID walletTrackingId,
+      String walletStatus,
+      String numeroCompte) {}
 
   List<StudentLiquidationInfo> getStudentsForBank(UUID bankOperatorTrackingId);
 
@@ -43,7 +46,9 @@ public interface BankPortalService {
       String categorieShop,
       String numeroCompte,
       BigDecimal soldeWallet,
-      String proprietaireNom) {}
+      String proprietaireNom,
+      UUID walletTrackingId,
+      String walletStatus) {}
 
   List<BoutiqueLiquidationInfo> getBoutiquesForBank(UUID bankOperatorTrackingId);
 
@@ -68,4 +73,16 @@ public interface BankPortalService {
   void updateBoutiqueAccountNumber(UUID boutiqueTrackingId, String numeroCompte);
 
   void updateBanqueLogo(UUID bankOperatorTrackingId, String logoUrl);
+
+  record BoutiqueVersementInfo(
+      UUID versementTrackingId,
+      String nomBoutique,
+      String proprietaireNom,
+      String numeroCompte,
+      BigDecimal montantVerse,
+      java.time.LocalDateTime dateVersement,
+      String typeVersement,
+      String statut) {}
+
+  List<BoutiqueVersementInfo> getBoutiqueVersementsForBank(UUID bankOperatorTrackingId);
 }

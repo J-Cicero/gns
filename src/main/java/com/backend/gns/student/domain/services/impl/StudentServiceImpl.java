@@ -2,8 +2,6 @@ package com.backend.gns.student.domain.services.impl;
 
 import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.core.exception.ResourceNotFoundException;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
 import com.backend.gns.student.application.mappers.StudentMapper;
@@ -40,7 +38,6 @@ public class StudentServiceImpl implements StudentService {
   private final StudentMapper studentMapper;
   private final WalletRepository walletRepository;
   private final com.backend.gns.student.infrastructure.repositories.CardRepository cardRepository;
-  private final ParametreGnsService parametreGnsService;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;

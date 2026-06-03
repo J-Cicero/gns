@@ -5,6 +5,7 @@ import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
 import com.backend.gns.wallet.domain.enums.VersementStatut;
 import com.backend.gns.wallet.domain.enums.VersementType;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -32,9 +33,9 @@ public interface VersementService {
 
   void effectuerVersementMasseBoutiques(BigDecimal seuil, BigDecimal montantQuota);
 
-  java.util.List<String> previewMasseEtudiants(UUID scolariteYearTrackingId);
+  List<String> previewMasseEtudiants(UUID scolariteYearTrackingId);
 
-  java.util.List<String> previewMasseBoutiques(BigDecimal seuil);
+  List<String> previewMasseBoutiques(BigDecimal seuil);
 
   void remiseAZeroMasseEtudiants(UUID scolariteYearTrackingId);
 

@@ -17,6 +17,7 @@ public class CloudinaryStorageService {
     this.cloudinary = cloudinary;
   }
 
+  @SuppressWarnings("unchecked")
   public Map<String, String> upload(MultipartFile fichier, String trackingId) {
     try {
       Map<String, Object> params =

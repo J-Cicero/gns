@@ -1,10 +1,11 @@
-package com.backend.gns.user.domain.services;
+package com.backend.gns.user.domain.services.Impl;
 
 import com.backend.gns.user.application.dtos.requests.UserRequest;
 import com.backend.gns.user.application.dtos.responses.UserResponse;
 import com.backend.gns.user.application.mappers.UserMapper;
 import com.backend.gns.user.domain.exception.ResourceNotFoundException;
 import com.backend.gns.user.domain.models.User;
+import com.backend.gns.user.domain.services.UserService;
 import com.backend.gns.user.infrastructure.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.UUID;

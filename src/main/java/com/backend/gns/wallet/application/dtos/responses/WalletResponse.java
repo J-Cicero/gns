@@ -17,5 +17,4 @@ public record WalletResponse(
     BigDecimal solde,
     BigDecimal plafond,
     Boolean estVerrouille,
-    LocalDateTime dateCreation,
-    String ownerName) {}
+    LocalDateTime dateCreation) {}

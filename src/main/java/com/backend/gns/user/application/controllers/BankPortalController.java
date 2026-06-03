@@ -1,6 +1,5 @@
 package com.backend.gns.user.application.controllers;
 
-import com.backend.gns.user.application.services.BankPortalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Map;
@@ -8,6 +7,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.backend.gns.user.domain.services.BankPortalService;
 
 @RestController
 @RequestMapping("/bank-portal")
@@ -157,6 +158,17 @@ public class BankPortalController {
     } catch (Exception e) {
       return ResponseEntity.internalServerError()
           .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/boutiques/versements")
+  @Operation(summary = "Historique des versements effectués aux boutiques affiliées")
+  public ResponseEntity<?> getBoutiqueVersementsForBank(@RequestParam UUID bankOperatorTrackingId) {
+    try {
+      return ResponseEntity.ok(bankPortalService.getBoutiqueVersementsForBank(bankOperatorTrackingId));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
     }
   }
 }
