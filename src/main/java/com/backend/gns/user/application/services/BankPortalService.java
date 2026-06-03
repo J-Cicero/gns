@@ -32,14 +32,28 @@ public interface BankPortalService {
       UUID universityTrackingId,
       String nomUniversite,
       String codeUniversite,
-      BigDecimal montantTotalScolarite) {}
+      BigDecimal montantTotalScolarite,
+      String numeroCompteVirement) {}
 
   List<UniversityReversementInfo> getUniversityReversementsForBank(UUID bankOperatorTrackingId);
+
+  record BoutiqueLiquidationInfo(
+      UUID boutiqueTrackingId,
+      String nomBoutique,
+      String categorieShop,
+      String numeroCompte,
+      BigDecimal soldeWallet,
+      String proprietaireNom) {}
+
+  List<BoutiqueLiquidationInfo> getBoutiquesForBank(UUID bankOperatorTrackingId);
+
+  void liquidateBoutiqueWallet(UUID boutiqueTrackingId);
 
   record BanqueInfo(
       UUID trackingId,
       String code,
-      String nom) {}
+      String nom,
+      String logoUrl) {}
 
   BanqueInfo getBanqueInfo(UUID bankOperatorTrackingId);
 
@@ -50,4 +64,8 @@ public interface BankPortalService {
       BigDecimal totalNetCommercants) {}
 
   BankFinancialSummary getFinancialSummary(UUID bankOperatorTrackingId);
+
+  void updateBoutiqueAccountNumber(UUID boutiqueTrackingId, String numeroCompte);
+
+  void updateBanqueLogo(UUID bankOperatorTrackingId, String logoUrl);
 }

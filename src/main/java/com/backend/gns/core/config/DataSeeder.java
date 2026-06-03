@@ -97,11 +97,11 @@ public class DataSeeder implements CommandLineRunner {
   private void seedBanques() {
     if (banqueRepository.count() == 0) {
       log.info("Création des banques partenaires...");
-      banqueRepository.save(new Banque(null, UUID.randomUUID(), "POSTE", "La Poste"));
-      banqueRepository.save(new Banque(null, UUID.randomUUID(), "ECOBANK", "Ecobank"));
-      banqueRepository.save(new Banque(null, UUID.randomUUID(), "ORABANK", "Orabank"));
-      banqueRepository.save(new Banque(null, UUID.randomUUID(), "IBBANK", "IB Bank"));
-      banqueRepository.save(new Banque(null, UUID.randomUUID(), "CORISBANK", "Coris Bank"));
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "POSTE", "La Poste", "/assets/logos/poste.png"));
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "ECOBANK", "Ecobank", "/assets/logos/ecobank.png"));
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "ORABANK", "Orabank", "/assets/logos/orabank.png"));
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "IBBANK", "IB Bank", "/assets/logos/ibbank.png"));
+      banqueRepository.save(new Banque(null, UUID.randomUUID(), "CORISBANK", "Coris Bank", "/assets/logos/corisbank.png"));
     }
   }
 
@@ -180,7 +180,9 @@ public class DataSeeder implements CommandLineRunner {
       if (currentYear == null) {
         currentYear = new ScolariteYear();
         currentYear.setTrackingId(UUID.randomUUID());
-        currentYear.setAnnee("2025-2026");
+        currentYear.setLibelle("2025-2026");
+        currentYear.setDateDebut(java.time.LocalDate.of(2025, 9, 1));
+        currentYear.setDateFin(java.time.LocalDate.of(2026, 6, 30));
         currentYear.setEstOuverte(true);
         currentYear = scolariteYearRepository.save(currentYear);
       }
@@ -303,10 +305,9 @@ public class DataSeeder implements CommandLineRunner {
       de.setTrackingId(UUID.randomUUID());
       de.setStudent(student);
       de.setType(TypeDocument.SOUCHE_TAMPONNEE);
-      de.setNomFichier("souche_mandat.pdf");
       de.setUrlFichier("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf");
-      de.setMandatSigne(true);
-      de.setDateUpload(LocalDateTime.now());
+      de.setDateDepot(LocalDateTime.now());
+      de.setStatut(com.backend.gns.student.domain.enums.StatutDocument.VALIDE);
       documentEtudiantRepository.save(de);
 
       // 6. Commerçant (Merchant)

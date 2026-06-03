@@ -1,6 +1,7 @@
 package com.backend.gns.commerce.domain.models;
 
 import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.core.domain.models.Banque;
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.wallet.domain.models.Wallet;
 import jakarta.persistence.CascadeType;
@@ -58,6 +59,13 @@ public class Boutique extends BaseEntity {
 
   @Column(length = 40)
   private Double longitude;
+
+  @Column(name = "numero_compte", length = 30, nullable = true)
+  private String numeroCompte;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "banque_partenaire_id", nullable = true)
+  private Banque banquePartenaire;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merchant_id", nullable = false)

@@ -2,9 +2,7 @@ package com.backend.gns.core.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,14 +22,14 @@ public class JwtService {
   public String generateJwtToken(Authentication authentication) {
     String userPrincipal = authentication.getName();
     return Jwts.builder()
-        .setSubject((userPrincipal))
-        .setIssuedAt(new Date())
-        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-        .signWith(getSignInKey(), SignatureAlgorithm.HS512)
+        .subject(userPrincipal)
+        .issuedAt(new Date())
+        .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+        .signWith(getSignInKey())
         .compact();
   }
 
-  private Key getSignInKey() {
+  private javax.crypto.SecretKey getSignInKey() {
     return Keys.hmacShaKeyFor(jwtSecret.getBytes());
   }
 
@@ -45,7 +43,7 @@ public class JwtService {
   }
 
   private Claims extractAllClaims(String token) {
-    return Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
+    return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token).getPayload();
   }
 
   public boolean isTokenValid(String token, UserDetails userDetails) {

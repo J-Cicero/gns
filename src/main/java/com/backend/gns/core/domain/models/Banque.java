@@ -36,4 +36,7 @@ public class Banque extends BaseEntity {
 
   @Column(nullable = false, length = 100)
   private String nom; // e.g. "Ecobank Cameroon", "La Poste"
+
+  @Column(name = "logo_url", length = 255, nullable = true)
+  private String logoUrl;
 }

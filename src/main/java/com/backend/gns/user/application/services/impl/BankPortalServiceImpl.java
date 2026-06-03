@@ -22,11 +22,21 @@ import com.backend.gns.paiement.domain.enums.PaiementType;
 import com.backend.gns.paiement.domain.enums.PaiementStatut;
 import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.core.domain.models.Banque;
+import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.core.domain.enums.TypeDocument;
+import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.student.domain.models.CompteBancaireUniversite;
+import com.backend.gns.student.infrastructure.repositories.CompteBancaireUniversiteRepository;
+import com.backend.gns.wallet.domain.models.Versement;
+import com.backend.gns.wallet.domain.enums.VersementStatut;
+import com.backend.gns.wallet.domain.enums.VersementType;
+import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +58,10 @@ public class BankPortalServiceImpl implements BankPortalService {
   private final WalletRepository walletRepository;
   private final PaiementRepository paiementRepository;
   private final DocumentEtudiantRepository documentEtudiantRepository;
+  private final CompteBancaireUniversiteRepository compteBancaireUniversiteRepository;
+  private final BoutiqueRepository boutiqueRepository;
+  private final VersementRepository versementRepository;
+  private final BanqueRepository banqueRepository;
 
   @Override
   public List<StudentLiquidationInfo> getStudentsForBank(UUID bankOperatorTrackingId) {
@@ -206,14 +220,76 @@ public class BankPortalServiceImpl implements BankPortalService {
     List<UniversityReversementInfo> results = new ArrayList<>();
     for (Map.Entry<Universite, BigDecimal> entry : reversementsMap.entrySet()) {
       Universite u = entry.getKey();
+      
+      String numCompte = compteBancaireUniversiteRepository.findByUniversiteAndBanque(u, bank)
+          .map(CompteBancaireUniversite::getNumeroCompte)
+          .orElse("Non configuré");
+
       results.add(new UniversityReversementInfo(
           u.getTrackingId(),
           u.getNom(),
           u.getCode(),
-          entry.getValue()
+          entry.getValue(),
+          numCompte
       ));
     }
     return results;
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<BoutiqueLiquidationInfo> getBoutiquesForBank(UUID bankOperatorTrackingId) {
+    BankOperator operator =
+        bankOperatorRepository
+            .findByTrackingId(bankOperatorTrackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Opérateur bancaire non trouvé"));
+
+    Banque bank = operator.getBanquePartenaire();
+    if (bank == null) {
+      return new ArrayList<>();
+    }
+
+    List<Boutique> boutiques = boutiqueRepository.findAll().stream()
+        .filter(b -> b.getBanquePartenaire() != null 
+                  && b.getBanquePartenaire().getId().equals(bank.getId()))
+        .toList();
+
+    List<BoutiqueLiquidationInfo> results = new ArrayList<>();
+    for (Boutique b : boutiques) {
+      BigDecimal solde = b.getWallet() != null ? b.getWallet().getSolde() : BigDecimal.ZERO;
+      String proprietaire = b.getMerchant() != null ? (b.getMerchant().getNom() + " " + b.getMerchant().getPrenom()) : "Inconnu";
+      results.add(new BoutiqueLiquidationInfo(
+          b.getTrackingId(),
+          b.getNomBoutique(),
+          b.getCategorieShop(),
+          b.getNumeroCompte() != null ? b.getNumeroCompte() : "Non renseigné",
+          solde,
+          proprietaire
+      ));
+    }
+    return results;
+  }
+
+  @Override
+  @Transactional
+  public void liquidateBoutiqueWallet(UUID boutiqueTrackingId) {
+    Boutique boutique = boutiqueRepository.findByTrackingId(boutiqueTrackingId)
+        .orElseThrow(() -> new EntityNotFoundException("Boutique non trouvée"));
+    Wallet w = boutique.getWallet();
+    if (w != null && w.getSolde().compareTo(BigDecimal.ZERO) > 0) {
+      BigDecimal balance = w.getSolde();
+      w.setSolde(BigDecimal.ZERO);
+      walletRepository.save(w);
+
+      Versement v = new Versement();
+      v.setTrackingId(UUID.randomUUID());
+      v.setWallet(w);
+      v.setMontantVerse(balance);
+      v.setDateVersement(LocalDateTime.now());
+      v.setTypeVersement(VersementType.RECHARGE_QUOTA_BOUTIQUE);
+      v.setStatut(VersementStatut.VALIDEE);
+      versementRepository.save(v);
+    }
   }
 
   @Override
@@ -229,7 +305,7 @@ public class BankPortalServiceImpl implements BankPortalService {
       throw new IllegalStateException("Aucune banque partenaire associée à cet opérateur");
     }
 
-    return new BanqueInfo(bank.getTrackingId(), bank.getCode(), bank.getNom());
+    return new BanqueInfo(bank.getTrackingId(), bank.getCode(), bank.getNom(), bank.getLogoUrl());
   }
 
   @Override
@@ -290,5 +366,29 @@ public class BankPortalServiceImpl implements BankPortalService {
         totalCommissionsAchats,
         totalNetCommercants
     );
+  }
+
+  @Override
+  @Transactional
+  public void updateBoutiqueAccountNumber(UUID boutiqueTrackingId, String numeroCompte) {
+    Boutique boutique = boutiqueRepository.findByTrackingId(boutiqueTrackingId)
+        .orElseThrow(() -> new EntityNotFoundException("Boutique non trouvée"));
+    boutique.setNumeroCompte(numeroCompte);
+    boutiqueRepository.save(boutique);
+  }
+
+  @Override
+  @Transactional
+  public void updateBanqueLogo(UUID bankOperatorTrackingId, String logoUrl) {
+    BankOperator operator =
+        bankOperatorRepository
+            .findByTrackingId(bankOperatorTrackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Opérateur bancaire non trouvé"));
+    Banque bank = operator.getBanquePartenaire();
+    if (bank == null) {
+      throw new IllegalStateException("Aucune banque partenaire associée à cet opérateur");
+    }
+    bank.setLogoUrl(logoUrl);
+    banqueRepository.save(bank);
   }
 }

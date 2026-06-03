@@ -105,4 +105,58 @@ public class BankPortalController {
           .body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
     }
   }
+
+  @GetMapping("/boutiques")
+  @Operation(
+      summary = "Liste des boutiques affiliées à la banque",
+      description = "Récupère les boutiques et leurs comptes bancaires associés")
+  public ResponseEntity<?> getBoutiquesForBank(@RequestParam UUID bankOperatorTrackingId) {
+    try {
+      return ResponseEntity.ok(bankPortalService.getBoutiquesForBank(bankOperatorTrackingId));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/boutiques/{boutiqueTrackingId}/liquidate")
+  @Operation(
+      summary = "Effectuer le versement réel à la boutique",
+      description = "Transfère le solde du wallet virtuel vers son compte bancaire réel")
+  public ResponseEntity<?> liquidateBoutique(@PathVariable UUID boutiqueTrackingId) {
+    try {
+      bankPortalService.liquidateBoutiqueWallet(boutiqueTrackingId);
+      return ResponseEntity.ok(Map.of("success", true, "message", "Versement réel effectué avec succès"));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body(Map.of("error", "LIQUIDATION_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/boutiques/{boutiqueTrackingId}/account-number")
+  @Operation(
+      summary = "Renseigner ou modifier le numéro de compte bancaire de la boutique")
+  public ResponseEntity<?> updateBoutiqueAccountNumber(
+      @PathVariable UUID boutiqueTrackingId, @RequestParam String numeroCompte) {
+    try {
+      bankPortalService.updateBoutiqueAccountNumber(boutiqueTrackingId, numeroCompte);
+      return ResponseEntity.ok(Map.of("success", true, "message", "Numéro de compte mis à jour avec succès"));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/info/logo")
+  @Operation(summary = "Mettre à jour le logo URL de la banque")
+  public ResponseEntity<?> updateBanqueLogo(
+      @RequestParam UUID bankOperatorTrackingId, @RequestParam String logoUrl) {
+    try {
+      bankPortalService.updateBanqueLogo(bankOperatorTrackingId, logoUrl);
+      return ResponseEntity.ok(Map.of("success", true, "message", "Logo de la banque mis à jour avec succès"));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
+  }
 }
