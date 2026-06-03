@@ -22,6 +22,9 @@ import com.backend.gns.paiement.domain.enums.PaiementType;
 import com.backend.gns.paiement.domain.enums.PaiementStatut;
 import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.core.domain.models.Banque;
+import com.backend.gns.student.domain.models.DocumentEtudiant;
+import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
+import com.backend.gns.core.domain.enums.TypeDocument;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -44,6 +47,7 @@ public class BankPortalServiceImpl implements BankPortalService {
   private final BanqueEtudiantRepository banqueEtudiantRepository;
   private final WalletRepository walletRepository;
   private final PaiementRepository paiementRepository;
+  private final DocumentEtudiantRepository documentEtudiantRepository;
 
   @Override
   public List<StudentLiquidationInfo> getStudentsForBank(UUID bankOperatorTrackingId) {
@@ -69,12 +73,16 @@ public class BankPortalServiceImpl implements BankPortalService {
           && be.getBanque().getId().equals(operator.getBanquePartenaire().getId())) {
 
         BigDecimal bourseTotale = BigDecimal.ZERO;
+        String typeBourseStr = "AUCUNE";
         if (currentYear != null) {
-          bourseTotale =
-              inscriptionAnnuelleRepository
-                  .findByStudentAndScolariteYear(s, currentYear)
-                  .map(InscriptionAnnuelle::getPlafondAccorde)
-                  .orElse(BigDecimal.ZERO);
+          var insOpt = inscriptionAnnuelleRepository.findByStudentAndScolariteYear(s, currentYear);
+          if (insOpt.isPresent()) {
+            InscriptionAnnuelle ins = insOpt.get();
+            bourseTotale = ins.getPlafondAccorde();
+            if (ins.getTypeBourse() != null) {
+              typeBourseStr = ins.getTypeBourse().name();
+            }
+          }
         }
 
         // Dépenses = ce qui a été retiré du wallet de l'étudiant
@@ -84,6 +92,14 @@ public class BankPortalServiceImpl implements BankPortalService {
         BigDecimal depenses = bourseTotale.subtract(soldeActuel);
         if (depenses.compareTo(BigDecimal.ZERO) < 0) depenses = BigDecimal.ZERO;
 
+        // Récupérer le document de souche tamponnée
+        List<DocumentEtudiant> docs = documentEtudiantRepository.findByStudentTrackingId(s.getTrackingId());
+        String urlSouche = docs.stream()
+            .filter(d -> d.getType() == TypeDocument.SOUCHE_TAMPONNEE)
+            .map(DocumentEtudiant::getUrlFichier)
+            .findFirst()
+            .orElse(null);
+
         results.add(
             new StudentLiquidationInfo(
                 s.getTrackingId(),
@@ -92,11 +108,10 @@ public class BankPortalServiceImpl implements BankPortalService {
                 s.getNumEtudiantUniv(),
                 bourseTotale,
                 depenses,
-                soldeActuel, // Ce qui reste sur le wallet est ce qui doit être liquidé à la fin ?
-                // Ou plutôt ce qui reste de la bourse non encore chargée sur StudCash ?
-                // Selon ton explication : BourseTotale - DépensesStudCash = Reste envoyé sur compte
-                // étudiant
-                be.isVirementEffectue()));
+                soldeActuel,
+                be.isVirementEffectue(),
+                typeBourseStr,
+                urlSouche));
       }
     }
     return results;
@@ -209,5 +224,65 @@ public class BankPortalServiceImpl implements BankPortalService {
     }
 
     return new BanqueInfo(bank.getTrackingId(), bank.getCode(), bank.getNom());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public BankFinancialSummary getFinancialSummary(UUID bankOperatorTrackingId) {
+    BankOperator operator =
+        bankOperatorRepository
+            .findByTrackingId(bankOperatorTrackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Opérateur bancaire non trouvé"));
+
+    Banque bank = operator.getBanquePartenaire();
+    if (bank == null) {
+      return new BankFinancialSummary(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+    }
+
+    List<Student> students = studentRepository.findAll().stream()
+        .filter(s -> s.getBanqueEtudiant() != null 
+                  && s.getBanqueEtudiant().getBanque() != null 
+                  && s.getBanqueEtudiant().getBanque().getId().equals(bank.getId()))
+        .toList();
+
+    BigDecimal totalScolarite = BigDecimal.ZERO;
+    BigDecimal totalDepensesAchats = BigDecimal.ZERO;
+    BigDecimal totalCommissionsAchats = BigDecimal.ZERO;
+    BigDecimal totalNetCommercants = BigDecimal.ZERO;
+
+    for (Student s : students) {
+      List<Paiement> paiementsScolarite = paiementRepository.findByStudentAndTypePaiementAndStatutPaiement(
+          s, PaiementType.SCOLARITE, PaiementStatut.VALIDE);
+      
+      BigDecimal sumScolarite = paiementsScolarite.stream()
+          .map(Paiement::getMontantDebite)
+          .reduce(BigDecimal.ZERO, BigDecimal::add);
+      totalScolarite = totalScolarite.add(sumScolarite);
+
+      List<Paiement> paiementsAchats = paiementRepository.findByStudentAndTypePaiementAndStatutPaiement(
+          s, PaiementType.ACHAT, PaiementStatut.VALIDE);
+
+      BigDecimal sumDepenses = paiementsAchats.stream()
+          .map(Paiement::getMontantDebite)
+          .reduce(BigDecimal.ZERO, BigDecimal::add);
+      totalDepensesAchats = totalDepensesAchats.add(sumDepenses);
+
+      BigDecimal sumCommissions = paiementsAchats.stream()
+          .map(Paiement::getCommission)
+          .reduce(BigDecimal.ZERO, BigDecimal::add);
+      totalCommissionsAchats = totalCommissionsAchats.add(sumCommissions);
+
+      BigDecimal sumNet = paiementsAchats.stream()
+          .map(Paiement::getMontantNetBoutique)
+          .reduce(BigDecimal.ZERO, BigDecimal::add);
+      totalNetCommercants = totalNetCommercants.add(sumNet);
+    }
+
+    return new BankFinancialSummary(
+        totalScolarite,
+        totalDepensesAchats,
+        totalCommissionsAchats,
+        totalNetCommercants
+    );
   }
 }

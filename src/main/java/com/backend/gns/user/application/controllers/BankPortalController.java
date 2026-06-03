@@ -94,4 +94,15 @@ public class BankPortalController {
           .body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
     }
   }
+
+  @GetMapping("/summary")
+  @Operation(summary = "Résumé financier global pour la banque")
+  public ResponseEntity<?> getFinancialSummary(@RequestParam UUID bankOperatorTrackingId) {
+    try {
+      return ResponseEntity.ok(bankPortalService.getFinancialSummary(bankOperatorTrackingId));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
+    }
+  }
 }

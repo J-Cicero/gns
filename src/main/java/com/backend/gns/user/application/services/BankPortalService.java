@@ -14,7 +14,9 @@ public interface BankPortalService {
       BigDecimal bourseTotale,
       BigDecimal depensesStudCash,
       BigDecimal resteAPayer,
-      boolean virementEffectue) {}
+      boolean virementEffectue,
+      String typeBourse,
+      String urlSoucheTamponnee) {}
 
   List<StudentLiquidationInfo> getStudentsForBank(UUID bankOperatorTrackingId);
 
@@ -38,4 +40,12 @@ public interface BankPortalService {
       String nom) {}
 
   BanqueInfo getBanqueInfo(UUID bankOperatorTrackingId);
+
+  record BankFinancialSummary(
+      BigDecimal totalScolariteUniversites,
+      BigDecimal totalDepensesAchats,
+      BigDecimal totalCommissionsAchats,
+      BigDecimal totalNetCommercants) {}
+
+  BankFinancialSummary getFinancialSummary(UUID bankOperatorTrackingId);
 }
