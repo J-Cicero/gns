@@ -1,6 +1,4 @@
-@ApplicationModule(
-    displayName = "Module Paiement",
-    allowedDependencies = {"student", "commerce", "admin", "core"})
+@ApplicationModule(displayName = "Module Paiement", type = ApplicationModule.Type.OPEN)
 package com.backend.gns.paiement;
 
 import org.springframework.modulith.ApplicationModule;
