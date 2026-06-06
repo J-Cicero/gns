@@ -42,10 +42,13 @@ public class PaiementController {
   }
 
   @PostMapping("/qr-payment")
-  @Operation(summary = "Paiement par Code QR", description = "Le commerçant initie un paiement via scan du QR Code étudiant")
+  @Operation(
+      summary = "Paiement par Code QR",
+      description = "Le commerçant initie un paiement via scan du QR Code étudiant")
   @ApiResponse(responseCode = "201", description = "Paiement effectué avec succès")
   @ApiResponse(responseCode = "400", description = "Solde insuffisant ou QR invalide")
-  public ResponseEntity<?> processQrPayment(@RequestBody com.backend.gns.paiement.application.dtos.requests.QrPaymentRequest request) {
+  public ResponseEntity<?> processQrPayment(
+      @RequestBody com.backend.gns.paiement.application.dtos.requests.QrPaymentRequest request) {
     try {
       PaiementResponse response = paiementService.processQrPayment(request);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);

@@ -43,7 +43,8 @@ public class UserController {
       })
   @PostMapping("/register")
   public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
-    return ResponseEntity.ok(userService.createUser(request));
+    UserResponse response = userService.createUser(request);
+    return ResponseEntity.ok(response);
   }
 
   @Operation(summary = "Login user", description = "Authenticates a user and returns a JWT token")

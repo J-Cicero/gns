@@ -24,7 +24,8 @@ public interface WalletService {
 
   Page<WalletResponse> findByTypeWallet(WalletType typeWallet, Pageable pageable);
 
-  Page<WalletResponse> findFiltered(WalletType typeWallet, WalletFundingLevel niveauSolde, Pageable pageable);
+  Page<WalletResponse> findFiltered(
+      WalletType typeWallet, WalletFundingLevel niveauSolde, Pageable pageable);
 
   Page<WalletResponse> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
 

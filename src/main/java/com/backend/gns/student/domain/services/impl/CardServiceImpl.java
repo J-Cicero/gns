@@ -1,5 +1,7 @@
 package com.backend.gns.student.domain.services.impl;
 
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.CardRequest;
 import com.backend.gns.student.application.dtos.responses.CardResponse;
 import com.backend.gns.student.application.mappers.CardMapper;
@@ -9,8 +11,6 @@ import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.CardService;
 import com.backend.gns.student.infrastructure.repositories.CardRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.wallet.domain.services.WalletService;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
@@ -35,8 +35,8 @@ public class CardServiceImpl implements CardService {
   private final ParametreGnsService parametreGnsService;
 
   public CardServiceImpl(
-      CardRepository cardRepository, 
-      CardMapper cardMapper, 
+      CardRepository cardRepository,
+      CardMapper cardMapper,
       StudentRepository studentRepository,
       WalletService walletService,
       ParametreGnsService parametreGnsService) {
@@ -95,23 +95,25 @@ public class CardServiceImpl implements CardService {
                         "Étudiant non trouvé avec l'ID: " + studentTrackingId));
 
     long existingCardCount =
-        cardRepository.countByStudentAndStatut(student, CardStatut.ACTIVE) +
-        cardRepository.countByStudentAndStatut(student, CardStatut.EN_ATTENTE) +
-        cardRepository.countByStudentAndStatut(student, CardStatut.EN_CONFECTION) +
-        cardRepository.countByStudentAndStatut(student, CardStatut.PRETE);
+        cardRepository.countByStudentAndStatut(student, CardStatut.ACTIVE)
+            + cardRepository.countByStudentAndStatut(student, CardStatut.EN_ATTENTE)
+            + cardRepository.countByStudentAndStatut(student, CardStatut.EN_CONFECTION)
+            + cardRepository.countByStudentAndStatut(student, CardStatut.PRETE);
 
     if (existingCardCount > 0) {
       throw new IllegalStateException(
           "Vous avez déjà une carte active ou en cours de préparation.");
     }
 
-    BigDecimal frais = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.FRAIS_CREATION_CARTE);
+    BigDecimal frais =
+        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.FRAIS_CREATION_CARTE);
     if (frais == null) {
       frais = new BigDecimal("4000"); // fallback
     }
 
     if (student.getWallet() == null) {
-      throw new IllegalStateException("L'étudiant ne possède pas de portefeuille pour payer les frais.");
+      throw new IllegalStateException(
+          "L'étudiant ne possède pas de portefeuille pour payer les frais.");
     }
 
     // Débit des frais de création de carte
@@ -122,7 +124,7 @@ public class CardServiceImpl implements CardService {
     card.setStudent(student);
     card.setStatut(CardStatut.EN_ATTENTE);
     card.setDateEmission(LocalDateTime.now());
-    
+
     String uniqueRef =
         "REQ-"
             + student.getTrackingId().toString().substring(0, 8).toUpperCase()

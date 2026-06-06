@@ -4,8 +4,4 @@ import java.util.UUID;
 import lombok.Builder;
 
 @Builder
-public record BanqueResponse(
-    UUID trackingId,
-    String code,
-    String nom
-) {}
+public record BanqueResponse(UUID trackingId, String code, String nom) {}

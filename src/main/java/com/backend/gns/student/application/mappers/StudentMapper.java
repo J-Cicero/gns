@@ -2,10 +2,8 @@ package com.backend.gns.student.application.mappers;
 
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
-import com.backend.gns.student.domain.models.BanqueEtudiant;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.models.Universite;
-import com.backend.gns.student.infrastructure.repositories.BanqueEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import com.backend.gns.user.domain.enums.UserRole;
 import com.backend.gns.wallet.domain.models.Wallet;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Component;
 public class StudentMapper {
 
   private final WalletRepository walletRepository;
-  private final BanqueEtudiantRepository banqueEtudiantRepository;
   private final UniversiteRepository universiteRepository;
 
   public Student toEntity(StudentRequest request) {
@@ -56,18 +53,6 @@ public class StudentMapper {
       student.setWallet(wallet);
     }
 
-    if (request.banqueEtudiantTrackingId() != null) {
-      BanqueEtudiant banqueEtudiant =
-          banqueEtudiantRepository
-              .findByTrackingId(request.banqueEtudiantTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: "
-                              + request.banqueEtudiantTrackingId()));
-      student.setBanqueEtudiant(banqueEtudiant);
-    }
-
     if (request.universiteTrackingId() != null) {
       Universite universite =
           universiteRepository
@@ -99,10 +84,6 @@ public class StudentMapper {
         .numEtudiantUniv(student.getNumEtudiantUniv())
         .walletTrackingId(student.getWallet() != null ? student.getWallet().getTrackingId() : null)
         .solde(student.getWallet() != null ? student.getWallet().getSolde() : BigDecimal.ZERO)
-        .banqueEtudiantTrackingId(
-            student.getBanqueEtudiant() != null
-                ? student.getBanqueEtudiant().getTrackingId()
-                : null)
         .universiteTrackingId(
             student.getUniversite() != null ? student.getUniversite().getTrackingId() : null)
         .universiteNom(student.getUniversite() != null ? student.getUniversite().getNom() : null)
@@ -136,18 +117,6 @@ public class StudentMapper {
                       new IllegalArgumentException(
                           "Portefeuille non trouvé avec l'ID: " + response.walletTrackingId()));
       student.setWallet(wallet);
-    }
-
-    if (response.banqueEtudiantTrackingId() != null) {
-      BanqueEtudiant banqueEtudiant =
-          banqueEtudiantRepository
-              .findByTrackingId(response.banqueEtudiantTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: "
-                              + response.banqueEtudiantTrackingId()));
-      student.setBanqueEtudiant(banqueEtudiant);
     }
 
     if (response.universiteTrackingId() != null) {

@@ -80,12 +80,12 @@ public class VersementController {
   @Operation(
       summary = "Remise à zéro bourses étudiants",
       description = "Remet à zéro tous les portefeuilles des étudiants de l'année scolaire")
-  public ResponseEntity<?> remiseAZeroMasseEtudiants(
-      @RequestParam UUID scolariteYearTrackingId) {
+  public ResponseEntity<?> remiseAZeroMasseEtudiants(@RequestParam UUID scolariteYearTrackingId) {
     try {
       versementService.remiseAZeroMasseEtudiants(scolariteYearTrackingId);
       return ResponseEntity.ok(
-          Map.of("success", true, "message", "Remise à zéro lancée avec succès pour les étudiants"));
+          Map.of(
+              "success", true, "message", "Remise à zéro lancée avec succès pour les étudiants"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "MASS_RESET_FAILED", "message", e.getMessage()));
@@ -93,10 +93,13 @@ public class VersementController {
   }
 
   @GetMapping("/masse/preview/etudiants")
-  @Operation(summary = "Prévisualiser les cibles pour étudiants", description = "Retourne la liste des étudiants concernés")
+  @Operation(
+      summary = "Prévisualiser les cibles pour étudiants",
+      description = "Retourne la liste des étudiants concernés")
   public ResponseEntity<?> previewMasseEtudiants(@RequestParam UUID scolariteYearTrackingId) {
     try {
-      java.util.List<String> names = versementService.previewMasseEtudiants(scolariteYearTrackingId);
+      java.util.List<String> names =
+          versementService.previewMasseEtudiants(scolariteYearTrackingId);
       return ResponseEntity.ok(Map.of("count", names.size(), "names", names));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -105,7 +108,9 @@ public class VersementController {
   }
 
   @GetMapping("/masse/preview/boutiques")
-  @Operation(summary = "Prévisualiser les cibles pour boutiques", description = "Retourne la liste des boutiques concernées")
+  @Operation(
+      summary = "Prévisualiser les cibles pour boutiques",
+      description = "Retourne la liste des boutiques concernées")
   public ResponseEntity<?> previewMasseBoutiques(@RequestParam BigDecimal seuil) {
     try {
       java.util.List<String> names = versementService.previewMasseBoutiques(seuil);
@@ -124,7 +129,8 @@ public class VersementController {
     try {
       versementService.remiseAZeroMasseBoutiques();
       return ResponseEntity.ok(
-          Map.of("success", true, "message", "Remise à zéro lancée avec succès pour les boutiques"));
+          Map.of(
+              "success", true, "message", "Remise à zéro lancée avec succès pour les boutiques"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "MASS_RESET_FAILED", "message", e.getMessage()));

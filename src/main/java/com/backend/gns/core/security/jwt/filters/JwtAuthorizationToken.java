@@ -1,13 +1,13 @@
 package com.backend.gns.core.security.jwt.filters;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 import com.backend.gns.core.security.jwt.JwtService;
 import com.backend.gns.core.security.userDetailsConf.UserServiceSecure;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,8 +44,7 @@ public class JwtAuthorizationToken extends OncePerRequestFilter {
     if (jwtService.isTokenValid(token, userDetails)
         && SecurityContextHolder.getContext().getAuthentication() == null) {
       UsernamePasswordAuthenticationToken authToken =
-          new UsernamePasswordAuthenticationToken(
-              userDetails, null, userDetails.getAuthorities());
+          new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
       authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
       SecurityContextHolder.getContext().setAuthentication(authToken);
     } else {

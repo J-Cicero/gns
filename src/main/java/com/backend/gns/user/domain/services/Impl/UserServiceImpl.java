@@ -1,6 +1,9 @@
 package com.backend.gns.user.domain.services.Impl;
 
+import com.backend.gns.core.security.jwt.JwtService;
+import com.backend.gns.user.application.dtos.requests.LoginRequest;
 import com.backend.gns.user.application.dtos.requests.UserRequest;
+import com.backend.gns.user.application.dtos.responses.LoginResponse;
 import com.backend.gns.user.application.dtos.responses.UserResponse;
 import com.backend.gns.user.application.mappers.UserMapper;
 import com.backend.gns.user.domain.exception.ResourceNotFoundException;
@@ -9,20 +12,17 @@ import com.backend.gns.user.domain.services.UserService;
 import com.backend.gns.user.infrastructure.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import com.backend.gns.user.application.dtos.requests.LoginRequest;
-import com.backend.gns.user.application.dtos.responses.LoginResponse;
-import com.backend.gns.core.security.jwt.JwtService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
 @Service
@@ -36,14 +36,17 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public LoginResponse login(LoginRequest request) {
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+    Authentication authentication =
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtService.generateJwtToken(authentication);
 
-    User user = userRepository.findByEmail(request.email())
-        .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+    User user =
+        userRepository
+            .findByEmail(request.email())
+            .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
 
     return new LoginResponse(
         user.getTrackingId(),
@@ -58,11 +61,8 @@ public class UserServiceImpl implements UserService {
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.toList()),
         "Cameroon", // Default country since there's no country field
-        user.isEstActif()
-    );
+        user.isEstActif());
   }
-
-
 
   @Override
   @Transactional

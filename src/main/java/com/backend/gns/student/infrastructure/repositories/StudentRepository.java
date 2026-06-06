@@ -2,6 +2,9 @@ package com.backend.gns.student.infrastructure.repositories;
 
 import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.domain.models.Universite;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -9,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import com.backend.gns.student.domain.models.Universite;
+
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
   Optional<Student> findByTrackingId(UUID trackingId);
@@ -29,7 +32,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
   long countByUniversite(Universite universite);
 
-  @Query("SELECT COUNT(s) FROM Student s WHERE s.universite = :universite AND s.statutKYC = :statut")
-  Long countByUniversiteAndStatutKYC(
-      Universite universite, KycStatus statut);
+  @Query(
+      "SELECT COUNT(s) FROM Student s WHERE s.universite = :universite AND s.statutKYC = :statut")
+  Long countByUniversiteAndStatutKYC(Universite universite, KycStatus statut);
 }

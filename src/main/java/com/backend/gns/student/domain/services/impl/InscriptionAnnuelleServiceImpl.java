@@ -1,18 +1,20 @@
 package com.backend.gns.student.domain.services.impl;
 
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.InscriptionAnnuelleRequest;
 import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleResponse;
 import com.backend.gns.student.application.mappers.InscriptionAnnuelleMapper;
 import com.backend.gns.student.domain.enums.StatutInscription;
+import com.backend.gns.student.domain.enums.TypeParametreDbs;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.InscriptionAnnuelleService;
+import com.backend.gns.student.domain.services.ParametreDbsService;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -37,6 +39,7 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   private final StudentRepository studentRepository;
   private final ScolariteYearRepository scolariteYearRepository;
   private final ParametreGnsService parametreGnsService;
+  private final ParametreDbsService parametreDbsService;
   private final WalletRepository walletRepository;
 
   private Pageable normalize(Pageable pageable) {
@@ -61,15 +64,33 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     return inscriptionMapper.toResponse(savedInscription);
   }
 
+  @Override
+  @Transactional
+  public InscriptionAnnuelleResponse validerEtActiverInscription(UUID trackingId) {
+    InscriptionAnnuelle ins =
+        inscriptionRepository
+            .findByTrackingId(trackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée"));
+
+    // Logique d'éligibilité simplifiée
+    if (ins.getStudent().getStatutKYC() == com.backend.gns.core.domain.enums.KycStatus.VALIDEE) {
+      ins.setStatut(StatutInscription.ACTIVE);
+      updatePlafondIfBoursier(ins);
+    }
+
+    return inscriptionMapper.toResponse(inscriptionRepository.save(ins));
+  }
+
   private void updatePlafondIfBoursier(InscriptionAnnuelle inscription) {
     if (inscription.isEstBoursier() && inscription.getTypeBourse() != null) {
-      BigDecimal retenue = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.RETENUE_BOURSE_ETUDIANT);
+      BigDecimal retenue =
+          parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.RETENUE_BOURSE_ETUDIANT);
       if (retenue == null) {
         retenue = new BigDecimal("4000"); // fallback
       }
       BigDecimal nouveauPlafond = inscription.getTypeBourse().getMontant().subtract(retenue);
       inscription.setPlafondAccorde(nouveauPlafond);
-      
+
       Student student = inscription.getStudent();
       if (student != null && student.getWallet() != null) {
         Wallet wallet = student.getWallet();
@@ -179,7 +200,8 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Override
   public Optional<InscriptionAnnuelleResponse> findByStudentAndAnnee(
       UUID studentTrackingId, String anneeAcademique) {
-    return inscriptionRepository.findByStudentTrackingIdAndAnnee(studentTrackingId, anneeAcademique)
+    return inscriptionRepository
+        .findByStudentTrackingIdAndAnnee(studentTrackingId, anneeAcademique)
         .map(inscriptionMapper::toResponse);
   }
 

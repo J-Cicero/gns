@@ -18,6 +18,8 @@ public interface InscriptionAnnuelleService {
 
   InscriptionAnnuelleResponse updateStatus(UUID trackingId, StatutInscription statut);
 
+  InscriptionAnnuelleResponse validerEtActiverInscription(UUID trackingId);
+
   InscriptionAnnuelleResponse updateDefinitif(UUID trackingId, boolean estInscritDefinitif);
 
   void delete(UUID trackingId);

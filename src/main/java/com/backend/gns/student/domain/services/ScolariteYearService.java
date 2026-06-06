@@ -13,7 +13,8 @@ public interface ScolariteYearService {
 
   Optional<ScolariteYearResponse> findByTrackingId(UUID trackingId);
 
-  ScolariteYearResponse cloturerEtOuvrirNouvelle(UUID oldTrackingId, ScolariteYearRequest newYearRequest);
+  ScolariteYearResponse cloturerEtOuvrirNouvelle(
+      UUID oldTrackingId, ScolariteYearRequest newYearRequest);
 
   Page<ScolariteYearResponse> findAll(Pageable pageable);
 

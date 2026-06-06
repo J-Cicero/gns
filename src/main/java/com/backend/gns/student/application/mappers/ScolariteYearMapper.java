@@ -30,7 +30,6 @@ public class ScolariteYearMapper {
         entity.getDateDebut(),
         entity.getDateFin(),
         entity.isEstOuverte(),
-        entity.isEstCloturee()
-    );
+        entity.isEstCloturee());
   }
 }

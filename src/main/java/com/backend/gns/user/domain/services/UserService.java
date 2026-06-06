@@ -9,7 +9,8 @@ public interface UserService {
 
   UserResponse createUser(UserRequest request);
 
-  com.backend.gns.user.application.dtos.responses.LoginResponse login(com.backend.gns.user.application.dtos.requests.LoginRequest request);
+  com.backend.gns.user.application.dtos.responses.LoginResponse login(
+      com.backend.gns.user.application.dtos.requests.LoginRequest request);
 
   UserResponse getUserByTrackingId(UUID trackingId);
 

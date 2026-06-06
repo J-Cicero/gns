@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BanqueRepository extends JpaRepository<Banque, Long> {
   Optional<Banque> findByTrackingId(UUID trackingId);
+
   Optional<Banque> findByCode(String code);
 }

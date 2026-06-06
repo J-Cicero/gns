@@ -3,15 +3,13 @@ package com.backend.gns.wallet.domain.services.impl;
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.paiement.domain.services.PretScolariteService;
+import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.TypeBourse;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.student.domain.services.EligibiliteService;
-import com.backend.gns.student.domain.services.EligibiliteService.EligibiliteResult;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
-import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.wallet.application.dtos.requests.VersementRequest;
 import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
 import com.backend.gns.wallet.application.mappers.VersementMapper;
@@ -21,6 +19,7 @@ import com.backend.gns.wallet.domain.models.Versement;
 import com.backend.gns.wallet.domain.services.VersementService;
 import com.backend.gns.wallet.domain.services.WalletService;
 import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
+import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -43,7 +42,6 @@ public class VersementServiceImpl implements VersementService {
   private final VersementRepository versementRepository;
   private final VersementMapper versementMapper;
   private final BoutiqueRepository boutiqueRepository;
-  private final EligibiliteService eligibiliteService;
   private final WalletService walletService;
   private final ScolariteYearRepository scolariteYearRepository;
   private final InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
@@ -52,9 +50,7 @@ public class VersementServiceImpl implements VersementService {
   public VersementServiceImpl(
       VersementRepository versementRepository,
       VersementMapper versementMapper,
-      StudentRepository studentRepository,
       BoutiqueRepository boutiqueRepository,
-      EligibiliteService eligibiliteService,
       WalletService walletService,
       ScolariteYearRepository scolariteYearRepository,
       InscriptionAnnuelleRepository inscriptionAnnuelleRepository,
@@ -62,7 +58,6 @@ public class VersementServiceImpl implements VersementService {
     this.versementRepository = versementRepository;
     this.versementMapper = versementMapper;
     this.boutiqueRepository = boutiqueRepository;
-    this.eligibiliteService = eligibiliteService;
     this.walletService = walletService;
     this.scolariteYearRepository = scolariteYearRepository;
     this.inscriptionAnnuelleRepository = inscriptionAnnuelleRepository;
@@ -162,15 +157,11 @@ public class VersementServiceImpl implements VersementService {
         inscriptionAnnuelleRepository.findAllByScolariteYear(year);
 
     for (InscriptionAnnuelle ins : inscriptions) {
-      Student student = ins.getStudent();
+      if (ins.getStatut() == StatutInscription.ACTIVE && ins.isEstBoursier()) {
+        BigDecimal montantAVerser = (montantFixe != null) ? montantFixe : ins.getPlafondAccorde();
+        Student student = ins.getStudent();
 
-      EligibiliteResult result =
-          eligibiliteService.verifierEligibilite(student, ins, student.getBanqueEtudiant());
-
-      if (result.estEligible) {
-        BigDecimal montantAVerser = (montantFixe != null) ? montantFixe : result.plafondAccorde;
-
-        if (student.getWallet() != null) {
+        if (student != null && student.getWallet() != null) {
           try {
             // 1. Créditer le wallet
             walletService.crediter(student.getWallet().getTrackingId(), montantAVerser);
@@ -238,11 +229,11 @@ public class VersementServiceImpl implements VersementService {
 
     List<String> eligibleNames = new java.util.ArrayList<>();
     for (InscriptionAnnuelle ins : inscriptions) {
-      Student student = ins.getStudent();
-      EligibiliteResult result =
-          eligibiliteService.verifierEligibilite(student, ins, student.getBanqueEtudiant());
-      if (result.estEligible && student.getWallet() != null) {
-        eligibleNames.add(student.getNom() + " " + student.getPrenom());
+      if (ins.getStatut() == StatutInscription.ACTIVE && ins.isEstBoursier()) {
+        Student student = ins.getStudent();
+        if (student != null && student.getWallet() != null) {
+          eligibleNames.add(student.getNom() + " " + student.getPrenom());
+        }
       }
     }
     return eligibleNames;
@@ -294,7 +285,8 @@ public class VersementServiceImpl implements VersementService {
           walletService.remettreAZero(boutique.getWallet().getTrackingId());
           log.info("Quota remis à zéro pour la boutique {}", boutique.getNomBoutique());
         } catch (Exception e) {
-          log.error("Échec remise à zéro boutique {}: {}", boutique.getNomBoutique(), e.getMessage());
+          log.error(
+              "Échec remise à zéro boutique {}: {}", boutique.getNomBoutique(), e.getMessage());
         }
       }
     }

@@ -1,10 +1,14 @@
 package com.backend.gns.paiement.domain.services.impl;
 
+import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.paiement.application.dtos.requests.PaiementRequest;
+import com.backend.gns.paiement.application.dtos.requests.QrPaymentRequest;
 import com.backend.gns.paiement.application.dtos.responses.PaiementResponse;
 import com.backend.gns.paiement.application.mappers.PaiementMapper;
+import com.backend.gns.paiement.domain.enums.CommandeStatut;
 import com.backend.gns.paiement.domain.enums.PaiementStatut;
 import com.backend.gns.paiement.domain.enums.PaiementType;
 import com.backend.gns.paiement.domain.models.Commande;
@@ -12,10 +16,14 @@ import com.backend.gns.paiement.domain.models.Paiement;
 import com.backend.gns.paiement.domain.services.PaiementService;
 import com.backend.gns.paiement.infrastructure.repositories.CommandeRepository;
 import com.backend.gns.paiement.infrastructure.repositories.PaiementRepository;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.wallet.domain.services.WalletService;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -23,15 +31,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.backend.gns.commerce.domain.models.Boutique;
-import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.paiement.application.dtos.requests.QrPaymentRequest;
-import com.backend.gns.paiement.domain.enums.CommandeStatut;
-import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.student.infrastructure.repositories.StudentRepository;
-import com.backend.gns.wallet.domain.services.WalletService;
-import java.time.LocalDateTime;
-
 
 @Service
 public class PaiementServiceImpl implements PaiementService {
@@ -46,7 +45,6 @@ public class PaiementServiceImpl implements PaiementService {
   private final StudentRepository studentRepository;
   private final BoutiqueRepository boutiqueRepository;
   private final WalletService walletService;
-
 
   public PaiementServiceImpl(
       PaiementRepository paiementRepository,
@@ -76,39 +74,47 @@ public class PaiementServiceImpl implements PaiementService {
   @Transactional
   public PaiementResponse processQrPayment(QrPaymentRequest request) {
     // 1. Récupérer la boutique
-    Boutique boutique = boutiqueRepository.findByTrackingId(request.boutiqueTrackingId())
-        .orElseThrow(() -> new EntityNotFoundException("Boutique non trouvée avec l'ID: " + request.boutiqueTrackingId()));
+    Boutique boutique =
+        boutiqueRepository
+            .findByTrackingId(request.boutiqueTrackingId())
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        "Boutique non trouvée avec l'ID: " + request.boutiqueTrackingId()));
 
-    // 2. Récupérer l'étudiant via le QR Token (ici on suppose que c'est le trackingId pour l'instant)
+    // 2. Récupérer l'étudiant via le QR Token (ici on suppose que c'est le trackingId pour
+    // l'instant)
     UUID studentId;
     try {
-        studentId = UUID.fromString(request.studentQrToken());
+      studentId = UUID.fromString(request.studentQrToken());
     } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("Token QR invalide");
+      throw new IllegalArgumentException("Token QR invalide");
     }
-    
-    Student student = studentRepository.findByTrackingId(studentId)
-        .orElseThrow(() -> new EntityNotFoundException("Étudiant non trouvé avec ce QR Code"));
+
+    Student student =
+        studentRepository
+            .findByTrackingId(studentId)
+            .orElseThrow(() -> new EntityNotFoundException("Étudiant non trouvé avec ce QR Code"));
 
     if (student.getWallet() == null) {
-        throw new IllegalStateException("Le wallet de l'étudiant est introuvable");
+      throw new IllegalStateException("Le wallet de l'étudiant est introuvable");
     }
 
     if (boutique.getWallet() == null) {
-        throw new IllegalStateException("Le wallet de la boutique est introuvable");
+      throw new IllegalStateException("Le wallet de la boutique est introuvable");
     }
 
     BigDecimal montantTotal = request.montantTotal();
 
     // 3. Effectuer la transaction financière (Wallet)
     try {
-        // Débiter l'étudiant (vérifie le solde automatiquement)
-        walletService.debiter(student.getWallet().getTrackingId(), montantTotal);
-        
-        // Débiter la boutique (Consommation quota comme demandé)
-        walletService.debiter(boutique.getWallet().getTrackingId(), montantTotal);
+      // Débiter l'étudiant (vérifie le solde automatiquement)
+      walletService.debiter(student.getWallet().getTrackingId(), montantTotal);
+
+      // Débiter la boutique (Consommation quota comme demandé)
+      walletService.debiter(boutique.getWallet().getTrackingId(), montantTotal);
     } catch (Exception e) {
-        throw new RuntimeException("Paiement échoué : " + e.getMessage());
+      throw new RuntimeException("Paiement échoué : " + e.getMessage());
     }
 
     // 4. Créer la Commande (Validation automatique)
@@ -123,7 +129,8 @@ public class PaiementServiceImpl implements PaiementService {
     commande = commandeRepository.save(commande);
 
     // 5. Créer l'entité Paiement
-    BigDecimal taux = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.TAUX_COMMISSION_PAIEMENT);
+    BigDecimal taux =
+        parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.TAUX_COMMISSION_PAIEMENT);
     BigDecimal commission = montantTotal.multiply(taux);
     BigDecimal montantNetBoutique = montantTotal.subtract(commission);
 
@@ -138,7 +145,7 @@ public class PaiementServiceImpl implements PaiementService {
     paiement.setDate(LocalDateTime.now());
     paiement.setTypePaiement(PaiementType.ACHAT);
     paiement.setStatutPaiement(PaiementStatut.VALIDE);
-    
+
     Paiement savedPaiement = paiementRepository.save(paiement);
 
     return paiementMapper.toResponse(savedPaiement);
@@ -291,7 +298,6 @@ public class PaiementServiceImpl implements PaiementService {
     return java.util.Map.of(
         "totalVolume", totalVolume != null ? totalVolume : BigDecimal.ZERO,
         "totalCommission", totalCommission != null ? totalCommission : BigDecimal.ZERO,
-        "totalCount", totalCount != null ? totalCount : 0L
-    );
+        "totalCount", totalCount != null ? totalCount : 0L);
   }
 }

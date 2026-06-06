@@ -18,13 +18,12 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
   Optional<Paiement> findByTrackingId(UUID trackingId);
 
   List<Paiement> findByStudentAndTypePaiementAndStatutPaiement(
-      com.backend.gns.student.domain.models.Student student, 
-      PaiementType typePaiement, 
+      com.backend.gns.student.domain.models.Student student,
+      PaiementType typePaiement,
       PaiementStatut statutPaiement);
 
   List<Paiement> findByStudentAndStatutPaiement(
-      com.backend.gns.student.domain.models.Student student, 
-      PaiementStatut statutPaiement);
+      com.backend.gns.student.domain.models.Student student, PaiementStatut statutPaiement);
 
   Page<Paiement> findByStatutPaiementOrderByDateDesc(
       PaiementStatut statutPaiement, Pageable pageable);
@@ -49,6 +48,7 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
 
   @Query("SELECT SUM(p.montantDebite) FROM Paiement p WHERE p.statutPaiement = :statut")
   BigDecimal sumMontantDebiteByStatut(@Param("statut") PaiementStatut statut);
+
 
   @Query(
       "SELECT SUM(p.montantDebite) FROM Paiement p WHERE p.date >= :start AND p.date <= :end AND p.statutPaiement = :statut")

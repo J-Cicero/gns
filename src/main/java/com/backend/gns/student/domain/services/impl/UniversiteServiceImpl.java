@@ -5,7 +5,6 @@ import com.backend.gns.student.application.dtos.responses.UniversiteResponse;
 import com.backend.gns.student.application.mappers.UniversiteMapper;
 import com.backend.gns.student.domain.models.Universite;
 import com.backend.gns.student.domain.services.UniversiteService;
-
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
@@ -32,7 +31,6 @@ public class UniversiteServiceImpl implements UniversiteService {
   private final UniversiteRepository repository;
   private final UniversiteMapper mapper;
   private final StudentRepository studentRepository;
-
 
   @Override
   @Transactional

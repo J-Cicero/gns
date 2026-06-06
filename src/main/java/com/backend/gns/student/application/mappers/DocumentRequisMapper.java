@@ -29,7 +29,6 @@ public class DocumentRequisMapper {
         entity.getNiveau(),
         entity.getTypeDocument(),
         entity.isObligatoire(),
-        entity.isEstActif()
-    );
+        entity.isEstActif());
   }
 }

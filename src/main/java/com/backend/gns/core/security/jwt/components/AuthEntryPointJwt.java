@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
-
   @Override
   public void commence(
       HttpServletRequest request,

@@ -4,17 +4,17 @@ import com.backend.gns.user.domain.exception.ResourceNotFoundException;
 import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
 import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
 import com.backend.gns.wallet.application.mappers.WalletMapper;
-import com.backend.gns.wallet.domain.enums.WalletStatus;
-import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.enums.VersementStatut;
 import com.backend.gns.wallet.domain.enums.VersementType;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
+import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Versement;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.domain.services.WalletService;
 import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
-import java.time.LocalDateTime;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -125,7 +125,10 @@ public class WalletServiceImpl implements WalletService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<WalletResponse> findFiltered(WalletType typeWallet, com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde, Pageable pageable) {
+  public Page<WalletResponse> findFiltered(
+      WalletType typeWallet,
+      com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde,
+      Pageable pageable) {
     log.debug("Recherche portefeuilles filtres: type={}, niveau={}", typeWallet, niveauSolde);
     return walletRepository
         .findFiltered(typeWallet, niveauSolde, normalize(pageable))
@@ -143,7 +146,8 @@ public class WalletServiceImpl implements WalletService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<WalletResponse> findByNiveauSolde(com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde, Pageable pageable) {
+  public Page<WalletResponse> findByNiveauSolde(
+      com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde, Pageable pageable) {
     log.debug("Recherche portefeuilles par niveau: {}", niveauSolde);
     return walletRepository
         .findByNiveauSolde(niveauSolde, normalize(pageable))
@@ -229,7 +233,7 @@ public class WalletServiceImpl implements WalletService {
   public void remettreAZero(UUID walletTrackingId) {
     log.info("Remise à zéro du portefeuille trackingId: {}", walletTrackingId);
     Wallet wallet = findWalletOrThrow(walletTrackingId);
-    
+
     BigDecimal soldeActuel = wallet.getSolde();
     if (soldeActuel.compareTo(BigDecimal.ZERO) == 0) {
       log.info("Le portefeuille est déjà à 0.");
@@ -244,7 +248,8 @@ public class WalletServiceImpl implements WalletService {
     Versement trace = new Versement();
     trace.setTrackingId(UUID.randomUUID());
     trace.setWallet(wallet);
-    trace.setMontantVerse(soldeActuel.negate()); // On enregistre un montant négatif correspondant à la soustraction
+    trace.setMontantVerse(
+        soldeActuel.negate()); // On enregistre un montant négatif correspondant à la soustraction
     trace.setDateVersement(LocalDateTime.now());
     trace.setTypeVersement(VersementType.REMISE_A_ZERO);
     trace.setStatut(VersementStatut.VALIDEE);
@@ -258,11 +263,11 @@ public class WalletServiceImpl implements WalletService {
   public void remettreAZeroGroupe(java.util.List<UUID> walletTrackingIds) {
     log.info("Remise à zéro en masse de {} portefeuilles", walletTrackingIds.size());
     for (UUID id : walletTrackingIds) {
-        try {
-            remettreAZero(id);
-        } catch (Exception e) {
-            log.error("Échec de la remise à zéro pour le portefeuille {}: {}", id, e.getMessage());
-        }
+      try {
+        remettreAZero(id);
+      } catch (Exception e) {
+        log.error("Échec de la remise à zéro pour le portefeuille {}: {}", id, e.getMessage());
+      }
     }
   }
 
@@ -270,13 +275,15 @@ public class WalletServiceImpl implements WalletService {
   @Transactional
   public void gelerTousLesWalletsEtudiant(boolean geler) {
     WalletStatus targetStatus = geler ? WalletStatus.GELE : WalletStatus.ACTIF;
-    java.util.List<Wallet> wallets = walletRepository.findAll().stream()
-        .filter(w -> w.getTypeWallet() == WalletType.STUDENT)
-        .toList();
+    java.util.List<Wallet> wallets =
+        walletRepository.findAll().stream()
+            .filter(w -> w.getTypeWallet() == WalletType.STUDENT)
+            .toList();
     for (Wallet w : wallets) {
       w.setStatutWallet(targetStatus);
       walletRepository.save(w);
     }
-    log.info("Tous les portefeuilles étudiants ont été mis à jour avec le statut: {}", targetStatus);
+    log.info(
+        "Tous les portefeuilles étudiants ont été mis à jour avec le statut: {}", targetStatus);
   }
 }

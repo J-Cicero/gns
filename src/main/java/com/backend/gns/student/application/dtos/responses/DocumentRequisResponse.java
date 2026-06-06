@@ -8,5 +8,4 @@ public record DocumentRequisResponse(
     StudentNiveau niveau,
     TypeDocument typeDocument,
     boolean obligatoire,
-    boolean estActif
-) {}
+    boolean estActif) {}

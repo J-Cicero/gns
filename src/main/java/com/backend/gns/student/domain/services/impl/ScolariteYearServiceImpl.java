@@ -40,10 +40,11 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
     if (request.estOuverte()) {
       Optional<ScolariteYear> activeYear = scolariteYearRepository.findByEstOuverteTrue();
       if (activeYear.isPresent()) {
-        throw new IllegalStateException("Une année scolaire est déjà ouverte. Veuillez la clôturer d'abord.");
+        throw new IllegalStateException(
+            "Une année scolaire est déjà ouverte. Veuillez la clôturer d'abord.");
       }
     }
-    
+
     ScolariteYear entity = scolariteYearMapper.toEntity(request);
     entity.setTrackingId(UUID.randomUUID());
     ScolariteYear saved = scolariteYearRepository.save(entity);
@@ -53,15 +54,23 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
   @Override
   @Transactional(readOnly = true)
   public Optional<ScolariteYearResponse> findByTrackingId(UUID trackingId) {
-    return scolariteYearRepository.findByTrackingId(trackingId).map(scolariteYearMapper::toResponse);
+    return scolariteYearRepository
+        .findByTrackingId(trackingId)
+        .map(scolariteYearMapper::toResponse);
   }
 
   @Override
   @Transactional
-  public ScolariteYearResponse cloturerEtOuvrirNouvelle(UUID oldTrackingId, ScolariteYearRequest newYearRequest) {
-    ScolariteYear oldYear = scolariteYearRepository.findByTrackingId(oldTrackingId)
-        .orElseThrow(() -> new EntityNotFoundException("Année scolaire non trouvée avec l'ID: " + oldTrackingId));
-    
+  public ScolariteYearResponse cloturerEtOuvrirNouvelle(
+      UUID oldTrackingId, ScolariteYearRequest newYearRequest) {
+    ScolariteYear oldYear =
+        scolariteYearRepository
+            .findByTrackingId(oldTrackingId)
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        "Année scolaire non trouvée avec l'ID: " + oldTrackingId));
+
     oldYear.setEstOuverte(false);
     oldYear.setEstCloturee(true);
     scolariteYearRepository.save(oldYear);
@@ -71,7 +80,7 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
     newYear.setTrackingId(UUID.randomUUID());
     newYear.setEstOuverte(true);
     newYear.setEstCloturee(false);
-    
+
     ScolariteYear savedNewYear = scolariteYearRepository.save(newYear);
     return scolariteYearMapper.toResponse(savedNewYear);
   }
@@ -79,7 +88,9 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
   @Override
   @Transactional(readOnly = true)
   public Page<ScolariteYearResponse> findAll(Pageable pageable) {
-    return scolariteYearRepository.findAll(normalize(pageable)).map(scolariteYearMapper::toResponse);
+    return scolariteYearRepository
+        .findAll(normalize(pageable))
+        .map(scolariteYearMapper::toResponse);
   }
 
   @Override

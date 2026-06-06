@@ -20,7 +20,6 @@ public class UserMapper {
     user.setPrenom(request.prenom());
     user.setEmail(request.email());
     user.setTelephone(request.telephone());
-    // Le mot de passe est géré dans le service pour être haché.
     if (request.role() != null && !request.role().trim().isEmpty()) {
       try {
         user.setRole(UserRole.valueOf(request.role()));

@@ -39,8 +39,6 @@ public class Student extends User {
   @Column(length = 20, nullable = true)
   private KycStatus statutKYC;
 
-  @OneToOne(mappedBy = "student", optional = true)
-  private BanqueEtudiant banqueEtudiant;
 
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "wallet_id")

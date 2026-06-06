@@ -9,5 +9,4 @@ public record ScolariteYearResponse(
     LocalDate dateDebut,
     LocalDate dateFin,
     boolean estOuverte,
-    boolean estCloturee
-) {}
+    boolean estCloturee) {}

@@ -1,16 +1,16 @@
 package com.backend.gns.paiement.application.mappers;
 
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.paiement.application.dtos.requests.PaiementRequest;
 import com.backend.gns.paiement.application.dtos.responses.PaiementResponse;
 import com.backend.gns.paiement.domain.models.Commande;
 import com.backend.gns.paiement.domain.models.Paiement;
+import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import com.backend.gns.wallet.domain.models.Wallet;
 import java.math.BigDecimal;
 import java.util.UUID;
-import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -67,21 +67,31 @@ public class PaiementMapper {
     String receiverName = null;
     String receiverType = null;
     if (paiement.getWallet() != null) {
-      if (paiement.getWallet().getTypeWallet() == com.backend.gns.wallet.domain.enums.WalletType.BOUTIQUE) {
-        boutiqueRepository.findByWalletTrackingId(paiement.getWallet().getTrackingId())
-            .ifPresent(boutique -> {
-              // Hacky way to set effectively final variables in lambda is not needed if we do:
-            });
-        com.backend.gns.commerce.domain.models.Boutique boutique = boutiqueRepository.findByWalletTrackingId(paiement.getWallet().getTrackingId()).orElse(null);
+      if (paiement.getWallet().getTypeWallet()
+          == com.backend.gns.wallet.domain.enums.WalletType.BOUTIQUE) {
+        boutiqueRepository
+            .findByWalletTrackingId(paiement.getWallet().getTrackingId())
+            .ifPresent(
+                boutique -> {
+                  // Hacky way to set effectively final variables in lambda is not needed if we do:
+                });
+        com.backend.gns.commerce.domain.models.Boutique boutique =
+            boutiqueRepository
+                .findByWalletTrackingId(paiement.getWallet().getTrackingId())
+                .orElse(null);
         if (boutique != null) {
-            receiverName = boutique.getNomBoutique();
-            receiverType = "Boutique";
+          receiverName = boutique.getNomBoutique();
+          receiverType = "Boutique";
         }
-      } else if (paiement.getWallet().getTypeWallet() == com.backend.gns.wallet.domain.enums.WalletType.UNIVERSITY) {
-        com.backend.gns.student.domain.models.Universite universite = universiteRepository.findByWalletTrackingId(paiement.getWallet().getTrackingId()).orElse(null);
+      } else if (paiement.getWallet().getTypeWallet()
+          == com.backend.gns.wallet.domain.enums.WalletType.UNIVERSITY) {
+        com.backend.gns.student.domain.models.Universite universite =
+            universiteRepository
+                .findByWalletTrackingId(paiement.getWallet().getTrackingId())
+                .orElse(null);
         if (universite != null) {
-            receiverName = universite.getNom();
-            receiverType = "Université";
+          receiverName = universite.getNom();
+          receiverType = "Université";
         }
       }
     }

@@ -122,7 +122,8 @@ public class WalletController {
       description = "Récupère les portefeuilles selon le type et le niveau de solde")
   public ResponseEntity<?> findFiltered(
       @RequestParam(required = false) WalletType typeWallet,
-      @RequestParam(required = false) com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde,
+      @RequestParam(required = false)
+          com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     try {
@@ -162,7 +163,12 @@ public class WalletController {
   public ResponseEntity<?> gelerTousLesWallets(@RequestParam boolean geler) {
     try {
       walletService.gelerTousLesWalletsEtudiant(geler);
-      return ResponseEntity.ok(Map.of("success", true, "message", "Statut de tous les portefeuilles étudiants mis à jour avec succès."));
+      return ResponseEntity.ok(
+          Map.of(
+              "success",
+              true,
+              "message",
+              "Statut de tous les portefeuilles étudiants mis à jour avec succès."));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));

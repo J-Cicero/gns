@@ -23,6 +23,8 @@ public interface BoutiqueRepository extends JpaRepository<Boutique, Long> {
 
   Page<Boutique> findByStatutKYC(KycStatus statutKYC, Pageable pageable);
 
-  @Query("SELECT b FROM Boutique b WHERE b.wallet IS NOT NULL AND b.wallet.plafond > 0 AND b.wallet.solde <= (b.wallet.plafond * :seuil)")
-  Page<Boutique> findBoutiquesEnAlerteQuota(@Param("seuil") java.math.BigDecimal seuil, Pageable pageable);
+  @Query(
+      "SELECT b FROM Boutique b WHERE b.wallet IS NOT NULL AND b.wallet.plafond > 0 AND b.wallet.solde <= (b.wallet.plafond * :seuil)")
+  Page<Boutique> findBoutiquesEnAlerteQuota(
+      @Param("seuil") java.math.BigDecimal seuil, Pageable pageable);
 }

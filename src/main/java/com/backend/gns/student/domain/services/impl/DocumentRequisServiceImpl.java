@@ -39,7 +39,8 @@ public class DocumentRequisServiceImpl implements DocumentRequisService {
   @Override
   @Transactional
   public DocumentRequisResponse create(DocumentRequisRequest request) {
-    if (documentRequisRepository.existsByNiveauAndTypeDocument(request.niveau(), request.typeDocument())) {
+    if (documentRequisRepository.existsByNiveauAndTypeDocument(
+        request.niveau(), request.typeDocument())) {
       throw new IllegalStateException("Ce document est déjà requis pour ce niveau.");
     }
     DocumentRequis entity = documentRequisMapper.toEntity(request);
@@ -50,9 +51,11 @@ public class DocumentRequisServiceImpl implements DocumentRequisService {
   @Override
   @Transactional
   public DocumentRequisResponse update(Long id, DocumentRequisRequest request) {
-    DocumentRequis entity = documentRequisRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Règle non trouvée avec l'ID: " + id));
-    
+    DocumentRequis entity =
+        documentRequisRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Règle non trouvée avec l'ID: " + id));
+
     entity.setNiveau(request.niveau());
     entity.setTypeDocument(request.typeDocument());
     entity.setObligatoire(request.obligatoire());
@@ -65,15 +68,18 @@ public class DocumentRequisServiceImpl implements DocumentRequisService {
   @Override
   @Transactional
   public void delete(Long id) {
-    DocumentRequis entity = documentRequisRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Règle non trouvée avec l'ID: " + id));
+    DocumentRequis entity =
+        documentRequisRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Règle non trouvée avec l'ID: " + id));
     documentRequisRepository.delete(entity);
   }
 
   @Override
   @Transactional(readOnly = true)
   public DocumentRequisResponse findById(Long id) {
-    return documentRequisRepository.findById(id)
+    return documentRequisRepository
+        .findById(id)
         .map(documentRequisMapper::toResponse)
         .orElseThrow(() -> new EntityNotFoundException("Règle non trouvée avec l'ID: " + id));
   }
@@ -81,8 +87,7 @@ public class DocumentRequisServiceImpl implements DocumentRequisService {
   @Override
   @Transactional(readOnly = true)
   public List<DocumentRequisResponse> findActiveByNiveau(StudentNiveau niveau) {
-    return documentRequisRepository.findByNiveauAndEstActifTrue(niveau)
-        .stream()
+    return documentRequisRepository.findByNiveauAndEstActifTrue(niveau).stream()
         .map(documentRequisMapper::toResponse)
         .collect(Collectors.toList());
   }
@@ -90,12 +95,16 @@ public class DocumentRequisServiceImpl implements DocumentRequisService {
   @Override
   @Transactional(readOnly = true)
   public Page<DocumentRequisResponse> findAll(Pageable pageable) {
-    return documentRequisRepository.findAll(normalize(pageable)).map(documentRequisMapper::toResponse);
+    return documentRequisRepository
+        .findAll(normalize(pageable))
+        .map(documentRequisMapper::toResponse);
   }
 
   @Override
   @Transactional(readOnly = true)
   public Page<DocumentRequisResponse> findByNiveau(StudentNiveau niveau, Pageable pageable) {
-    return documentRequisRepository.findByNiveau(niveau, normalize(pageable)).map(documentRequisMapper::toResponse);
+    return documentRequisRepository
+        .findByNiveau(niveau, normalize(pageable))
+        .map(documentRequisMapper::toResponse);
   }
 }

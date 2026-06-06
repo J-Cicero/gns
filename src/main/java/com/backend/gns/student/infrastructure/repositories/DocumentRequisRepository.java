@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DocumentRequisRepository extends JpaRepository<DocumentRequis, Long> {
-  
+
   List<DocumentRequis> findByNiveauAndEstActifTrue(StudentNiveau niveau);
 
   Page<DocumentRequis> findByNiveau(StudentNiveau niveau, Pageable pageable);

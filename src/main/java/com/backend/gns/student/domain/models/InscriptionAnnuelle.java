@@ -30,7 +30,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(
     name = "INSCRIPTION_ANNUELLE",
-    uniqueConstraints = {@UniqueConstraint(columnNames = {"student_id", "anneeAcademique"})})
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"student_id", "scolarite_year_id"})})
 @Getter
 @Setter
 @AllArgsConstructor
