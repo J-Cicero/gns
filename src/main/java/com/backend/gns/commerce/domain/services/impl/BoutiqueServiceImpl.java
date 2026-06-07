@@ -78,7 +78,7 @@ public class BoutiqueServiceImpl implements BoutiqueService {
       wallet.setStatutWallet(WalletStatus.ACTIF);
       wallet.setSolde(BigDecimal.ZERO);
 
-      wallet.setPlafond(BigDecimal.ZERO);
+      wallet.setPlafond(new BigDecimal("100000"));
       wallet.setDateCreation(LocalDateTime.now());
 
       boutique.setWallet(wallet);

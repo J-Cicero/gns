@@ -45,6 +45,7 @@ public class PaiementServiceImpl implements PaiementService {
   private final StudentRepository studentRepository;
   private final BoutiqueRepository boutiqueRepository;
   private final WalletService walletService;
+  
 
   public PaiementServiceImpl(
       PaiementRepository paiementRepository,

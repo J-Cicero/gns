@@ -1,6 +1,15 @@
 package com.backend.gns.wallet.domain.services.impl;
 
-import com.backend.gns.user.domain.exception.ResourceNotFoundException;
+import com.backend.gns.commerce.domain.models.Boutique;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.paiement.domain.services.PretScolariteService;
+import com.backend.gns.student.domain.enums.StatutInscription;
+import com.backend.gns.student.domain.enums.TypeBourse;
+import com.backend.gns.student.domain.models.InscriptionAnnuelle;
+import com.backend.gns.student.domain.models.ScolariteYear;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
+import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
 import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
 import com.backend.gns.wallet.application.mappers.WalletMapper;
@@ -13,8 +22,10 @@ import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.domain.services.WalletService;
 import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,19 +33,40 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class WalletServiceImpl implements WalletService {
-
-  private static final int DEFAULT_PAGE_SIZE = 10;
 
   private final WalletRepository walletRepository;
   private final WalletMapper walletMapper;
   private final VersementRepository versementRepository;
+  private final BoutiqueRepository boutiqueRepository;
+  private final ScolariteYearRepository scolariteYearRepository;
+  private final InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
+  private final PretScolariteService pretScolariteService;
+  
+  private static final int DEFAULT_PAGE_SIZE = 10;
+
+  public WalletServiceImpl(
+      WalletRepository walletRepository,
+      WalletMapper walletMapper,
+      VersementRepository versementRepository,
+      BoutiqueRepository boutiqueRepository,
+      ScolariteYearRepository scolariteYearRepository,
+      InscriptionAnnuelleRepository inscriptionAnnuelleRepository,
+      @Lazy PretScolariteService pretScolariteService) {
+    this.walletRepository = walletRepository;
+    this.walletMapper = walletMapper;
+    this.versementRepository = versementRepository;
+    this.boutiqueRepository = boutiqueRepository;
+    this.scolariteYearRepository = scolariteYearRepository;
+    this.inscriptionAnnuelleRepository = inscriptionAnnuelleRepository;
+    this.pretScolariteService = pretScolariteService;
+  }
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -47,7 +79,7 @@ public class WalletServiceImpl implements WalletService {
         .orElseThrow(
             () -> {
               log.warn("Portefeuille introuvable avec trackingId: {}", trackingId);
-              return new ResourceNotFoundException(
+              return new com.backend.gns.user.domain.exception.ResourceNotFoundException(
                   "Portefeuille non trouvé avec l'ID: " + trackingId);
             });
   }
@@ -95,10 +127,10 @@ public class WalletServiceImpl implements WalletService {
 
     Wallet wallet = findWalletOrThrow(trackingId);
 
-    wallet.setTypeWallet(request.typeWallet());
-    wallet.setStatutWallet(request.statutWallet());
-    wallet.setSolde(request.solde());
-    wallet.setPlafond(request.plafond());
+    if (request.typeWallet() != null) wallet.setTypeWallet(request.typeWallet());
+    if (request.statutWallet() != null) wallet.setStatutWallet(request.statutWallet());
+    if (request.solde() != null) wallet.setSolde(request.solde());
+    if (request.plafond() != null) wallet.setPlafond(request.plafond());
 
     Wallet updated = walletRepository.save(wallet);
     log.info("Portefeuille mis à jour avec succès, trackingId: {}", trackingId);
@@ -189,6 +221,12 @@ public class WalletServiceImpl implements WalletService {
     }
 
     Wallet wallet = findWalletOrThrow(walletTrackingId);
+    
+    // Réparation automatique au vol
+    if (wallet.getPlafond() == null) {
+      wallet.setPlafond(wallet.getTypeWallet() == WalletType.STUDENT ? new BigDecimal("30000") : new BigDecimal("100000"));
+    }
+
     ensureWalletCanReceiveFunds(wallet);
 
     BigDecimal nouveauSolde = wallet.getSolde().add(montant);
@@ -199,7 +237,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     wallet.setSolde(nouveauSolde);
-    walletRepository.save(wallet);
+    walletRepository.saveAndFlush(wallet);
     log.info("Crédit effectué. Nouveau solde: {}, trackingId: {}", nouveauSolde, walletTrackingId);
   }
 
@@ -224,7 +262,7 @@ public class WalletServiceImpl implements WalletService {
 
     BigDecimal nouveauSolde = wallet.getSolde().subtract(montant);
     wallet.setSolde(nouveauSolde);
-    walletRepository.save(wallet);
+    walletRepository.saveAndFlush(wallet);
     log.info("Débit effectué. Nouveau solde: {}, trackingId: {}", nouveauSolde, walletTrackingId);
   }
 
@@ -242,7 +280,7 @@ public class WalletServiceImpl implements WalletService {
 
     // Remise à zéro
     wallet.setSolde(BigDecimal.ZERO);
-    walletRepository.save(wallet);
+    walletRepository.saveAndFlush(wallet);
 
     // Traçabilité de l'opération
     Versement trace = new Versement();

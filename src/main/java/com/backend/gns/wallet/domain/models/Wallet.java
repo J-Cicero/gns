@@ -64,8 +64,19 @@ public class Wallet extends BaseEntity {
   private LocalDateTime dateCreation;
 
   @PrePersist
+  public void onPrePersist() {
+    if (this.trackingId == null) {
+      this.trackingId = UUID.randomUUID();
+    }
+    calculateFundingLevel();
+  }
+
   @PreUpdate
-  public void calculateFundingLevel() {
+  public void onPreUpdate() {
+    calculateFundingLevel();
+  }
+
+  private void calculateFundingLevel() {
     if (solde == null || solde.compareTo(BigDecimal.ZERO) <= 0) {
       this.niveauSolde = WalletFundingLevel.EPUISE;
     } else if (plafond == null || plafond.compareTo(BigDecimal.ZERO) <= 0) {

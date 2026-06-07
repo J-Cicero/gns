@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.UUID;
 
 public record UserRequest(
     @Size(min = 2, message = "Le nom doit contenir au moins deux caractères")
@@ -23,4 +24,6 @@ public record UserRequest(
     @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caracteres")
         @NotNull(message = "Le mot de passe est obligatoire")
         String motDePasse,
-    String role) {}
+    String role,
+    UUID universiteTrackingId,
+    UUID banquePartenaireTrackingId) {}

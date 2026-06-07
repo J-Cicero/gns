@@ -82,21 +82,15 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   }
 
   private void updatePlafondIfBoursier(InscriptionAnnuelle inscription) {
-    if (inscription.isEstBoursier() && inscription.getTypeBourse() != null) {
-      BigDecimal retenue =
-          parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.RETENUE_BOURSE_ETUDIANT);
-      if (retenue == null) {
-        retenue = new BigDecimal("4000"); // fallback
-      }
-      BigDecimal nouveauPlafond = inscription.getTypeBourse().getMontant().subtract(retenue);
-      inscription.setPlafondAccorde(nouveauPlafond);
+    // Application du plafond fixe de 30 000 FCFA pour tous les étudiants inscrits
+    BigDecimal nouveauPlafond = new BigDecimal("30000");
+    inscription.setPlafondAccorde(nouveauPlafond);
 
-      Student student = inscription.getStudent();
-      if (student != null && student.getWallet() != null) {
-        Wallet wallet = student.getWallet();
-        wallet.setPlafond(nouveauPlafond);
-        walletRepository.save(wallet);
-      }
+    Student student = inscription.getStudent();
+    if (student != null && student.getWallet() != null) {
+      Wallet wallet = student.getWallet();
+      wallet.setPlafond(nouveauPlafond);
+      walletRepository.save(wallet);
     }
   }
 
