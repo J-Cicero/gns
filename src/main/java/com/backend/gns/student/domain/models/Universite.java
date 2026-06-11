@@ -1,7 +1,6 @@
 package com.backend.gns.student.domain.models;
 
 import com.backend.gns.core.utils.BaseEntity;
-import com.backend.gns.wallet.domain.models.Wallet;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.*;
@@ -32,8 +31,4 @@ public class Universite extends BaseEntity {
 
   @Column(nullable = false)
   private boolean estActive = true;
-
-  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JoinColumn(name = "wallet_id")
-  private Wallet wallet;
 }

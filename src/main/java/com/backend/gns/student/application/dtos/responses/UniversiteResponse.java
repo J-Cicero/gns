@@ -11,5 +11,4 @@ public record UniversiteResponse(
     String nom,
     String ville,
     boolean estActive,
-    UUID walletTrackingId,
     BigDecimal soldeWallet) {}

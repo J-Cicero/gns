@@ -58,6 +58,9 @@ public class User extends BaseEntity {
   @Column(length = 20)
   private String telephone;
 
+  @Column(length = 50)
+  private String pays;
+
   @Column(nullable = false, updatable = false)
   @CreatedDate
   @CreationTimestamp

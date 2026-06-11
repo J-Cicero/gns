@@ -23,51 +23,50 @@ public class ParametreGnsServiceImpl implements ParametreGnsService {
 
   private final ParametreGnsRepository repository;
   private final ParametreGnsMapper mapper;
+@Override
+@Transactional
+public ParametreGnsResponse saveOrUpdate(ParametreGnsRequest request) {
+  return repository
+      .findByNomParametre(request.nomParametre())
+      .map(
+          existing -> {
+            existing.setValeurParametre(request.valeurParametre());
+            existing.setDescription(request.description());
+            return mapper.toResponse(repository.save(existing));
+          })
+      .orElseGet(
+          () -> {
+            ParametreGns entity = mapper.toEntity(request);
+            return mapper.toResponse(repository.save(entity));
+          });
+}
 
-  @Override
-  @Transactional
-  public ParametreGnsResponse saveOrUpdate(ParametreGnsRequest request) {
-    return repository
-        .findByNomParametreAndEstActifTrue(request.nomParametre())
-        .map(
-            existing -> {
-              existing.setValeurParametre(request.valeurParametre());
-              existing.setDescription(request.description());
-              return mapper.toResponse(repository.save(existing));
-            })
-        .orElseGet(
-            () -> {
-              ParametreGns entity = mapper.toEntity(request);
-              return mapper.toResponse(repository.save(entity));
-            });
-  }
+@Override
+@Transactional(readOnly = true)
+public Optional<ParametreGnsResponse> findByNomParametre(TypeParametreGns nom) {
+  return repository.findByNomParametre(nom).map(mapper::toResponse);
+}
 
-  @Override
-  @Transactional(readOnly = true)
-  public Optional<ParametreGnsResponse> findByTrackingId(UUID trackingId) {
-    return repository.findByTrackingId(trackingId).map(mapper::toResponse);
-  }
+@Override
+@Transactional(readOnly = true)
+public Page<ParametreGnsResponse> findAll(Pageable pageable) {
+  return repository.findAll(pageable).map(mapper::toResponse);
+}
 
-  @Override
-  @Transactional(readOnly = true)
-  public Page<ParametreGnsResponse> findAll(Pageable pageable) {
-    return repository.findAll(pageable).map(mapper::toResponse);
-  }
+@Override
+@Transactional(readOnly = true)
+public Optional<ParametreGnsResponse> findByTrackingId(UUID trackingId) {
+  return repository.findByTrackingId(trackingId).map(mapper::toResponse);
+}
 
-  @Override
-  @Transactional(readOnly = true)
-  public Optional<ParametreGnsResponse> findByNomParametre(TypeParametreGns nom) {
-    return repository.findByNomParametreAndEstActifTrue(nom).map(mapper::toResponse);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public String getValeur(TypeParametreGns type) {
-    return repository
-        .findByNomParametreAndEstActifTrue(type)
-        .map(ParametreGns::getValeurParametre)
-        .orElseThrow(() -> new ResourceNotFoundException("Paramètre GNS non trouvé: " + type));
-  }
+@Override
+@Transactional(readOnly = true)
+public String getValeur(TypeParametreGns type) {
+  return repository
+      .findByNomParametre(type)
+      .map(ParametreGns::getValeurParametre)
+      .orElseThrow(() -> new ResourceNotFoundException("Paramètre GNS non trouvé: " + type));
+}
 
   @Override
   @Transactional(readOnly = true)

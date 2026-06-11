@@ -30,8 +30,6 @@ public interface InscriptionAnnuelleService {
   Optional<InscriptionAnnuelleResponse> findByStudentAndAnnee(
       UUID studentTrackingId, String anneeAcademique);
 
-  Page<InscriptionAnnuelleResponse> findByStatut(StatutInscription statut, Pageable pageable);
-
   Page<InscriptionAnnuelleResponse> findAll(Pageable pageable);
 
   Page<InscriptionAnnuelleResponse> findByUniversiteTrackingId(

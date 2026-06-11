@@ -176,30 +176,6 @@ public class InscriptionAnnuelleController {
     }
   }
 
-  @GetMapping("/statut/{statut}")
-  @Operation(
-      summary = "Récupérer les inscriptions par statut",
-      description = "Récupère toutes les inscriptions avec un statut donné")
-  @ApiResponse(responseCode = "200", description = "Inscriptions trouvées")
-  @ApiResponse(responseCode = "404", description = "Aucune inscription trouvée")
-  public ResponseEntity<?> findByStatut(
-      @PathVariable StatutInscription statut,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
-    try {
-      Pageable pageable = PageRequest.of(page, size);
-      var responses = inscriptionService.findByStatut(statut, pageable);
-      if (!responses.hasContent()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(Map.of("error", "NOT_FOUND", "message", "Aucune inscription avec ce statut"));
-      }
-      return ResponseEntity.ok(responses);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
-    }
-  }
-
   @GetMapping
   @Operation(
       summary = "Récupérer toutes les inscriptions",

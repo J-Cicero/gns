@@ -29,8 +29,6 @@ public class UniversiteMapper {
         .nom(entity.getNom())
         .ville(entity.getVille())
         .estActive(entity.isEstActive())
-        .walletTrackingId(entity.getWallet() != null ? entity.getWallet().getTrackingId() : null)
-        .soldeWallet(entity.getWallet() != null ? entity.getWallet().getSolde() : BigDecimal.ZERO)
         .build();
   }
 }

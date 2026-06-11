@@ -38,34 +38,8 @@ public class SecurityConfig {
         .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(JavaConstant.PUBLIC_URLS)
-                    .permitAll()
-                    .requestMatchers(JavaConstant.ADMIN_URLS)
-                    .hasRole("ADMIN_GNS")
-                    .requestMatchers(JavaConstant.CAMPAGNE_GNS_URLS)
-                    .hasRole("ADMIN_GNS")
-                    .requestMatchers(JavaConstant.ETUDIANT_URLS)
-                    .hasAnyRole("ETUDIANT", "ADMIN_GNS")
-                    .requestMatchers(JavaConstant.COMMERCANT_URLS)
-                    .hasAnyRole("COMMERCANT", "ADMIN_GNS")
-                    .requestMatchers(JavaConstant.BANQUE_URLS)
-                    .hasAnyRole("ADMIN_BANQUE", "ADMIN_GNS")
-                    .requestMatchers("/wallets/freeze-all")
-                    .hasRole("ADMIN_GNS")
-                    .requestMatchers(JavaConstant.WALLETS_URLS)
-                    .hasAnyRole("ETUDIANT", "ADMIN_BANQUE", "ADMIN_GNS")
-                    .requestMatchers(JavaConstant.VERSEMENTS_URLS)
-                    .hasAnyRole("ADMIN_BANQUE", "ADMIN_GNS")
-                    .requestMatchers(JavaConstant.PAIEMENTS_URLS)
-                    .hasAnyRole("ETUDIANT", "ADMIN_GNS")
-                    .requestMatchers(JavaConstant.COMMANDES_URLS)
-                    .hasAnyRole("ETUDIANT", "COMMERCANT", "ADMIN_GNS")
-                    .requestMatchers(JavaConstant.STATS_URLS)
-                    .hasRole("ADMIN_GNS")
-                    .requestMatchers(JavaConstant.UNIVERSITES_URLS)
-                    .hasAnyRole("ADMIN_GNS", "ETUDIANT")
-                    .anyRequest()
-                    .authenticated());
+                auth.anyRequest()
+                    .permitAll());
     return http.build();
   }
 

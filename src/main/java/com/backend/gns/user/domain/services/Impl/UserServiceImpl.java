@@ -10,7 +10,6 @@ import com.backend.gns.user.application.dtos.responses.UserResponse;
 import com.backend.gns.user.application.mappers.UserMapper;
 import com.backend.gns.user.domain.enums.UserRole;
 import com.backend.gns.user.domain.exception.ResourceNotFoundException;
-import com.backend.gns.user.domain.models.BankOperator;
 import com.backend.gns.user.domain.models.User;
 import com.backend.gns.user.domain.services.UserService;
 import com.backend.gns.user.infrastructure.repositories.UserRepository;
@@ -84,23 +83,14 @@ public class UserServiceImpl implements UserService {
       role = UserRole.ETUDIANT;
     }
 
-    User user;
-    if (role == UserRole.ADMIN_BANQUE) {
-      BankOperator bankOp = new BankOperator();
-      if (request.banquePartenaireTrackingId() != null) {
-        bankOp.setBanquePartenaire(banqueRepository.findByTrackingId(request.banquePartenaireTrackingId())
-            .orElseThrow(() -> new ResourceNotFoundException("Banque non trouvée")));
-      }
-      user = bankOp;
-    } else {
-      user = new User();
-    }
-
+    User user = new User();
+    
     user.setTrackingId(UUID.randomUUID());
     user.setNom(request.nom());
     user.setPrenom(request.prenom());
     user.setEmail(request.email());
     user.setTelephone(request.telephone());
+    user.setPays(request.pays());
     user.setRole(role);
     user.setEstActif(true);
     user.setMotDePasse(passwordEncoder.encode(request.motDePasse()));

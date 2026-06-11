@@ -11,6 +11,4 @@ public interface UniversiteRepository extends JpaRepository<Universite, Long> {
   Optional<Universite> findByTrackingId(UUID trackingId);
 
   Optional<Universite> findByCode(String code);
-
-  Optional<Universite> findByWalletTrackingId(UUID walletTrackingId);
 }

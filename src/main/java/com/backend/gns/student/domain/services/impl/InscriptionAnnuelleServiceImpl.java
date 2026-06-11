@@ -172,14 +172,6 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
 
   @Override
   @Transactional(readOnly = true)
-  public Page<InscriptionAnnuelleResponse> findByStatut(
-      com.backend.gns.student.domain.enums.StatutInscription statut, Pageable pageable) {
-    // A adapter ou supprimer
-    return inscriptionRepository.findAll(normalize(pageable)).map(inscriptionMapper::toResponse);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
   public Page<InscriptionAnnuelleResponse> findAll(Pageable pageable) {
     return inscriptionRepository.findAll(normalize(pageable)).map(inscriptionMapper::toResponse);
   }

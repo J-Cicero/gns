@@ -50,7 +50,7 @@ public class Commande extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "boutique_id", nullable = false)
-  private Boutique boutique;
+  private Boutique boutique; // RELATION JPA RESTAURÉE
 
   @Column(nullable = false)
   private BigDecimal montantTotal;

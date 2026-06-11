@@ -44,9 +44,6 @@ public class Student extends User {
   @JoinColumn(name = "wallet_id")
   private Wallet wallet;
 
-  @OneToOne(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private Card card;
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "universite_id")
   private Universite universite;

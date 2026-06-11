@@ -18,5 +18,7 @@ public interface UniversiteService {
 
   void delete(UUID trackingId);
 
+  UniversiteResponse updateEtat(UUID trackingId, boolean etat);
+
   List<Map<String, Object>> getSummaryStats();
 }

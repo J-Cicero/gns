@@ -33,13 +33,6 @@ public interface InscriptionAnnuelleRepository extends JpaRepository<Inscription
 
   List<InscriptionAnnuelle> findAllByScolariteYear(ScolariteYear scolariteYear);
 
-  Page<InscriptionAnnuelle> findByStatut(StatutInscription statut, Pageable pageable);
-
   Page<InscriptionAnnuelle> findByStudentUniversiteTrackingId(
       UUID universiteTrackingId, Pageable pageable);
-
-  @Query(
-      "SELECT i FROM InscriptionAnnuelle i WHERE i.estBoursier = true " + "AND i.statut = :statut")
-  Page<InscriptionAnnuelle> findBoursiersByStatut(
-      @Param("statut") StatutInscription statut, Pageable pageable);
 }

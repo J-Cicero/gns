@@ -7,11 +7,6 @@ import com.backend.gns.student.domain.models.Universite;
 import com.backend.gns.student.domain.services.UniversiteService;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
-import com.backend.gns.wallet.domain.enums.WalletStatus;
-import com.backend.gns.wallet.domain.enums.WalletType;
-import com.backend.gns.wallet.domain.models.Wallet;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,19 +31,6 @@ public class UniversiteServiceImpl implements UniversiteService {
   @Transactional
   public UniversiteResponse create(UniversiteRequest request) {
     Universite entity = mapper.toEntity(request);
-
-    // Initialisation du Wallet via Cascade
-    Wallet wallet = new Wallet();
-    wallet.setTrackingId(UUID.randomUUID());
-    wallet.setTypeWallet(WalletType.UNIVERSITY);
-    wallet.setStatutWallet(WalletStatus.ACTIF);
-    wallet.setSolde(BigDecimal.ZERO);
-
-    wallet.setPlafond(BigDecimal.ZERO);
-    wallet.setDateCreation(LocalDateTime.now());
-
-    entity.setWallet(wallet);
-
     return mapper.toResponse(repository.save(entity));
   }
 
@@ -72,6 +54,17 @@ public class UniversiteServiceImpl implements UniversiteService {
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new RuntimeException("Université non trouvée"));
     repository.delete(entity);
+  }
+
+  @Override
+  @Transactional
+  public UniversiteResponse updateEtat(UUID trackingId, boolean etat) {
+    Universite entity =
+        repository
+            .findByTrackingId(trackingId)
+            .orElseThrow(() -> new RuntimeException("Université non trouvée"));
+    entity.setEstActive(etat);
+    return mapper.toResponse(repository.save(entity));
   }
 
   @Override

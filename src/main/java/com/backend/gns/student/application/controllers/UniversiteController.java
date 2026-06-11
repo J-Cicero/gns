@@ -42,6 +42,12 @@ public class UniversiteController {
     return ResponseEntity.ok(service.findAll(pageable));
   }
 
+  @PatchMapping("/etat/{trackingId}")
+  public ResponseEntity<UniversiteResponse> updateEtat(
+      @PathVariable UUID trackingId, @RequestParam boolean etat) {
+    return ResponseEntity.ok(service.updateEtat(trackingId, etat));
+  }
+
   @GetMapping("/summary-stats")
   public ResponseEntity<List<Map<String, Object>>> getSummaryStats() {
     return ResponseEntity.ok(service.getSummaryStats());
