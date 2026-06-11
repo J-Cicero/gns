@@ -115,19 +115,9 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
   private void updateInscriptionFromExtraction(
       InscriptionAnnuelle ins, ExtractionResultat extraction) {
-    boolean modifie = false;
-    if (extraction.creditsTotalValides() != null) {
-      ins.setCreditsTotalValides(extraction.creditsTotalValides());
-      modifie = true;
-    }
-    if (extraction.moyenneBac() != null) {
-      ins.setMoyenneBac(extraction.moyenneBac());
-      modifie = true;
-    }
-    if (modifie) {
-      inscriptionRepository.save(ins);
-      log.info("Inscription {} mise à jour via OCR", ins.getTrackingId());
-    }
+    // La mise à jour automatique basée sur les notes/crédits n'est plus requise
+    // avec la nouvelle architecture simplifiée.
+    log.info("Analyse OCR pour inscription {} traitée sans mise à jour métier.", ins.getTrackingId());
   }
 
   @Override

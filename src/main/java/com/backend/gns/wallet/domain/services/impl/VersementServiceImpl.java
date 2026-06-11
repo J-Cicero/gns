@@ -2,7 +2,6 @@ package com.backend.gns.wallet.domain.services.impl;
 
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.paiement.domain.services.PretScolariteService;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.TypeBourse;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
@@ -45,7 +44,6 @@ public class VersementServiceImpl implements VersementService {
   private final WalletService walletService;
   private final ScolariteYearRepository scolariteYearRepository;
   private final InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
-  private final PretScolariteService pretScolariteService;
 
   public VersementServiceImpl(
       VersementRepository versementRepository,
@@ -53,15 +51,13 @@ public class VersementServiceImpl implements VersementService {
       BoutiqueRepository boutiqueRepository,
       WalletService walletService,
       ScolariteYearRepository scolariteYearRepository,
-      InscriptionAnnuelleRepository inscriptionAnnuelleRepository,
-      PretScolariteService pretScolariteService) {
+      InscriptionAnnuelleRepository inscriptionAnnuelleRepository) {
     this.versementRepository = versementRepository;
     this.versementMapper = versementMapper;
     this.boutiqueRepository = boutiqueRepository;
     this.walletService = walletService;
     this.scolariteYearRepository = scolariteYearRepository;
     this.inscriptionAnnuelleRepository = inscriptionAnnuelleRepository;
-    this.pretScolariteService = pretScolariteService;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -157,7 +153,7 @@ public class VersementServiceImpl implements VersementService {
         inscriptionAnnuelleRepository.findAllByScolariteYear(year);
 
     for (InscriptionAnnuelle ins : inscriptions) {
-      if (ins.getStatut() == StatutInscription.ACTIVE && ins.isEstBoursier()) {
+      if (ins.isEstInscritDefinitif()) {
         BigDecimal montantAVerser = (montantFixe != null) ? montantFixe : ins.getPlafondAccorde();
         Student student = ins.getStudent();
 
@@ -172,14 +168,8 @@ public class VersementServiceImpl implements VersementService {
             v.setMontantVerse(montantAVerser);
             v.setDateVersement(LocalDateTime.now());
             v.setStatut(VersementStatut.VALIDEE);
-            v.setTypeVersement(
-                ins.getTypeBourse() == TypeBourse.BOURSE_DBS_54k
-                    ? VersementType.BOURSE_DBS_54k
-                    : VersementType.BOURSE_DBS_36k);
+            v.setTypeVersement(VersementType.RECHARGE_QUOTA_BOUTIQUE);
             versementRepository.save(v);
-
-            // 3. Rembourser automatiquement les dettes de scolarité
-            pretScolariteService.rembourserPretsEnAttente(student.getTrackingId(), montantAVerser);
 
             log.info("Versement réussi pour {}", student.getNom());
           } catch (Exception e) {
@@ -229,7 +219,7 @@ public class VersementServiceImpl implements VersementService {
 
     List<String> eligibleNames = new java.util.ArrayList<>();
     for (InscriptionAnnuelle ins : inscriptions) {
-      if (ins.getStatut() == StatutInscription.ACTIVE && ins.isEstBoursier()) {
+      if (ins.isEstInscritDefinitif()) {
         Student student = ins.getStudent();
         if (student != null && student.getWallet() != null) {
           eligibleNames.add(student.getNom() + " " + student.getPrenom());

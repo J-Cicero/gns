@@ -1,10 +1,11 @@
-package com.backend.gns.student.domain.models;
+package com.backend.gns.commerce.domain.models;
 
+import com.backend.gns.commerce.domain.enums.PaiementStatut;
+import com.backend.gns.commerce.domain.enums.PaiementType;
 import com.backend.gns.core.utils.BaseEntity;
-import com.backend.gns.student.domain.enums.SourceVerification;
-import com.backend.gns.student.domain.enums.StatutInscription;
-import com.backend.gns.student.domain.enums.StudentNiveau;
-import com.backend.gns.student.domain.enums.TypeBourse;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.wallet.domain.models.Wallet;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -17,7 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -28,47 +28,59 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(
-    name = "INSCRIPTION_ANNUELLE",
-    uniqueConstraints = {@UniqueConstraint(columnNames = {"student_id", "scolarite_year_id"})})
+@Table(name = "PAIEMENT")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class InscriptionAnnuelle extends BaseEntity {
+public class Paiement extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(length = 36, nullable = false, unique = true, updatable = false)
+  @Column(nullable = false, unique = true, updatable = false)
   private UUID trackingId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "commande_id", nullable = true)
+  private Commande commande;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "student_id", nullable = false)
   private Student student;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "scolarite_year_id", nullable = false)
-  private ScolariteYear scolariteYear;
+  @JoinColumn(name = "wallet_id", nullable = false)
+  private Wallet wallet;
 
   @Column(nullable = false)
-  private boolean estInscritDefinitif = false; // Désormais piloté par l'API Externe
+  // il est calculé automatiquement à 1% du montantDebite
+  private BigDecimal commission;
+
+  @Column(nullable = false)
+  private BigDecimal montantDebite;
+
+  @Column(nullable = false)
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime date;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
-  private StudentNiveau niveau;
-
-  @Column(nullable = false)
-  private boolean estEligibleBourse = false; // Nouveau : Éligibilité API Externe
+  private PaiementType typePaiement;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
-  private TypeBourse typeBourse; // Type de bourse fourni par l'API
-
-  @Column private LocalDateTime dateValidationApi; // Nouveau : Date réponse API
+  private PaiementStatut statutPaiement;
 
   @Column(nullable = false, precision = 10, scale = 2)
-  private BigDecimal plafondAccorde;
+  private BigDecimal montantNetBoutique;
+
+  @Column(nullable = false)
+  private boolean estLiquide = false; // Suivi de la répartition des commissions
+
+  @Column
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime dateLiquidation;
 }

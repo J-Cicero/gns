@@ -2,7 +2,6 @@ package com.backend.gns.wallet.domain.services.impl;
 
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.paiement.domain.services.PretScolariteService;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.TypeBourse;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
@@ -33,12 +32,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class WalletServiceImpl implements WalletService {
 
   private final WalletRepository walletRepository;
@@ -47,26 +46,8 @@ public class WalletServiceImpl implements WalletService {
   private final BoutiqueRepository boutiqueRepository;
   private final ScolariteYearRepository scolariteYearRepository;
   private final InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
-  private final PretScolariteService pretScolariteService;
   
   private static final int DEFAULT_PAGE_SIZE = 10;
-
-  public WalletServiceImpl(
-      WalletRepository walletRepository,
-      WalletMapper walletMapper,
-      VersementRepository versementRepository,
-      BoutiqueRepository boutiqueRepository,
-      ScolariteYearRepository scolariteYearRepository,
-      InscriptionAnnuelleRepository inscriptionAnnuelleRepository,
-      @Lazy PretScolariteService pretScolariteService) {
-    this.walletRepository = walletRepository;
-    this.walletMapper = walletMapper;
-    this.versementRepository = versementRepository;
-    this.boutiqueRepository = boutiqueRepository;
-    this.scolariteYearRepository = scolariteYearRepository;
-    this.inscriptionAnnuelleRepository = inscriptionAnnuelleRepository;
-    this.pretScolariteService = pretScolariteService;
-  }
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;

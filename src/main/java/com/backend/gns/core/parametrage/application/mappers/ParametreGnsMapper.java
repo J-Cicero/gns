@@ -12,22 +12,18 @@ public class ParametreGnsMapper {
   public ParametreGns toEntity(ParametreGnsRequest request) {
     if (request == null) return null;
     ParametreGns entity = new ParametreGns();
-    entity.setTrackingId(UUID.randomUUID());
-    entity.setNomParametre(request.nomParametre());
+    entity.setNomParametre(request.nomParametre().name());
     entity.setValeurParametre(request.valeurParametre());
     entity.setDescription(request.description());
-    entity.setEstActif(request.estActif());
     return entity;
   }
 
   public ParametreGnsResponse toResponse(ParametreGns entity) {
     if (entity == null) return null;
     return ParametreGnsResponse.builder()
-        .trackingId(entity.getTrackingId())
-        .nomParametre(entity.getNomParametre())
+        .nomParametre(com.backend.gns.core.parametrage.domain.enums.TypeParametreGns.valueOf(entity.getNomParametre()))
         .valeurParametre(entity.getValeurParametre())
         .description(entity.getDescription())
-        .estActif(entity.isEstActif())
         .build();
   }
 }

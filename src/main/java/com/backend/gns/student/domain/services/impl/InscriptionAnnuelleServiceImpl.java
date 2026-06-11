@@ -1,17 +1,13 @@
 package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.InscriptionAnnuelleRequest;
 import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleResponse;
 import com.backend.gns.student.application.mappers.InscriptionAnnuelleMapper;
-import com.backend.gns.student.domain.enums.StatutInscription;
-import com.backend.gns.student.domain.enums.TypeParametreDbs;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.InscriptionAnnuelleService;
-import com.backend.gns.student.domain.services.ParametreDbsService;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
@@ -39,7 +35,6 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   private final StudentRepository studentRepository;
   private final ScolariteYearRepository scolariteYearRepository;
   private final ParametreGnsService parametreGnsService;
-  private final ParametreDbsService parametreDbsService;
   private final WalletRepository walletRepository;
 
   private Pageable normalize(Pageable pageable) {
@@ -58,8 +53,9 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
             .orElseThrow(() -> new IllegalStateException("Aucune année scolaire ouverte"));
     inscription.setScolariteYear(year);
 
-    updatePlafondIfBoursier(inscription);
-
+    // Initialisation par défaut selon la refonte
+    inscription.setEstInscritDefinitif(false);
+    
     InscriptionAnnuelle savedInscription = inscriptionRepository.save(inscription);
     return inscriptionMapper.toResponse(savedInscription);
   }
@@ -72,18 +68,18 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée"));
 
-    // Logique d'éligibilité simplifiée
-    if (ins.getStudent().getStatutKYC() == com.backend.gns.core.domain.enums.KycStatus.VALIDEE) {
-      ins.setStatut(StatutInscription.ACTIVE);
-      updatePlafondIfBoursier(ins);
+    // La logique de validation est désormais pilotée par l'API externe (InscriptionExterneService)
+    // Ici nous nous assurons que le wallet est prêt si l'inscription est définie comme définitive
+    if (ins.isEstInscritDefinitif()) {
+        updatePlafond(ins);
     }
 
     return inscriptionMapper.toResponse(inscriptionRepository.save(ins));
   }
 
-  private void updatePlafondIfBoursier(InscriptionAnnuelle inscription) {
-    // Application du plafond fixe de 30 000 FCFA pour tous les étudiants inscrits
-    BigDecimal nouveauPlafond = new BigDecimal("30000");
+  private void updatePlafond(InscriptionAnnuelle inscription) {
+    // Application du plafond fixe pour les étudiants inscrits
+    BigDecimal nouveauPlafond = new BigDecimal("30000"); // A remplacer par une lecture dans ParametreGns si nécessaire
     inscription.setPlafondAccorde(nouveauPlafond);
 
     Student student = inscription.getStudent();
@@ -112,47 +108,17 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
                         "Inscription non trouvée avec l'ID: " + trackingId));
 
     inscription.setNiveau(request.niveau());
-    inscription.setCreditsTotalValides(request.creditsTotalValides());
-    inscription.setMoyenneBac(request.moyenneBac());
-    inscription.setEstBoursier(request.estBoursier());
-    inscription.setTypeBourse(request.typeBourse());
-    inscription.setStatut(request.statut());
-    inscription.setSource(request.source());
-
-    updatePlafondIfBoursier(inscription);
-
+    // Les champs obsolètes (crédits, moyenne, statut, source) ont été supprimés
+    
     InscriptionAnnuelle updatedInscription = inscriptionRepository.save(inscription);
     return inscriptionMapper.toResponse(updatedInscription);
   }
 
   @Override
   @Transactional
-  public InscriptionAnnuelleResponse updateStatus(UUID trackingId, StatutInscription statut) {
-    InscriptionAnnuelle inscription =
-        inscriptionRepository
-            .findByTrackingId(trackingId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Inscription non trouvée avec l'ID: " + trackingId));
-    inscription.setStatut(statut);
-
-    // Synchronize Student KYC status with DBS Decision
-    if (statut == StatutInscription.ACTIVE) {
-      Student student = inscription.getStudent();
-      if (student != null) {
-        student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.VALIDEE);
-        studentRepository.save(student);
-      }
-    } else if (statut == StatutInscription.REJETEE) {
-      Student student = inscription.getStudent();
-      if (student != null) {
-        student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.REJETE);
-        studentRepository.save(student);
-      }
-    }
-
-    return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
+  public InscriptionAnnuelleResponse updateStatus(UUID trackingId, com.backend.gns.student.domain.enums.StatutInscription statut) {
+      // Cette méthode est devenue obsolète dans la nouvelle architecture
+      throw new UnsupportedOperationException("Cette méthode est obsolète dans la nouvelle architecture.");
   }
 
   @Override
@@ -166,6 +132,11 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
                     new EntityNotFoundException(
                         "Inscription non trouvée avec l'ID: " + trackingId));
     inscription.setEstInscritDefinitif(estInscritDefinitif);
+    
+    if (estInscritDefinitif) {
+        updatePlafond(inscription);
+    }
+    
     return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
   }
 
@@ -202,10 +173,9 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Override
   @Transactional(readOnly = true)
   public Page<InscriptionAnnuelleResponse> findByStatut(
-      StatutInscription statut, Pageable pageable) {
-    return inscriptionRepository
-        .findByStatut(statut, normalize(pageable))
-        .map(inscriptionMapper::toResponse);
+      com.backend.gns.student.domain.enums.StatutInscription statut, Pageable pageable) {
+    // A adapter ou supprimer
+    return inscriptionRepository.findAll(normalize(pageable)).map(inscriptionMapper::toResponse);
   }
 
   @Override

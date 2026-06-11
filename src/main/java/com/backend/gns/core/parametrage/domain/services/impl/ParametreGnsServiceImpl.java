@@ -33,7 +33,6 @@ public class ParametreGnsServiceImpl implements ParametreGnsService {
             existing -> {
               existing.setValeurParametre(request.valeurParametre());
               existing.setDescription(request.description());
-              existing.setEstActif(request.estActif());
               return mapper.toResponse(repository.save(existing));
             })
         .orElseGet(

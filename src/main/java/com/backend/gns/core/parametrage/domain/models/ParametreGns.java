@@ -1,10 +1,14 @@
 package com.backend.gns.core.parametrage.domain.models;
 
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.utils.BaseEntity;
-import jakarta.persistence.*;
-import java.util.UUID;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
+
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "PARAMETRE_GNS")
@@ -12,24 +16,16 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ParametreGns extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(length = 36, nullable = false, unique = true, updatable = false)
-  private UUID trackingId = UUID.randomUUID();
-
-  @Enumerated(EnumType.STRING)
-  @Column(name = "nom_parametre", nullable = false, unique = true, length = 50)
-  private TypeParametreGns nomParametre;
-
-  @Column(name = "valeur_parametre", nullable = false)
-  private String valeurParametre;
-
-  @Column(nullable = false)
-  private boolean estActif = true;
-
-  @Column private String description;
+    private String nomParametre;
+    private String valeurParametre;
+    private BigDecimal valeurAsBigDecimal;
+    private Integer valeurAsInteger;
+    private String description;
 }

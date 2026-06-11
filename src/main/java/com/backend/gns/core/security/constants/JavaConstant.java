@@ -17,8 +17,6 @@ public class JavaConstant {
     "/actuator/info"
   };
 
-  public static final String[] CAMPAGNE_DBS_URLS = {API_BASE_URL + "/campagnes"};
-
   public static final String[] CAMPAGNE_GNS_URLS = {API_BASE_URL + "/campagnes/*/process"};
 
   // URLs exclusives pour ADMINISTRATEUR central (ADMIN_GNS)
@@ -50,14 +48,6 @@ public class JavaConstant {
   // URLs exclusives pour PORTAIL BANQUE (ADMIN_BANQUE)
   public static final String[] BANQUE_URLS = {
     API_BASE_URL + "/bank-portal/**", API_BASE_URL + "/bank-operator/**"
-  };
-
-  // URLs exclusives pour UNIVERSITY ADMIN
-  public static final String[] UNIVERSITY_URLS = {API_BASE_URL + "/admin-university/**"};
-
-  // URLs exclusives pour ADMIN DBS
-  public static final String[] DBS_URLS = {
-    API_BASE_URL + "/admin-dbs/**", API_BASE_URL + "/regles-bourse-dbs/**"
   };
 
   // URLs PARTAGÉES (avec gestion de rôles multiples)

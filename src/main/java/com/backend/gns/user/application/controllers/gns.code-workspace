@@ -1,7 +1,14 @@
 {
-    "folders": [
-        {
-            "path": "../../../student/application/mappers"
-        }
-    ]
+	"folders": [
+		{
+			"path": "../../../../../../../../.."
+		},
+		{
+			"path": "../../../../../../../../../../gns_front"
+		},
+		{
+			"path": "../../../../../../../../../../gns_mobile"
+		}
+	],
+	"settings": {}
 }

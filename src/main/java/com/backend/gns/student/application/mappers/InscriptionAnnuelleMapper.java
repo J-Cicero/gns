@@ -24,12 +24,6 @@ public class InscriptionAnnuelleMapper {
     InscriptionAnnuelle inscription = new InscriptionAnnuelle();
     inscription.setTrackingId(UUID.randomUUID());
     inscription.setNiveau(request.niveau());
-    inscription.setCreditsTotalValides(request.creditsTotalValides());
-    inscription.setMoyenneBac(request.moyenneBac());
-    inscription.setEstBoursier(request.estBoursier());
-    inscription.setTypeBourse(request.typeBourse());
-    inscription.setStatut(request.statut());
-    inscription.setSource(request.source());
 
     if (request.studentTrackingId() != null) {
       Student student =
@@ -64,15 +58,11 @@ public class InscriptionAnnuelleMapper {
                 ? inscription.getScolariteYear().getLibelle()
                 : null)
         .niveau(inscription.getNiveau())
-        .creditsTotalValides(inscription.getCreditsTotalValides())
-        .moyenneBac(inscription.getMoyenneBac())
-        .estBoursier(inscription.isEstBoursier())
-        .typeBourse(inscription.getTypeBourse())
-        .statut(inscription.getStatut())
-        .source(inscription.getSource())
-        .dateActivation(inscription.getDateActivation())
-        .plafondAccorde(inscription.getPlafondAccorde())
         .estInscritDefinitif(inscription.isEstInscritDefinitif())
+        .estEligibleBourse(inscription.isEstEligibleBourse())
+        .typeBourse(inscription.getTypeBourse())
+        .dateValidationApi(inscription.getDateValidationApi())
+        .plafondAccorde(inscription.getPlafondAccorde())
         .build();
   }
 }

@@ -11,7 +11,6 @@ import com.backend.gns.user.application.mappers.UserMapper;
 import com.backend.gns.user.domain.enums.UserRole;
 import com.backend.gns.user.domain.exception.ResourceNotFoundException;
 import com.backend.gns.user.domain.models.BankOperator;
-import com.backend.gns.user.domain.models.UniversityAdmin;
 import com.backend.gns.user.domain.models.User;
 import com.backend.gns.user.domain.services.UserService;
 import com.backend.gns.user.infrastructure.repositories.UserRepository;
@@ -86,14 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     User user;
-    if (role == UserRole.UNIVERSITY_ADMIN) {
-      UniversityAdmin univAdmin = new UniversityAdmin();
-      if (request.universiteTrackingId() != null) {
-        univAdmin.setUniversite(universiteRepository.findByTrackingId(request.universiteTrackingId())
-            .orElseThrow(() -> new ResourceNotFoundException("Université non trouvée")));
-      }
-      user = univAdmin;
-    } else if (role == UserRole.ADMIN_BANQUE) {
+    if (role == UserRole.ADMIN_BANQUE) {
       BankOperator bankOp = new BankOperator();
       if (request.banquePartenaireTrackingId() != null) {
         bankOp.setBanquePartenaire(banqueRepository.findByTrackingId(request.banquePartenaireTrackingId())
