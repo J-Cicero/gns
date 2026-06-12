@@ -34,6 +34,9 @@ public class CompteBancaire extends BaseEntity {
   @Column(length = 36, nullable = false)
   private UUID proprietaireTrackingId;
 
+  @Column(length = 50, nullable = false)
+  private String numeroCompte;
+
   @Enumerated(EnumType.STRING)
   @Column(length = 20, nullable = false)
   private ProprietaireType typeProprietaire;

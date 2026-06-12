@@ -52,4 +52,11 @@ public class UniversiteController {
   public ResponseEntity<List<Map<String, Object>>> getSummaryStats() {
     return ResponseEntity.ok(service.getSummaryStats());
   }
+
+  @DeleteMapping("/{trackingId}")
+  @Operation(summary = "Supprimer une université")
+  public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
+    service.delete(trackingId);
+    return ResponseEntity.noContent().build();
+  }
 }

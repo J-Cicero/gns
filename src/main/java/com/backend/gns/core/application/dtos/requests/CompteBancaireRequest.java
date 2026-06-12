@@ -6,5 +6,6 @@ public record CompteBancaireRequest(
     UUID ribDocumentTrackingId,
     UUID banqueTrackingId,
     UUID proprietaireTrackingId,
-    String typeProprietaire
+    String typeProprietaire,
+    String numeroCompte
 ) {}

@@ -5,5 +5,6 @@ public enum TypeDocument {
   SOUCHE_TAMPONNEE,
   RELEVE_NOTES,
   FICHE_UE,
-  PIECE_IDENTITE
+  PIECE_IDENTITE,
+  RIB
 }

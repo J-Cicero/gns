@@ -1,13 +1,17 @@
 package com.backend.gns.core.domain.services.impl;
 
+import com.backend.gns.core.application.dtos.requests.BanqueRequest;
 import com.backend.gns.core.application.dtos.responses.BanqueResponse;
 import com.backend.gns.core.application.mappers.BanqueMapper;
+import com.backend.gns.core.domain.models.Banque;
 import com.backend.gns.core.domain.services.BanqueService;
 import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,5 +25,16 @@ public class BanqueServiceImpl implements BanqueService {
     return banqueRepository.findAll().stream()
         .map(banqueMapper::toResponse)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  @Transactional
+  public BanqueResponse createBanque(BanqueRequest request) {
+    Banque banque = new Banque();
+    banque.setTrackingId(UUID.randomUUID());
+    banque.setNom(request.nom());
+    banque.setCode(request.code());
+    banque.setLogoUrl(request.logoUrl());
+    return banqueMapper.toResponse(banqueRepository.save(banque));
   }
 }

@@ -11,6 +11,9 @@ import com.backend.gns.user.application.mappers.UserMapper;
 import com.backend.gns.user.domain.enums.UserRole;
 import com.backend.gns.user.domain.exception.ResourceNotFoundException;
 import com.backend.gns.user.domain.models.User;
+import com.backend.gns.user.domain.models.AdminBanque;
+import com.backend.gns.user.application.dtos.requests.AdminBanqueRequest;
+import com.backend.gns.core.domain.models.Banque;
 import com.backend.gns.user.domain.services.UserService;
 import com.backend.gns.user.infrastructure.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -97,6 +100,31 @@ public class UserServiceImpl implements UserService {
 
     User savedUser = userRepository.save(user);
     log.info("Utilisateur créé avec succès: {}", savedUser.getEmail());
+    return userMapper.toResponse(savedUser);
+  }
+
+  @Override
+  @Transactional
+  public UserResponse createAdminBanque(AdminBanqueRequest request) {
+    log.info("Tentative de création d'admin banque: {}", request.email());
+
+    Banque banque = banqueRepository.findByTrackingId(request.banqueTrackingId())
+        .orElseThrow(() -> new ResourceNotFoundException("Banque non trouvée"));
+
+    AdminBanque adminBanque = new AdminBanque();
+    adminBanque.setTrackingId(UUID.randomUUID());
+    adminBanque.setNom(request.nom());
+    adminBanque.setPrenom(request.prenom());
+    adminBanque.setEmail(request.email());
+    adminBanque.setTelephone(request.telephone());
+    adminBanque.setPays(request.pays());
+    adminBanque.setRole(UserRole.ADMIN_BANQUE);
+    adminBanque.setEstActif(true);
+    adminBanque.setMotDePasse(passwordEncoder.encode(request.motDePasse()));
+    adminBanque.setBanque(banque);
+
+    AdminBanque savedUser = userRepository.save(adminBanque);
+    log.info("Admin Banque créé avec succès: {}", savedUser.getEmail());
     return userMapper.toResponse(savedUser);
   }
 

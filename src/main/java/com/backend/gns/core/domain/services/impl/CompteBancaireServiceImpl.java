@@ -34,17 +34,24 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
     public CompteBancaireResponse create(CompteBancaireRequest request) {
         Banque banque = banqueRepository.findByTrackingId(request.banqueTrackingId())
                 .orElseThrow(() -> new EntityNotFoundException("Banque non trouvée"));
-        
-        com.backend.gns.student.domain.models.DocumentEtudiant ribDocument = documentRepository.findByTrackingId(request.ribDocumentTrackingId())
-                .orElseThrow(() -> new EntityNotFoundException("Document RIB non trouvé"));
-        
+
+        com.backend.gns.student.domain.models.DocumentEtudiant ribDocument =
+                documentRepository.findByTrackingId(request.ribDocumentTrackingId())
+                        .orElseThrow(() -> new EntityNotFoundException("Document RIB non trouvé"));
+
         CompteBancaire compte = new CompteBancaire();
         compte.setTrackingId(UUID.randomUUID());
-        compte.setRibDocument(ribDocument);
         compte.setBanque(banque);
-        compte.setProprietaireTrackingId(request.proprietaireTrackingId());
+        compte.setRibDocument(ribDocument);
+        compte.setNumeroCompte(request.numeroCompte());
+
+        UUID proprietaireId = request.proprietaireTrackingId();
+        if (proprietaireId == null && "GNS".equals(request.typeProprietaire())) {
+            proprietaireId = UUID.randomUUID();
+        }
+        compte.setProprietaireTrackingId(proprietaireId);
         compte.setTypeProprietaire(ProprietaireType.valueOf(request.typeProprietaire()));
-        
+
         return mapper.toResponse(repository.save(compte));
     }
 
