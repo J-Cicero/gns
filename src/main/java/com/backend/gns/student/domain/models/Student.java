@@ -30,7 +30,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Student extends User {
 
   @Column(length = 50, nullable = true, unique = true)
-  private String numEtudiantUniv;
+  private String matricule;
 
   @Column(name = "pin_code", length = 60, nullable = true)
   private String pinCode;

@@ -12,7 +12,7 @@ public class ParametreGnsMapper {
   public ParametreGns toEntity(ParametreGnsRequest request) {
     if (request == null) return null;
     ParametreGns entity = new ParametreGns();
-    entity.setNomParametre(request.nomParametre().name());
+    entity.setNomParametre(request.nomParametre());
     entity.setValeurParametre(request.valeurParametre());
     entity.setDescription(request.description());
     return entity;
@@ -21,7 +21,7 @@ public class ParametreGnsMapper {
   public ParametreGnsResponse toResponse(ParametreGns entity) {
     if (entity == null) return null;
     return ParametreGnsResponse.builder()
-        .nomParametre(com.backend.gns.core.parametrage.domain.enums.TypeParametreGns.valueOf(entity.getNomParametre()))
+        .nomParametre(entity.getNomParametre())
         .valeurParametre(entity.getValeurParametre())
         .description(entity.getDescription())
         .build();

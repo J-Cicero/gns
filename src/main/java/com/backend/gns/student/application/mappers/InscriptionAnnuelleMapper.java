@@ -52,7 +52,7 @@ public class InscriptionAnnuelleMapper {
         .studentPrenom(
             inscription.getStudent() != null ? inscription.getStudent().getPrenom() : null)
         .numEtudiantUniv(
-            inscription.getStudent() != null ? inscription.getStudent().getNumEtudiantUniv() : null)
+            inscription.getStudent() != null ? inscription.getStudent().getMatricule() : null)
         .anneeAcademique(
             inscription.getScolariteYear() != null
                 ? inscription.getScolariteYear().getLibelle()

@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum TypeBourse {
-  BOURSE_DBS_36k(new BigDecimal("36000")),
-  BOURSE_DBS_54k(new BigDecimal("54000"));
+  BOURSE_EXCELLENCE(new BigDecimal("54000")),
+  BOURSE_MERITE(new BigDecimal("36000"));
 
   private final BigDecimal montant;
 }

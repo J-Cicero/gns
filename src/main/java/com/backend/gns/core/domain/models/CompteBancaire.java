@@ -23,8 +23,9 @@ public class CompteBancaire extends BaseEntity {
   @Column(length = 36, nullable = false, unique = true, updatable = false)
   private UUID trackingId;
 
-  @Column(nullable = false)
-  private String numeroCompte;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "document_rib_id", nullable = true)
+  private com.backend.gns.student.domain.models.DocumentEtudiant ribDocument;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "banque_id", nullable = false)

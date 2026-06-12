@@ -23,7 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private JwtAuthorizationToken authenticationFilter;
+  private final JwtAuthorizationToken authenticationFilter;
 
   public SecurityConfig(JwtAuthorizationToken authenticationFilter) {
     this.authenticationFilter = authenticationFilter;
@@ -36,10 +36,8 @@ public class SecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .authorizeHttpRequests(
-            auth ->
-                auth.anyRequest()
-                    .permitAll());
+        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+    
     return http.build();
   }
 
@@ -57,7 +55,6 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    // TEMPORAIRE : Autoriser toutes les origines pour les tests
     configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
     configuration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));

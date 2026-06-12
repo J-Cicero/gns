@@ -12,4 +12,5 @@ public interface TransactionService {
     Optional<TransactionResponse> findByTrackingId(UUID trackingId);
     Page<TransactionResponse> findAll(Pageable pageable);
     Page<TransactionResponse> findByBoutiqueId(UUID boutiqueId, Pageable pageable);
+  java.math.BigDecimal getVolumeValide();
 }

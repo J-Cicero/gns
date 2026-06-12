@@ -53,6 +53,11 @@ public class UniversiteServiceImpl implements UniversiteService {
         repository
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new RuntimeException("Université non trouvée"));
+    
+    if (studentRepository.countByUniversite(entity) > 0) {
+        throw new IllegalStateException("Impossible de supprimer cette université : des étudiants y sont rattachés.");
+    }
+    
     repository.delete(entity);
   }
 

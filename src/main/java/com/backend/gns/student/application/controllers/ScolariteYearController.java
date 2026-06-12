@@ -45,10 +45,10 @@ public class ScolariteYearController {
   }
 
   @PostMapping("/{trackingId}/cloturer")
-  @Operation(summary = "Clôturer une année et ouvrir la suivante")
-  public ResponseEntity<ScolariteYearResponse> cloturerEtOuvrirNouvelle(
-      @PathVariable UUID trackingId, @RequestBody ScolariteYearRequest request) {
-    return ResponseEntity.ok(scolariteYearService.cloturerEtOuvrirNouvelle(trackingId, request));
+  @Operation(summary = "Clôturer une année scolaire")
+  public ResponseEntity<Void> cloturer(@PathVariable UUID trackingId) {
+    scolariteYearService.cloturer(trackingId);
+    return ResponseEntity.noContent().build();
   }
 
   @GetMapping

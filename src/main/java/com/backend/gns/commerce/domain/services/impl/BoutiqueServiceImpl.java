@@ -188,6 +188,15 @@ public class BoutiqueServiceImpl implements BoutiqueService {
 
   @Override
   @Transactional(readOnly = true)
+  public long countLowQuota() {
+      // Pour l'instant, on compte toutes les boutiques dont le solde est <= 10% du plafond par défaut
+      return boutiqueRepository.findAll().stream()
+          .filter(b -> b.getWallet() != null && b.getWallet().getSolde().compareTo(b.getWallet().getPlafond().multiply(new BigDecimal("0.10"))) <= 0)
+          .count();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public Page<BoutiqueResponse> getBoutiquesEnAlerteQuota(
       BigDecimal seuilPourcentage, Pageable pageable) {
     return boutiqueRepository

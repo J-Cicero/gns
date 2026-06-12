@@ -49,6 +49,14 @@ public class LiquidationServiceImpl implements LiquidationService {
     }
 
     @Override
+    public java.math.BigDecimal getPendingTotal() {
+        return liquidationRepository.findAll().stream()
+                .filter(l -> l.getStatut() == LiquidationStatut.EN_ATTENTE)
+                .map(Liquidation::getMontantALiquider)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+    }
+
+    @Override
     @Transactional
     public LiquidationResponse validerLiquidation(UUID trackingId, String referenceVirement) {
         Liquidation liquidation = liquidationRepository.findByTrackingId(trackingId)

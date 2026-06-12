@@ -70,7 +70,12 @@ public class CommandeServiceImpl implements CommandeService {
             .findByTrackingId(request.boutiqueTrackingId())
             .orElseThrow(() -> new EntityNotFoundException("Boutique non trouvée"));
 
-    Commande commande = commandeMapper.toEntity(request, student, boutique);
+    Commande commande = commandeMapper.toEntity(request);
+    
+    // Les relations sont gérées par le Mapper via les repositories
+    if (commande.getStudent() == null || commande.getBoutique() == null) {
+        throw new RuntimeException("Étudiant ou Boutique non trouvé");
+    }
     commande.setStatut(CommandeStatut.EN_ATTENTE);
     commande.setDateCommande(LocalDateTime.now());
     Commande savedCommande = commandeRepository.save(commande);

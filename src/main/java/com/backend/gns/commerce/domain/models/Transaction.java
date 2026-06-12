@@ -48,6 +48,12 @@ public class Transaction {
     private BigDecimal commissionTotale;
 
     @Column(nullable = false)
+    private BigDecimal commissionGns;
+
+    @Column(nullable = false)
+    private BigDecimal commissionBanque;
+
+    @Column(nullable = false)
     private LocalDateTime date;
 
     @Enumerated(EnumType.STRING)

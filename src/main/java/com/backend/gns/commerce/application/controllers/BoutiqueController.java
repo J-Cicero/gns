@@ -162,6 +162,11 @@ public class BoutiqueController {
     }
   }
 
+  @GetMapping("/stats/low-quota-count")
+  public ResponseEntity<Long> getLowQuotaCount() {
+    return ResponseEntity.ok(boutiqueService.countLowQuota());
+  }
+
   @GetMapping
   @Operation(
       summary = "Récupérer toutes les boutiques",

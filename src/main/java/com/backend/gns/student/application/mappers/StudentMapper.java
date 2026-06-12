@@ -36,7 +36,7 @@ public class StudentMapper {
     student.setTelephone(request.telephone());
     student.setDateNaissance(request.dateNaissance());
     student.setStatutKYC(request.statutKYC());
-    student.setNumEtudiantUniv(request.numEtudiantUniv());
+    student.setMatricule(request.matricule());
 
     if (request.pinCode() != null && !request.pinCode().isEmpty()) {
       student.setPinCode(request.pinCode());
@@ -81,7 +81,7 @@ public class StudentMapper {
         .telephone(student.getTelephone())
         .dateNaissance(student.getDateNaissance())
         .statutKYC(student.getStatutKYC())
-        .numEtudiantUniv(student.getNumEtudiantUniv())
+        .matricule(student.getMatricule())
         .walletTrackingId(student.getWallet() != null ? student.getWallet().getTrackingId() : null)
         .solde(student.getWallet() != null ? student.getWallet().getSolde() : BigDecimal.ZERO)
         .universiteTrackingId(
@@ -106,7 +106,7 @@ public class StudentMapper {
     student.setTelephone(response.telephone());
     student.setDateNaissance(response.dateNaissance());
     student.setStatutKYC(response.statutKYC());
-    student.setNumEtudiantUniv(response.numEtudiantUniv());
+    student.setMatricule(response.matricule());
 
     if (response.walletTrackingId() != null) {
       Wallet wallet =

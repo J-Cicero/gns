@@ -28,4 +28,5 @@ public interface BoutiqueService {
   Page<BoutiqueResponse> findAll(Pageable pageable);
 
   Page<BoutiqueResponse> getBoutiquesEnAlerteQuota(BigDecimal seuilPourcentage, Pageable pageable);
+  long countLowQuota();
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
 
@@ -19,6 +19,11 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody TransactionRequest request) {
         return ResponseEntity.ok(transactionService.create(request));
+    }
+
+    @GetMapping("/stats/volume-valide")
+    public ResponseEntity<java.math.BigDecimal> getVolumeValide() {
+        return ResponseEntity.ok(transactionService.getVolumeValide());
     }
 
     @GetMapping("/{trackingId}")

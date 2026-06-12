@@ -1,25 +1,36 @@
 package com.backend.gns.core.application.controllers;
 
-import com.backend.gns.core.domain.models.CompteBancaire;
-import com.backend.gns.core.infrastructure.repositories.CompteBancaireRepository;
+import com.backend.gns.core.application.dtos.requests.CompteBancaireRequest;
+import com.backend.gns.core.application.dtos.responses.CompteBancaireResponse;
+import com.backend.gns.core.domain.services.CompteBancaireService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/compte-bancaire")
+@RequestMapping("/banques/comptes-gns")
 @RequiredArgsConstructor
 public class CompteBancaireController {
 
-  private final CompteBancaireRepository compteBancaireRepository;
+    private final CompteBancaireService service;
 
-  @GetMapping("/proprietaire/{trackingId}")
-  public ResponseEntity<List<CompteBancaire>> getByProprietaire(@PathVariable UUID trackingId) {
-    return ResponseEntity.ok(compteBancaireRepository.findByProprietaireTrackingId(trackingId));
-  }
+    @PostMapping
+    public ResponseEntity<CompteBancaireResponse> create(@RequestBody CompteBancaireRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CompteBancaireResponse>> findAll() {
+        return ResponseEntity.ok(service.findAll());
+    }
+
+    @DeleteMapping("/{trackingId}")
+    public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
+        service.delete(trackingId);
+        return ResponseEntity.noContent().build();
+    }
 }

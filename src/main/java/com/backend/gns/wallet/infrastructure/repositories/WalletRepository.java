@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -42,4 +43,7 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
   @Query("SELECT w FROM Wallet w WHERE w.solde > :amount ORDER BY w.solde DESC")
   Page<Wallet> findBySoldeGreaterThan(@Param("amount") BigDecimal amount, Pageable pageable);
+    @Modifying
+    @Query("UPDATE Wallet w SET w.statutWallet = :status WHERE w.typeWallet = :type")
+    void updateStatutByType(@Param("status") WalletStatus status, @Param("type") WalletType type);
 }

@@ -15,7 +15,7 @@ public record StudentResponse(
     Boolean estActif,
     String telephone,
     LocalDateTime dateNaissance,
-    String numEtudiantUniv,
+    String matricule,
     KycStatus statutKYC,
     UUID walletTrackingId,
     BigDecimal solde,

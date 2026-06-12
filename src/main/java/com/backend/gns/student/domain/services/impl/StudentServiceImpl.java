@@ -171,6 +171,15 @@ public class StudentServiceImpl implements StudentService {
   }
 
   @Override
+  @Transactional
+  public StudentResponse assignerMatricule(UUID trackingId, String matricule) {
+    log.info("Assignation du matricule {} à l'étudiant {}", matricule, trackingId);
+    Student student = findStudentOrThrow(trackingId);
+    student.setMatricule(matricule);
+    return studentMapper.toResponse(studentRepository.save(student));
+  }
+
+  @Override
   public long countAll() {
     return studentRepository.count();
   }

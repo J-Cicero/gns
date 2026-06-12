@@ -30,6 +30,8 @@ public class TransactionMapper {
             entity.getMontantDebite(),
             entity.getMontantNetBoutique(),
             entity.getCommissionTotale(),
+            entity.getCommissionGns(),
+            entity.getCommissionBanque(),
             entity.getDate(),
             entity.getStatut()
         );

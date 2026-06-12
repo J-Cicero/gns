@@ -1,14 +1,5 @@
 package com.backend.gns.wallet.domain.services.impl;
 
-import com.backend.gns.commerce.domain.models.Boutique;
-import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
-import com.backend.gns.student.domain.enums.StatutInscription;
-import com.backend.gns.student.domain.enums.TypeBourse;
-import com.backend.gns.student.domain.models.InscriptionAnnuelle;
-import com.backend.gns.student.domain.models.ScolariteYear;
-import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
-import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
 import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
 import com.backend.gns.wallet.application.mappers.WalletMapper;
@@ -21,10 +12,8 @@ import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.domain.services.WalletService;
 import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -43,9 +32,6 @@ public class WalletServiceImpl implements WalletService {
   private final WalletRepository walletRepository;
   private final WalletMapper walletMapper;
   private final VersementRepository versementRepository;
-  private final BoutiqueRepository boutiqueRepository;
-  private final ScolariteYearRepository scolariteYearRepository;
-  private final InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
   
   private static final int DEFAULT_PAGE_SIZE = 10;
 
@@ -63,6 +49,31 @@ public class WalletServiceImpl implements WalletService {
               return new com.backend.gns.user.domain.exception.ResourceNotFoundException(
                   "Portefeuille non trouvé avec l'ID: " + trackingId);
             });
+  }
+
+  private void updateWalletBalance(Wallet wallet, BigDecimal amount, boolean isCredit) {
+    if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+      throw new IllegalArgumentException("Le montant doit être strictement positif.");
+    }
+    
+    if (isCredit) {
+      ensureWalletCanReceiveFunds(wallet);
+      if (wallet.getPlafond() == null) {
+        wallet.setPlafond(wallet.getTypeWallet() == WalletType.STUDENT ? new BigDecimal("30000") : new BigDecimal("100000"));
+      }
+      if (wallet.getSolde().add(amount).compareTo(wallet.getPlafond()) > 0) {
+        throw new IllegalStateException("Crédit refusé : plafond dépassé.");
+      }
+      wallet.setSolde(wallet.getSolde().add(amount));
+    } else {
+      ensureWalletCanSpend(wallet);
+      if (wallet.getSolde().compareTo(amount) < 0) {
+        throw new IllegalStateException("Solde insuffisant.");
+      }
+      wallet.setSolde(wallet.getSolde().subtract(amount));
+    }
+    walletRepository.saveAndFlush(wallet);
+    log.info("Portefeuille {} mis à jour. Nouveau solde: {}", wallet.getTrackingId(), wallet.getSolde());
   }
 
   private void ensureWalletCanReceiveFunds(Wallet wallet) {
@@ -195,56 +206,13 @@ public class WalletServiceImpl implements WalletService {
   @Override
   @Transactional
   public void crediter(UUID walletTrackingId, BigDecimal montant) {
-    log.info("Crédit portefeuille trackingId: {}, montant: {}", walletTrackingId, montant);
-
-    if (montant == null || montant.compareTo(BigDecimal.ZERO) <= 0) {
-      throw new IllegalArgumentException("Le montant à créditer doit être strictement positif.");
-    }
-
-    Wallet wallet = findWalletOrThrow(walletTrackingId);
-    
-    // Réparation automatique au vol
-    if (wallet.getPlafond() == null) {
-      wallet.setPlafond(wallet.getTypeWallet() == WalletType.STUDENT ? new BigDecimal("30000") : new BigDecimal("100000"));
-    }
-
-    ensureWalletCanReceiveFunds(wallet);
-
-    BigDecimal nouveauSolde = wallet.getSolde().add(montant);
-
-    if (nouveauSolde.compareTo(wallet.getPlafond()) > 0) {
-      throw new IllegalStateException(
-          "Crédit refusé : le solde dépasserait le plafond autorisé de " + wallet.getPlafond());
-    }
-
-    wallet.setSolde(nouveauSolde);
-    walletRepository.saveAndFlush(wallet);
-    log.info("Crédit effectué. Nouveau solde: {}, trackingId: {}", nouveauSolde, walletTrackingId);
+    updateWalletBalance(findWalletOrThrow(walletTrackingId), montant, true);
   }
 
   @Override
   @Transactional
   public void debiter(UUID walletTrackingId, BigDecimal montant) {
-    log.info("Débit portefeuille trackingId: {}, montant: {}", walletTrackingId, montant);
-
-    if (montant == null || montant.compareTo(BigDecimal.ZERO) <= 0) {
-      throw new IllegalArgumentException("Le montant à débiter doit être strictement positif.");
-    }
-
-    Wallet wallet = findWalletOrThrow(walletTrackingId);
-    ensureWalletCanSpend(wallet);
-    if (wallet.getSolde().compareTo(montant) < 0) {
-      throw new IllegalStateException(
-          "Solde insuffisant. Solde actuel: "
-              + wallet.getSolde()
-              + ", Montant demandé: "
-              + montant);
-    }
-
-    BigDecimal nouveauSolde = wallet.getSolde().subtract(montant);
-    wallet.setSolde(nouveauSolde);
-    walletRepository.saveAndFlush(wallet);
-    log.info("Débit effectué. Nouveau solde: {}, trackingId: {}", nouveauSolde, walletTrackingId);
+    updateWalletBalance(findWalletOrThrow(walletTrackingId), montant, false);
   }
 
   @Override
@@ -294,15 +262,7 @@ public class WalletServiceImpl implements WalletService {
   @Transactional
   public void gelerTousLesWalletsEtudiant(boolean geler) {
     WalletStatus targetStatus = geler ? WalletStatus.GELE : WalletStatus.ACTIF;
-    java.util.List<Wallet> wallets =
-        walletRepository.findAll().stream()
-            .filter(w -> w.getTypeWallet() == WalletType.STUDENT)
-            .toList();
-    for (Wallet w : wallets) {
-      w.setStatutWallet(targetStatus);
-      walletRepository.save(w);
-    }
-    log.info(
-        "Tous les portefeuilles étudiants ont été mis à jour avec le statut: {}", targetStatus);
+    walletRepository.updateStatutByType(targetStatus, WalletType.STUDENT);
+    log.info("Tous les portefeuilles étudiants ont été mis à jour avec le statut: {}", targetStatus);
   }
 }

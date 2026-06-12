@@ -61,28 +61,13 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
 
   @Override
   @Transactional
-  public ScolariteYearResponse cloturerEtOuvrirNouvelle(
-      UUID oldTrackingId, ScolariteYearRequest newYearRequest) {
-    ScolariteYear oldYear =
-        scolariteYearRepository
-            .findByTrackingId(oldTrackingId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Année scolaire non trouvée avec l'ID: " + oldTrackingId));
-
-    oldYear.setEstOuverte(false);
-    oldYear.setEstCloturee(true);
-    scolariteYearRepository.save(oldYear);
-
-    // On crée la nouvelle
-    ScolariteYear newYear = scolariteYearMapper.toEntity(newYearRequest);
-    newYear.setTrackingId(UUID.randomUUID());
-    newYear.setEstOuverte(true);
-    newYear.setEstCloturee(false);
-
-    ScolariteYear savedNewYear = scolariteYearRepository.save(newYear);
-    return scolariteYearMapper.toResponse(savedNewYear);
+  public void cloturer(UUID trackingId) {
+    ScolariteYear year = scolariteYearRepository.findByTrackingId(trackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Année non trouvée"));
+    
+    year.setEstOuverte(false);
+    year.setEstCloturee(true);
+    scolariteYearRepository.save(year);
   }
 
   @Override

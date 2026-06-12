@@ -25,6 +25,4 @@ public record UserRequest(
         @NotNull(message = "Le mot de passe est obligatoire")
         String motDePasse,
     String role,
-    String pays,
-    UUID universiteTrackingId,
-    UUID banquePartenaireTrackingId) {}
+    String pays) {}

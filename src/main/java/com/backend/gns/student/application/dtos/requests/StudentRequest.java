@@ -14,7 +14,7 @@ public record StudentRequest(
     Boolean estActif,
     String telephone,
     LocalDateTime dateNaissance,
-    String numEtudiantUniv,
+    String matricule,
     KycStatus statutKYC,
     UUID walletTrackingId,
     UUID banqueEtudiantTrackingId,

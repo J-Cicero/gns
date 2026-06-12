@@ -12,6 +12,8 @@ public record TransactionResponse(
     BigDecimal montantDebite,
     BigDecimal montantNetBoutique,
     BigDecimal commissionTotale,
+    BigDecimal commissionGns,
+    BigDecimal commissionBanque,
     LocalDateTime date,
     TransactionStatut statut
 ) {}

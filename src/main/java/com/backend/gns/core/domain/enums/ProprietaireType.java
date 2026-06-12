@@ -4,5 +4,6 @@ public enum ProprietaireType {
     STUDENT,
     UNIVERSITY,
     ADMIN,
-    MERCHANT
+    MERCHANT,
+    GNS
 }

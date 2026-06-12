@@ -49,9 +49,11 @@ public class VersementController {
       description =
           "Effectue les versements de bourse pour tous les étudiants éligibles d'une année")
   public ResponseEntity<?> effectuerVersementMasseEtudiants(
-      @RequestParam UUID scolariteYearTrackingId, @RequestParam BigDecimal montantFixe) {
+      @RequestParam UUID scolariteYearTrackingId, 
+      @RequestParam(required = false) com.backend.gns.wallet.domain.enums.WalletStatus statutCible,
+      @RequestParam BigDecimal montantFixe) {
     try {
-      versementService.effectuerVersementMasseEtudiants(scolariteYearTrackingId, montantFixe);
+      versementService.effectuerVersementMasseEtudiants(scolariteYearTrackingId, statutCible, montantFixe);
       return ResponseEntity.ok(
           Map.of("success", true, "message", "Versements en masse lancés avec succès"));
     } catch (Exception e) {
@@ -65,9 +67,11 @@ public class VersementController {
       summary = "Recharge quota boutiques en masse",
       description = "Recharge le quota des boutiques dont le solde est bas")
   public ResponseEntity<?> effectuerVersementMasseBoutiques(
-      @RequestParam BigDecimal seuil, @RequestParam BigDecimal montantQuota) {
+      @RequestParam BigDecimal seuil, 
+      @RequestParam(required = false) com.backend.gns.wallet.domain.enums.WalletStatus statutCible,
+      @RequestParam BigDecimal montantQuota) {
     try {
-      versementService.effectuerVersementMasseBoutiques(seuil, montantQuota);
+      versementService.effectuerVersementMasseBoutiques(seuil, statutCible, montantQuota);
       return ResponseEntity.ok(
           Map.of("success", true, "message", "Recharge en masse des boutiques lancée avec succès"));
     } catch (Exception e) {

@@ -20,15 +20,36 @@ public class InscriptionExterneServiceImpl implements InscriptionExterneService 
 
     @Override
     public InscriptionAnnuelle synchroniserStatutInscription(InscriptionAnnuelle inscriptionAnnuelle) {
-        log.info("Appel API externe pour l'étudiant: {}", inscriptionAnnuelle.getStudent().getNumEtudiantUniv());
-
-        // TODO: Implémenter l'appel REST réel vers l'API de l'Université
-        // Exemple: ApiResponse response = restTemplate.getForObject(url, ApiResponse.class, ...);
+        String matricule = inscriptionAnnuelle.getStudent().getMatricule();
         
-        // Simulation de la réponse pour le moment:
-        // inscriptionAnnuelle.setEstInscritDefinitif(response.isEnrolled());
-        // inscriptionAnnuelle.setEstEligibleBourse(response.isEligible());
-        // inscriptionAnnuelle.setTypeBourse(TypeBourse.valueOf(response.getType()));
+        if (matricule == null || matricule.isBlank()) {
+            log.warn("Impossible de synchroniser : matricule absent pour l'étudiant {}", 
+                inscriptionAnnuelle.getStudent().getTrackingId());
+            return inscriptionAnnuelle;
+        }
+
+        log.info("Simulation appel API externe pour le matricule numérique: {}", matricule);
+
+        // Simulation de la logique basée sur un matricule à 6 chiffres
+        if (matricule.startsWith("1")) {
+            // Cas : Matricule en 1xxxxx -> Bon travail
+            inscriptionAnnuelle.setEstInscritDefinitif(true);
+            inscriptionAnnuelle.setEstEligibleBourse(true);
+            inscriptionAnnuelle.setTypeBourse(com.backend.gns.student.domain.enums.TypeBourse.BOURSE_EXCELLENCE);
+            log.info("Mock API : Étudiant {} (6 chiffres) reconnu comme Excellence", matricule);
+        } else if (matricule.startsWith("2")) {
+            // Cas : Matricule en 2xxxxx -> Travail moyen
+            inscriptionAnnuelle.setEstInscritDefinitif(true);
+            inscriptionAnnuelle.setEstEligibleBourse(true);
+            inscriptionAnnuelle.setTypeBourse(com.backend.gns.student.domain.enums.TypeBourse.BOURSE_MERITE);
+            log.info("Mock API : Étudiant {} (6 chiffres) reconnu comme Mérite", matricule);
+        } else {
+            // Cas : Autres matricules (ex: 3xxxxx, 4xxxxx) -> Non boursier
+            inscriptionAnnuelle.setEstInscritDefinitif(true);
+            inscriptionAnnuelle.setEstEligibleBourse(false);
+            inscriptionAnnuelle.setTypeBourse(null);
+            log.info("Mock API : Étudiant {} (6 chiffres) reconnu comme Non Boursier", matricule);
+        }
         
         inscriptionAnnuelle.setDateValidationApi(LocalDateTime.now());
         

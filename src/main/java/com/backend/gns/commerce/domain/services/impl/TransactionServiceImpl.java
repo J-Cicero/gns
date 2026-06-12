@@ -12,8 +12,13 @@ import com.backend.gns.commerce.infrastructure.repositories.TransactionRepositor
 import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.student.domain.services.StudentService;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import jakarta.persistence.EntityNotFoundException;
+import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.wallet.domain.services.WalletService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,37 +29,67 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
-    private final StudentService studentService;
-    private final BoutiqueService boutiqueService;
+    private final StudentRepository studentRepository;
+    private final BoutiqueRepository boutiqueRepository;
     private final ParametreGnsService parametreGnsService;
+    private final WalletService walletService;
+
+    @Override
+    public java.math.BigDecimal getVolumeValide() {
+        return transactionRepository.findAll().stream()
+                .filter(t -> t.getStatut() == com.backend.gns.commerce.domain.enums.TransactionStatut.VALIDE)
+                .map(Transaction::getMontantDebite)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+    }
 
     @Override
     @Transactional
     public TransactionResponse create(TransactionRequest request) {
-        // En vrai projet, on récupère les objets complets via les services pour les mettre dans le modèle
-        // Ici on simule l'enrichissement (à adapter selon les méthodes de tes services existants)
+        log.info("Traitement de la transaction pour étudiant {} et boutique {}", request.studentId(), request.boutiqueId());
+
+        // 1. Récupération des entités
+        Student student = studentRepository.findByTrackingId(request.studentId())
+                .orElseThrow(() -> new EntityNotFoundException("Étudiant non trouvé"));
+        Boutique boutique = boutiqueRepository.findByTrackingId(request.boutiqueId())
+                .orElseThrow(() -> new EntityNotFoundException("Boutique non trouvée"));
         
-        // Exemple hypothétique:
-        // Student student = studentService.findEntityByTrackingId(request.studentId());
-        // Boutique boutique = boutiqueService.findEntityByTrackingId(request.boutiqueId());
-        
-        // Pour l'instant, création basique avec les UUIDs que nous avons dans le modèle
+        Wallet studentWallet = student.getWallet();
+        Wallet boutiqueWallet = boutique.getWallet();
+
+        // 2. Double débit sécurisé
+        walletService.debiter(studentWallet.getTrackingId(), request.montantDebite()); // Paiement
+        walletService.debiter(boutiqueWallet.getTrackingId(), request.montantDebite()); // Débit Quota (limite vente)
+
+        // 3. Calculs et Commission
         BigDecimal taux = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.TAUX_COMMISSION_PAIEMENT);
-        BigDecimal commission = request.montantDebite().multiply(taux);
+        BigDecimal commissionTotale = request.montantDebite().multiply(taux);
         
+        // Split 75% GNS / 25% Banque (à rendre configurable plus tard)
+        BigDecimal commissionGns = commissionTotale.multiply(new BigDecimal("0.75"));
+        BigDecimal commissionBanque = commissionTotale.multiply(new BigDecimal("0.25"));
+        
+        BigDecimal montantNetBoutique = request.montantDebite().subtract(commissionTotale);
+
+        // 4. Crédit Net Boutique
+        walletService.crediter(boutiqueWallet.getTrackingId(), montantNetBoutique);
+
+        // 5. Enregistrement
         Transaction transaction = Transaction.builder()
                 .trackingId(UUID.randomUUID())
-                // .student(student) // À implémenter quand les services retournent l'entité
-                // .boutique(boutique) // À implémenter quand les services retournent l'entité
+                .student(student)
+                .boutique(boutique)
                 .montantDebite(request.montantDebite())
-                .montantNetBoutique(request.montantDebite().subtract(commission))
-                .commissionTotale(commission)
+                .montantNetBoutique(montantNetBoutique)
+                .commissionTotale(commissionTotale)
+                .commissionGns(commissionGns)
+                .commissionBanque(commissionBanque)
                 .date(LocalDateTime.now())
                 .statut(TransactionStatut.VALIDE)
                 .build();

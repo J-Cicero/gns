@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/liquidations")
+@RequestMapping("/liquidations")
 @RequiredArgsConstructor
 public class LiquidationController {
 
@@ -30,6 +30,11 @@ public class LiquidationController {
     @GetMapping("/boutique/{boutiqueId}")
     public ResponseEntity<?> findByBoutiqueId(@PathVariable UUID boutiqueId) {
         return ResponseEntity.ok(liquidationService.findByBoutiqueId(boutiqueId));
+    }
+
+    @GetMapping("/stats/pending-total")
+    public ResponseEntity<java.math.BigDecimal> getPendingTotal() {
+        return ResponseEntity.ok(liquidationService.getPendingTotal());
     }
 
     @PatchMapping("/{trackingId}/valider")

@@ -4,31 +4,22 @@ import com.backend.gns.commerce.application.dtos.requests.BoutiqueRequest;
 import com.backend.gns.commerce.application.dtos.responses.BoutiqueResponse;
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.domain.models.Merchant;
-import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class BoutiqueMapper {
 
   private final MerchantRepository merchantRepository;
   private final WalletRepository walletRepository;
 
-  public BoutiqueMapper(
-      BoutiqueRepository boutiqueRepository,
-      MerchantRepository merchantRepository,
-      WalletRepository walletRepository) {
-    this.merchantRepository = merchantRepository;
-    this.walletRepository = walletRepository;
-  }
-
   public Boutique toEntity(BoutiqueRequest request) {
-    if (request == null) {
-      throw new IllegalArgumentException("La requête BoutiqueRequest ne peut pas être nulle");
-    }
+    if (request == null) return null;
 
     Boutique boutique = new Boutique();
     boutique.setTrackingId(UUID.randomUUID());
@@ -40,34 +31,20 @@ public class BoutiqueMapper {
     boutique.setCheminCarteEDJ(request.cheminCarteEDJ());
 
     if (request.merchantTrackingId() != null) {
-      Merchant merchant =
-          merchantRepository
-              .findByTrackingId(request.merchantTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Commerçant non trouvé avec l'ID: " + request.merchantTrackingId()));
-      boutique.setMerchant(merchant);
+      merchantRepository.findByTrackingId(request.merchantTrackingId())
+          .ifPresent(boutique::setMerchant);
     }
 
     if (request.walletTrackingId() != null) {
-      Wallet wallet =
-          walletRepository
-              .findByTrackingId(request.walletTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: " + request.walletTrackingId()));
-      boutique.setWallet(wallet);
+      walletRepository.findByTrackingId(request.walletTrackingId())
+          .ifPresent(boutique::setWallet);
     }
 
     return boutique;
   }
 
   public BoutiqueResponse toResponse(Boutique boutique) {
-    if (boutique == null) {
-      throw new IllegalArgumentException("L'entité Boutique ne peut pas être nulle");
-    }
+    if (boutique == null) return null;
 
     return BoutiqueResponse.builder()
         .trackingId(boutique.getTrackingId())
@@ -77,48 +54,8 @@ public class BoutiqueMapper {
         .statutKYC(boutique.getStatutKYC())
         .latitude(boutique.getLatitude())
         .longitude(boutique.getLongitude())
-        .merchantTrackingId(
-            boutique.getMerchant() != null ? boutique.getMerchant().getTrackingId() : null)
-        .walletTrackingId(
-            boutique.getWallet() != null ? boutique.getWallet().getTrackingId() : null)
+        .merchantTrackingId(boutique.getMerchant() != null ? boutique.getMerchant().getTrackingId() : null)
+        .walletTrackingId(boutique.getWallet() != null ? boutique.getWallet().getTrackingId() : null)
         .build();
-  }
-
-  public Boutique toEntityFromResponse(BoutiqueResponse response) {
-    if (response == null) {
-      throw new IllegalArgumentException("La réponse BoutiqueResponse ne peut pas être nulle");
-    }
-
-    Boutique boutique = new Boutique();
-    boutique.setTrackingId(response.trackingId());
-    boutique.setNomBoutique(response.nomBoutique());
-    boutique.setCategorieShop(response.categorieShop());
-    boutique.setStatutKYC(response.statutKYC());
-    boutique.setLatitude(response.latitude());
-    boutique.setLongitude(response.longitude());
-
-    if (response.merchantTrackingId() != null) {
-      Merchant merchant =
-          merchantRepository
-              .findByTrackingId(response.merchantTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Commerçant non trouvé avec l'ID: " + response.merchantTrackingId()));
-      boutique.setMerchant(merchant);
-    }
-
-    if (response.walletTrackingId() != null) {
-      Wallet wallet =
-          walletRepository
-              .findByTrackingId(response.walletTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: " + response.walletTrackingId()));
-      boutique.setWallet(wallet);
-    }
-
-    return boutique;
   }
 }

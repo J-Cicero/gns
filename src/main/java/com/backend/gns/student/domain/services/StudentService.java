@@ -17,6 +17,8 @@ public interface StudentService {
 
   StudentResponse update(UUID trackingId, StudentRequest request);
 
+  StudentResponse assignerMatricule(UUID trackingId, String matricule);
+
   void delete(UUID trackingId);
 
   Page<StudentResponse> findByStatutKYC(KycStatus statutKYC, Pageable pageable);
