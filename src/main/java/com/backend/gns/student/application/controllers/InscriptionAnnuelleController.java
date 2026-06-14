@@ -27,10 +27,25 @@ public class InscriptionAnnuelleController {
     this.inscriptionService = inscriptionService;
   }
 
-  @PostMapping
+  @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(
-      summary = "Créer une inscription",
-      description = "Crée une nouvelle inscription annuelle")
+      summary = "Créer une inscription avec carte",
+      description = "Crée une nouvelle inscription annuelle avec upload de la carte étudiant")
+  public ResponseEntity<?> createWithFile(
+      @RequestPart("request") String requestJson,
+      @RequestPart("carte") org.springframework.web.multipart.MultipartFile carte) throws Exception {
+    
+    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+    InscriptionAnnuelleRequest request = mapper.readValue(requestJson, InscriptionAnnuelleRequest.class);
+    
+    return ResponseEntity.status(HttpStatus.CREATED).body(inscriptionService.createWithCarte(request, carte));
+  }
+
+  @PostMapping("/simple")
+  @Operation(
+      summary = "Créer une inscription simple",
+      description = "Crée une nouvelle inscription annuelle sans fichier")
   @ApiResponse(responseCode = "201", description = "Inscription créée avec succès")
   public ResponseEntity<?> create(@RequestBody InscriptionAnnuelleRequest request) {
     try {
@@ -107,6 +122,17 @@ public class InscriptionAnnuelleController {
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/{trackingId}/synchroniser")
+  @Operation(summary = "Synchroniser avec l'université", description = "Lance la vérification d'éligibilité via l'API de l'université")
+  public ResponseEntity<?> synchroniser(@PathVariable UUID trackingId) {
+    try {
+      return ResponseEntity.ok(inscriptionService.synchroniserAvecUniversite(trackingId));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "SYNC_FAILED", "message", e.getMessage()));
     }
   }
 

@@ -36,6 +36,72 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   private final ScolariteYearRepository scolariteYearRepository;
   private final ParametreGnsService parametreGnsService;
   private final WalletRepository walletRepository;
+  private final com.backend.gns.student.domain.services.InscriptionExterneService inscriptionExterneService;
+  private final com.backend.gns.core.storage.CloudinaryStorageService storageService;
+  private final com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository documentRepository;
+
+  @Override
+  @Transactional
+  public InscriptionAnnuelleResponse createWithCarte(InscriptionAnnuelleRequest request, org.springframework.web.multipart.MultipartFile carte) {
+    ScolariteYear year = scolariteYearRepository.findByEstOuverteTrue()
+            .orElseThrow(() -> new IllegalStateException("Aucune année scolaire ouverte"));
+    
+    Student student = studentRepository.findByTrackingId(request.studentTrackingId())
+            .orElseThrow(() -> new EntityNotFoundException("Étudiant non trouvé"));
+
+    // Vérifier si une inscription existe déjà pour cet étudiant et cette année
+    Optional<InscriptionAnnuelle> existing = inscriptionRepository.findByStudentTrackingIdAndAnnee(student.getTrackingId(), year.getLibelle());
+    
+    InscriptionAnnuelle ins;
+    if (existing.isPresent()) {
+        ins = existing.get();
+        ins.setNiveau(request.niveau());
+    } else {
+        ins = inscriptionMapper.toEntity(request);
+        ins.setScolariteYear(year);
+        ins.setStudent(student);
+        ins.setTrackingId(UUID.randomUUID());
+        ins.setEstInscritDefinitif(false);
+        ins.setPlafondAccorde(BigDecimal.ZERO);
+    }
+    
+    InscriptionAnnuelle savedIns = inscriptionRepository.save(ins);
+    
+    if (carte != null && !carte.isEmpty()) {
+        try {
+            var upload = storageService.upload(carte, "carte_" + savedIns.getTrackingId());
+            com.backend.gns.student.domain.models.DocumentEtudiant doc = com.backend.gns.student.domain.models.DocumentEtudiant.builder()
+                .trackingId(UUID.randomUUID())
+                .type(com.backend.gns.core.domain.enums.TypeDocument.PIECE_IDENTITE)
+                .urlFichier(upload.get("url"))
+                .statut(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
+                .dateDepot(java.time.LocalDateTime.now())
+                .inscription(savedIns)
+                .build();
+            documentRepository.save(doc);
+        } catch (Exception e) {
+            throw new RuntimeException("Échec de l'upload de la carte étudiant", e);
+        }
+    }
+    
+    return inscriptionMapper.toResponse(savedIns);
+  }
+
+  @Override
+  @Transactional
+  public InscriptionAnnuelleResponse synchroniserAvecUniversite(UUID trackingId) {
+    InscriptionAnnuelle ins = inscriptionRepository.findByTrackingId(trackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée"));
+    
+    InscriptionAnnuelle synched = inscriptionExterneService.synchroniserStatutInscription(ins);
+    
+    // Si l'éligibilité est confirmée, on met à jour le plafond
+    if (synched.isEstEligibleBourse() && synched.isEstInscritDefinitif()) {
+        updatePlafond(synched);
+    }
+    
+    return inscriptionMapper.toResponse(synched);
+  }
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;

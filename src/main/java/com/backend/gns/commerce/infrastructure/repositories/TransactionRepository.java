@@ -13,4 +13,5 @@ import java.util.UUID;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     Optional<Transaction> findByTrackingId(UUID trackingId);
     Page<Transaction> findByBoutiqueTrackingId(UUID boutiqueTrackingId, Pageable pageable);
+    Page<Transaction> findByStudentTrackingId(UUID studentTrackingId, Pageable pageable);
 }

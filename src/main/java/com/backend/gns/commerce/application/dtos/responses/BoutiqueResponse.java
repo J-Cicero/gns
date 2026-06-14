@@ -1,6 +1,7 @@
 package com.backend.gns.commerce.application.dtos.responses;
 
 import com.backend.gns.core.domain.enums.KycStatus;
+import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -14,4 +15,6 @@ public record BoutiqueResponse(
     String cheminCarteEDJ,
     KycStatus statutKYC,
     Double latitude,
-    Double longitude) {}
+    Double longitude,
+    BigDecimal solde,
+    BigDecimal plafond) {}

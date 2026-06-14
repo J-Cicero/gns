@@ -56,6 +56,8 @@ public class BoutiqueMapper {
         .longitude(boutique.getLongitude())
         .merchantTrackingId(boutique.getMerchant() != null ? boutique.getMerchant().getTrackingId() : null)
         .walletTrackingId(boutique.getWallet() != null ? boutique.getWallet().getTrackingId() : null)
+        .solde(boutique.getWallet() != null ? boutique.getWallet().getSolde() : java.math.BigDecimal.ZERO)
+        .plafond(boutique.getWallet() != null ? boutique.getWallet().getPlafond() : java.math.BigDecimal.ZERO)
         .build();
   }
 }

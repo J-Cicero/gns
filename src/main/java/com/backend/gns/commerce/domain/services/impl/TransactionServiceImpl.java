@@ -109,7 +109,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Page<TransactionResponse> findByBoutiqueId(UUID boutiqueId, Pageable pageable) {
-        // Nécessite une méthode dans le repository
-        return null;
+        return transactionRepository.findByBoutiqueTrackingId(boutiqueId, pageable)
+                .map(transactionMapper::toResponse);
+    }
+
+    @Override
+    public Page<TransactionResponse> findByStudentId(UUID studentId, Pageable pageable) {
+        return transactionRepository.findByStudentTrackingId(studentId, pageable)
+                .map(transactionMapper::toResponse);
     }
 }

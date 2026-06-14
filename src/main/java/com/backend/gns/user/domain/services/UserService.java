@@ -10,6 +10,8 @@ public interface UserService {
 
   UserResponse createUser(UserRequest request);
   UserResponse createAdminBanque(AdminBanqueRequest request);
+  UserResponse registerStudent(com.backend.gns.student.application.dtos.requests.StudentRequest request, org.springframework.web.multipart.MultipartFile rib, org.springframework.web.multipart.MultipartFile mandat);
+  UserResponse registerMerchant(com.backend.gns.commerce.application.dtos.requests.MerchantRequest request, org.springframework.web.multipart.MultipartFile rib);
 
   com.backend.gns.user.application.dtos.responses.LoginResponse login(
       com.backend.gns.user.application.dtos.requests.LoginRequest request);

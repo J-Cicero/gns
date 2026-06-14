@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,6 +46,33 @@ public class UserController {
   public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
     UserResponse response = userService.createUser(request);
     return ResponseEntity.ok(response);
+  }
+
+  @PostMapping(value = "/register/student", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<UserResponse> registerStudent(
+      @RequestPart("request") String requestJson,
+      @RequestPart("rib") org.springframework.web.multipart.MultipartFile rib,
+      @RequestPart("mandat") org.springframework.web.multipart.MultipartFile mandat) throws Exception {
+    
+    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+    com.backend.gns.student.application.dtos.requests.StudentRequest request = 
+        mapper.readValue(requestJson, com.backend.gns.student.application.dtos.requests.StudentRequest.class);
+        
+    return ResponseEntity.ok(userService.registerStudent(request, rib, mandat));
+  }
+
+  @PostMapping(value = "/register/merchant", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<UserResponse> registerMerchant(
+      @RequestPart("request") String requestJson,
+      @RequestPart("rib") org.springframework.web.multipart.MultipartFile rib) throws Exception {
+      
+    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+    com.backend.gns.commerce.application.dtos.requests.MerchantRequest request = 
+        mapper.readValue(requestJson, com.backend.gns.commerce.application.dtos.requests.MerchantRequest.class);
+        
+    return ResponseEntity.ok(userService.registerMerchant(request, rib));
   }
 
   @Operation(summary = "Login user", description = "Authenticates a user and returns a JWT token")

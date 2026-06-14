@@ -6,5 +6,6 @@ public enum TypeDocument {
   RELEVE_NOTES,
   FICHE_UE,
   PIECE_IDENTITE,
-  RIB
+  RIB,
+  MANDAT
 }

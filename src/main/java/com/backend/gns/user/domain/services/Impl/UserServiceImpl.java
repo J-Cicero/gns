@@ -40,9 +40,136 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final UniversiteRepository universiteRepository;
   private final BanqueRepository banqueRepository;
+  private final com.backend.gns.core.infrastructure.repositories.CompteBancaireRepository compteBancaireRepository;
+  private final com.backend.gns.student.infrastructure.repositories.StudentRepository studentRepository;
+  private final com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository documentEtudiantRepository;
+  private final com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository boutiqueRepository;
+  private final com.backend.gns.core.storage.CloudinaryStorageService storageService;
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
   private final PasswordEncoder passwordEncoder;
+
+  @Override
+  @Transactional
+  public UserResponse registerStudent(com.backend.gns.student.application.dtos.requests.StudentRequest request, org.springframework.web.multipart.MultipartFile rib, org.springframework.web.multipart.MultipartFile mandat) {
+      log.info("Inscription étudiant complète pour: {}", request.email());
+      
+      // 1. Création de l'étudiant
+      com.backend.gns.student.domain.models.Student student = new com.backend.gns.student.domain.models.Student();
+      student.setTrackingId(UUID.randomUUID());
+      student.setNom(request.nom());
+      student.setPrenom(request.prenom());
+      student.setEmail(request.email());
+      student.setTelephone(request.telephone());
+      student.setRole(UserRole.ETUDIANT);
+      student.setEstActif(true);
+      student.setMotDePasse(passwordEncoder.encode(request.password()));
+      student.setMatricule(request.matricule());
+      student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
+      
+      if (request.universiteTrackingId() != null) {
+          student.setUniversite(universiteRepository.findByTrackingId(request.universiteTrackingId()).orElse(null));
+      }
+      
+      com.backend.gns.student.domain.models.Student savedStudent = studentRepository.save(student);
+      
+      // 2. Traitement des fichiers (RIB et Mandat)
+      try {
+          if (rib != null) {
+              var ribUpload = storageService.upload(rib, "rib_" + savedStudent.getTrackingId());
+              var docRib = com.backend.gns.student.domain.models.DocumentEtudiant.builder()
+                  .trackingId(UUID.randomUUID())
+                  .type(com.backend.gns.core.domain.enums.TypeDocument.RIB)
+                  .urlFichier(ribUpload.get("url"))
+                  .statut(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
+                  .dateDepot(java.time.LocalDateTime.now())
+                  .build();
+              var savedDocRib = documentEtudiantRepository.save(docRib);
+              
+              // Création du compte bancaire associé
+              com.backend.gns.core.domain.models.CompteBancaire cb = new com.backend.gns.core.domain.models.CompteBancaire();
+              cb.setTrackingId(UUID.randomUUID());
+              cb.setProprietaireTrackingId(savedStudent.getTrackingId());
+              cb.setTypeProprietaire(com.backend.gns.core.domain.enums.ProprietaireType.STUDENT);
+              cb.setNumeroCompte(request.numeroCompte());
+              cb.setRibDocument(savedDocRib);
+              cb.setComptePrincipalBourse(true);
+              
+              if (request.banqueTrackingId() != null) {
+                  cb.setBanque(banqueRepository.findByTrackingId(request.banqueTrackingId()).orElse(null));
+              }
+              compteBancaireRepository.save(cb);
+          }
+          
+          if (mandat != null) {
+              var mandatUpload = storageService.upload(mandat, "mandat_" + savedStudent.getTrackingId());
+              var docMandat = com.backend.gns.student.domain.models.DocumentEtudiant.builder()
+                  .trackingId(UUID.randomUUID())
+                  .type(com.backend.gns.core.domain.enums.TypeDocument.MANDAT)
+                  .urlFichier(mandatUpload.get("url"))
+                  .statut(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
+                  .dateDepot(java.time.LocalDateTime.now())
+                  .build();
+              documentEtudiantRepository.save(docMandat);
+          }
+      } catch (Exception e) {
+          throw new RuntimeException("Erreur lors de l'upload des documents bancaires", e);
+      }
+      
+      return userMapper.toResponse(savedStudent);
+  }
+
+  @Override
+  @Transactional
+  public UserResponse registerMerchant(com.backend.gns.commerce.application.dtos.requests.MerchantRequest request, org.springframework.web.multipart.MultipartFile rib) {
+      log.info("Inscription commerçant complète pour: {}", request.email());
+      
+      // 1. Création de l'utilisateur Merchant
+      com.backend.gns.commerce.domain.models.Merchant merchant = new com.backend.gns.commerce.domain.models.Merchant();
+      merchant.setTrackingId(UUID.randomUUID());
+      merchant.setNom(request.nom());
+      merchant.setPrenom(request.prenom());
+      merchant.setEmail(request.email());
+      merchant.setTelephone(request.telephone());
+      merchant.setRole(UserRole.COMMERCANT);
+      merchant.setEstActif(true);
+      merchant.setMotDePasse(passwordEncoder.encode(request.password()));
+      
+      com.backend.gns.commerce.domain.models.Merchant savedMerchantUser = userRepository.save(merchant);
+      
+      // 2. Création de la boutique associée
+      com.backend.gns.commerce.domain.models.Boutique boutique = new com.backend.gns.commerce.domain.models.Boutique();
+      boutique.setTrackingId(UUID.randomUUID());
+      boutique.setNomBoutique(request.nomBoutique());
+      boutique.setMerchant(savedMerchantUser);
+      boutique.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
+      boutique.setCheminCarteEDJ("N/A"); // À uploader plus tard si besoin
+      boutique.setCategorieShop("N/A");
+      boutiqueRepository.save(boutique);
+      
+      // 3. Création du compte bancaire pour les liquidations
+      if (rib != null) {
+          try {
+              var ribUpload = storageService.upload(rib, "rib_merchant_" + boutique.getTrackingId());
+              // Note: On pourrait réutiliser DocumentEtudiant ou créer DocumentMerchant si besoin
+              // Ici on stocke juste l'info bancaire
+              com.backend.gns.core.domain.models.CompteBancaire cb = new com.backend.gns.core.domain.models.CompteBancaire();
+              cb.setTrackingId(UUID.randomUUID());
+              cb.setProprietaireTrackingId(boutique.getTrackingId());
+              cb.setTypeProprietaire(com.backend.gns.core.domain.enums.ProprietaireType.MERCHANT);
+              cb.setNumeroCompte(request.numeroCompte());
+              
+              if (request.banqueTrackingId() != null) {
+                  cb.setBanque(banqueRepository.findByTrackingId(request.banqueTrackingId()).orElse(null));
+              }
+              compteBancaireRepository.save(cb);
+          } catch (Exception e) {
+              throw new RuntimeException("Erreur lors de l'upload du RIB commerçant", e);
+          }
+      }
+      
+      return userMapper.toResponse(savedMerchantUser);
+  }
 
   @Override
   public LoginResponse login(LoginRequest request) {

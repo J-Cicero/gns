@@ -103,6 +103,8 @@ public class GeminiExtractionService {
           "Analyse cette ID. Retourne JSON: {\"nomComplet\": \"...\", \"dateNaissance\": \"YYYY-MM-DD\"}";
       case RIB ->
           "Analyse ce RIB. Retourne JSON: {\"nomComplet\": \"...\", \"numeroCDompte\": \"...\", \"nomBanque\": \"...\"}";
+      case MANDAT ->
+          "Analyse ce mandat de prélèvement. Retourne JSON: {\"signe\": true, \"dateSignature\": \"...\"}";
     };
   }
 

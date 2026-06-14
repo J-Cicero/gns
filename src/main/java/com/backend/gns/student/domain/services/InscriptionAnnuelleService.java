@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 public interface InscriptionAnnuelleService {
 
   InscriptionAnnuelleResponse create(InscriptionAnnuelleRequest request);
+  
+  InscriptionAnnuelleResponse createWithCarte(InscriptionAnnuelleRequest request, org.springframework.web.multipart.MultipartFile carte);
 
   Optional<InscriptionAnnuelleResponse> findByTrackingId(UUID trackingId);
 
@@ -19,6 +21,8 @@ public interface InscriptionAnnuelleService {
   InscriptionAnnuelleResponse updateStatus(UUID trackingId, StatutInscription statut);
 
   InscriptionAnnuelleResponse validerEtActiverInscription(UUID trackingId);
+
+  InscriptionAnnuelleResponse synchroniserAvecUniversite(UUID trackingId);
 
   InscriptionAnnuelleResponse updateDefinitif(UUID trackingId, boolean estInscritDefinitif);
 

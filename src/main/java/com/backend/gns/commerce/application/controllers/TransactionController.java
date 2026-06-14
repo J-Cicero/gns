@@ -42,4 +42,9 @@ public class TransactionController {
     public ResponseEntity<?> findByBoutiqueId(@PathVariable UUID boutiqueId, Pageable pageable) {
         return ResponseEntity.ok(transactionService.findByBoutiqueId(boutiqueId, pageable));
     }
+
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<?> findByStudentId(@PathVariable UUID studentId, Pageable pageable) {
+        return ResponseEntity.ok(transactionService.findByStudentId(studentId, pageable));
+    }
 }

@@ -17,6 +17,7 @@ public record StudentRequest(
     String matricule,
     KycStatus statutKYC,
     UUID walletTrackingId,
-    UUID banqueEtudiantTrackingId,
+    UUID banqueTrackingId,
+    String numeroCompte,
     UUID universiteTrackingId,
     String pinCode) {}
