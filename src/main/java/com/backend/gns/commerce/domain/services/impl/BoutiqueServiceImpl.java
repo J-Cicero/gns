@@ -112,11 +112,11 @@ public class BoutiqueServiceImpl implements BoutiqueService {
             .orElseThrow(
                 () -> new EntityNotFoundException("Boutique non trouvée avec l'ID: " + trackingId));
 
-    boutique.setNomBoutique(request.nomBoutique());
-    boutique.setCategorieShop(request.categorieShop());
-    boutique.setStatutKYC(request.statutKYC());
-    boutique.setLatitude(request.latitude());
-    boutique.setLongitude(request.longitude());
+    boutique.setNomBoutique(request.nomBoutique() != null ? request.nomBoutique() : boutique.getNomBoutique());
+    boutique.setCategorieShop(request.categorieShop() != null ? request.categorieShop() : (boutique.getCategorieShop() != null ? boutique.getCategorieShop() : "N/A"));
+    boutique.setStatutKYC(request.statutKYC() != null ? request.statutKYC() : boutique.getStatutKYC());
+    boutique.setLatitude(request.latitude() != null ? request.latitude() : boutique.getLatitude());
+    boutique.setLongitude(request.longitude() != null ? request.longitude() : boutique.getLongitude());
 
     if (request.merchantTrackingId() != null) {
       Merchant merchant =

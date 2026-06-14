@@ -54,6 +54,11 @@ public class UserServiceImpl implements UserService {
   public UserResponse registerStudent(com.backend.gns.student.application.dtos.requests.StudentRequest request, org.springframework.web.multipart.MultipartFile rib, org.springframework.web.multipart.MultipartFile mandat) {
       log.info("Inscription étudiant complète pour: {}", request.email());
       
+      // Vérification doublon email
+      if (userRepository.findByEmail(request.email()).isPresent()) {
+          throw new IllegalArgumentException("Cet email est déjà utilisé par un autre compte.");
+      }
+      
       // 1. Création de l'étudiant
       com.backend.gns.student.domain.models.Student student = new com.backend.gns.student.domain.models.Student();
       student.setTrackingId(UUID.randomUUID());
@@ -66,6 +71,16 @@ public class UserServiceImpl implements UserService {
       student.setMotDePasse(passwordEncoder.encode(request.password()));
       student.setMatricule(request.matricule());
       student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
+
+      // Initialisation du Wallet
+      com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
+      wallet.setTrackingId(UUID.randomUUID());
+      wallet.setTypeWallet(com.backend.gns.wallet.domain.enums.WalletType.STUDENT);
+      wallet.setStatutWallet(com.backend.gns.wallet.domain.enums.WalletStatus.INACTIF);
+      wallet.setSolde(java.math.BigDecimal.ZERO);
+      wallet.setPlafond(java.math.BigDecimal.ZERO);
+      wallet.setDateCreation(java.time.LocalDateTime.now());
+      student.setWallet(wallet);
       
       if (request.universiteTrackingId() != null) {
           student.setUniversite(universiteRepository.findByTrackingId(request.universiteTrackingId()).orElse(null));
@@ -123,6 +138,11 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public UserResponse registerMerchant(com.backend.gns.commerce.application.dtos.requests.MerchantRequest request, org.springframework.web.multipart.MultipartFile rib) {
       log.info("Inscription commerçant complète pour: {}", request.email());
+
+      // Vérification doublon email
+      if (userRepository.findByEmail(request.email()).isPresent()) {
+          throw new IllegalArgumentException("Cet email est déjà utilisé par un autre compte.");
+      }
       
       // 1. Création de l'utilisateur Merchant
       com.backend.gns.commerce.domain.models.Merchant merchant = new com.backend.gns.commerce.domain.models.Merchant();
@@ -145,6 +165,17 @@ public class UserServiceImpl implements UserService {
       boutique.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
       boutique.setCheminCarteEDJ("N/A"); // À uploader plus tard si besoin
       boutique.setCategorieShop("N/A");
+
+      // Initialisation du Wallet Boutique (Quota)
+      com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
+      wallet.setTrackingId(UUID.randomUUID());
+      wallet.setTypeWallet(com.backend.gns.wallet.domain.enums.WalletType.BOUTIQUE);
+      wallet.setStatutWallet(com.backend.gns.wallet.domain.enums.WalletStatus.ACTIF);
+      wallet.setSolde(java.math.BigDecimal.ZERO);
+      wallet.setPlafond(java.math.BigDecimal.ZERO); // Le quota sera défini par l'admin
+      wallet.setDateCreation(java.time.LocalDateTime.now());
+      boutique.setWallet(wallet);
+
       boutiqueRepository.save(boutique);
       
       // 3. Création du compte bancaire pour les liquidations

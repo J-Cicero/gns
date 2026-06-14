@@ -146,6 +146,30 @@ public class CommandeController {
     }
   }
 
+  @GetMapping("/boutique/{boutiqueTrackingId}")
+  @Operation(
+      summary = "Récupérer les commandes d'une boutique",
+      description = "Récupère la liste de toutes les commandes pour une boutique donnée")
+  @ApiResponse(responseCode = "200", description = "Commandes récupérées avec succès")
+  @ApiResponse(responseCode = "404", description = "Aucune commande trouvée pour cette boutique")
+  public ResponseEntity<?> findByBoutiqueTrackingId(
+      @PathVariable UUID boutiqueTrackingId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    try {
+      Pageable pageable = PageRequest.of(page, size);
+      var responses = commandeService.findByBoutiqueTrackingId(boutiqueTrackingId, pageable);
+      if (!responses.hasContent()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(Map.of("error", "NOT_FOUND", "message", "Aucune commande trouvée pour cette boutique"));
+      }
+      return ResponseEntity.ok(responses);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
+    }
+  }
+
   @PostMapping("/{trackingId}/payer")
   @Operation(summary = "Payer une commande", description = "Traite le paiement d'une commande")
   @ApiResponse(responseCode = "200", description = "Commande payée avec succès")
