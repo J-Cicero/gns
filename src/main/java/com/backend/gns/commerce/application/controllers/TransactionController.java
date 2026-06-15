@@ -17,8 +17,8 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody TransactionRequest request) {
-        return ResponseEntity.ok(transactionService.create(request));
+    public ResponseEntity<?> createPayment(@RequestBody TransactionRequest request) {
+        return ResponseEntity.ok(transactionService.createPayment(request));
     }
 
     @GetMapping("/stats/volume-valide")

@@ -4,25 +4,24 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.util.UUID;
 
 public record UserRequest(
-    @Size(min = 2, message = "Le nom doit contenir au moins deux caractères")
-        @NotNull(message = "Le nom est obligatoire")
-        String nom,
-    @Size(min = 2, message = "Le prénom doit contenir au moins deux caractères")
-        @NotNull(message = "Le prénom est obligatoire")
-        String prenom,
+    @Size(min = 2, message = "Last name must be at least 2 characters")
+        @NotNull(message = "Last name is required")
+        String lastName,
+    @Size(min = 2, message = "First name must be at least 2 characters")
+        @NotNull(message = "First name is required")
+        String firstName,
     @Pattern(
             regexp = "^(\\+?[0-9]{8,15})$",
-            message = "Le numéro de téléphone doit être valide (8 à 15 chiffres, optionnel +)")
-        @NotNull(message = "Le telephone est obligatoire")
-        String telephone,
-    @Email(message = "Veuillez mettre un email valide")
-        @NotNull(message = "L'email est obligatoire")
+            message = "Phone number must be valid (8 to 15 digits, optional +)")
+        @NotNull(message = "Phone number is required")
+        String phoneNumber,
+    @Email(message = "Please provide a valid email")
+        @NotNull(message = "Email is required")
         String email,
-    @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caracteres")
-        @NotNull(message = "Le mot de passe est obligatoire")
-        String motDePasse,
+    @Size(min = 6, message = "Password must be at least 6 characters")
+        @NotNull(message = "Password is required")
+        String password,
     String role,
-    String pays) {}
+    String country) {}

@@ -45,7 +45,7 @@ public class MerchantServiceImpl implements MerchantService {
   @Override
   @Transactional
   public MerchantResponse create(MerchantRequest request) {
-    log.info("Création d'un marchand: {} {}", request.prenom(), request.nom());
+    log.info("Création d'un marchand: {} {}", request.firstName(), request.lastName());
 
     Merchant merchant = merchantMapper.toEntity(request);
     Merchant savedMerchant = merchantRepository.save(merchant);
@@ -69,10 +69,10 @@ public class MerchantServiceImpl implements MerchantService {
     Merchant merchant = findMerchantOrThrow(trackingId);
 
     merchant.setEmail(request.email());
-    merchant.setNom(request.nom());
-    merchant.setPrenom(request.prenom());
-    merchant.setTelephone(request.telephone());
-    merchant.setDateNaissance(request.dateNaissance());
+    merchant.setLastName(request.lastName());
+    merchant.setFirstName(request.firstName());
+    merchant.setPhoneNumber(request.phoneNumber());
+    merchant.setBirthDate(request.birthDate());
 
     Merchant updatedMerchant = merchantRepository.save(merchant);
     log.info("Marchand mis à jour avec succès, trackingId: {}", trackingId);

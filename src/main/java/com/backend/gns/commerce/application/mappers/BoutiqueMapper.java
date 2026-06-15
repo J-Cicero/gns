@@ -23,12 +23,12 @@ public class BoutiqueMapper {
 
     Boutique boutique = new Boutique();
     boutique.setTrackingId(UUID.randomUUID());
-    boutique.setNomBoutique(request.nomBoutique());
-    boutique.setCategorieShop(request.categorieShop());
-    boutique.setStatutKYC(request.statutKYC());
+    boutique.setName(request.name());
+    boutique.setShopCategory(request.shopCategory());
+    boutique.setKycStatus(request.kycStatus());
     boutique.setLatitude(request.latitude());
     boutique.setLongitude(request.longitude());
-    boutique.setCheminCarteEDJ(request.cheminCarteEDJ());
+    boutique.setMapPath(request.mapPath());
 
     if (request.merchantTrackingId() != null) {
       merchantRepository.findByTrackingId(request.merchantTrackingId())
@@ -48,16 +48,16 @@ public class BoutiqueMapper {
 
     return BoutiqueResponse.builder()
         .trackingId(boutique.getTrackingId())
-        .nomBoutique(boutique.getNomBoutique())
-        .categorieShop(boutique.getCategorieShop())
-        .cheminCarteEDJ(boutique.getCheminCarteEDJ())
-        .statutKYC(boutique.getStatutKYC())
+        .name(boutique.getName())
+        .shopCategory(boutique.getShopCategory())
+        .mapPath(boutique.getMapPath())
+        .kycStatus(boutique.getKycStatus())
         .latitude(boutique.getLatitude())
         .longitude(boutique.getLongitude())
         .merchantTrackingId(boutique.getMerchant() != null ? boutique.getMerchant().getTrackingId() : null)
         .walletTrackingId(boutique.getWallet() != null ? boutique.getWallet().getTrackingId() : null)
-        .solde(boutique.getWallet() != null ? boutique.getWallet().getSolde() : java.math.BigDecimal.ZERO)
-        .plafond(boutique.getWallet() != null ? boutique.getWallet().getPlafond() : java.math.BigDecimal.ZERO)
+        .balance(boutique.getWallet() != null ? boutique.getWallet().getBalance() : java.math.BigDecimal.ZERO)
+        .limitAmount(boutique.getWallet() != null ? boutique.getWallet().getLimitAmount() : java.math.BigDecimal.ZERO)
         .build();
   }
 }

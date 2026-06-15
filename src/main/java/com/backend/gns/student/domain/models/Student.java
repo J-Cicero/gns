@@ -30,15 +30,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Student extends User {
 
   @Column(length = 50, nullable = true, unique = true)
-  private String matricule;
+  private String studentIdNumber;
 
   @Column(name = "pin_code", length = 60, nullable = true)
-  private String pinCode;
+  private String pinCodeHash;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20, nullable = true)
-  private KycStatus statutKYC;
-
+  private KycStatus kycStatus;
 
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "wallet_id")

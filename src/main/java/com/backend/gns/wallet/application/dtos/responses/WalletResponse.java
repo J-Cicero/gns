@@ -11,10 +11,11 @@ import lombok.Builder;
 @Builder
 public record WalletResponse(
     UUID trackingId,
-    WalletType typeWallet,
-    WalletStatus statutWallet,
-    WalletFundingLevel niveauSolde,
-    BigDecimal solde,
-    BigDecimal plafond,
-    Boolean estVerrouille,
-    LocalDateTime dateCreation) {}
+    WalletType walletType,
+    WalletStatus status,
+    WalletFundingLevel fundingLevel,
+    BigDecimal balance,
+    BigDecimal limitAmount,
+    String currency,
+    LocalDateTime createdAt,
+    UUID studentTrackingId) {}

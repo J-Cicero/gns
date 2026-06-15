@@ -9,8 +9,8 @@ import lombok.Builder;
 
 @Builder
 public record VersementRequest(
-    UUID trackingWalletId,
-    BigDecimal montantVerse,
-    VersementType typeVersement,
-    LocalDateTime dateVersement,
-    VersementStatut statut) {}
+    UUID walletTrackingId,
+    BigDecimal amount,
+    VersementType paymentType,
+    LocalDateTime paymentDate,
+    VersementStatut status) {}

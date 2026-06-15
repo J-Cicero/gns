@@ -58,37 +58,37 @@ public class WalletServiceImpl implements WalletService {
     
     if (isCredit) {
       ensureWalletCanReceiveFunds(wallet);
-      if (wallet.getPlafond() == null) {
-        wallet.setPlafond(wallet.getTypeWallet() == WalletType.STUDENT ? new BigDecimal("30000") : new BigDecimal("100000"));
+      if (wallet.getLimitAmount() == null) {
+        wallet.setLimitAmount(wallet.getWalletType() == WalletType.STUDENT ? new BigDecimal("30000") : new BigDecimal("100000"));
       }
-      if (wallet.getSolde().add(amount).compareTo(wallet.getPlafond()) > 0) {
+      if (wallet.getBalance().add(amount).compareTo(wallet.getLimitAmount()) > 0) {
         throw new IllegalStateException("Crédit refusé : plafond dépassé.");
       }
-      wallet.setSolde(wallet.getSolde().add(amount));
+      wallet.setBalance(wallet.getBalance().add(amount));
     } else {
       ensureWalletCanSpend(wallet);
-      if (wallet.getSolde().compareTo(amount) < 0) {
+      if (wallet.getBalance().compareTo(amount) < 0) {
         throw new IllegalStateException("Solde insuffisant.");
       }
-      wallet.setSolde(wallet.getSolde().subtract(amount));
+      wallet.setBalance(wallet.getBalance().subtract(amount));
     }
     walletRepository.saveAndFlush(wallet);
-    log.info("Portefeuille {} mis à jour. Nouveau solde: {}", wallet.getTrackingId(), wallet.getSolde());
+    log.info("Portefeuille {} mis à jour. Nouveau solde: {}", wallet.getTrackingId(), wallet.getBalance());
   }
 
   private void ensureWalletCanReceiveFunds(Wallet wallet) {
-    if (wallet.getStatutWallet() == WalletStatus.GELE
-        || wallet.getStatutWallet() == WalletStatus.BLOQUE) {
+    if (wallet.getStatus() == WalletStatus.GELE
+        || wallet.getStatus() == WalletStatus.BLOQUE) {
       throw new IllegalStateException(
-          "Crédit refusé : le wallet est gelé ou bloqué (" + wallet.getStatutWallet() + ")");
+          "Crédit refusé : le wallet est gelé ou bloqué (" + wallet.getStatus() + ")");
     }
   }
 
   private void ensureWalletCanSpend(Wallet wallet) {
-    if (wallet.getStatutWallet() != WalletStatus.ACTIF) {
+    if (wallet.getStatus() != WalletStatus.ACTIF) {
       throw new IllegalStateException(
           "Débit refusé : le wallet doit être actif (statut actuel: "
-              + wallet.getStatutWallet()
+              + wallet.getStatus()
               + ")");
     }
   }
@@ -96,7 +96,7 @@ public class WalletServiceImpl implements WalletService {
   @Override
   @Transactional
   public WalletResponse create(WalletRequest request) {
-    log.info("Création d'un portefeuille de type: {}", request.typeWallet());
+    log.info("Création d'un portefeuille de type: {}", request.walletType());
 
     Wallet wallet = walletMapper.toEntity(request);
     Wallet savedWallet = walletRepository.save(wallet);
@@ -119,10 +119,10 @@ public class WalletServiceImpl implements WalletService {
 
     Wallet wallet = findWalletOrThrow(trackingId);
 
-    if (request.typeWallet() != null) wallet.setTypeWallet(request.typeWallet());
-    if (request.statutWallet() != null) wallet.setStatutWallet(request.statutWallet());
-    if (request.solde() != null) wallet.setSolde(request.solde());
-    if (request.plafond() != null) wallet.setPlafond(request.plafond());
+    if (request.walletType() != null) wallet.setWalletType(request.walletType());
+    if (request.status() != null) wallet.setStatus(request.status());
+    if (request.balance() != null) wallet.setBalance(request.balance());
+    if (request.limitAmount() != null) wallet.setLimitAmount(request.limitAmount());
 
     Wallet updated = walletRepository.save(wallet);
     log.info("Portefeuille mis à jour avec succès, trackingId: {}", trackingId);
@@ -140,41 +140,41 @@ public class WalletServiceImpl implements WalletService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<WalletResponse> findByTypeWallet(WalletType typeWallet, Pageable pageable) {
-    log.debug("Recherche portefeuilles par type: {}", typeWallet);
+  public Page<WalletResponse> findByTypeWallet(WalletType walletType, Pageable pageable) {
+    log.debug("Recherche portefeuilles par type: {}", walletType);
     return walletRepository
-        .findByTypeWallet(typeWallet, normalize(pageable))
+        .findByWalletType(walletType, normalize(pageable))
         .map(walletMapper::toResponse);
   }
 
   @Override
   @Transactional(readOnly = true)
   public Page<WalletResponse> findFiltered(
-      WalletType typeWallet,
-      com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde,
+      WalletType walletType,
+      com.backend.gns.wallet.domain.enums.WalletFundingLevel fundingLevel,
       Pageable pageable) {
-    log.debug("Recherche portefeuilles filtres: type={}, niveau={}", typeWallet, niveauSolde);
+    log.debug("Recherche portefeuilles filtres: type={}, niveau={}", walletType, fundingLevel);
     return walletRepository
-        .findFiltered(typeWallet, niveauSolde, normalize(pageable))
+        .findFiltered(walletType, fundingLevel, normalize(pageable))
         .map(walletMapper::toResponse);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Page<WalletResponse> findByStatutWallet(WalletStatus statutWallet, Pageable pageable) {
-    log.debug("Recherche portefeuilles par statut: {}", statutWallet);
+  public Page<WalletResponse> findByStatutWallet(WalletStatus status, Pageable pageable) {
+    log.debug("Recherche portefeuilles par statut: {}", status);
     return walletRepository
-        .findByStatutWallet(statutWallet, normalize(pageable))
+        .findByStatus(status, normalize(pageable))
         .map(walletMapper::toResponse);
   }
 
   @Override
   @Transactional(readOnly = true)
   public Page<WalletResponse> findByNiveauSolde(
-      com.backend.gns.wallet.domain.enums.WalletFundingLevel niveauSolde, Pageable pageable) {
-    log.debug("Recherche portefeuilles par niveau: {}", niveauSolde);
+      com.backend.gns.wallet.domain.enums.WalletFundingLevel fundingLevel, Pageable pageable) {
+    log.debug("Recherche portefeuilles par niveau: {}", fundingLevel);
     return walletRepository
-        .findByNiveauSolde(niveauSolde, normalize(pageable))
+        .findByFundingLevel(fundingLevel, normalize(pageable))
         .map(walletMapper::toResponse);
   }
 
@@ -183,7 +183,7 @@ public class WalletServiceImpl implements WalletService {
   public Page<WalletResponse> findBySoldeLessThan(BigDecimal amount, Pageable pageable) {
     log.debug("Recherche portefeuilles avec solde < {}", amount);
     return walletRepository
-        .findBySoldeLessThan(amount, normalize(pageable))
+        .findByBalanceLessThan(amount, normalize(pageable))
         .map(walletMapper::toResponse);
   }
 
@@ -192,7 +192,7 @@ public class WalletServiceImpl implements WalletService {
   public Page<WalletResponse> findBySoldeGreaterThan(BigDecimal amount, Pageable pageable) {
     log.debug("Recherche portefeuilles avec solde > {}", amount);
     return walletRepository
-        .findBySoldeGreaterThan(amount, normalize(pageable))
+        .findByBalanceGreaterThan(amount, normalize(pageable))
         .map(walletMapper::toResponse);
   }
 
@@ -216,27 +216,44 @@ public class WalletServiceImpl implements WalletService {
   }
 
   @Override
+  public boolean hasSufficientBalance(UUID walletTrackingId, BigDecimal amount) {
+    Wallet wallet = findWalletOrThrow(walletTrackingId);
+    return wallet.getBalance().compareTo(amount) >= 0;
+  }
+
+  @Override
+  @Transactional
+  public void credit(UUID walletTrackingId, BigDecimal montant) {
+    crediter(walletTrackingId, montant);
+  }
+
+  @Override
+  @Transactional
+  public void debit(UUID walletTrackingId, BigDecimal montant) {
+    debiter(walletTrackingId, montant);
+  }
+
+  @Override
   @Transactional
   public void remettreAZero(UUID walletTrackingId) {
     log.info("Remise à zéro du portefeuille trackingId: {}", walletTrackingId);
     Wallet wallet = findWalletOrThrow(walletTrackingId);
 
-    BigDecimal soldeActuel = wallet.getSolde();
-    if (soldeActuel.compareTo(BigDecimal.ZERO) == 0) {
+    BigDecimal balanceAtResest = wallet.getBalance();
+    if (balanceAtResest.compareTo(BigDecimal.ZERO) == 0) {
       log.info("Le portefeuille est déjà à 0.");
       return;
     }
 
     // Remise à zéro
-    wallet.setSolde(BigDecimal.ZERO);
+    wallet.setBalance(BigDecimal.ZERO);
     walletRepository.saveAndFlush(wallet);
 
     // Traçabilité de l'opération
     Versement trace = new Versement();
     trace.setTrackingId(UUID.randomUUID());
     trace.setWallet(wallet);
-    trace.setMontantVerse(
-        soldeActuel.negate()); // On enregistre un montant négatif correspondant à la soustraction
+    trace.setMontantVerse(balanceAtResest.negate());
     trace.setDateVersement(LocalDateTime.now());
     trace.setTypeVersement(VersementType.REMISE_A_ZERO);
     trace.setStatut(VersementStatut.VALIDEE);

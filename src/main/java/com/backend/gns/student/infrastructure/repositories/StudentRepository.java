@@ -22,17 +22,17 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
   Optional<Student> findByEmail(String email);
 
-  Long countByStatutKYC(KycStatus statut);
+  Long countByKycStatus(KycStatus statut);
 
-  long countByEstActif(boolean estActif);
+  long countByIsActive(boolean isActive);
 
-  Page<Student> findByStatutKYCOrderByCreatedAtAsc(KycStatus statut, Pageable pageable);
+  Page<Student> findByKycStatusOrderByCreatedAtAsc(KycStatus statut, Pageable pageable);
 
   Page<Student> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 
   long countByUniversite(Universite universite);
 
   @Query(
-      "SELECT COUNT(s) FROM Student s WHERE s.universite = :universite AND s.statutKYC = :statut")
-  Long countByUniversiteAndStatutKYC(Universite universite, KycStatus statut);
+      "SELECT COUNT(s) FROM Student s WHERE s.universite = :universite AND s.kycStatus = :statut")
+  Long countByUniversiteAndKycStatus(Universite universite, KycStatus statut);
 }

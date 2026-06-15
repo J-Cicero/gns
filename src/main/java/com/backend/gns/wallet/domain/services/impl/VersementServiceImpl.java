@@ -92,9 +92,9 @@ public class VersementServiceImpl implements VersementService {
     Versement versement = versementRepository.findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Versement non trouvé"));
 
-    versement.setMontantVerse(request.montantVerse());
-    versement.setTypeVersement(request.typeVersement());
-    versement.setStatut(request.statut());
+    versement.setMontantVerse(request.amount());
+    versement.setTypeVersement(request.paymentType());
+    versement.setStatut(request.status());
 
     return versementMapper.toResponse(versementRepository.save(versement));
   }
@@ -135,8 +135,8 @@ public class VersementServiceImpl implements VersementService {
 
     for (InscriptionAnnuelle ins : inscriptions) {
       Wallet wallet = ins.getStudent().getWallet();
-      if (ins.isEstInscritDefinitif() && wallet != null && (statutCible == null || wallet.getStatutWallet() == statutCible)) {
-        BigDecimal montant = (montantFixe != null) ? montantFixe : ins.getPlafondAccorde();
+      if (ins.isFullyEnrolled() && wallet != null && (statutCible == null || wallet.getStatus() == statutCible)) {
+        BigDecimal montant = (montantFixe != null) ? montantFixe : ins.getAllocatedBudget();
         executerVersement(wallet, montant, VersementType.DOTATION_BOURSE_INITIALE);
       }
     }
@@ -149,7 +149,7 @@ public class VersementServiceImpl implements VersementService {
 
     for (Boutique boutique : boutiques) {
       Wallet wallet = boutique.getWallet();
-      if (wallet != null && wallet.getSolde().compareTo(seuil) <= 0 && (statutCible == null || wallet.getStatutWallet() == statutCible)) {
+      if (wallet != null && wallet.getBalance().compareTo(seuil) <= 0 && (statutCible == null || wallet.getStatus() == statutCible)) {
         executerVersement(wallet, montantQuota, VersementType.RECHARGE_QUOTA_BOUTIQUE);
       }
     }
@@ -159,16 +159,16 @@ public class VersementServiceImpl implements VersementService {
   public List<String> previewMasseEtudiants(UUID scolariteYearTrackingId) {
     ScolariteYear year = scolariteYearRepository.findByTrackingId(scolariteYearTrackingId).orElseThrow();
     return inscriptionAnnuelleRepository.findAllByScolariteYear(year).stream()
-            .filter(ins -> ins.isEstInscritDefinitif() && ins.getStudent().getWallet() != null)
-            .map(ins -> ins.getStudent().getNom() + " " + ins.getStudent().getPrenom())
+            .filter(ins -> ins.isFullyEnrolled() && ins.getStudent().getWallet() != null)
+            .map(ins -> ins.getStudent().getLastName() + " " + ins.getStudent().getFirstName())
             .toList();
   }
 
   @Override
   public List<String> previewMasseBoutiques(BigDecimal seuil) {
     return boutiqueRepository.findAll().stream()
-            .filter(b -> b.getWallet() != null && b.getWallet().getSolde().compareTo(seuil) <= 0)
-            .map(Boutique::getNomBoutique)
+            .filter(b -> b.getWallet() != null && b.getWallet().getBalance().compareTo(seuil) <= 0)
+            .map(Boutique::getName)
             .toList();
   }
 

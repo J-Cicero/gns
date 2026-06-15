@@ -3,7 +3,6 @@ package com.backend.gns.student.application.mappers;
 import com.backend.gns.student.application.dtos.requests.UniversiteRequest;
 import com.backend.gns.student.application.dtos.responses.UniversiteResponse;
 import com.backend.gns.student.domain.models.Universite;
-import java.math.BigDecimal;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +14,9 @@ public class UniversiteMapper {
     Universite entity = new Universite();
     entity.setTrackingId(UUID.randomUUID());
     entity.setCode(request.code());
-    entity.setNom(request.nom());
-    entity.setVille(request.ville());
-    entity.setEstActive(request.estActive());
+    entity.setFullName(request.fullName());
+    entity.setCity(request.city());
+    entity.setActive(request.isActive());
     return entity;
   }
 
@@ -26,9 +25,9 @@ public class UniversiteMapper {
     return UniversiteResponse.builder()
         .trackingId(entity.getTrackingId())
         .code(entity.getCode())
-        .nom(entity.getNom())
-        .ville(entity.getVille())
-        .estActive(entity.isEstActive())
+        .fullName(entity.getFullName())
+        .city(entity.getCity())
+        .isActive(entity.isActive())
         .build();
   }
 }

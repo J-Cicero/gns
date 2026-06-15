@@ -1,6 +1,7 @@
 package com.backend.gns.commerce.domain.models;
 
 import com.backend.gns.user.domain.models.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -13,4 +14,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
-public class Merchant extends User {}
+public class Merchant extends User {
+
+  @Column(length = 100)
+  private String businessName;
+
+  @Column(length = 50)
+  private String registrationNumber;
+}

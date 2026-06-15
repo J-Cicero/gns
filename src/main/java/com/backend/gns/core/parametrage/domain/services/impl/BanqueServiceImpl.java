@@ -32,7 +32,7 @@ public class BanqueServiceImpl implements BanqueService {
   public BanqueResponse createBanque(BanqueRequest request) {
     Banque banque = new Banque();
     banque.setTrackingId(UUID.randomUUID());
-    banque.setNom(request.nom());
+    banque.setName(request.name());
     banque.setCode(request.code());
     banque.setLogoUrl(request.logoUrl());
     return banqueMapper.toResponse(banqueRepository.save(banque));

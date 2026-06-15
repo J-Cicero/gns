@@ -42,17 +42,17 @@ public class Boutique extends BaseEntity {
   private UUID trackingId;
 
   @Column(length = 100, nullable = false)
-  private String nomBoutique;
+  private String name;
 
   @Column(length = 100, nullable = false)
-  private String categorieShop;
+  private String shopCategory;
 
   @Column(length = 255, nullable = false)
-  private String cheminCarteEDJ;
+  private String mapPath;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20, nullable = false)
-  private KycStatus statutKYC;
+  private KycStatus kycStatus;
 
   @Column(length = 40)
   private Double latitude;
@@ -61,11 +61,11 @@ public class Boutique extends BaseEntity {
   private Double longitude;
 
   @Column(name = "numero_compte", length = 30, nullable = true)
-  private String numeroCompte;
+  private String accountNumber;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "banque_partenaire_id", nullable = true)
-  private Banque banquePartenaire;
+  private Banque partnerBank;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merchant_id", nullable = false)

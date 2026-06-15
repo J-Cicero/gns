@@ -37,8 +37,8 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
   @Override
   @Transactional
   public ScolariteYearResponse create(ScolariteYearRequest request) {
-    if (request.estOuverte()) {
-      Optional<ScolariteYear> activeYear = scolariteYearRepository.findByEstOuverteTrue();
+    if (request.isOpen()) {
+      Optional<ScolariteYear> activeYear = scolariteYearRepository.findByIsOpenTrue();
       if (activeYear.isPresent()) {
         throw new IllegalStateException(
             "Une année scolaire est déjà ouverte. Veuillez la clôturer d'abord.");
@@ -65,8 +65,8 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
     ScolariteYear year = scolariteYearRepository.findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Année non trouvée"));
     
-    year.setEstOuverte(false);
-    year.setEstCloturee(true);
+    year.setOpen(false);
+    year.setClosed(true);
     scolariteYearRepository.save(year);
   }
 
@@ -81,6 +81,6 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
   @Override
   @Transactional(readOnly = true)
   public Optional<ScolariteYearResponse> findActiveYear() {
-    return scolariteYearRepository.findByEstOuverteTrue().map(scolariteYearMapper::toResponse);
+    return scolariteYearRepository.findByIsOpenTrue().map(scolariteYearMapper::toResponse);
   }
 }

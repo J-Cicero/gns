@@ -8,9 +8,9 @@ import lombok.Builder;
 
 @Builder
 public record WalletRequest(
-    WalletType typeWallet,
-    WalletStatus statutWallet,
-    BigDecimal solde,
-    BigDecimal plafond,
-    Boolean estVerrouille,
-    LocalDateTime dateCreation) {}
+    WalletType walletType,
+    WalletStatus status,
+    BigDecimal balance,
+    BigDecimal limitAmount,
+    String currency,
+    LocalDateTime createdAt) {}

@@ -20,17 +20,17 @@ public class ProductMapper {
 
   public Product toEntity(ProductRequest request) {
     if (request == null) {
-      throw new IllegalArgumentException("La requête ProductRequest ne peut pas être nulle");
+      throw new IllegalArgumentException("ProductRequest cannot be null");
     }
 
     Product product = new Product();
     product.setTrackingId(UUID.randomUUID());
-    product.setNom(request.nom());
+    product.setName(request.name());
     product.setDescription(request.description());
-    product.setPrix(request.prix());
+    product.setPrice(request.price());
     product.setStock(request.stock());
-    product.setEstDisponible(request.estDisponible());
-    product.setDateAjout(request.dateAjout() != null ? request.dateAjout() : LocalDateTime.now());
+    product.setIsAvailable(request.isAvailable());
+    product.setAddedAt(request.addedAt() != null ? request.addedAt() : LocalDateTime.now());
 
     if (request.boutiqueTrackingId() != null) {
       Boutique boutique =
@@ -39,7 +39,7 @@ public class ProductMapper {
               .orElseThrow(
                   () ->
                       new IllegalArgumentException(
-                          "Boutique non trouvée avec l'ID: " + request.boutiqueTrackingId()));
+                          "Boutique not found with trackingId: " + request.boutiqueTrackingId()));
       product.setBoutique(boutique);
     }
 
@@ -48,47 +48,19 @@ public class ProductMapper {
 
   public ProductResponse toResponse(Product product) {
     if (product == null) {
-      throw new IllegalArgumentException("L'entité Product ne peut pas être nulle");
+      return null;
     }
 
     return ProductResponse.builder()
         .trackingId(product.getTrackingId())
-        .nom(product.getNom())
+        .name(product.getName())
         .description(product.getDescription())
-        .prix(product.getPrix())
+        .price(product.getPrice())
         .stock(product.getStock())
-        .estDisponible(product.getEstDisponible())
-        .dateAjout(product.getDateAjout())
+        .isAvailable(product.getIsAvailable())
+        .addedAt(product.getAddedAt())
         .boutiqueTrackingId(
             product.getBoutique() != null ? product.getBoutique().getTrackingId() : null)
         .build();
-  }
-
-  public Product toEntityFromResponse(ProductResponse response) {
-    if (response == null) {
-      throw new IllegalArgumentException("La réponse ProductResponse ne peut pas être nulle");
-    }
-
-    Product product = new Product();
-    product.setTrackingId(response.trackingId());
-    product.setNom(response.nom());
-    product.setDescription(response.description());
-    product.setPrix(response.prix());
-    product.setStock(response.stock());
-    product.setEstDisponible(response.estDisponible());
-    product.setDateAjout(response.dateAjout());
-
-    if (response.boutiqueTrackingId() != null) {
-      Boutique boutique =
-          boutiqueRepository
-              .findByTrackingId(response.boutiqueTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Boutique non trouvée avec l'ID: " + response.boutiqueTrackingId()));
-      product.setBoutique(boutique);
-    }
-
-    return product;
   }
 }

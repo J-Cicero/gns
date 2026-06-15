@@ -11,11 +11,11 @@ import lombok.Builder;
 @Builder
 public record InscriptionAnnuelleRequest(
     UUID studentTrackingId,
-    String anneeAcademique,
-    StudentNiveau niveau,
-    int creditsTotalValides,
-    BigDecimal moyenneBac,
-    boolean estBoursier,
-    TypeBourse typeBourse,
-    StatutInscription statut,
+    String academicYearLabel,
+    StudentNiveau studyLevel,
+    int totalValidatedCredits,
+    BigDecimal highSchoolGrade,
+    boolean isScholarshipHolder,
+    TypeBourse scholarshipType,
+    StatutInscription status,
     SourceVerification source) {}

@@ -42,21 +42,21 @@ public class Product extends BaseEntity {
   private Boutique boutique;
 
   @Column(length = 100, nullable = false)
-  private String nom;
+  private String name;
 
   @Column(columnDefinition = "TEXT")
   private String description;
 
   @Column(nullable = false)
-  private BigDecimal prix;
+  private BigDecimal price;
 
   @Column(nullable = false)
   private int stock;
 
   @Column(nullable = false)
-  private Boolean estDisponible = true;
+  private Boolean isAvailable = true;
 
   @Column(nullable = false)
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime dateAjout;
+  private LocalDateTime addedAt;
 }

@@ -32,16 +32,16 @@ public class Liquidation {
     private ScolariteYear scolariteYear;
 
     @Column(nullable = false)
-    private BigDecimal montantALiquider;
+    private BigDecimal amountToLiquidate;
 
     @Column(nullable = false)
-    private LocalDateTime dateCreation;
+    private LocalDateTime createdAt;
 
-    private LocalDateTime dateValidation;
+    private LocalDateTime validatedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LiquidationStatut statut;
+    private LiquidationStatut status;
 
-    private String referenceVirement;
+    private String transferReference;
 }

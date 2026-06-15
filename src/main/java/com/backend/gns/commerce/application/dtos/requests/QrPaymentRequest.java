@@ -8,10 +8,9 @@ import lombok.Builder;
 
 @Builder
 public record QrPaymentRequest(
-    @NotNull(message = "L'ID de la boutique est requis") UUID boutiqueTrackingId,
-    @NotNull(message = "Le token QR de l'étudiant est requis") String studentQrToken,
-    @NotNull(message = "Le montant total est requis")
-        @Positive(message = "Le montant doit être positif")
-        BigDecimal montantTotal,
-    String description // Optionnel, ex: achat de repas
-    ) {}
+    @NotNull(message = "Boutique ID is required") UUID boutiqueTrackingId,
+    @NotNull(message = "Student QR token is required") String studentQrToken,
+    @NotNull(message = "Total amount is required")
+        @Positive(message = "Amount must be positive")
+        BigDecimal totalAmount,
+    String description) {}

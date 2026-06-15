@@ -14,11 +14,12 @@ public class DocumentMapper {
 
     return DocumentResponse.builder()
         .trackingId(entity.getTrackingId())
-        .inscriptionId(entity.getInscription() != null ? entity.getInscription().getTrackingId() : null)
-        .type(entity.getType())
-        .cheminFichier(entity.getUrlFichier())
-        .statut(entity.getStatut())
-        .dateDepot(entity.getDateDepot())
+        .ownerTrackingId(entity.getOwnerTrackingId())
+        .documentType(entity.getDocumentType())
+        .fileUrl(entity.getFileUrl())
+        .providerPublicId(entity.getProviderPublicId())
+        .status(entity.getStatus())
+        .uploadedAt(entity.getUploadedAt())
         .build();
   }
 
@@ -27,11 +28,11 @@ public class DocumentMapper {
 
     return DocumentResponse.builder()
         .trackingId(entity.getTrackingId())
-        .userTrackingId(entity.getMerchant() != null ? entity.getMerchant().getTrackingId() : null)
-        .type(entity.getType())
-        .cheminFichier(entity.getUrlFichier())
-        .statut(entity.getStatut())
-        .dateDepot(entity.getDateDepot())
+        .ownerTrackingId(entity.getMerchant() != null ? entity.getMerchant().getTrackingId() : null)
+        .documentType(entity.getType())
+        .fileUrl(entity.getUrlFichier())
+        .status(entity.getStatut())
+        .uploadedAt(entity.getDateDepot())
         .build();
   }
 }

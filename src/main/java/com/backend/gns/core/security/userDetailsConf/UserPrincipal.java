@@ -23,7 +23,7 @@ public class UserPrincipal implements UserDetails {
 
   @Override
   public String getPassword() {
-    return user.getPassword();
+    return user.getPasswordHash();
   }
 
   @Override
@@ -48,7 +48,7 @@ public class UserPrincipal implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return user.isEstActif();
+    return user.isActive();
   }
 
   public User getUser() {

@@ -8,11 +8,12 @@ import lombok.Builder;
 public record MerchantRequest(
     String email,
     String password,
-    String nom,
-    String prenom,
-    Boolean estActif,
-    String telephone,
-    LocalDateTime dateNaissance,
-    String nomBoutique,
-    UUID banqueTrackingId,
-    String numeroCompte) {}
+    String lastName,
+    String firstName,
+    Boolean isActive,
+    String phoneNumber,
+    LocalDateTime birthDate,
+    String businessName,
+    String registrationNumber,
+    UUID bankTrackingId,
+    String accountNumber) {}

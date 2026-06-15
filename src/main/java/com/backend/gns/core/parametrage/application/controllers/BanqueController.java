@@ -50,18 +50,19 @@ public class BanqueController {
 
       DocumentEtudiant document = DocumentEtudiant.builder()
           .trackingId(UUID.randomUUID())
-          .type(TypeDocument.RIB)
-          .urlFichier(uploadResult.get("url"))
-          .publicIdCloudinary(uploadResult.get("publicId"))
-          .statut(StatutDocument.EN_ATTENTE)
-          .dateDepot(LocalDateTime.now())
+          .ownerTrackingId(UUID.randomUUID()) // using a generic tracking ID since it is unlinked
+          .documentType(TypeDocument.RIB)
+          .fileUrl(uploadResult.get("url"))
+          .providerPublicId(uploadResult.get("publicId"))
+          .status(StatutDocument.EN_ATTENTE)
+          .uploadedAt(LocalDateTime.now())
           .build();
 
       DocumentEtudiant saved = documentRepository.save(document);
       return ResponseEntity.status(HttpStatus.CREATED).body(
           Map.of(
               "trackingId", saved.getTrackingId().toString(),
-              "urlFichier", saved.getUrlFichier(),
+              "urlFichier", saved.getFileUrl(),
               "message", "Document RIB uploadé avec succès"
           )
       );

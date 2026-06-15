@@ -1,6 +1,5 @@
 package com.backend.gns.student.infrastructure.repositories;
 
-import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.models.Student;
@@ -17,19 +16,21 @@ public interface InscriptionAnnuelleRepository extends JpaRepository<Inscription
 
   Optional<InscriptionAnnuelle> findByTrackingId(UUID trackingId);
 
+  List<InscriptionAnnuelle> findByStudent_TrackingId(UUID studentTrackingId);
+
   @Query("SELECT i FROM InscriptionAnnuelle i WHERE i.student.trackingId = :studentTrackingId")
   Page<InscriptionAnnuelle> findByStudentTrackingId(
       @Param("studentTrackingId") UUID studentTrackingId, Pageable pageable);
 
   @Query(
-      "SELECT i FROM InscriptionAnnuelle i WHERE i.student.trackingId = :studentTrackingId AND i.scolariteYear.libelle = :annee")
-  Optional<InscriptionAnnuelle> findByStudentTrackingIdAndAnnee(
-      @Param("studentTrackingId") UUID studentTrackingId, @Param("annee") String annee);
+      "SELECT i FROM InscriptionAnnuelle i WHERE i.student.trackingId = :studentTrackingId AND i.scolariteYear.label = :label")
+  Optional<InscriptionAnnuelle> findByStudentTrackingIdAndLabel(
+      @Param("studentTrackingId") UUID studentTrackingId, @Param("label") String label);
 
   Optional<InscriptionAnnuelle> findByStudentAndScolariteYear(
       Student student, ScolariteYear scolariteYear);
 
-  Optional<InscriptionAnnuelle> findByStudentAndScolariteYear_EstOuverteTrue(Student student);
+  Optional<InscriptionAnnuelle> findByStudentAndScolariteYear_IsOpenTrue(Student student);
 
   List<InscriptionAnnuelle> findAllByScolariteYear(ScolariteYear scolariteYear);
 

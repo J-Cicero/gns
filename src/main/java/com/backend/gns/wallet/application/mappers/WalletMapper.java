@@ -12,51 +12,37 @@ public class WalletMapper {
 
   public Wallet toEntity(WalletRequest request) {
     if (request == null) {
-      throw new IllegalArgumentException("La requête WalletRequest ne peut pas être nulle");
+      throw new IllegalArgumentException("WalletRequest cannot be null");
     }
 
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
-    wallet.setTypeWallet(request.typeWallet());
-    wallet.setStatutWallet(request.statutWallet());
-    wallet.setSolde(request.solde());
-    wallet.setPlafond(request.plafond());
-    wallet.setDateCreation(
-        request.dateCreation() != null ? request.dateCreation() : LocalDateTime.now());
+    wallet.setWalletType(request.walletType());
+    wallet.setStatus(request.status());
+    wallet.setBalance(request.balance());
+    wallet.setLimitAmount(request.limitAmount());
+    wallet.setCurrency(request.currency() != null ? request.currency() : "XAF");
+    wallet.setCreatedAt(
+        request.createdAt() != null ? request.createdAt() : LocalDateTime.now());
 
     return wallet;
   }
 
   public WalletResponse toResponse(Wallet wallet) {
     if (wallet == null) {
-      throw new IllegalArgumentException("L'entité Wallet ne peut pas être nulle");
+      return null;
     }
 
     return WalletResponse.builder()
         .trackingId(wallet.getTrackingId())
-        .typeWallet(wallet.getTypeWallet())
-        .statutWallet(wallet.getStatutWallet())
-        .niveauSolde(wallet.getNiveauSolde())
-        .solde(wallet.getSolde())
-        .plafond(wallet.getPlafond())
-        .dateCreation(wallet.getDateCreation())
+        .walletType(wallet.getWalletType())
+        .status(wallet.getStatus())
+        .fundingLevel(wallet.getFundingLevel())
+        .balance(wallet.getBalance())
+        .limitAmount(wallet.getLimitAmount())
+        .currency(wallet.getCurrency())
+        .createdAt(wallet.getCreatedAt())
+        .studentTrackingId(wallet.getStudent() != null ? wallet.getStudent().getTrackingId() : null)
         .build();
-  }
-
-  public Wallet toEntityFromResponse(WalletResponse response) {
-    if (response == null) {
-      throw new IllegalArgumentException("La réponse WalletResponse ne peut pas être nulle");
-    }
-
-    Wallet wallet = new Wallet();
-    wallet.setTrackingId(response.trackingId());
-    wallet.setTypeWallet(response.typeWallet());
-    wallet.setStatutWallet(response.statutWallet());
-    wallet.setNiveauSolde(response.niveauSolde());
-    wallet.setSolde(response.solde());
-    wallet.setPlafond(response.plafond());
-    wallet.setDateCreation(response.dateCreation());
-
-    return wallet;
   }
 }

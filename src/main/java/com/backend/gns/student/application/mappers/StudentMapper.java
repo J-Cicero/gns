@@ -22,24 +22,24 @@ public class StudentMapper {
 
   public Student toEntity(StudentRequest request) {
     if (request == null) {
-      throw new IllegalArgumentException("La requête StudentRequest ne peut pas être nulle");
+      throw new IllegalArgumentException("StudentRequest cannot be null");
     }
 
     Student student = new Student();
     student.setTrackingId(UUID.randomUUID());
     student.setEmail(request.email());
     student.setPassword(request.password());
-    student.setNom(request.nom());
-    student.setPrenom(request.prenom());
+    student.setLastName(request.lastName());
+    student.setFirstName(request.firstName());
     student.setRole(UserRole.ETUDIANT);
-    student.setEstActif(request.estActif());
-    student.setTelephone(request.telephone());
-    student.setDateNaissance(request.dateNaissance());
-    student.setStatutKYC(request.statutKYC());
-    student.setMatricule(request.matricule());
+    student.setActive(request.isActive() != null ? request.isActive() : false);
+    student.setPhoneNumber(request.phoneNumber());
+    student.setBirthDate(request.birthDate());
+    student.setKycStatus(request.kycStatus());
+    student.setStudentIdNumber(request.studentIdNumber());
 
-    if (request.pinCode() != null && !request.pinCode().isEmpty()) {
-      student.setPinCode(request.pinCode());
+    if (request.pinCodeHash() != null && !request.pinCodeHash().isEmpty()) {
+      student.setPinCodeHash(request.pinCodeHash());
     }
 
     if (request.walletTrackingId() != null) {
@@ -49,7 +49,7 @@ public class StudentMapper {
               .orElseThrow(
                   () ->
                       new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: " + request.walletTrackingId()));
+                          "Wallet not found with trackingId: " + request.walletTrackingId()));
       student.setWallet(wallet);
     }
 
@@ -60,7 +60,7 @@ public class StudentMapper {
               .orElseThrow(
                   () ->
                       new IllegalArgumentException(
-                          "Université non trouvée avec l'ID: " + request.universiteTrackingId()));
+                          "University not found with trackingId: " + request.universiteTrackingId()));
       student.setUniversite(universite);
     }
 
@@ -69,67 +69,25 @@ public class StudentMapper {
 
   public StudentResponse toResponse(Student student) {
     if (student == null) {
-      throw new IllegalArgumentException("L'entité Student ne peut pas être nulle");
+      return null;
     }
 
     return StudentResponse.builder()
         .trackingId(student.getTrackingId())
         .email(student.getEmail())
-        .nom(student.getNom())
-        .prenom(student.getPrenom())
-        .estActif(student.isEstActif())
-        .telephone(student.getTelephone())
-        .dateNaissance(student.getDateNaissance())
-        .statutKYC(student.getStatutKYC())
-        .matricule(student.getMatricule())
+        .lastName(student.getLastName())
+        .firstName(student.getFirstName())
+        .isActive(student.isActive())
+        .phoneNumber(student.getPhoneNumber())
+        .birthDate(student.getBirthDate())
+        .kycStatus(student.getKycStatus())
+        .studentIdNumber(student.getStudentIdNumber())
         .walletTrackingId(student.getWallet() != null ? student.getWallet().getTrackingId() : null)
-        .solde(student.getWallet() != null ? student.getWallet().getSolde() : BigDecimal.ZERO)
+        .balance(student.getWallet() != null ? student.getWallet().getBalance() : BigDecimal.ZERO)
         .universiteTrackingId(
             student.getUniversite() != null ? student.getUniversite().getTrackingId() : null)
-        .universiteNom(student.getUniversite() != null ? student.getUniversite().getNom() : null)
-        .pinCode(student.getPinCode())
+        .universiteFullName(student.getUniversite() != null ? student.getUniversite().getFullName() : null)
+        .pinCodeHash(student.getPinCodeHash())
         .build();
-  }
-
-  public Student toEntityFromResponse(StudentResponse response) {
-    if (response == null) {
-      throw new IllegalArgumentException("La réponse StudentResponse ne peut pas être nulle");
-    }
-
-    Student student = new Student();
-    student.setTrackingId(response.trackingId());
-    student.setEmail(response.email());
-    student.setNom(response.nom());
-    student.setPrenom(response.prenom());
-    student.setRole(UserRole.ETUDIANT);
-    student.setEstActif(response.estActif());
-    student.setTelephone(response.telephone());
-    student.setDateNaissance(response.dateNaissance());
-    student.setStatutKYC(response.statutKYC());
-    student.setMatricule(response.matricule());
-
-    if (response.walletTrackingId() != null) {
-      Wallet wallet =
-          walletRepository
-              .findByTrackingId(response.walletTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: " + response.walletTrackingId()));
-      student.setWallet(wallet);
-    }
-
-    if (response.universiteTrackingId() != null) {
-      Universite universite =
-          universiteRepository
-              .findByTrackingId(response.universiteTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Université non trouvée avec l'ID: " + response.universiteTrackingId()));
-      student.setUniversite(universite);
-    }
-
-    return student;
   }
 }

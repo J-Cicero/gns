@@ -2,6 +2,7 @@ package com.backend.gns.student.domain.models;
 
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.student.domain.enums.CardStatut;
+import com.backend.gns.wallet.domain.models.Wallet;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -12,7 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -39,15 +40,22 @@ public class Card extends BaseEntity {
   private UUID trackingId;
 
   @Column(unique = true, nullable = false)
-  private String qrCodeStatique;
+  private String cardNumber;
+
+  @Column(unique = true, nullable = false)
+  private String qrCodeData;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 50)
-  private CardStatut statut;
+  private CardStatut status;
 
-  @Column private LocalDateTime dateEmission;
+  @Column 
+  private LocalDateTime emissionDate;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "student_id", nullable = false)
-  private Student student;
+  @Column
+  private LocalDateTime expirationDate;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "wallet_id", nullable = false)
+  private Wallet wallet;
 }

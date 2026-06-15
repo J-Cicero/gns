@@ -1,9 +1,10 @@
 package com.backend.gns.commerce.application.mappers;
 
+import com.backend.gns.commerce.application.dtos.requests.TransactionRequest;
 import com.backend.gns.commerce.application.dtos.responses.TransactionResponse;
 import com.backend.gns.commerce.domain.models.Transaction;
-import com.backend.gns.commerce.domain.services.BoutiqueService;
 import com.backend.gns.student.domain.services.StudentService;
+import com.backend.gns.commerce.domain.services.BoutiqueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,29 +12,40 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TransactionMapper {
 
-    private final StudentService studentService;
-    private final BoutiqueService boutiqueService;
+    private final StudentService studentService; // To get senderName
+    private final BoutiqueService boutiqueService; // To get receiverName
+
+    public Transaction toEntity(TransactionRequest request) {
+        if (request == null) return null;
+        Transaction transaction = new Transaction();
+        // The sender and receiver entities will be set in the service layer
+        // via their tracking IDs.
+        transaction.setAmount(request.amount());
+        return transaction;
+    }
 
     public TransactionResponse toResponse(Transaction entity) {
-        String studentName = studentService.findByTrackingId(entity.getStudent().getTrackingId())
-                .map(s -> s.nom() + " " + s.prenom())
-                .orElse("Inconnu");
+        if (entity == null) return null;
 
-        String boutiqueName = boutiqueService.findByTrackingId(entity.getBoutique().getTrackingId())
-                .map(b -> b.nomBoutique())
-                .orElse("Inconnu");
+        String senderName = "Unknown";
+        if (entity.getSender() != null) {
+            senderName = entity.getSender().getFirstName() + " " + entity.getSender().getLastName();
+        }
+
+        String receiverName = "Unknown";
+        if (entity.getReceiver() != null) {
+            receiverName = entity.getReceiver().getName();
+        }
 
         return new TransactionResponse(
             entity.getTrackingId(),
-            studentName,
-            boutiqueName,
-            entity.getMontantDebite(),
-            entity.getMontantNetBoutique(),
-            entity.getCommissionTotale(),
-            entity.getCommissionGns(),
-            entity.getCommissionBanque(),
-            entity.getDate(),
-            entity.getStatut()
+            entity.getSender() != null ? entity.getSender().getTrackingId() : null,
+            entity.getReceiver() != null ? entity.getReceiver().getTrackingId() : null,
+            senderName,
+            receiverName,
+            entity.getAmount(),
+            entity.getStatus(),
+            entity.getCreatedAt()
         );
     }
 }

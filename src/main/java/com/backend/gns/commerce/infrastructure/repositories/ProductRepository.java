@@ -15,9 +15,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   Page<Product> findByBoutiqueTrackingId(
       @Param("boutiqueTrackingId") UUID boutiqueTrackingId, Pageable pageable);
 
-  Optional<Product> findByNom(String nom);
+  Optional<Product> findByName(String name);
 
-  Page<Product> findByEstDisponible(Boolean disponible, Pageable pageable);
+  Page<Product> findByIsAvailable(Boolean isAvailable, Pageable pageable);
 
   Optional<Product> findByTrackingId(UUID trackingId);
 }

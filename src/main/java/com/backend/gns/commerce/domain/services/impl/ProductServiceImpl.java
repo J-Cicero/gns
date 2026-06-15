@@ -56,12 +56,12 @@ public class ProductServiceImpl implements ProductService {
             .orElseThrow(
                 () -> new EntityNotFoundException("Produit non trouvé avec l'ID: " + trackingId));
 
-    product.setNom(request.nom());
+    product.setName(request.name());
     product.setDescription(request.description());
-    product.setPrix(request.prix());
+    product.setPrice(request.price());
     product.setStock(request.stock());
-    product.setEstDisponible(request.estDisponible());
-    product.setDateAjout(request.dateAjout());
+    product.setIsAvailable(request.isAvailable());
+    product.setAddedAt(request.addedAt());
 
     return productMapper.toResponse(productRepository.save(product));
   }
@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
   @Transactional(readOnly = true)
   public Page<ProductResponse> findByEstDisponible(Boolean estDisponible, Pageable pageable) {
     return productRepository
-        .findByEstDisponible(estDisponible, normalize(pageable))
+        .findByIsAvailable(estDisponible, normalize(pageable))
         .map(productMapper::toResponse);
   }
 

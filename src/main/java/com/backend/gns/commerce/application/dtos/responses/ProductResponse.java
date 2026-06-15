@@ -9,9 +9,9 @@ import lombok.Builder;
 public record ProductResponse(
     UUID trackingId,
     UUID boutiqueTrackingId,
-    String nom,
+    String name,
     String description,
-    BigDecimal prix,
+    BigDecimal price,
     int stock,
-    Boolean estDisponible,
-    LocalDateTime dateAjout) {}
+    Boolean isAvailable,
+    LocalDateTime addedAt) {}

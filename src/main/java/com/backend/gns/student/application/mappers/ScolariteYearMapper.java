@@ -13,10 +13,10 @@ public class ScolariteYearMapper {
       return null;
     }
     ScolariteYear entity = new ScolariteYear();
-    entity.setLibelle(request.libelle());
-    entity.setDateDebut(request.dateDebut());
-    entity.setDateFin(request.dateFin());
-    entity.setEstOuverte(request.estOuverte());
+    entity.setLabel(request.label());
+    entity.setStartDate(request.startDate());
+    entity.setEndDate(request.endDate());
+    entity.setOpen(request.isOpen());
     return entity;
   }
 
@@ -26,10 +26,10 @@ public class ScolariteYearMapper {
     }
     return new ScolariteYearResponse(
         entity.getTrackingId(),
-        entity.getLibelle(),
-        entity.getDateDebut(),
-        entity.getDateFin(),
-        entity.isEstOuverte(),
-        entity.isEstCloturee());
+        entity.getLabel(),
+        entity.getStartDate(),
+        entity.getEndDate(),
+        entity.isOpen(),
+        entity.isClosed());
   }
 }

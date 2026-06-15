@@ -7,13 +7,11 @@ import java.util.UUID;
 
 public record TransactionResponse(
     UUID trackingId,
-    String studentName,
-    String boutiqueName,
-    BigDecimal montantDebite,
-    BigDecimal montantNetBoutique,
-    BigDecimal commissionTotale,
-    BigDecimal commissionGns,
-    BigDecimal commissionBanque,
-    LocalDateTime date,
-    TransactionStatut statut
+    UUID senderTrackingId,
+    UUID receiverTrackingId,
+    String senderName,
+    String receiverName,
+    BigDecimal amount,
+    TransactionStatut status,
+    LocalDateTime createdAt
 ) {}

@@ -20,24 +20,24 @@ public class VersementMapper {
 
   public Versement toEntity(VersementRequest request) {
     if (request == null) {
-      throw new IllegalArgumentException("La requête VersementRequest ne peut pas être nulle");
+      throw new IllegalArgumentException("VersementRequest cannot be null");
     }
 
     Versement versement = new Versement();
     versement.setTrackingId(UUID.randomUUID());
-    versement.setMontantVerse(request.montantVerse());
-    versement.setTypeVersement(request.typeVersement());
+    versement.setMontantVerse(request.amount());
+    versement.setTypeVersement(request.paymentType());
     versement.setDateVersement(LocalDateTime.now());
-    versement.setStatut(request.statut());
+    versement.setStatut(request.status());
 
-    if (request.trackingWalletId() != null) {
+    if (request.walletTrackingId() != null) {
       Wallet wallet =
           walletRepository
-              .findByTrackingId(request.trackingWalletId())
+              .findByTrackingId(request.walletTrackingId())
               .orElseThrow(
                   () ->
                       new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: " + request.trackingWalletId()));
+                          "Wallet not found with trackingId: " + request.walletTrackingId()));
       versement.setWallet(wallet);
     }
 
@@ -46,42 +46,17 @@ public class VersementMapper {
 
   public VersementResponse toResponse(Versement versement) {
     if (versement == null) {
-      throw new IllegalArgumentException("L'entité Versement ne peut pas être nulle");
+      return null;
     }
 
     return VersementResponse.builder()
         .trackingId(versement.getTrackingId())
-        .montantVerse(versement.getMontantVerse())
-        .typeVersement(versement.getTypeVersement())
-        .dateVersement(LocalDateTime.now())
-        .statut(versement.getStatut())
-        .trackingWalletId(
+        .amount(versement.getMontantVerse())
+        .paymentType(versement.getTypeVersement())
+        .paymentDate(versement.getDateVersement())
+        .status(versement.getStatut())
+        .walletTrackingId(
             versement.getWallet() != null ? versement.getWallet().getTrackingId() : null)
         .build();
-  }
-
-  public Versement toEntityFromResponse(VersementResponse response) {
-    if (response == null) {
-      throw new IllegalArgumentException("La réponse VersementResponse ne peut pas être nulle");
-    }
-
-    Versement versement = new Versement();
-    versement.setTrackingId(response.trackingId());
-    versement.setMontantVerse(response.montantVerse());
-    versement.setTypeVersement(response.typeVersement());
-    versement.setDateVersement(LocalDateTime.now());
-    versement.setStatut(response.statut());
-
-    if (response.trackingWalletId() != null) {
-      Wallet wallet =
-          walletRepository
-              .findByTrackingId(response.trackingWalletId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Portefeuille non trouvé avec l'ID: " + response.trackingWalletId()));
-      versement.setWallet(wallet);
-    }
-    return versement;
   }
 }

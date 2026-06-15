@@ -30,9 +30,9 @@ public class LiquidationServiceImpl implements LiquidationService {
         Liquidation liquidation = Liquidation.builder()
                 .trackingId(UUID.randomUUID())
                 // .boutique(boutique) // À enrichir
-                .montantALiquider(request.montantALiquider())
-                .dateCreation(LocalDateTime.now())
-                .statut(LiquidationStatut.EN_ATTENTE)
+                .amountToLiquidate(request.amountToLiquidate())
+                .createdAt(LocalDateTime.now())
+                .status(LiquidationStatut.EN_ATTENTE)
                 .build();
         return liquidationMapper.toResponse(liquidationRepository.save(liquidation));
     }
@@ -51,8 +51,8 @@ public class LiquidationServiceImpl implements LiquidationService {
     @Override
     public java.math.BigDecimal getPendingTotal() {
         return liquidationRepository.findAll().stream()
-                .filter(l -> l.getStatut() == LiquidationStatut.EN_ATTENTE)
-                .map(Liquidation::getMontantALiquider)
+                .filter(l -> l.getStatus() == LiquidationStatut.EN_ATTENTE)
+                .map(Liquidation::getAmountToLiquidate)
                 .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
     }
 
@@ -62,9 +62,9 @@ public class LiquidationServiceImpl implements LiquidationService {
         Liquidation liquidation = liquidationRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new RuntimeException("Liquidation non trouvée"));
         
-        liquidation.setStatut(LiquidationStatut.PAYE);
-        liquidation.setDateValidation(LocalDateTime.now());
-        liquidation.setReferenceVirement(referenceVirement);
+        liquidation.setStatus(LiquidationStatut.PAYE);
+        liquidation.setValidatedAt(LocalDateTime.now());
+        liquidation.setTransferReference(referenceVirement);
         
         return liquidationMapper.toResponse(liquidationRepository.save(liquidation));
     }

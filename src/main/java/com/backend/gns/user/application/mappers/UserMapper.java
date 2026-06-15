@@ -12,14 +12,14 @@ public class UserMapper {
 
   public User toEntity(UserRequest request) {
     if (request == null) {
-      throw new IllegalArgumentException("UserRequest ne peut pas être null");
+      throw new IllegalArgumentException("UserRequest cannot be null");
     }
     User user = new User();
     user.setTrackingId(UUID.randomUUID());
-    user.setNom(request.nom());
-    user.setPrenom(request.prenom());
+    user.setLastName(request.lastName());
+    user.setFirstName(request.firstName());
     user.setEmail(request.email());
-    user.setTelephone(request.telephone());
+    user.setPhoneNumber(request.phoneNumber());
     if (request.role() != null && !request.role().trim().isEmpty()) {
       try {
         user.setRole(UserRole.valueOf(request.role()));
@@ -29,23 +29,23 @@ public class UserMapper {
     } else {
       user.setRole(UserRole.ETUDIANT);
     }
-    user.setEstActif(true);
+    user.setActive(true);
     return user;
   }
 
   public UserResponse toResponse(User user) {
     if (user == null) {
-      throw new IllegalArgumentException("User ne peut pas être null");
+      return null;
     }
 
     return new UserResponse(
         user.getTrackingId(),
-        user.getNom(),
-        user.getPrenom(),
-        null,
+        user.getLastName(),
+        user.getFirstName(),
+        user.getPhoneNumber(),
         user.getEmail(),
-        user.getRole().name(),
-        null,
-        user.isEstActif());
+        user.getRole() != null ? user.getRole().name() : null,
+        user.getRegistrationDate(),
+        user.isActive());
   }
 }

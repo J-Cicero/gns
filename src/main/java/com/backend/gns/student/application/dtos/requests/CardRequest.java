@@ -5,4 +5,9 @@ import java.util.UUID;
 import lombok.Builder;
 
 @Builder
-public record CardRequest(String qrCodeStatique, CardStatut cardStatus, UUID studentTrackingId) {}
+public record CardRequest(
+    String cardNumber,
+    String qrCodeData,
+    CardStatut status,
+    UUID walletTrackingId
+) {}

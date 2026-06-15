@@ -24,42 +24,20 @@ public class Transaction {
     private UUID trackingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+    @JoinColumn(name = "sender_id", nullable = false)
+    private Student sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "boutique_id", nullable = false)
-    private Boutique boutique;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "scolarite_year_id", nullable = false)
-    private com.backend.gns.student.domain.models.ScolariteYear scolariteYear;
+    @JoinColumn(name = "receiver_id", nullable = false)
+    private Boutique receiver;
 
     @Column(nullable = false)
-    private UUID commandeId;
-
-    @Column(nullable = false)
-    private BigDecimal montantDebite;
-
-    @Column(nullable = false)
-    private BigDecimal montantNetBoutique;
-
-    @Column(nullable = false)
-    private BigDecimal commissionTotale;
-
-    @Column(nullable = false)
-    private BigDecimal commissionGns;
-
-    @Column(nullable = false)
-    private BigDecimal commissionBanque;
-
-    @Column(nullable = false)
-    private LocalDateTime date;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TransactionStatut statut;
+    private TransactionStatut status;
 
     @Column(nullable = false)
-    private boolean estLiquide = false;
+    private LocalDateTime createdAt;
 }

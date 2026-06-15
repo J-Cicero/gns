@@ -1,9 +1,17 @@
 package com.backend.gns.student.application.dtos.responses;
 
 import com.backend.gns.student.domain.enums.CardStatut;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 
 @Builder
 public record CardResponse(
-    UUID trackingId, String qrCodeStatique, CardStatut cardStatus, UUID studentTrackingId) {}
+    UUID trackingId,
+    String cardNumber,
+    String qrCodeData,
+    CardStatut status,
+    LocalDateTime emissionDate,
+    LocalDateTime expirationDate,
+    UUID walletTrackingId
+) {}

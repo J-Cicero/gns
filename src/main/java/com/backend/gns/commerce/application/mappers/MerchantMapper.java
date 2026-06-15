@@ -18,10 +18,14 @@ public class MerchantMapper {
     Merchant merchant = new Merchant();
     merchant.setTrackingId(UUID.randomUUID());
     merchant.setEmail(request.email());
-    merchant.setNom(request.nom());
-    merchant.setPrenom(request.prenom());
+    merchant.setLastName(request.lastName());
+    merchant.setFirstName(request.firstName());
     merchant.setRole(UserRole.COMMERCANT);
-    merchant.setEstActif(true);
+    merchant.setActive(request.isActive() != null ? request.isActive() : true);
+    merchant.setBusinessName(request.businessName());
+    merchant.setRegistrationNumber(request.registrationNumber());
+    merchant.setPhoneNumber(request.phoneNumber());
+    merchant.setBirthDate(request.birthDate());
     return merchant;
   }
 
@@ -31,9 +35,13 @@ public class MerchantMapper {
     return MerchantResponse.builder()
         .trackingId(merchant.getTrackingId())
         .email(merchant.getEmail())
-        .nom(merchant.getNom())
-        .prenom(merchant.getPrenom())
-        .estActif(merchant.isEstActif())
+        .lastName(merchant.getLastName())
+        .firstName(merchant.getFirstName())
+        .isActive(merchant.isActive())
+        .phoneNumber(merchant.getPhoneNumber())
+        .birthDate(merchant.getBirthDate())
+        .businessName(merchant.getBusinessName())
+        .registrationNumber(merchant.getRegistrationNumber())
         .build();
   }
 }

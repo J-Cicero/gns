@@ -10,11 +10,11 @@ public record BoutiqueResponse(
     UUID trackingId,
     UUID merchantTrackingId,
     UUID walletTrackingId,
-    String nomBoutique,
-    String categorieShop,
-    String cheminCarteEDJ,
-    KycStatus statutKYC,
+    String name,
+    String shopCategory,
+    String mapPath,
+    KycStatus kycStatus,
     Double latitude,
     Double longitude,
-    BigDecimal solde,
-    BigDecimal plafond) {}
+    BigDecimal balance,
+    BigDecimal limitAmount) {}

@@ -4,6 +4,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record LiquidationRequest(
-    UUID boutiqueId,
-    BigDecimal montantALiquider
+    UUID boutiqueTrackingId,
+    BigDecimal amountToLiquidate
 ) {}

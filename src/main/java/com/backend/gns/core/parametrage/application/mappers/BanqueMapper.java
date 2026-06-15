@@ -12,7 +12,7 @@ public class BanqueMapper {
     return BanqueResponse.builder()
         .trackingId(banque.getTrackingId())
         .code(banque.getCode())
-        .nom(banque.getNom())
+        .name(banque.getName())
         .build();
   }
 }

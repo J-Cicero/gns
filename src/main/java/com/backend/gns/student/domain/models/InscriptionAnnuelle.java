@@ -1,8 +1,6 @@
 package com.backend.gns.student.domain.models;
 
 import com.backend.gns.core.utils.BaseEntity;
-import com.backend.gns.student.domain.enums.SourceVerification;
-import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.StudentNiveau;
 import com.backend.gns.student.domain.enums.TypeBourse;
 import jakarta.persistence.Column;
@@ -54,21 +52,21 @@ public class InscriptionAnnuelle extends BaseEntity {
   private ScolariteYear scolariteYear;
 
   @Column(nullable = false)
-  private boolean estInscritDefinitif = false; // Désormais piloté par l'API Externe
+  private boolean isFullyEnrolled = false;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
-  private StudentNiveau niveau;
+  private StudentNiveau studyLevel;
 
   @Column(nullable = false)
-  private boolean estEligibleBourse = false; // Nouveau : Éligibilité API Externe
+  private boolean isEligibleForScholarship = false;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
-  private TypeBourse typeBourse; // Type de bourse fourni par l'API
+  private TypeBourse scholarshipType;
 
-  @Column private LocalDateTime dateValidationApi; // Nouveau : Date réponse API
+  @Column private LocalDateTime apiValidationDate;
 
   @Column(nullable = false, precision = 10, scale = 2)
-  private BigDecimal plafondAccorde;
+  private BigDecimal allocatedBudget;
 }

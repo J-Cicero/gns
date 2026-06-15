@@ -36,42 +36,42 @@ public class User extends BaseEntity {
   private UUID trackingId;
 
   @Column(length = 100, nullable = false)
-  private String nom;
+  private String lastName;
 
   @Column(length = 100, nullable = false)
-  private String prenom;
+  private String firstName;
 
   @Column(length = 100, nullable = false, unique = true)
   private String email;
 
   @JsonIgnore
   @Column(length = 255, nullable = false)
-  private String password;
+  private String passwordHash;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
   private UserRole role;
 
   @Column(nullable = false)
-  private boolean estActif = false;
+  private boolean isActive = false;
 
   @Column(length = 20)
-  private String telephone;
+  private String phoneNumber;
 
   @Column(length = 50)
-  private String pays;
+  private String country;
 
   @Column(nullable = false, updatable = false)
   @CreatedDate
   @CreationTimestamp
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime dateInscription;
+  private LocalDateTime registrationDate;
 
   @Column(nullable = true)
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime dateNaissance;
+  private LocalDateTime birthDate;
 
-  public void setMotDePasse(String motDePasse) {
-    this.password = motDePasse;
+  public void setPassword(String password) {
+    this.passwordHash = password;
   }
 }

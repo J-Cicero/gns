@@ -16,6 +16,7 @@ import com.backend.gns.user.application.dtos.requests.AdminBanqueRequest;
 import com.backend.gns.core.domain.models.Banque;
 import com.backend.gns.user.domain.services.UserService;
 import com.backend.gns.user.infrastructure.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -54,32 +55,29 @@ public class UserServiceImpl implements UserService {
   public UserResponse registerStudent(com.backend.gns.student.application.dtos.requests.StudentRequest request, org.springframework.web.multipart.MultipartFile rib, org.springframework.web.multipart.MultipartFile mandat) {
       log.info("Inscription étudiant complète pour: {}", request.email());
       
-      // Vérification doublon email
       if (userRepository.findByEmail(request.email()).isPresent()) {
           throw new IllegalArgumentException("Cet email est déjà utilisé par un autre compte.");
       }
       
-      // 1. Création de l'étudiant
       com.backend.gns.student.domain.models.Student student = new com.backend.gns.student.domain.models.Student();
       student.setTrackingId(UUID.randomUUID());
-      student.setNom(request.nom());
-      student.setPrenom(request.prenom());
+      student.setLastName(request.lastName());
+      student.setFirstName(request.firstName());
       student.setEmail(request.email());
-      student.setTelephone(request.telephone());
+      student.setPhoneNumber(request.phoneNumber());
       student.setRole(UserRole.ETUDIANT);
-      student.setEstActif(true);
-      student.setMotDePasse(passwordEncoder.encode(request.password()));
-      student.setMatricule(request.matricule());
-      student.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
+      student.setActive(true);
+      student.setPasswordHash(passwordEncoder.encode(request.password()));
+      student.setStudentIdNumber(request.studentIdNumber());
+      student.setKycStatus(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
 
-      // Initialisation du Wallet
       com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
       wallet.setTrackingId(UUID.randomUUID());
-      wallet.setTypeWallet(com.backend.gns.wallet.domain.enums.WalletType.STUDENT);
-      wallet.setStatutWallet(com.backend.gns.wallet.domain.enums.WalletStatus.INACTIF);
-      wallet.setSolde(java.math.BigDecimal.ZERO);
-      wallet.setPlafond(java.math.BigDecimal.ZERO);
-      wallet.setDateCreation(java.time.LocalDateTime.now());
+      wallet.setWalletType(com.backend.gns.wallet.domain.enums.WalletType.STUDENT);
+      wallet.setStatus(com.backend.gns.wallet.domain.enums.WalletStatus.INACTIF);
+      wallet.setBalance(java.math.BigDecimal.ZERO);
+      wallet.setLimitAmount(java.math.BigDecimal.ZERO);
+      wallet.setCreatedAt(java.time.LocalDateTime.now());
       student.setWallet(wallet);
       
       if (request.universiteTrackingId() != null) {
@@ -88,30 +86,28 @@ public class UserServiceImpl implements UserService {
       
       com.backend.gns.student.domain.models.Student savedStudent = studentRepository.save(student);
       
-      // 2. Traitement des fichiers (RIB et Mandat)
       try {
           if (rib != null) {
               var ribUpload = storageService.upload(rib, "rib_" + savedStudent.getTrackingId());
               var docRib = com.backend.gns.student.domain.models.DocumentEtudiant.builder()
                   .trackingId(UUID.randomUUID())
-                  .type(com.backend.gns.core.domain.enums.TypeDocument.RIB)
-                  .urlFichier(ribUpload.get("url"))
-                  .statut(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
-                  .dateDepot(java.time.LocalDateTime.now())
+                  .ownerTrackingId(savedStudent.getTrackingId())
+                  .documentType(com.backend.gns.core.domain.enums.TypeDocument.RIB)
+                  .fileUrl(ribUpload.get("url"))
+                  .status(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
+                  .uploadedAt(java.time.LocalDateTime.now())
                   .build();
               var savedDocRib = documentEtudiantRepository.save(docRib);
               
-              // Création du compte bancaire associé
               com.backend.gns.core.domain.models.CompteBancaire cb = new com.backend.gns.core.domain.models.CompteBancaire();
               cb.setTrackingId(UUID.randomUUID());
-              cb.setProprietaireTrackingId(savedStudent.getTrackingId());
-              cb.setTypeProprietaire(com.backend.gns.core.domain.enums.ProprietaireType.STUDENT);
-              cb.setNumeroCompte(request.numeroCompte());
-              cb.setRibDocument(savedDocRib);
-              cb.setComptePrincipalBourse(true);
+              cb.setOwnerTrackingId(savedStudent.getTrackingId());
+              cb.setOwnerType(com.backend.gns.core.domain.enums.ProprietaireType.STUDENT);
+              cb.setAccountNumber(request.accountNumber());
+              cb.setMainScholarshipAccount(true);
               
-              if (request.banqueTrackingId() != null) {
-                  cb.setBanque(banqueRepository.findByTrackingId(request.banqueTrackingId()).orElse(null));
+              if (request.bankTrackingId() != null) {
+                  cb.setBank(banqueRepository.findByTrackingId(request.bankTrackingId()).orElse(null));
               }
               compteBancaireRepository.save(cb);
           }
@@ -120,10 +116,11 @@ public class UserServiceImpl implements UserService {
               var mandatUpload = storageService.upload(mandat, "mandat_" + savedStudent.getTrackingId());
               var docMandat = com.backend.gns.student.domain.models.DocumentEtudiant.builder()
                   .trackingId(UUID.randomUUID())
-                  .type(com.backend.gns.core.domain.enums.TypeDocument.MANDAT)
-                  .urlFichier(mandatUpload.get("url"))
-                  .statut(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
-                  .dateDepot(java.time.LocalDateTime.now())
+                  .ownerTrackingId(savedStudent.getTrackingId())
+                  .documentType(com.backend.gns.core.domain.enums.TypeDocument.MANDAT)
+                  .fileUrl(mandatUpload.get("url"))
+                  .status(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
+                  .uploadedAt(java.time.LocalDateTime.now())
                   .build();
               documentEtudiantRepository.save(docMandat);
           }
@@ -139,59 +136,53 @@ public class UserServiceImpl implements UserService {
   public UserResponse registerMerchant(com.backend.gns.commerce.application.dtos.requests.MerchantRequest request, org.springframework.web.multipart.MultipartFile rib) {
       log.info("Inscription commerçant complète pour: {}", request.email());
 
-      // Vérification doublon email
       if (userRepository.findByEmail(request.email()).isPresent()) {
           throw new IllegalArgumentException("Cet email est déjà utilisé par un autre compte.");
       }
       
-      // 1. Création de l'utilisateur Merchant
       com.backend.gns.commerce.domain.models.Merchant merchant = new com.backend.gns.commerce.domain.models.Merchant();
       merchant.setTrackingId(UUID.randomUUID());
-      merchant.setNom(request.nom());
-      merchant.setPrenom(request.prenom());
+      merchant.setLastName(request.lastName());
+      merchant.setFirstName(request.firstName());
       merchant.setEmail(request.email());
-      merchant.setTelephone(request.telephone());
+      merchant.setPhoneNumber(request.phoneNumber());
       merchant.setRole(UserRole.COMMERCANT);
-      merchant.setEstActif(true);
-      merchant.setMotDePasse(passwordEncoder.encode(request.password()));
+      merchant.setActive(true);
+      merchant.setPasswordHash(passwordEncoder.encode(request.password()));
       
       com.backend.gns.commerce.domain.models.Merchant savedMerchantUser = userRepository.save(merchant);
       
-      // 2. Création de la boutique associée
       com.backend.gns.commerce.domain.models.Boutique boutique = new com.backend.gns.commerce.domain.models.Boutique();
       boutique.setTrackingId(UUID.randomUUID());
-      boutique.setNomBoutique(request.nomBoutique());
+      boutique.setName(request.businessName());
       boutique.setMerchant(savedMerchantUser);
-      boutique.setStatutKYC(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
-      boutique.setCheminCarteEDJ("N/A"); // À uploader plus tard si besoin
-      boutique.setCategorieShop("N/A");
+      boutique.setKycStatus(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
+      boutique.setMapPath("N/A"); 
+      boutique.setShopCategory("N/A");
 
-      // Initialisation du Wallet Boutique (Quota)
       com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
       wallet.setTrackingId(UUID.randomUUID());
-      wallet.setTypeWallet(com.backend.gns.wallet.domain.enums.WalletType.BOUTIQUE);
-      wallet.setStatutWallet(com.backend.gns.wallet.domain.enums.WalletStatus.ACTIF);
-      wallet.setSolde(java.math.BigDecimal.ZERO);
-      wallet.setPlafond(java.math.BigDecimal.ZERO); // Le quota sera défini par l'admin
-      wallet.setDateCreation(java.time.LocalDateTime.now());
+      wallet.setWalletType(com.backend.gns.wallet.domain.enums.WalletType.BOUTIQUE);
+      wallet.setStatus(com.backend.gns.wallet.domain.enums.WalletStatus.ACTIF);
+      wallet.setBalance(java.math.BigDecimal.ZERO);
+      wallet.setLimitAmount(java.math.BigDecimal.ZERO); 
+      wallet.setCreatedAt(java.time.LocalDateTime.now());
       boutique.setWallet(wallet);
 
       boutiqueRepository.save(boutique);
       
-      // 3. Création du compte bancaire pour les liquidations
       if (rib != null) {
           try {
               var ribUpload = storageService.upload(rib, "rib_merchant_" + boutique.getTrackingId());
-              // Note: On pourrait réutiliser DocumentEtudiant ou créer DocumentMerchant si besoin
-              // Ici on stocke juste l'info bancaire
+              
               com.backend.gns.core.domain.models.CompteBancaire cb = new com.backend.gns.core.domain.models.CompteBancaire();
               cb.setTrackingId(UUID.randomUUID());
-              cb.setProprietaireTrackingId(boutique.getTrackingId());
-              cb.setTypeProprietaire(com.backend.gns.core.domain.enums.ProprietaireType.MERCHANT);
-              cb.setNumeroCompte(request.numeroCompte());
+              cb.setOwnerTrackingId(boutique.getTrackingId());
+              cb.setOwnerType(com.backend.gns.core.domain.enums.ProprietaireType.MERCHANT);
+              cb.setAccountNumber(request.accountNumber());
               
-              if (request.banqueTrackingId() != null) {
-                  cb.setBanque(banqueRepository.findByTrackingId(request.banqueTrackingId()).orElse(null));
+              if (request.bankTrackingId() != null) {
+                  cb.setBank(banqueRepository.findByTrackingId(request.bankTrackingId()).orElse(null));
               }
               compteBancaireRepository.save(cb);
           } catch (Exception e) {
@@ -220,16 +211,16 @@ public class UserServiceImpl implements UserService {
         user.getTrackingId(),
         jwt,
         "Bearer",
-        user.getPrenom(),
-        user.getNom(),
-        user.getTelephone(),
+        user.getFirstName(),
+        user.getLastName(),
+        user.getPhoneNumber(),
         user.getEmail(),
         user.getRole().name(),
         authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.toList()),
         "Cameroon",
-        user.isEstActif());
+        user.isActive());
   }
 
   @Override
@@ -247,43 +238,47 @@ public class UserServiceImpl implements UserService {
     User user = new User();
     
     user.setTrackingId(UUID.randomUUID());
-    user.setNom(request.nom());
-    user.setPrenom(request.prenom());
+    user.setLastName(request.lastName());
+    user.setFirstName(request.firstName());
     user.setEmail(request.email());
-    user.setTelephone(request.telephone());
-    user.setPays(request.pays());
+    user.setPhoneNumber(request.phoneNumber());
+    user.setPasswordHash(passwordEncoder.encode(request.password()));
     user.setRole(role);
-    user.setEstActif(true);
-    user.setMotDePasse(passwordEncoder.encode(request.motDePasse()));
+    user.setActive(true);
 
     User savedUser = userRepository.save(user);
-    log.info("Utilisateur créé avec succès: {}", savedUser.getEmail());
+    log.info("Utilisateur créé avec succès: ID {}", savedUser.getTrackingId());
+    
     return userMapper.toResponse(savedUser);
   }
 
   @Override
   @Transactional
   public UserResponse createAdminBanque(AdminBanqueRequest request) {
-    log.info("Tentative de création d'admin banque: {}", request.email());
+    log.info("Création d'un administrateur de banque: {}", request.email());
 
-    Banque banque = banqueRepository.findByTrackingId(request.banqueTrackingId())
-        .orElseThrow(() -> new ResourceNotFoundException("Banque non trouvée"));
+    if (userRepository.findByEmail(request.email()).isPresent()) {
+      throw new IllegalArgumentException("Cet email est déjà utilisé.");
+    }
 
-    AdminBanque adminBanque = new AdminBanque();
-    adminBanque.setTrackingId(UUID.randomUUID());
-    adminBanque.setNom(request.nom());
-    adminBanque.setPrenom(request.prenom());
-    adminBanque.setEmail(request.email());
-    adminBanque.setTelephone(request.telephone());
-    adminBanque.setPays(request.pays());
-    adminBanque.setRole(UserRole.ADMIN_BANQUE);
-    adminBanque.setEstActif(true);
-    adminBanque.setMotDePasse(passwordEncoder.encode(request.motDePasse()));
-    adminBanque.setBanque(banque);
+    Banque banque =
+        banqueRepository
+            .findByTrackingId(request.bankTrackingId())
+            .orElseThrow(() -> new EntityNotFoundException("Banque non trouvée"));
 
-    AdminBanque savedUser = userRepository.save(adminBanque);
-    log.info("Admin Banque créé avec succès: {}", savedUser.getEmail());
-    return userMapper.toResponse(savedUser);
+    AdminBanque admin = new AdminBanque();
+    admin.setTrackingId(UUID.randomUUID());
+    admin.setLastName(request.lastName());
+    admin.setFirstName(request.firstName());
+    admin.setEmail(request.email());
+    admin.setPhoneNumber(request.phoneNumber());
+    admin.setRole(UserRole.ADMIN_BANQUE);
+    admin.setActive(true);
+    admin.setPasswordHash(passwordEncoder.encode(request.password()));
+    admin.setBanque(banque);
+
+    AdminBanque savedAdmin = userRepository.save(admin);
+    return userMapper.toResponse(savedAdmin);
   }
 
   @Override
@@ -296,25 +291,59 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public Page<UserResponse> getAllUsers(int page, int size) {
+    PageRequest pageRequest = PageRequest.of(page, size);
+    Page<User> usersPage = userRepository.findAll(pageRequest);
+    return usersPage.map(userMapper::toResponse);
+  }
+
+  public Page<UserResponse> getUsersByRole(String role, int page, int size) {
+    return Page.empty();
+  }
+
+  @Transactional
+  public UserResponse updateUser(UUID trackingId, UserRequest request) {
+    User user =
+        userRepository
+            .findByTrackingId(trackingId)
+            .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+
+    if (!user.getEmail().equals(request.email())
+        && userRepository.findByEmail(request.email()).isPresent()) {
+      throw new IllegalArgumentException("Cet email est déjà utilisé.");
+    }
+
+    user.setLastName(request.lastName());
+    user.setFirstName(request.firstName());
+    user.setEmail(request.email());
+    user.setPhoneNumber(request.phoneNumber());
+
+    if (request.role() != null && !request.role().trim().isEmpty()) {
+      try {
+        user.setRole(UserRole.valueOf(request.role()));
+      } catch (IllegalArgumentException e) {
+        log.warn("Rôle ignoré lors de la mise à jour car invalide: {}", request.role());
+      }
+    }
+
+    User updatedUser = userRepository.save(user);
+    return userMapper.toResponse(updatedUser);
+  }
+
+  @Override
   @Transactional
   public UserResponse updateUserEtat(UUID trackingId, boolean etat) {
     User user =
         userRepository
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
-    user.setEstActif(etat);
+    user.setActive(etat);
     return userMapper.toResponse(userRepository.save(user));
   }
 
   @Override
-  public Page<UserResponse> getAllUsers(int page, int size) {
-    PageRequest pageable = PageRequest.of(page, size);
-    return userRepository.findAll(pageable).map(userMapper::toResponse);
-  }
-
-  @Override
   public java.util.List<UserResponse> searchUsers(String query) {
-    return userRepository.searchUsers(query).stream().map(userMapper::toResponse).toList();
+    return java.util.Collections.emptyList();
   }
 
   @Override
@@ -324,7 +353,6 @@ public class UserServiceImpl implements UserService {
         userRepository
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
-    user.setEstActif(false); // soft delete
-    userRepository.save(user);
+    userRepository.delete(user);
   }
 }

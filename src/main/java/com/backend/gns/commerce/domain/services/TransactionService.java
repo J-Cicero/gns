@@ -8,10 +8,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TransactionService {
-    TransactionResponse create(TransactionRequest request);
+    TransactionResponse createPayment(TransactionRequest request);
     Optional<TransactionResponse> findByTrackingId(UUID trackingId);
     Page<TransactionResponse> findAll(Pageable pageable);
     Page<TransactionResponse> findByBoutiqueId(UUID boutiqueId, Pageable pageable);
     Page<TransactionResponse> findByStudentId(UUID studentId, Pageable pageable);
-  java.math.BigDecimal getVolumeValide();
+    java.math.BigDecimal getVolumeValide();
 }

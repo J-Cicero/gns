@@ -2,7 +2,8 @@ package com.backend.gns.student.infrastructure.repositories;
 
 import com.backend.gns.student.domain.enums.CardStatut;
 import com.backend.gns.student.domain.models.Card;
-import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.wallet.domain.models.Wallet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -13,13 +14,15 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
   Optional<Card> findByTrackingId(UUID trackingId);
 
-  Optional<Card> findByQrCodeStatique(String qrCodeStatique);
+  List<Card> findByWallet_TrackingId(UUID walletTrackingId);
 
-  Optional<Card> findByStudentAndStatut(Student student, CardStatut statut);
+  Optional<Card> findByQrCodeData(String qrCodeData);
 
-  Page<Card> findByStudent(Student student, Pageable pageable);
+  Optional<Card> findByWalletAndStatus(Wallet wallet, CardStatut status);
 
-  Page<Card> findByStatut(CardStatut statut, Pageable pageable);
+  Page<Card> findByWallet(Wallet wallet, Pageable pageable);
 
-  Long countByStudentAndStatut(Student student, CardStatut statut);
+  Page<Card> findByStatus(CardStatut status, Pageable pageable);
+
+  Long countByWalletAndStatus(Wallet wallet, CardStatut status);
 }

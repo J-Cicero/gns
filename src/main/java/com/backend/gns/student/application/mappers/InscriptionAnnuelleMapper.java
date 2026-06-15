@@ -23,7 +23,7 @@ public class InscriptionAnnuelleMapper {
 
     InscriptionAnnuelle inscription = new InscriptionAnnuelle();
     inscription.setTrackingId(UUID.randomUUID());
-    inscription.setNiveau(request.niveau());
+    inscription.setStudyLevel(request.studyLevel());
 
     if (request.studentTrackingId() != null) {
       Student student =
@@ -48,21 +48,22 @@ public class InscriptionAnnuelleMapper {
         .trackingId(inscription.getTrackingId())
         .studentTrackingId(
             inscription.getStudent() != null ? inscription.getStudent().getTrackingId() : null)
-        .studentNom(inscription.getStudent() != null ? inscription.getStudent().getNom() : null)
-        .studentPrenom(
-            inscription.getStudent() != null ? inscription.getStudent().getPrenom() : null)
-        .numEtudiantUniv(
-            inscription.getStudent() != null ? inscription.getStudent().getMatricule() : null)
-        .anneeAcademique(
+        .studentLastName(
+            inscription.getStudent() != null ? inscription.getStudent().getLastName() : null)
+        .studentFirstName(
+            inscription.getStudent() != null ? inscription.getStudent().getFirstName() : null)
+        .studentIdNumber(
+            inscription.getStudent() != null ? inscription.getStudent().getStudentIdNumber() : null)
+        .academicYearLabel(
             inscription.getScolariteYear() != null
-                ? inscription.getScolariteYear().getLibelle()
+                ? inscription.getScolariteYear().getLabel()
                 : null)
-        .niveau(inscription.getNiveau())
-        .estInscritDefinitif(inscription.isEstInscritDefinitif())
-        .estEligibleBourse(inscription.isEstEligibleBourse())
-        .typeBourse(inscription.getTypeBourse())
-        .dateValidationApi(inscription.getDateValidationApi())
-        .plafondAccorde(inscription.getPlafondAccorde())
+        .studyLevel(inscription.getStudyLevel())
+        .isFullyEnrolled(inscription.isFullyEnrolled())
+        .isEligibleForScholarship(inscription.isEligibleForScholarship())
+        .scholarshipType(inscription.getScholarshipType())
+        .apiValidationDate(inscription.getApiValidationDate())
+        .allocatedBudget(inscription.getAllocatedBudget())
         .build();
   }
 }

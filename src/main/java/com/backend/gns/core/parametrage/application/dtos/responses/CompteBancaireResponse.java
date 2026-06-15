@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public record CompteBancaireResponse(
     UUID trackingId,
-    String numeroCompte,
-    String banqueNom,
-    String typeProprietaire
+    String accountNumber,
+    String bankName,
+    String ownerType
 ) {}

@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record UniversiteRequest(
     @NotBlank String code, 
-    @NotBlank String nom, 
-    @NotBlank String ville, 
-    @NotBlank boolean estActive) {}
+    @NotBlank String fullName, 
+    @NotBlank String city, 
+    boolean isActive) {}

@@ -70,16 +70,15 @@ public class BoutiqueServiceImpl implements BoutiqueService {
       boutique.setMerchant(merchant);
     }
 
-    // Créer un Wallet pour la boutique si pas fourni via Cascade
     if (request.walletTrackingId() == null) {
       Wallet wallet = new Wallet();
       wallet.setTrackingId(UUID.randomUUID());
-      wallet.setTypeWallet(WalletType.BOUTIQUE);
-      wallet.setStatutWallet(WalletStatus.ACTIF);
-      wallet.setSolde(BigDecimal.ZERO);
+      wallet.setWalletType(WalletType.BOUTIQUE);
+      wallet.setStatus(WalletStatus.ACTIF);
+      wallet.setBalance(BigDecimal.ZERO);
 
-      wallet.setPlafond(new BigDecimal("100000"));
-      wallet.setDateCreation(LocalDateTime.now());
+      wallet.setLimitAmount(new BigDecimal("100000"));
+      wallet.setCreatedAt(LocalDateTime.now());
 
       boutique.setWallet(wallet);
     } else {
@@ -112,9 +111,9 @@ public class BoutiqueServiceImpl implements BoutiqueService {
             .orElseThrow(
                 () -> new EntityNotFoundException("Boutique non trouvée avec l'ID: " + trackingId));
 
-    boutique.setNomBoutique(request.nomBoutique() != null ? request.nomBoutique() : boutique.getNomBoutique());
-    boutique.setCategorieShop(request.categorieShop() != null ? request.categorieShop() : (boutique.getCategorieShop() != null ? boutique.getCategorieShop() : "N/A"));
-    boutique.setStatutKYC(request.statutKYC() != null ? request.statutKYC() : boutique.getStatutKYC());
+    boutique.setName(request.name() != null ? request.name() : boutique.getName());
+    boutique.setShopCategory(request.shopCategory() != null ? request.shopCategory() : (boutique.getShopCategory() != null ? boutique.getShopCategory() : "N/A"));
+    boutique.setKycStatus(request.kycStatus() != null ? request.kycStatus() : boutique.getKycStatus());
     boutique.setLatitude(request.latitude() != null ? request.latitude() : boutique.getLatitude());
     boutique.setLongitude(request.longitude() != null ? request.longitude() : boutique.getLongitude());
 
@@ -176,7 +175,7 @@ public class BoutiqueServiceImpl implements BoutiqueService {
   @Transactional(readOnly = true)
   public Page<BoutiqueResponse> findByStatutKYC(KycStatus statutKYC, Pageable pageable) {
     return boutiqueRepository
-        .findByStatutKYC(statutKYC, normalize(pageable))
+        .findByKycStatus(statutKYC, normalize(pageable))
         .map(boutiqueMapper::toResponse);
   }
 
@@ -189,9 +188,9 @@ public class BoutiqueServiceImpl implements BoutiqueService {
   @Override
   @Transactional(readOnly = true)
   public long countLowQuota() {
-      // Pour l'instant, on compte toutes les boutiques dont le solde est <= 10% du plafond par défaut
       return boutiqueRepository.findAll().stream()
-          .filter(b -> b.getWallet() != null && b.getWallet().getSolde().compareTo(b.getWallet().getPlafond().multiply(new BigDecimal("0.10"))) <= 0)
+          .filter(b -> b.getWallet() != null && b.getWallet().getBalance() != null && b.getWallet().getLimitAmount() != null &&
+           b.getWallet().getBalance().compareTo(b.getWallet().getLimitAmount().multiply(new BigDecimal("0.10"))) <= 0)
           .count();
   }
 

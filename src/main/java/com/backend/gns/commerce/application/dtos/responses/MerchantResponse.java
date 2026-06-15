@@ -8,8 +8,10 @@ import lombok.Builder;
 public record MerchantResponse(
     UUID trackingId,
     String email,
-    String nom,
-    String prenom,
-    Boolean estActif,
-    String telephone,
-    LocalDateTime dateNaissance) {}
+    String lastName,
+    String firstName,
+    Boolean isActive,
+    String phoneNumber,
+    LocalDateTime birthDate,
+    String businessName,
+    String registrationNumber) {}

@@ -24,11 +24,11 @@ public class Universite extends BaseEntity {
   private String code;
 
   @Column(length = 100, nullable = false)
-  private String nom;
+  private String fullName;
 
   @Column(length = 50)
-  private String ville;
+  private String city;
 
   @Column(nullable = false)
-  private boolean estActive = true;
+  private boolean isActive = true;
 }

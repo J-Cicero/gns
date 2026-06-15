@@ -37,8 +37,13 @@ public interface WalletService {
 
   Page<WalletResponse> findAll(Pageable pageable);
 
-  void crediter(UUID walletTrackingId, BigDecimal montant);
+  // New methods for direct transaction support
+  boolean hasSufficientBalance(UUID walletTrackingId, BigDecimal amount);
+  void credit(UUID walletTrackingId, BigDecimal montant);
+  void debit(UUID walletTrackingId, BigDecimal montant);
 
+  // Legacy methods (can be refactored later if not used)
+  void crediter(UUID walletTrackingId, BigDecimal montant);
   void debiter(UUID walletTrackingId, BigDecimal montant);
 
   void remettreAZero(UUID walletTrackingId);

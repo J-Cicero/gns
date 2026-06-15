@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface ScolariteYearRepository extends JpaRepository<ScolariteYear, Long> {
   Optional<ScolariteYear> findByTrackingId(UUID trackingId);
 
-  Optional<ScolariteYear> findByEstOuverteTrue();
+  Optional<ScolariteYear> findByIsOpenTrue();
 }

@@ -20,30 +20,30 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
   Optional<Wallet> findByTrackingId(UUID trackingId);
 
   // Rechercher un portefeuille par son type
-  Page<Wallet> findByTypeWallet(WalletType typeWallet, Pageable pageable);
+  Page<Wallet> findByWalletType(WalletType walletType, Pageable pageable);
 
   // Rechercher un portefeuille par son statut
-  Page<Wallet> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
+  Page<Wallet> findByStatus(WalletStatus status, Pageable pageable);
 
   // Rechercher un portefeuille par son type et/ou niveau solde
   @Query(
       "SELECT w FROM Wallet w WHERE "
-          + "(:typeWallet IS NULL OR w.typeWallet = :typeWallet) AND "
-          + "(:niveauSolde IS NULL OR w.niveauSolde = :niveauSolde)")
+          + "(:walletType IS NULL OR w.walletType = :walletType) AND "
+          + "(:fundingLevel IS NULL OR w.fundingLevel = :fundingLevel)")
   Page<Wallet> findFiltered(
-      @Param("typeWallet") WalletType typeWallet,
-      @Param("niveauSolde") WalletFundingLevel niveauSolde,
+      @Param("walletType") WalletType walletType,
+      @Param("fundingLevel") WalletFundingLevel fundingLevel,
       Pageable pageable);
 
   // Rechercher un portefeuille par son niveau de solde
-  Page<Wallet> findByNiveauSolde(WalletFundingLevel niveauSolde, Pageable pageable);
+  Page<Wallet> findByFundingLevel(WalletFundingLevel fundingLevel, Pageable pageable);
 
-  @Query("SELECT w FROM Wallet w WHERE w.solde < :amount ORDER BY w.solde ASC")
-  Page<Wallet> findBySoldeLessThan(@Param("amount") BigDecimal amount, Pageable pageable);
+  @Query("SELECT w FROM Wallet w WHERE w.balance < :amount ORDER BY w.balance ASC")
+  Page<Wallet> findByBalanceLessThan(@Param("amount") BigDecimal amount, Pageable pageable);
 
-  @Query("SELECT w FROM Wallet w WHERE w.solde > :amount ORDER BY w.solde DESC")
-  Page<Wallet> findBySoldeGreaterThan(@Param("amount") BigDecimal amount, Pageable pageable);
+  @Query("SELECT w FROM Wallet w WHERE w.balance > :amount ORDER BY w.balance DESC")
+  Page<Wallet> findByBalanceGreaterThan(@Param("amount") BigDecimal amount, Pageable pageable);
     @Modifying
-    @Query("UPDATE Wallet w SET w.statutWallet = :status WHERE w.typeWallet = :type")
+    @Query("UPDATE Wallet w SET w.status = :status WHERE w.walletType = :type")
     void updateStatutByType(@Param("status") WalletStatus status, @Param("type") WalletType type);
 }

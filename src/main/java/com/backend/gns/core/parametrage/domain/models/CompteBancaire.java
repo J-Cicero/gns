@@ -24,47 +24,42 @@ public class CompteBancaire extends BaseEntity {
   private UUID trackingId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "document_rib_id", nullable = true)
-  private com.backend.gns.student.domain.models.DocumentEtudiant ribDocument;
-
-  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "banque_id", nullable = false)
-  private Banque banque;
+  private Banque bank;
 
-  @Column(length = 36, nullable = false)
-  private UUID proprietaireTrackingId;
+  @Column(nullable = false)
+  private UUID ownerTrackingId;
 
   @Column(length = 50, nullable = false)
-  private String numeroCompte;
+  private String accountNumber;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20, nullable = false)
-  private ProprietaireType typeProprietaire;
-
-  // --- Champs transférés de BanqueEtudiant pour les Étudiants ---
-  @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-  private boolean isComptePrincipalBourse = false;
+  private ProprietaireType ownerType;
 
   @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-  private boolean mandatSigne = false;
+  private boolean isMainScholarshipAccount = false;
+
+  @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+  private boolean mandateSigned = false;
 
   @Column
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime mandatTimestamp;
+  private LocalDateTime mandateTimestamp;
 
   @Column(length = 45)
-  private String lieuEnregistrement;
+  private String registrationPlace;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 50)
-  private MandatStatut mandatStatut;
+  private MandatStatut mandateStatus;
 
   @Column
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime mandatValideLeDate;
+  private LocalDateTime mandateValidatedAt;
 
   @Column(nullable = false)
-  private boolean virementEffectue = false;
+  private boolean transferCompleted = false;
 
   @PrePersist
   public void prePersist() {

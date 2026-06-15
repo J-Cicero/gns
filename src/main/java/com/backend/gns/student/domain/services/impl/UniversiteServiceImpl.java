@@ -68,7 +68,7 @@ public class UniversiteServiceImpl implements UniversiteService {
         repository
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new RuntimeException("Université non trouvée"));
-    entity.setEstActive(etat);
+    entity.setActive(etat);
     return mapper.toResponse(repository.save(entity));
   }
 
@@ -79,12 +79,12 @@ public class UniversiteServiceImpl implements UniversiteService {
             u -> {
               Map<String, Object> map = new HashMap<>();
               map.put("trackingId", u.getTrackingId());
-              map.put("nom", u.getNom());
+              map.put("nom", u.getFullName());
               map.put("code", u.getCode());
               map.put("nbEtudiants", studentRepository.countByUniversite(u));
               map.put(
                   "nbEligibles",
-                  studentRepository.countByUniversiteAndStatutKYC(
+                  studentRepository.countByUniversiteAndKycStatus(
                       u, com.backend.gns.core.domain.enums.KycStatus.VALIDEE));
               return map;
             })

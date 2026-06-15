@@ -43,44 +43,44 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Override
   @Transactional
   public InscriptionAnnuelleResponse createWithCarte(InscriptionAnnuelleRequest request, org.springframework.web.multipart.MultipartFile carte) {
-    ScolariteYear year = scolariteYearRepository.findByEstOuverteTrue()
-            .orElseThrow(() -> new IllegalStateException("Aucune année scolaire ouverte"));
+    ScolariteYear year = scolariteYearRepository.findByIsOpenTrue()
+            .orElseThrow(() -> new IllegalStateException("No open academic year found"));
     
     Student student = studentRepository.findByTrackingId(request.studentTrackingId())
-            .orElseThrow(() -> new EntityNotFoundException("Étudiant non trouvé"));
+            .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-    // Vérifier si une inscription existe déjà pour cet étudiant et cette année
-    Optional<InscriptionAnnuelle> existing = inscriptionRepository.findByStudentTrackingIdAndAnnee(student.getTrackingId(), year.getLibelle());
+    // Check if an enrollment already exists for this student and year
+    Optional<InscriptionAnnuelle> existing = inscriptionRepository.findByStudentTrackingIdAndLabel(student.getTrackingId(), year.getLabel());
     
     InscriptionAnnuelle ins;
     if (existing.isPresent()) {
         ins = existing.get();
-        ins.setNiveau(request.niveau());
+        ins.setStudyLevel(request.studyLevel());
     } else {
         ins = inscriptionMapper.toEntity(request);
         ins.setScolariteYear(year);
         ins.setStudent(student);
         ins.setTrackingId(UUID.randomUUID());
-        ins.setEstInscritDefinitif(false);
-        ins.setPlafondAccorde(BigDecimal.ZERO);
+        ins.setFullyEnrolled(false);
+        ins.setAllocatedBudget(BigDecimal.ZERO);
     }
     
     InscriptionAnnuelle savedIns = inscriptionRepository.save(ins);
     
     if (carte != null && !carte.isEmpty()) {
         try {
-            var upload = storageService.upload(carte, "carte_" + savedIns.getTrackingId());
+            var upload = storageService.upload(carte, "card_" + savedIns.getTrackingId());
             com.backend.gns.student.domain.models.DocumentEtudiant doc = com.backend.gns.student.domain.models.DocumentEtudiant.builder()
                 .trackingId(UUID.randomUUID())
-                .type(com.backend.gns.core.domain.enums.TypeDocument.PIECE_IDENTITE)
-                .urlFichier(upload.get("url"))
-                .statut(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
-                .dateDepot(java.time.LocalDateTime.now())
-                .inscription(savedIns)
+                .ownerTrackingId(savedIns.getTrackingId())
+                .documentType(com.backend.gns.core.domain.enums.TypeDocument.PIECE_IDENTITE)
+                .fileUrl(upload.get("url"))
+                .status(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
+                .uploadedAt(java.time.LocalDateTime.now())
                 .build();
             documentRepository.save(doc);
         } catch (Exception e) {
-            throw new RuntimeException("Échec de l'upload de la carte étudiant", e);
+            throw new RuntimeException("Failed to upload student card", e);
         }
     }
     
@@ -91,13 +91,13 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Transactional
   public InscriptionAnnuelleResponse synchroniserAvecUniversite(UUID trackingId) {
     InscriptionAnnuelle ins = inscriptionRepository.findByTrackingId(trackingId)
-            .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée"));
+            .orElseThrow(() -> new EntityNotFoundException("Enrollment not found"));
     
     InscriptionAnnuelle synched = inscriptionExterneService.synchroniserStatutInscription(ins);
     
-    // Si l'éligibilité est confirmée, on met à jour le plafond
-    if (synched.isEstEligibleBourse() && synched.isEstInscritDefinitif()) {
-        updatePlafond(synched);
+    // If eligibility is confirmed, update budget
+    if (synched.isEligibleForScholarship() && synched.isFullyEnrolled()) {
+        updateBudget(synched);
     }
     
     return inscriptionMapper.toResponse(synched);
@@ -115,12 +115,19 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
 
     ScolariteYear year =
         scolariteYearRepository
-            .findByEstOuverteTrue()
-            .orElseThrow(() -> new IllegalStateException("Aucune année scolaire ouverte"));
-    inscription.setScolariteYear(year);
+            .findByIsOpenTrue()
+            .orElseThrow(() -> new IllegalStateException("No open academic year found"));
+    
+    Student student = studentRepository.findByTrackingId(request.studentTrackingId())
+            .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-    // Initialisation par défaut selon la refonte
-    inscription.setEstInscritDefinitif(false);
+    inscription.setScolariteYear(year);
+    inscription.setStudent(student);
+    inscription.setTrackingId(UUID.randomUUID());
+
+    // Default initialization
+    inscription.setFullyEnrolled(false);
+    inscription.setAllocatedBudget(BigDecimal.ZERO);
     
     InscriptionAnnuelle savedInscription = inscriptionRepository.save(inscription);
     return inscriptionMapper.toResponse(savedInscription);
@@ -132,95 +139,34 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     InscriptionAnnuelle ins =
         inscriptionRepository
             .findByTrackingId(trackingId)
-            .orElseThrow(() -> new EntityNotFoundException("Inscription non trouvée"));
+            .orElseThrow(() -> new EntityNotFoundException("Enrollment not found"));
 
-    // La logique de validation est désormais pilotée par l'API externe (InscriptionExterneService)
-    // Ici nous nous assurons que le wallet est prêt si l'inscription est définie comme définitive
-    if (ins.isEstInscritDefinitif()) {
-        updatePlafond(ins);
+    if (ins.isFullyEnrolled()) {
+        updateBudget(ins);
     }
 
     return inscriptionMapper.toResponse(inscriptionRepository.save(ins));
   }
 
-  private void updatePlafond(InscriptionAnnuelle inscription) {
-    // Application du plafond fixe pour les étudiants inscrits
-    BigDecimal nouveauPlafond = new BigDecimal("30000"); // A remplacer par une lecture dans ParametreGns si nécessaire
-    inscription.setPlafondAccorde(nouveauPlafond);
-
-    Student student = inscription.getStudent();
-    if (student != null && student.getWallet() != null) {
-      Wallet wallet = student.getWallet();
-      wallet.setPlafond(nouveauPlafond);
-      walletRepository.save(wallet);
-    }
+  private void updateBudget(InscriptionAnnuelle inscription) {
+    // Fixed budget application for enrolled students
+    BigDecimal newBudget = new BigDecimal("30000"); // To be replaced by ParametreGns if necessary
+    inscription.setAllocatedBudget(newBudget);
   }
 
   @Override
-  @Transactional(readOnly = true)
+  public Page<InscriptionAnnuelleResponse> findAll(Pageable pageable) {
+    return inscriptionRepository.findAll(normalize(pageable)).map(inscriptionMapper::toResponse);
+  }
+
+  @Override
   public Optional<InscriptionAnnuelleResponse> findByTrackingId(UUID trackingId) {
-    return inscriptionRepository.findByTrackingId(trackingId).map(inscriptionMapper::toResponse);
+    return inscriptionRepository
+        .findByTrackingId(trackingId)
+        .map(inscriptionMapper::toResponse);
   }
 
   @Override
-  @Transactional
-  public InscriptionAnnuelleResponse update(UUID trackingId, InscriptionAnnuelleRequest request) {
-    InscriptionAnnuelle inscription =
-        inscriptionRepository
-            .findByTrackingId(trackingId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Inscription non trouvée avec l'ID: " + trackingId));
-
-    inscription.setNiveau(request.niveau());
-    // Les champs obsolètes (crédits, moyenne, statut, source) ont été supprimés
-    
-    InscriptionAnnuelle updatedInscription = inscriptionRepository.save(inscription);
-    return inscriptionMapper.toResponse(updatedInscription);
-  }
-
-  @Override
-  @Transactional
-  public InscriptionAnnuelleResponse updateStatus(UUID trackingId, com.backend.gns.student.domain.enums.StatutInscription statut) {
-      // Cette méthode est devenue obsolète dans la nouvelle architecture
-      throw new UnsupportedOperationException("Cette méthode est obsolète dans la nouvelle architecture.");
-  }
-
-  @Override
-  @Transactional
-  public InscriptionAnnuelleResponse updateDefinitif(UUID trackingId, boolean estInscritDefinitif) {
-    InscriptionAnnuelle inscription =
-        inscriptionRepository
-            .findByTrackingId(trackingId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Inscription non trouvée avec l'ID: " + trackingId));
-    inscription.setEstInscritDefinitif(estInscritDefinitif);
-    
-    if (estInscritDefinitif) {
-        updatePlafond(inscription);
-    }
-    
-    return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
-  }
-
-  @Override
-  @Transactional
-  public void delete(UUID trackingId) {
-    InscriptionAnnuelle inscription =
-        inscriptionRepository
-            .findByTrackingId(trackingId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Inscription non trouvée avec l'ID: " + trackingId));
-    inscriptionRepository.delete(inscription);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
   public Page<InscriptionAnnuelleResponse> findByStudentTrackingId(
       UUID studentTrackingId, Pageable pageable) {
     return inscriptionRepository
@@ -229,25 +175,58 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   }
 
   @Override
-  public Optional<InscriptionAnnuelleResponse> findByStudentAndAnnee(
-      UUID studentTrackingId, String anneeAcademique) {
-    return inscriptionRepository
-        .findByStudentTrackingIdAndAnnee(studentTrackingId, anneeAcademique)
-        .map(inscriptionMapper::toResponse);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public Page<InscriptionAnnuelleResponse> findAll(Pageable pageable) {
-    return inscriptionRepository.findAll(normalize(pageable)).map(inscriptionMapper::toResponse);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
   public Page<InscriptionAnnuelleResponse> findByUniversiteTrackingId(
       UUID universiteTrackingId, Pageable pageable) {
     return inscriptionRepository
         .findByStudentUniversiteTrackingId(universiteTrackingId, normalize(pageable))
+        .map(inscriptionMapper::toResponse);
+  }
+
+  @Override
+  @Transactional
+  public InscriptionAnnuelleResponse update(UUID trackingId, InscriptionAnnuelleRequest request) {
+    InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Enrollment not found with ID: " + trackingId));
+
+    inscription.setStudyLevel(request.studyLevel());
+    
+    InscriptionAnnuelle updatedInscription = inscriptionRepository.save(inscription);
+    return inscriptionMapper.toResponse(updatedInscription);
+  }
+
+  @Override
+  @Transactional
+  public InscriptionAnnuelleResponse updateStatus(UUID trackingId, com.backend.gns.student.domain.enums.StatutInscription statut) {
+      throw new UnsupportedOperationException("This method is obsolete in the new architecture.");
+  }
+
+  @Override
+  @Transactional
+  public InscriptionAnnuelleResponse updateDefinitif(UUID trackingId, boolean estInscritDefinitif) {
+    InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Enrollment not found with ID: " + trackingId));
+    
+    inscription.setFullyEnrolled(estInscritDefinitif);
+    if (estInscritDefinitif) {
+        updateBudget(inscription);
+    }
+    
+    return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
+  }
+
+  @Override
+  @Transactional
+  public void delete(UUID trackingId) {
+    InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Enrollment not found with ID: " + trackingId));
+    inscriptionRepository.delete(inscription);
+  }
+
+  @Override
+  public Optional<InscriptionAnnuelleResponse> findByStudentAndAnnee(
+      UUID studentTrackingId, String anneeAcademique) {
+    return inscriptionRepository
+        .findByStudentTrackingIdAndLabel(studentTrackingId, anneeAcademique)
         .map(inscriptionMapper::toResponse);
   }
 }

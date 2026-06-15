@@ -8,9 +8,9 @@ import java.util.UUID;
 public record LiquidationResponse(
     UUID trackingId,
     String boutiqueName,
-    BigDecimal montantALiquider,
-    LocalDateTime dateCreation,
-    LocalDateTime dateValidation,
-    LiquidationStatut statut,
-    String referenceVirement
+    BigDecimal amountToLiquidate,
+    LocalDateTime createdAt,
+    LocalDateTime validatedAt,
+    LiquidationStatut status,
+    String transferReference
 ) {}

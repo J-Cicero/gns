@@ -22,17 +22,17 @@ public class ScolariteYear extends BaseEntity {
   private UUID trackingId = UUID.randomUUID();
 
   @Column(length = 20, nullable = false, unique = true)
-  private String libelle; // e.g., "2025-2026"
+  private String label; // e.g., "2025-2026"
 
   @Column(nullable = false)
-  private LocalDate dateDebut;
+  private LocalDate startDate;
 
   @Column(nullable = false)
-  private LocalDate dateFin;
+  private LocalDate endDate;
 
   @Column(nullable = false)
-  private boolean estOuverte = true;
+  private boolean isOpen = true;
 
   @Column(nullable = false)
-  private boolean estCloturee = false;
+  private boolean isClosed = false;
 }

@@ -44,12 +44,12 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
         
         DocumentEtudiant document = DocumentEtudiant.builder()
                 .trackingId(UUID.randomUUID())
-                .inscription(inscription)
-                .type(typeDocument)
-                .urlFichier(uploadResult.get("url"))
-                .publicIdCloudinary(uploadResult.get("publicId"))
-                .statut(StatutDocument.EN_ATTENTE)
-                .dateDepot(LocalDateTime.now())
+                .ownerTrackingId(inscriptionTrackingId) // Corrected from .inscription(inscription)
+                .documentType(typeDocument)
+                .fileUrl(uploadResult.get("url"))
+                .providerPublicId(uploadResult.get("publicId"))
+                .status(StatutDocument.EN_ATTENTE)
+                .uploadedAt(LocalDateTime.now())
                 .build();
         
         return documentMapper.toResponse(documentRepository.save(document));
@@ -74,7 +74,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     @Override
     public void delete(UUID trackingId) {
         documentRepository.findByTrackingId(trackingId).ifPresent(doc -> {
-            cloudinaryService.supprimer(doc.getPublicIdCloudinary());
+            cloudinaryService.supprimer(doc.getProviderPublicId());
             documentRepository.delete(doc);
         });
     }

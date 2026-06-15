@@ -8,12 +8,10 @@ import lombok.Builder;
 
 @Builder
 public record DocumentRequest(
-    UUID userTrackingId,
-    UUID inscriptionId,
-    TypeDocument type,
-    String cheminFichier,
-    StatutDocument statut,
-    String commentaireRejet,
-    LocalDateTime dateDepot,
-    LocalDateTime dateValidation,
-    String donneesExtraites) {}
+    UUID ownerTrackingId,
+    TypeDocument documentType,
+    String fileUrl,
+    String providerPublicId,
+    StatutDocument status,
+    String rejectionComment,
+    LocalDateTime uploadedAt) {}

@@ -1,21 +1,12 @@
 package com.backend.gns.wallet.domain.models;
 
 import com.backend.gns.core.utils.BaseEntity;
+import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.wallet.domain.enums.WalletFundingLevel;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -43,25 +34,32 @@ public class Wallet extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
-  private WalletType typeWallet;
+  private WalletType walletType;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
-  private WalletStatus statutWallet;
+  private WalletStatus status;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
-  private WalletFundingLevel niveauSolde;
+  private WalletFundingLevel fundingLevel;
 
   @Column(nullable = false)
-  private BigDecimal solde;
+  private BigDecimal balance;
 
   @Column(nullable = false)
-  private BigDecimal plafond;
+  private BigDecimal limitAmount;
+
+  @Column(length = 3)
+  private String currency = "XAF";
 
   @Column
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime dateCreation;
+  private LocalDateTime createdAt;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "student_id")
+  private Student student;
 
   @PrePersist
   public void onPrePersist() {
@@ -77,18 +75,18 @@ public class Wallet extends BaseEntity {
   }
 
   private void calculateFundingLevel() {
-    if (solde == null || solde.compareTo(BigDecimal.ZERO) <= 0) {
-      this.niveauSolde = WalletFundingLevel.EPUISE;
-    } else if (plafond == null || plafond.compareTo(BigDecimal.ZERO) <= 0) {
-      this.niveauSolde = WalletFundingLevel.NORMAL;
+    if (balance == null || balance.compareTo(BigDecimal.ZERO) <= 0) {
+      this.fundingLevel = WalletFundingLevel.EPUISE;
+    } else if (limitAmount == null || limitAmount.compareTo(BigDecimal.ZERO) <= 0) {
+      this.fundingLevel = WalletFundingLevel.NORMAL;
     } else {
-      BigDecimal percentage = solde.divide(plafond, 4, java.math.RoundingMode.HALF_UP);
+      BigDecimal percentage = balance.divide(limitAmount, 4, java.math.RoundingMode.HALF_UP);
       if (percentage.compareTo(new BigDecimal("0.10")) <= 0) {
-        this.niveauSolde = WalletFundingLevel.CRITIQUE;
+        this.fundingLevel = WalletFundingLevel.CRITIQUE;
       } else if (percentage.compareTo(new BigDecimal("0.30")) <= 0) {
-        this.niveauSolde = WalletFundingLevel.FAIBLE;
+        this.fundingLevel = WalletFundingLevel.FAIBLE;
       } else {
-        this.niveauSolde = WalletFundingLevel.NORMAL;
+        this.fundingLevel = WalletFundingLevel.NORMAL;
       }
     }
   }

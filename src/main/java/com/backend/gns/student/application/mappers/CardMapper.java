@@ -3,8 +3,8 @@ package com.backend.gns.student.application.mappers;
 import com.backend.gns.student.application.dtos.requests.CardRequest;
 import com.backend.gns.student.application.dtos.responses.CardResponse;
 import com.backend.gns.student.domain.models.Card;
-import com.backend.gns.student.domain.models.Student;
-import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import com.backend.gns.wallet.domain.models.Wallet;
+import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,27 +13,28 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class CardMapper {
 
-  private final StudentRepository studentRepository;
+  private final WalletRepository walletRepository;
 
   public Card toEntity(CardRequest request) {
     if (request == null) {
-      throw new IllegalArgumentException("La requête CardRequest ne peut pas être nulle");
+      throw new IllegalArgumentException("CardRequest cannot be null");
     }
 
     Card card = new Card();
     card.setTrackingId(UUID.randomUUID());
-    card.setQrCodeStatique(request.qrCodeStatique());
-    card.setStatut(request.cardStatus());
+    card.setCardNumber(request.cardNumber());
+    card.setQrCodeData(request.qrCodeData());
+    card.setStatus(request.status());
 
-    if (request.studentTrackingId() != null) {
-      Student student =
-          studentRepository
-              .findByTrackingId(request.studentTrackingId())
+    if (request.walletTrackingId() != null) {
+      Wallet wallet =
+          walletRepository
+              .findByTrackingId(request.walletTrackingId())
               .orElseThrow(
                   () ->
                       new IllegalArgumentException(
-                          "Étudiant non trouvé avec l'ID: " + request.studentTrackingId()));
-      card.setStudent(student);
+                          "Wallet not found with trackingId: " + request.walletTrackingId()));
+      card.setWallet(wallet);
     }
 
     return card;
@@ -41,38 +42,17 @@ public class CardMapper {
 
   public CardResponse toResponse(Card card) {
     if (card == null) {
-      throw new IllegalArgumentException("L'entité Card ne peut pas être nulle");
+      return null;
     }
 
     return CardResponse.builder()
         .trackingId(card.getTrackingId())
-        .qrCodeStatique(card.getQrCodeStatique())
-        .cardStatus(card.getStatut())
-        .studentTrackingId(card.getStudent() != null ? card.getStudent().getTrackingId() : null)
+        .cardNumber(card.getCardNumber())
+        .qrCodeData(card.getQrCodeData())
+        .status(card.getStatus())
+        .emissionDate(card.getEmissionDate())
+        .expirationDate(card.getExpirationDate())
+        .walletTrackingId(card.getWallet() != null ? card.getWallet().getTrackingId() : null)
         .build();
-  }
-
-  public Card toEntityFromResponse(CardResponse response) {
-    if (response == null) {
-      throw new IllegalArgumentException("La réponse CardResponse ne peut pas être nulle");
-    }
-
-    Card card = new Card();
-    card.setTrackingId(response.trackingId());
-    card.setQrCodeStatique(response.qrCodeStatique());
-    card.setStatut(response.cardStatus());
-
-    if (response.studentTrackingId() != null) {
-      Student student =
-          studentRepository
-              .findByTrackingId(response.studentTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Étudiant non trouvé avec l'ID: " + response.studentTrackingId()));
-      card.setStudent(student);
-    }
-
-    return card;
   }
 }

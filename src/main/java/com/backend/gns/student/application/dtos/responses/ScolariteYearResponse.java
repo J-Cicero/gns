@@ -5,8 +5,8 @@ import java.util.UUID;
 
 public record ScolariteYearResponse(
     UUID trackingId,
-    String libelle,
-    LocalDate dateDebut,
-    LocalDate dateFin,
-    boolean estOuverte,
-    boolean estCloturee) {}
+    String label,
+    LocalDate startDate,
+    LocalDate endDate,
+    boolean isOpen,
+    boolean isClosed) {}

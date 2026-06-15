@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record TransactionRequest(
-    UUID studentId,
-    UUID boutiqueId,
-    BigDecimal montantDebite
+    UUID senderTrackingId,
+    UUID receiverTrackingId,
+    BigDecimal amount
 ) {}
