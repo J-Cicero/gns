@@ -228,12 +228,7 @@ public class UserServiceImpl implements UserService {
   public UserResponse createUser(UserRequest request) {
     log.info("Tentative de création d'utilisateur: {} avec le rôle: {}", request.email(), request.role());
     
-    UserRole role;
-    try {
-      role = UserRole.valueOf(request.role());
-    } catch (Exception e) {
-      role = UserRole.ETUDIANT;
-    }
+    UserRole role = UserRole.valueOf(request.role());
 
     User user = new User();
     

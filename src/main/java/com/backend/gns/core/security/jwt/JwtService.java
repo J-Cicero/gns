@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtService {
 
-  @Value("${jwt.jwtSecret}")
+  @Value("${app.jwt.secret}")
   private String jwtSecret;
 
   @Value("${jwt.jwtExpirationMs}")

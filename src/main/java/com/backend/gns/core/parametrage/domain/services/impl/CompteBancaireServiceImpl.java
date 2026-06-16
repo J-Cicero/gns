@@ -11,6 +11,7 @@ import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
 import com.backend.gns.core.infrastructure.repositories.CompteBancaireRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CompteBancaireServiceImpl implements CompteBancaireService {
-
     private final BanqueRepository banqueRepository;
     private final CompteBancaireRepository repository;
     private final CompteBancaireMapper mapper;
@@ -30,8 +31,13 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
     @Override
     @Transactional
     public CompteBancaireResponse create(CompteBancaireRequest request) {
-        Banque banque = banqueRepository.findByTrackingId(request.bankTrackingId())
-                .orElseThrow(() -> new EntityNotFoundException("Bank not found"));
+        log.info("Requête de création de compte bancaire reçue: {}", request);
+        
+        List<Banque> allBanques = banqueRepository.findAll();
+        log.info("Banques en base de données: {}", allBanques.stream().map(Banque::getTrackingId).collect(Collectors.toList()));
+        
+        Banque banque = banqueRepository.findByTrackingId(request.banqueTrackingId())
+                .orElseThrow(() -> new EntityNotFoundException("Banque non trouvée pour le trackingId: " + request.banqueTrackingId()));
 
         CompteBancaire compte = new CompteBancaire();
         compte.setTrackingId(UUID.randomUUID());
@@ -39,11 +45,11 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
         compte.setAccountNumber(request.accountNumber());
 
         UUID proprietaireId = request.ownerTrackingId();
-        if (proprietaireId == null && "GNS".equals(request.ownerType())) {
+        if (proprietaireId == null && "GNS".equals(request.typeProprietaire())) {
             proprietaireId = UUID.randomUUID();
         }
         compte.setOwnerTrackingId(proprietaireId);
-        compte.setOwnerType(ProprietaireType.valueOf(request.ownerType()));
+        compte.setOwnerType(ProprietaireType.valueOf(request.typeProprietaire()));
 
         return mapper.toResponse(repository.save(compte));
     }
