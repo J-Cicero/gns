@@ -6,7 +6,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
+import java.util.List;
+
 @Repository
 public interface DocumentMerchantRepository extends JpaRepository<DocumentMerchant, Long> {
     Optional<DocumentMerchant> findByTrackingId(UUID trackingId);
+    List<DocumentMerchant> findByMerchantTrackingId(UUID merchantTrackingId);
 }

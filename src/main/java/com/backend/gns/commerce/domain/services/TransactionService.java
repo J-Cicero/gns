@@ -13,5 +13,5 @@ public interface TransactionService {
     Page<TransactionResponse> findAll(Pageable pageable);
     Page<TransactionResponse> findByBoutiqueId(UUID boutiqueId, Pageable pageable);
     Page<TransactionResponse> findByStudentId(UUID studentId, Pageable pageable);
-    java.math.BigDecimal getVolumeValide();
+    com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse getGlobalStats();
 }

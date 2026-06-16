@@ -12,6 +12,12 @@ public record TransactionResponse(
     String senderName,
     String receiverName,
     BigDecimal amount,
+    BigDecimal amountDebited,
+    BigDecimal amountCredited,
+    BigDecimal totalCommission,
+    BigDecimal gnsCommission,
+    BigDecimal bankCommission,
+    Boolean isCommissionPaid,
     TransactionStatut status,
     LocalDateTime createdAt
 ) {}

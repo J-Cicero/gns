@@ -21,4 +21,9 @@ public class AdminController {
     public ResponseEntity<UserResponse> createBanqueAdmin(@RequestBody com.backend.gns.user.application.dtos.requests.AdminBanqueRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createAdminBanque(request));
     }
+
+    @PostMapping("/create-gns-admin")
+    public ResponseEntity<UserResponse> createGnsAdmin(@RequestBody UserRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
+    }
 }

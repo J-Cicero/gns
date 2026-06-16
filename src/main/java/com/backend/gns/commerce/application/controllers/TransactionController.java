@@ -21,9 +21,9 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.createPayment(request));
     }
 
-    @GetMapping("/stats/volume-valide")
-    public ResponseEntity<java.math.BigDecimal> getVolumeValide() {
-        return ResponseEntity.ok(transactionService.getVolumeValide());
+    @GetMapping("/stats/global")
+    public ResponseEntity<com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse> getGlobalStats() {
+        return ResponseEntity.ok(transactionService.getGlobalStats());
     }
 
     @GetMapping("/{trackingId}")

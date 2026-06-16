@@ -40,4 +40,24 @@ public class Transaction {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    // Commission & financial details
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal amountDebited;
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal amountCredited;
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal totalCommission;
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal gnsCommission;
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal bankCommission;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isCommissionPaid = false;
 }

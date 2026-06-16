@@ -78,4 +78,16 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
             documentRepository.delete(doc);
         });
     }
+
+    @Override
+    public java.util.List<com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse> getDocumentsByStudent(UUID studentTrackingId) {
+        return documentRepository.findByOwnerTrackingId(studentTrackingId).stream()
+            .map(doc -> new com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse(
+                doc.getDocumentType(),
+                doc.getFileUrl(),
+                doc.getStatus(),
+                doc.getUploadedAt()
+            ))
+            .collect(java.util.stream.Collectors.toList());
+    }
 }

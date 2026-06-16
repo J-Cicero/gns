@@ -15,4 +15,5 @@ public interface DocumentEtudiantService {
   Page<DocumentResponse> findByUserTrackingId(UUID userTrackingId, Pageable pageable);
   Page<DocumentResponse> findByInscriptionId(UUID inscriptionId, Pageable pageable);
   void delete(UUID trackingId);
+  java.util.List<com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse> getDocumentsByStudent(UUID studentTrackingId);
 }

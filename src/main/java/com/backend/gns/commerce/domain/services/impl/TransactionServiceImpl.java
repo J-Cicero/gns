@@ -21,6 +21,8 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,13 +38,23 @@ public class TransactionServiceImpl implements TransactionService {
     private final StudentRepository studentRepository;
     private final BoutiqueRepository boutiqueRepository;
     private final WalletService walletService;
+    private final ParametreGnsService parametreService;
 
     @Override
-    public BigDecimal getVolumeValide() {
-        return transactionRepository.findAll().stream()
+    public com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse getGlobalStats() {
+        java.util.List<Transaction> transactions = transactionRepository.findAll();
+        BigDecimal volume = transactions.stream()
                 .filter(t -> t.getStatus() == TransactionStatut.VALIDE)
                 .map(Transaction::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal commission = transactions.stream()
+                .filter(t -> t.getStatus() == TransactionStatut.VALIDE)
+                .map(Transaction::getTotalCommission)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        long count = transactions.stream()
+                .filter(t -> t.getStatus() == TransactionStatut.VALIDE)
+                .count();
+        return new com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse(volume, commission, count);
     }
 
     @Override
@@ -69,24 +81,39 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalStateException("Both wallets must be active.");
         }
 
-        // 4. Pre-check: Sufficient funds (Check-then-Act)
-        if (!walletService.hasSufficientBalance(senderWallet.getTrackingId(), request.amount())) {
-            throw new RuntimeException("Sender has insufficient funds.");
-        }
-        if (!walletService.hasSufficientBalance(receiverWallet.getTrackingId(), request.amount())) {
-            throw new RuntimeException("Receiver has insufficient funds.");
+        // 4. Calculate Commissions
+        BigDecimal amount = request.amount();
+        BigDecimal commissionRate = new BigDecimal(parametreService.getValeur(TypeParametreGns.TAUX_COMMISSION_PAIEMENT));
+        BigDecimal gnsShareRate = new BigDecimal(parametreService.getValeur(TypeParametreGns.PART_COMMISSION_GNS));
+
+        BigDecimal totalCommission = amount.multiply(commissionRate);
+        BigDecimal amountDebited = amount.add(totalCommission);
+        BigDecimal amountCredited = amount;
+        
+        BigDecimal gnsCommission = totalCommission.multiply(gnsShareRate);
+        BigDecimal bankCommission = totalCommission.subtract(gnsCommission);
+
+        // 5. Pre-check: Sufficient funds for the debited amount
+        if (!walletService.hasSufficientBalance(senderWallet.getTrackingId(), amountDebited)) {
+            throw new RuntimeException("Sender has insufficient funds for amount + commission.");
         }
 
-        // 5. Perform double debit - Atomic operation
-        walletService.debit(senderWallet.getTrackingId(), request.amount());
-        walletService.debit(receiverWallet.getTrackingId(), request.amount());
+        // 6. Perform transaction - Atomic operation
+        walletService.debit(senderWallet.getTrackingId(), amountDebited);
+        walletService.credit(receiverWallet.getTrackingId(), amountCredited);
 
-        // 6. Save the Transaction record
+        // 7. Save the Transaction record
         Transaction transaction = Transaction.builder()
                 .trackingId(UUID.randomUUID())
                 .sender(sender)
                 .receiver(receiver)
-                .amount(request.amount())
+                .amount(amount)
+                .amountDebited(amountDebited)
+                .amountCredited(amountCredited)
+                .totalCommission(totalCommission)
+                .gnsCommission(gnsCommission)
+                .bankCommission(bankCommission)
+                .isCommissionPaid(false)
                 .status(TransactionStatut.VALIDE)
                 .createdAt(LocalDateTime.now())
                 .build();

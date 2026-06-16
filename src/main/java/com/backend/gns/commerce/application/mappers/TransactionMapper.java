@@ -44,6 +44,12 @@ public class TransactionMapper {
             senderName,
             receiverName,
             entity.getAmount(),
+            entity.getAmountDebited(),
+            entity.getAmountCredited(),
+            entity.getTotalCommission(),
+            entity.getGnsCommission(),
+            entity.getBankCommission(),
+            entity.getIsCommissionPaid(),
             entity.getStatus(),
             entity.getCreatedAt()
         );

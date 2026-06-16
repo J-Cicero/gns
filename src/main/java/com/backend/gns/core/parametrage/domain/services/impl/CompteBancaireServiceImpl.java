@@ -57,7 +57,7 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
     @Override
     @Transactional(readOnly = true)
     public List<CompteBancaireResponse> findAll() {
-        return repository.findByTypeProprietaire(ProprietaireType.GNS).stream().map(mapper::toResponse).collect(Collectors.toList());
+        return repository.findByOwnerType(ProprietaireType.GNS).stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
