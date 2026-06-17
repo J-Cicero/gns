@@ -6,5 +6,7 @@ public record CompteBancaireResponse(
     UUID trackingId,
     String accountNumber,
     String bankName,
-    String ownerType
+    String ownerType,
+    String ribUrl,
+    UUID ribDocumentTrackingId
 ) {}

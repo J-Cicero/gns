@@ -43,6 +43,7 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
         compte.setTrackingId(UUID.randomUUID());
         compte.setBank(banque);
         compte.setAccountNumber(request.accountNumber());
+        compte.setRibDocumentTrackingId(request.ribDocumentTrackingId());
 
         UUID proprietaireId = request.ownerTrackingId();
         if (proprietaireId == null && "GNS".equals(request.typeProprietaire())) {

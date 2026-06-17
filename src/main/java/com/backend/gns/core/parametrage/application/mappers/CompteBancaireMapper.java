@@ -12,7 +12,9 @@ public class CompteBancaireMapper {
             entity.getTrackingId(),
             entity.getAccountNumber(),
             entity.getBank() != null ? entity.getBank().getName() : "N/A",
-            entity.getOwnerType() != null ? entity.getOwnerType().name() : "N/A"
+            entity.getOwnerType() != null ? entity.getOwnerType().name() : "N/A",
+            null, // ribUrl (pas encore gérée ici)
+            entity.getRibDocumentTrackingId()
         );
     }
 }

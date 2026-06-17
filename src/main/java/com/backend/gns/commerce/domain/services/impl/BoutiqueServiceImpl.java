@@ -35,6 +35,8 @@ public class BoutiqueServiceImpl implements BoutiqueService {
   private final BoutiqueMapper boutiqueMapper;
   private final MerchantRepository merchantRepository;
   private final WalletRepository walletRepository;
+  private final WalletService walletService;
+  private final ParametreGnsService parametreGnsService;
 
   public BoutiqueServiceImpl(
       BoutiqueRepository boutiqueRepository,
@@ -47,6 +49,8 @@ public class BoutiqueServiceImpl implements BoutiqueService {
     this.boutiqueMapper = boutiqueMapper;
     this.merchantRepository = merchantRepository;
     this.walletRepository = walletRepository;
+    this.walletService = walletService;
+    this.parametreGnsService = parametreGnsService;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -77,7 +81,11 @@ public class BoutiqueServiceImpl implements BoutiqueService {
       wallet.setStatus(WalletStatus.ACTIF);
       wallet.setBalance(BigDecimal.ZERO);
 
-      wallet.setLimitAmount(new BigDecimal("100000"));
+      BigDecimal quotaBoutique = parametreGnsService.findByNomParametre(com.backend.gns.core.parametrage.domain.enums.TypeParametreGns.MAJORATION_MONTANT_BOUTIQUE)
+          .map(p -> new BigDecimal(p.valeurParametre()))
+          .orElse(new BigDecimal("100000"));
+
+      wallet.setLimitAmount(quotaBoutique);
       wallet.setCreatedAt(LocalDateTime.now());
 
       boutique.setWallet(wallet);

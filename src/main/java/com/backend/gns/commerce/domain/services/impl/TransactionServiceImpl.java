@@ -21,6 +21,8 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.backend.gns.student.domain.services.ScolariteYearService;
+import com.backend.gns.student.application.dtos.responses.ScolariteYearResponse;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import org.springframework.data.domain.Page;
@@ -39,10 +41,22 @@ public class TransactionServiceImpl implements TransactionService {
     private final BoutiqueRepository boutiqueRepository;
     private final WalletService walletService;
     private final ParametreGnsService parametreService;
+    private final ScolariteYearService scolariteYearService;
 
     @Override
     public com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse getGlobalStats() {
-        java.util.List<Transaction> transactions = transactionRepository.findAll();
+        Optional<ScolariteYearResponse> activeYear = scolariteYearService.findActiveYear();
+        
+        java.util.List<Transaction> transactions;
+        if (activeYear.isPresent()) {
+            ScolariteYearResponse year = activeYear.get();
+            transactions = transactionRepository.findByCreatedAtBetween(
+                year.startDate().atStartOfDay(), 
+                year.endDate().atTime(23, 59, 59));
+        } else {
+            transactions = transactionRepository.findAll();
+        }
+
         BigDecimal volume = transactions.stream()
                 .filter(t -> t.getStatus() == TransactionStatut.VALIDE)
                 .map(Transaction::getAmount)
@@ -51,10 +65,18 @@ public class TransactionServiceImpl implements TransactionService {
                 .filter(t -> t.getStatus() == TransactionStatut.VALIDE)
                 .map(Transaction::getTotalCommission)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal gnsCommission = transactions.stream()
+                .filter(t -> t.getStatus() == TransactionStatut.VALIDE)
+                .map(Transaction::getGnsCommission)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal bankCommission = transactions.stream()
+                .filter(t -> t.getStatus() == TransactionStatut.VALIDE)
+                .map(Transaction::getBankCommission)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         long count = transactions.stream()
                 .filter(t -> t.getStatus() == TransactionStatut.VALIDE)
                 .count();
-        return new com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse(volume, commission, count);
+        return new com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse(volume, commission, gnsCommission, bankCommission, count);
     }
 
     @Override

@@ -43,4 +43,11 @@ public class DocumentEtudiantController {
     public ResponseEntity<?> findByInscriptionId(@PathVariable UUID inscriptionId, Pageable pageable) {
         return ResponseEntity.ok(documentService.findByInscriptionId(inscriptionId, pageable));
     }
+
+    @GetMapping("/{trackingId}")
+    public ResponseEntity<?> findByTrackingId(@PathVariable UUID trackingId) {
+        return documentService.findByTrackingId(trackingId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

@@ -5,5 +5,7 @@ import java.math.BigDecimal;
 public record TransactionStatsResponse(
     BigDecimal totalVolume,
     BigDecimal totalCommission,
-    long totalCount
+    BigDecimal totalGnsCommission,
+    BigDecimal totalBankCommission,
+    long transactionCount
 ) {}

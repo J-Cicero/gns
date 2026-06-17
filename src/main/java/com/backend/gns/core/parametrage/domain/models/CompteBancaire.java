@@ -30,6 +30,9 @@ public class CompteBancaire extends BaseEntity {
   @Column(nullable = false)
   private UUID ownerTrackingId;
 
+  @Column
+  private UUID ribDocumentTrackingId;
+
   @Column(length = 50, nullable = false)
   private String accountNumber;
 

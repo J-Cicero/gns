@@ -68,7 +68,8 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     @Override
     public Page<DocumentResponse> findByInscriptionId(UUID inscriptionId, Pageable pageable) {
-        return Page.empty();
+        return documentRepository.findByOwnerTrackingId(inscriptionId, pageable)
+                .map(documentMapper::toResponse);
     }
 
     @Override
