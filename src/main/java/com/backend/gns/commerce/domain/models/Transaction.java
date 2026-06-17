@@ -41,7 +41,6 @@ public class Transaction {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    // Commission & financial details
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amountDebited;
 
@@ -60,4 +59,8 @@ public class Transaction {
     @Column(nullable = false)
     @Builder.Default
     private Boolean isCommissionPaid = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isRetry = false;
 }

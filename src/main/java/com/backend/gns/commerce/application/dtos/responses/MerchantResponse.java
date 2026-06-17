@@ -13,5 +13,4 @@ public record MerchantResponse(
     Boolean isActive,
     String phoneNumber,
     LocalDateTime birthDate,
-    String businessName,
-    String registrationNumber) {}
+    String businessName) {}

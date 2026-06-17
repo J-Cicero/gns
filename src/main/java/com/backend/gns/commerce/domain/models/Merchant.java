@@ -19,6 +19,4 @@ public class Merchant extends User {
   @Column(length = 100)
   private String businessName;
 
-  @Column(length = 50)
-  private String registrationNumber;
 }

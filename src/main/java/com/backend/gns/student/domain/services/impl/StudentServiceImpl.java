@@ -105,8 +105,8 @@ public class StudentServiceImpl implements StudentService {
     student.setBirthDate(request.birthDate());
     student.setKycStatus(request.kycStatus());
 
-    if (request.pinCodeHash() != null && !request.pinCodeHash().isBlank()) {
-      student.setPinCodeHash(request.pinCodeHash());
+    if (request.password() != null && !request.password().isBlank()) {
+      student.setPasswordHash(passwordEncoder.encode(request.password()));
     }
 
     if (request.walletTrackingId() != null) {
@@ -162,16 +162,16 @@ public class StudentServiceImpl implements StudentService {
 
   @Override
   @Transactional(readOnly = true)
-  public boolean verifyPin(UUID studentTrackingId, String pinCode) {
-    log.debug("Vérification PIN étudiant trackingId: {}", studentTrackingId);
+  public boolean verifyPassword(UUID studentTrackingId, String password) {
+    log.debug("Vérification mot de passe étudiant trackingId: {}", studentTrackingId);
 
     Student student = findStudentOrThrow(studentTrackingId);
 
-    if (student.getPinCodeHash() == null || pinCode == null || pinCode.isBlank()) {
+    if (student.getPasswordHash() == null || password == null || password.isBlank()) {
       return false;
     }
 
-    return student.getPinCodeHash().equals(pinCode); // En supposant que le hash soit géré correctement ailleurs, ou que ce soit temporaire
+    return passwordEncoder.matches(password, student.getPasswordHash());
   }
 
   @Override

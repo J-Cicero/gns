@@ -17,6 +17,7 @@ import com.backend.gns.wallet.domain.services.WalletService;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse;
 
 @Slf4j
 @Service
@@ -45,10 +47,10 @@ public class TransactionServiceImpl implements TransactionService {
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @Override
-    public com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse getGlobalStats() {
+    public TransactionStatsResponse getGlobalStats() {
         Optional<ScolariteYearResponse> activeYear = scolariteYearService.findActiveYear();
         
-        java.util.List<Transaction> transactions;
+        List<Transaction> transactions;
         if (activeYear.isPresent()) {
             ScolariteYearResponse year = activeYear.get();
             transactions = transactionRepository.findByCreatedAtBetween(

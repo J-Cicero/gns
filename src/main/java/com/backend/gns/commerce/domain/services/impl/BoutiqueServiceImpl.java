@@ -9,6 +9,7 @@ import com.backend.gns.commerce.domain.services.BoutiqueService;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
@@ -81,7 +82,7 @@ public class BoutiqueServiceImpl implements BoutiqueService {
       wallet.setStatus(WalletStatus.ACTIF);
       wallet.setBalance(BigDecimal.ZERO);
 
-      BigDecimal quotaBoutique = parametreGnsService.findByNomParametre(com.backend.gns.core.parametrage.domain.enums.TypeParametreGns.MAJORATION_MONTANT_BOUTIQUE)
+      BigDecimal quotaBoutique = parametreGnsService.findByNomParametre(TypeParametreGns.MAJORATION_MONTANT_BOUTIQUE)
           .map(p -> new BigDecimal(p.valeurParametre()))
           .orElse(new BigDecimal("100000"));
 

@@ -12,5 +12,5 @@ public record QrPaymentRequest(
     @NotNull(message = "Student QR token is required") String studentQrToken,
     @NotNull(message = "Total amount is required")
         @Positive(message = "Amount must be positive")
-        BigDecimal totalAmount,
-    String description) {}
+        BigDecimal totalAmount
+    ) {}

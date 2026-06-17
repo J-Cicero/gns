@@ -23,13 +23,13 @@ public class LiquidationMapper {
             return null;
         }
 
-        Boutique boutique = boutiqueRepository.findByTrackingId(request.getBoutiqueTrackingId())
-                .orElseThrow(() -> new RuntimeException("Boutique introuvable avec le trackingId: " + request.getBoutiqueTrackingId()));
+        Boutique boutique = boutiqueRepository.findByTrackingId(request.boutiqueTrackingId())
+                .orElseThrow(() -> new RuntimeException("Boutique introuvable avec le trackingId: " + request.boutiqueTrackingId()));
 
         Liquidation liquidation = new Liquidation();
-                liquidation.setTrackingId(UUID.randomUUID().toString());
+        liquidation.setTrackingId(UUID.randomUUID());
         liquidation.setBoutique(boutique);
-        liquidation.setAmountToLiquidate(request.getAmountToLiquidate());
+        liquidation.setAmountToLiquidate(request.amountToLiquidate());
         liquidation.setStatus(LiquidationStatut.EN_ATTENTE); 
         liquidation.setCreatedAt(LocalDateTime.now());
         
