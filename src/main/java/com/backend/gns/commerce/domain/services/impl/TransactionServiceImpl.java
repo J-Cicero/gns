@@ -42,6 +42,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final WalletService walletService;
     private final ParametreGnsService parametreService;
     private final ScolariteYearService scolariteYearService;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @Override
     public com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse getGlobalStats() {
@@ -88,6 +89,12 @@ public class TransactionServiceImpl implements TransactionService {
         // 1. Validate sender and receiver existence using repositories
         Student sender = studentRepository.findByTrackingId(request.senderTrackingId())
                 .orElseThrow(() -> new EntityNotFoundException("Sender not found with ID: " + request.senderTrackingId()));
+
+        // Verify password
+        if (request.password() == null || !passwordEncoder.matches(request.password(), sender.getPasswordHash())) {
+            throw new RuntimeException("Invalid authorization: Incorrect password.");
+        }
+
         Boutique receiver = boutiqueRepository.findByTrackingId(request.receiverTrackingId())
                 .orElseThrow(() -> new EntityNotFoundException("Receiver not found with ID: " + request.receiverTrackingId()));
 

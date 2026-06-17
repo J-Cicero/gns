@@ -9,8 +9,7 @@ public record BoutiqueRequest(
     UUID merchantTrackingId,
     UUID walletTrackingId,
     String name,
-    String shopCategory,
-    String mapPath,
+    String description,
     KycStatus kycStatus,
     Double latitude,
     Double longitude) {}

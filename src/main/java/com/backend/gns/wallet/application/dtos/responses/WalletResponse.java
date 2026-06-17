@@ -18,4 +18,5 @@ public record WalletResponse(
     BigDecimal limitAmount,
     String currency,
     LocalDateTime createdAt,
-    UUID studentTrackingId) {}
+    UUID studentTrackingId,
+    String ownerName) {}

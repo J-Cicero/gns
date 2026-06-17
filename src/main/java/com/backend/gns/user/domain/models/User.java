@@ -71,6 +71,9 @@ public class User extends BaseEntity {
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime birthDate;
 
+  @Column(length = 100, nullable = true) // Ajouté
+  private String birthPlace;
+
   public void setPassword(String password) {
     this.passwordHash = password;
   }

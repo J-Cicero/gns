@@ -120,7 +120,7 @@ public class BoutiqueServiceImpl implements BoutiqueService {
                 () -> new EntityNotFoundException("Boutique non trouvée avec l'ID: " + trackingId));
 
     boutique.setName(request.name() != null ? request.name() : boutique.getName());
-    boutique.setShopCategory(request.shopCategory() != null ? request.shopCategory() : (boutique.getShopCategory() != null ? boutique.getShopCategory() : "N/A"));
+    boutique.setDescription(request.description() != null ? request.description() : boutique.getDescription());
     boutique.setKycStatus(request.kycStatus() != null ? request.kycStatus() : boutique.getKycStatus());
     boutique.setLatitude(request.latitude() != null ? request.latitude() : boutique.getLatitude());
     boutique.setLongitude(request.longitude() != null ? request.longitude() : boutique.getLongitude());

@@ -70,6 +70,8 @@ public class UserServiceImpl implements UserService {
       student.setPasswordHash(passwordEncoder.encode(request.password()));
       student.setStudentIdNumber(request.studentIdNumber());
       student.setKycStatus(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
+      student.setBirthDate(request.birthDate()); // Ajouté
+      student.setBirthPlace(request.birthPlace()); // Ajouté
 
       com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
       wallet.setTrackingId(UUID.randomUUID());
@@ -149,16 +151,17 @@ public class UserServiceImpl implements UserService {
       merchant.setRole(UserRole.COMMERCANT);
       merchant.setActive(true);
       merchant.setPasswordHash(passwordEncoder.encode(request.password()));
+      merchant.setBusinessName(request.businessName());
+      merchant.setRegistrationNumber(request.registrationNumber());
       
       com.backend.gns.commerce.domain.models.Merchant savedMerchantUser = userRepository.save(merchant);
       
       com.backend.gns.commerce.domain.models.Boutique boutique = new com.backend.gns.commerce.domain.models.Boutique();
       boutique.setTrackingId(UUID.randomUUID());
       boutique.setName(request.businessName());
+      boutique.setDescription(request.description() != null ? request.description() : "N/A");
       boutique.setMerchant(savedMerchantUser);
       boutique.setKycStatus(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
-      boutique.setMapPath("N/A"); 
-      boutique.setShopCategory("N/A");
 
       com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
       wallet.setTrackingId(UUID.randomUUID());
@@ -173,11 +176,11 @@ public class UserServiceImpl implements UserService {
       
       if (rib != null) {
           try {
-              var ribUpload = storageService.upload(rib, "rib_merchant_" + boutique.getTrackingId());
+              var ribUpload = storageService.upload(rib, "rib_merchant_" + savedMerchantUser.getTrackingId());
               
               com.backend.gns.core.domain.models.CompteBancaire cb = new com.backend.gns.core.domain.models.CompteBancaire();
               cb.setTrackingId(UUID.randomUUID());
-              cb.setOwnerTrackingId(boutique.getTrackingId());
+              cb.setOwnerTrackingId(savedMerchantUser.getTrackingId());
               cb.setOwnerType(com.backend.gns.core.domain.enums.ProprietaireType.MERCHANT);
               cb.setAccountNumber(request.accountNumber());
               

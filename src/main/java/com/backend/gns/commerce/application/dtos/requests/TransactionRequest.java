@@ -6,5 +6,6 @@ import java.util.UUID;
 public record TransactionRequest(
     UUID senderTrackingId,
     UUID receiverTrackingId,
-    BigDecimal amount
+    BigDecimal amount,
+    String password
 ) {}

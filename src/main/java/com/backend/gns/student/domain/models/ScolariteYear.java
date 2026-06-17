@@ -22,7 +22,7 @@ public class ScolariteYear extends BaseEntity {
   private UUID trackingId = UUID.randomUUID();
 
   @Column(length = 20, nullable = false, unique = true)
-  private String label; // e.g., "2025-2026"
+  private String label;
 
   @Column(nullable = false)
   private LocalDate startDate;

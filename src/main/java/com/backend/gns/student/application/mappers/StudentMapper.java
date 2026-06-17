@@ -35,12 +35,9 @@ public class StudentMapper {
     student.setActive(request.isActive() != null ? request.isActive() : false);
     student.setPhoneNumber(request.phoneNumber());
     student.setBirthDate(request.birthDate());
+    student.setBirthPlace(request.birthPlace()); 
     student.setKycStatus(request.kycStatus());
     student.setStudentIdNumber(request.studentIdNumber());
-
-    if (request.pinCodeHash() != null && !request.pinCodeHash().isEmpty()) {
-      student.setPinCodeHash(request.pinCodeHash());
-    }
 
     if (request.walletTrackingId() != null) {
       Wallet wallet =
@@ -80,6 +77,7 @@ public class StudentMapper {
         .isActive(student.isActive())
         .phoneNumber(student.getPhoneNumber())
         .birthDate(student.getBirthDate())
+        .birthPlace(student.getBirthPlace()) // Ajouté
         .kycStatus(student.getKycStatus())
         .studentIdNumber(student.getStudentIdNumber())
         .walletTrackingId(student.getWallet() != null ? student.getWallet().getTrackingId() : null)
@@ -87,7 +85,6 @@ public class StudentMapper {
         .universiteTrackingId(
             student.getUniversite() != null ? student.getUniversite().getTrackingId() : null)
         .universiteFullName(student.getUniversite() != null ? student.getUniversite().getFullName() : null)
-        .pinCodeHash(student.getPinCodeHash())
         .build();
   }
 }

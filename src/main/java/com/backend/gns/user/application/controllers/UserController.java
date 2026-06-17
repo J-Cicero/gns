@@ -51,9 +51,9 @@ public class UserController {
   @PostMapping(value = "/register/student", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<UserResponse> registerStudent(
       @RequestPart("request") String requestJson,
-      @RequestPart("rib") org.springframework.web.multipart.MultipartFile rib,
-      @RequestPart("mandat") org.springframework.web.multipart.MultipartFile mandat) throws Exception {
-    
+      @RequestPart(value = "rib", required = false) org.springframework.web.multipart.MultipartFile rib,
+      @RequestPart(value = "mandat", required = false) org.springframework.web.multipart.MultipartFile mandat) throws Exception {
+      
     com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
     mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
     com.backend.gns.student.application.dtos.requests.StudentRequest request = 

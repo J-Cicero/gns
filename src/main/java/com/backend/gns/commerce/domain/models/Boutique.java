@@ -1,7 +1,6 @@
 package com.backend.gns.commerce.domain.models;
 
 import com.backend.gns.core.domain.enums.KycStatus;
-import com.backend.gns.core.domain.models.Banque;
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.wallet.domain.models.Wallet;
 import jakarta.persistence.CascadeType;
@@ -45,10 +44,7 @@ public class Boutique extends BaseEntity {
   private String name;
 
   @Column(length = 100, nullable = false)
-  private String shopCategory;
-
-  @Column(length = 255, nullable = false)
-  private String mapPath;
+  private String description;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20, nullable = false)
@@ -59,13 +55,6 @@ public class Boutique extends BaseEntity {
 
   @Column(length = 40)
   private Double longitude;
-
-  @Column(name = "numero_compte", length = 30, nullable = true)
-  private String accountNumber;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "banque_partenaire_id", nullable = true)
-  private Banque partnerBank;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merchant_id", nullable = false)

@@ -33,6 +33,11 @@ public class WalletMapper {
       return null;
     }
 
+    String ownerName = "Inconnu";
+    if (wallet.getStudent() != null) {
+        ownerName = wallet.getStudent().getFirstName() + " " + wallet.getStudent().getLastName();
+    }
+
     return WalletResponse.builder()
         .trackingId(wallet.getTrackingId())
         .walletType(wallet.getWalletType())
@@ -43,6 +48,7 @@ public class WalletMapper {
         .currency(wallet.getCurrency())
         .createdAt(wallet.getCreatedAt())
         .studentTrackingId(wallet.getStudent() != null ? wallet.getStudent().getTrackingId() : null)
+        .ownerName(ownerName)
         .build();
   }
 }

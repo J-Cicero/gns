@@ -24,11 +24,10 @@ public class BoutiqueMapper {
     Boutique boutique = new Boutique();
     boutique.setTrackingId(UUID.randomUUID());
     boutique.setName(request.name());
-    boutique.setShopCategory(request.shopCategory());
+    boutique.setDescription(request.description());
     boutique.setKycStatus(request.kycStatus());
     boutique.setLatitude(request.latitude());
     boutique.setLongitude(request.longitude());
-    boutique.setMapPath(request.mapPath());
 
     if (request.merchantTrackingId() != null) {
       merchantRepository.findByTrackingId(request.merchantTrackingId())
@@ -49,8 +48,7 @@ public class BoutiqueMapper {
     return BoutiqueResponse.builder()
         .trackingId(boutique.getTrackingId())
         .name(boutique.getName())
-        .shopCategory(boutique.getShopCategory())
-        .mapPath(boutique.getMapPath())
+        .description(boutique.getDescription())
         .kycStatus(boutique.getKycStatus())
         .latitude(boutique.getLatitude())
         .longitude(boutique.getLongitude())

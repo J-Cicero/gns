@@ -27,6 +27,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,7 @@ public class StudentServiceImpl implements StudentService {
   private final StudentMapper studentMapper;
   private final WalletRepository walletRepository;
   private final com.backend.gns.student.infrastructure.repositories.CardRepository cardRepository;
+  private final PasswordEncoder passwordEncoder;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -60,15 +63,16 @@ public class StudentServiceImpl implements StudentService {
     log.info("Création d'un étudiant: {} {}", request.firstName(), request.lastName());
 
     Student student = studentMapper.toEntity(request);
+    
+    if (request.password() != null && !request.password().isEmpty()) {
+        student.setPasswordHash(passwordEncoder.encode(request.password()));
+    }
 
-    // Initialisation du Wallet via Cascade
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
     wallet.setWalletType(WalletType.STUDENT);
-    // Type par défaut, sera mis à jour lors de l'inscription
     wallet.setStatus(WalletStatus.INACTIF);
     wallet.setBalance(BigDecimal.ZERO);
-
     wallet.setLimitAmount(BigDecimal.ZERO);
     wallet.setCreatedAt(LocalDateTime.now());
 

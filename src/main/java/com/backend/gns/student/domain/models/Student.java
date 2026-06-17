@@ -32,9 +32,6 @@ public class Student extends User {
   @Column(length = 50, nullable = true, unique = true)
   private String studentIdNumber;
 
-  @Column(name = "pin_code", length = 60, nullable = true)
-  private String pinCodeHash;
-
   @Enumerated(EnumType.STRING)
   @Column(length = 20, nullable = true)
   private KycStatus kycStatus;

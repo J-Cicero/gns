@@ -15,10 +15,10 @@ public record StudentResponse(
     Boolean isActive,
     String phoneNumber,
     LocalDateTime birthDate,
+    String birthPlace, // Ajouté
     String studentIdNumber,
     KycStatus kycStatus,
     UUID walletTrackingId,
     BigDecimal balance,
     UUID universiteTrackingId,
-    String universiteFullName,
-    String pinCodeHash) {}
+    String universiteFullName) {}

@@ -27,7 +27,7 @@ public interface StudentService {
 
   Page<StudentResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable);
 
-  boolean verifyPin(UUID studentTrackingId, String pinCode);
+  boolean verifyPassword(UUID studentTrackingId, String password);
 
   Map<String, Object> getCard(UUID studentTrackingId);
 

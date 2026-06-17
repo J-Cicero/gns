@@ -1,6 +1,0 @@
-MINISTERE DE L'ENSEIGNEMENT
-SUPÉRIEUR ET DE LA RECHERCHE
-06/05/2026
-REPUBLIQUE TOGOLAISE
-Travail-Liberté-Patrie
-... (contenu identique conservé) ...
