@@ -3,9 +3,10 @@ package com.backend.gns.wallet.application.mappers;
 import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
 import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
 import com.backend.gns.wallet.domain.models.Wallet;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
 
 @Component
 public class WalletMapper {

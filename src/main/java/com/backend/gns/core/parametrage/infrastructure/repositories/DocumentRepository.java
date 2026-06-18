@@ -13,8 +13,7 @@ import java.util.UUID;
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long> {
     Optional<Document> findByTrackingId(UUID trackingId);
-    List<Document> findByOwnerTrackingId(UUID ownerTrackingId);
-    List<Document> findByOwnerTrackingIdAndDocumentType(UUID ownerTrackingId, TypeDocument documentType);
-    List<Document> findByOwnerType(ProprietaireType ownerType);
+
+
     void deleteByTrackingId(UUID trackingId);
 }

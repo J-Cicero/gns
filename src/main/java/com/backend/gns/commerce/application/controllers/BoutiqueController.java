@@ -3,18 +3,19 @@ package com.backend.gns.commerce.application.controllers;
 import com.backend.gns.commerce.application.dtos.requests.BoutiqueRequest;
 import com.backend.gns.commerce.application.dtos.responses.BoutiqueResponse;
 import com.backend.gns.commerce.domain.services.BoutiqueService;
-import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/boutiques")

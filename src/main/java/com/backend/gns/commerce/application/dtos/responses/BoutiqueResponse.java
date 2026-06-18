@@ -1,9 +1,10 @@
 package com.backend.gns.commerce.application.dtos.responses;
 
-import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.util.UUID;
-import lombok.Builder;
 
 @Builder
 public record BoutiqueResponse(

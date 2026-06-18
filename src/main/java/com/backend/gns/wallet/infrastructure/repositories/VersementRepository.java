@@ -3,14 +3,15 @@ package com.backend.gns.wallet.infrastructure.repositories;
 import com.backend.gns.wallet.domain.enums.VersementStatut;
 import com.backend.gns.wallet.domain.enums.VersementType;
 import com.backend.gns.wallet.domain.models.Versement;
-import java.math.BigDecimal;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface VersementRepository extends JpaRepository<Versement, Long> {
 

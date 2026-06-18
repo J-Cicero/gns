@@ -1,7 +1,8 @@
 package com.backend.gns.student.application.dtos.responses;
 
-import java.util.UUID;
 import lombok.Builder;
+
+import java.util.UUID;
 
 @Builder
 public record UniversiteResponse(

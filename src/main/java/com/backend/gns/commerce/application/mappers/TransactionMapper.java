@@ -3,8 +3,8 @@ package com.backend.gns.commerce.application.mappers;
 import com.backend.gns.commerce.application.dtos.requests.TransactionRequest;
 import com.backend.gns.commerce.application.dtos.responses.TransactionResponse;
 import com.backend.gns.commerce.domain.models.Transaction;
-import com.backend.gns.student.domain.services.StudentService;
 import com.backend.gns.commerce.domain.services.BoutiqueService;
+import com.backend.gns.student.domain.services.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

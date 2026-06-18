@@ -2,9 +2,10 @@ package com.backend.gns.commerce.application.dtos.requests;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.util.UUID;
-import lombok.Builder;
 
 @Builder
 public record QrPaymentRequest(

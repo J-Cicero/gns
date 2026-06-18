@@ -4,9 +4,10 @@ import com.backend.gns.commerce.application.dtos.requests.MerchantRequest;
 import com.backend.gns.commerce.application.dtos.responses.MerchantResponse;
 import com.backend.gns.commerce.domain.models.Merchant;
 import com.backend.gns.user.domain.enums.UserRole;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor

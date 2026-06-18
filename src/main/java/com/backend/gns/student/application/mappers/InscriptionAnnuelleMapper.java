@@ -5,9 +5,10 @@ import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleRes
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @AllArgsConstructor

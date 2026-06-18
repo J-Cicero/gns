@@ -5,9 +5,10 @@ import com.backend.gns.student.application.dtos.responses.CardResponse;
 import com.backend.gns.student.domain.models.Card;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @AllArgsConstructor

@@ -8,10 +8,11 @@ import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import com.backend.gns.user.domain.enums.UserRole;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
-import java.math.BigDecimal;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.UUID;
 
 @Component
 @AllArgsConstructor

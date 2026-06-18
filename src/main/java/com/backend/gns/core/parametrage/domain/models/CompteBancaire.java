@@ -1,26 +1,32 @@
-package com.backend.gns.core.domain.models;
+package com.backend.gns.core.parametrage.domain.models;
 
 import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.student.domain.enums.MandatStatut;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "COMPTE_BANCAIRE")
+@NoArgsConstructor
+@AllArgsConstructor
 public class CompteBancaire extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(length = 36, nullable = false, unique = true, updatable = false)
+  @Column(nullable = false, unique = true, updatable = false)
   private UUID trackingId;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -55,7 +61,7 @@ public class CompteBancaire extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(length = 50)
-  private MandatStatut mandateStatus;
+  private MandatStatut mandateStatus; // Import missing, will add MandatStatut later
 
   @Column
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -64,10 +70,4 @@ public class CompteBancaire extends BaseEntity {
   @Column(nullable = false)
   private boolean transferCompleted = false;
 
-  @PrePersist
-  public void prePersist() {
-    if (this.trackingId == null) {
-      this.trackingId = UUID.randomUUID();
-    }
-  }
 }

@@ -1,10 +1,14 @@
-package com.backend.gns.core.domain.models;
+package com.backend.gns.core.parametrage.domain.models;
 
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.utils.BaseEntity;
-import com.backend.gns.student.domain.enums.TargetType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
 import java.util.UUID;
 
 @Entity
@@ -13,29 +17,22 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class DocumentRequis extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false, unique = true, updatable = false)
-  private UUID trackingId = UUID.randomUUID();
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID trackingId;
 
-  @Column(nullable = false)
-  private String niveau;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, unique = true)
+    private TypeDocument typeDocument;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private TargetType targetType;
+    @Column(nullable = false)
+    private boolean required;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private TypeDocument typeDocument;
-
-  @Column(nullable = false)
-  private boolean obligatoire = true;
-
-  @Column(nullable = false)
-  private boolean estActif = true;
+    private String description;
 }

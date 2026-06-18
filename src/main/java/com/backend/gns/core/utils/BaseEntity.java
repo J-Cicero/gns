@@ -1,12 +1,11 @@
 package com.backend.gns.core.utils;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
@@ -15,18 +14,30 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
+@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public abstract class BaseEntity implements Serializable {
 
-  @Column(updatable = false, length = 100)
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(nullable = false, unique = true, updatable = false)
+  private UUID trackingId;
+
   @CreatedBy
+  @Column(updatable = false)
   private String createdBy;
 
-  @Column(length = 100)
   @LastModifiedBy
+  @Column(length = 36)
   private String updatedBy;
 
   @Column(updatable = false, length = 36)
@@ -38,4 +49,11 @@ public abstract class BaseEntity implements Serializable {
   @LastModifiedDate
   @UpdateTimestamp
   private LocalDateTime updatedAt;
+
+  @PrePersist
+  public void prePersist() {
+    if (this.trackingId == null) {
+      this.trackingId = UUID.randomUUID();
+    }
+  }
 }

@@ -1,14 +1,14 @@
-package com.backend.gns.core.domain.services.impl;
+package com.backend.gns.core.parametrage.domain.services.impl;
 
-import com.backend.gns.core.application.dtos.requests.CompteBancaireRequest;
-import com.backend.gns.core.application.dtos.responses.CompteBancaireResponse;
-import com.backend.gns.core.application.mappers.CompteBancaireMapper;
+import com.backend.gns.core.parametrage.application.dtos.requests.CompteBancaireRequest;
+import com.backend.gns.core.parametrage.application.dtos.responses.CompteBancaireResponse;
+import com.backend.gns.core.parametrage.application.mappers.CompteBancaireMapper;
 import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
-import com.backend.gns.core.domain.models.Banque;
-import com.backend.gns.core.domain.models.CompteBancaire;
-import com.backend.gns.core.domain.services.CompteBancaireService;
-import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
-import com.backend.gns.core.infrastructure.repositories.CompteBancaireRepository;
+import com.backend.gns.core.parametrage.domain.models.Banque;
+import com.backend.gns.core.parametrage.domain.models.CompteBancaire;
+import com.backend.gns.core.parametrage.domain.services.CompteBancaireService;
+import com.backend.gns.core.parametrage.infrastructure.repositories.BanqueRepository;
+import com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,11 +46,11 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
         compte.setRibDocumentTrackingId(request.ribDocumentTrackingId());
 
         UUID proprietaireId = request.ownerTrackingId();
-        if (proprietaireId == null && "GNS".equals(request.typeProprietaire())) {
+        if (proprietaireId == null && "GNS".equals(request.ownerType().name())) { // Changed to use ownerType enum
             proprietaireId = UUID.randomUUID();
         }
         compte.setOwnerTrackingId(proprietaireId);
-        compte.setOwnerType(ProprietaireType.valueOf(request.typeProprietaire()));
+        compte.setOwnerType(request.ownerType()); // Directly use enum
 
         return mapper.toResponse(repository.save(compte));
     }

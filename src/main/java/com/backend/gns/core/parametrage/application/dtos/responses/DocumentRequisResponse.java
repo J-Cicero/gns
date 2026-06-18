@@ -1,14 +1,14 @@
-package com.backend.gns.core.application.dtos.responses;
+package com.backend.gns.core.parametrage.application.dtos.responses;
 
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
-import com.backend.gns.student.domain.enums.TargetType;
+import lombok.Builder;
+
 import java.util.UUID;
 
+@Builder
 public record DocumentRequisResponse(
-    Long id,
     UUID trackingId,
-    String niveau,
-    TargetType targetType,
     TypeDocument typeDocument,
-    boolean obligatoire,
-    boolean estActif) {}
+    Boolean required,
+    String description
+) {}

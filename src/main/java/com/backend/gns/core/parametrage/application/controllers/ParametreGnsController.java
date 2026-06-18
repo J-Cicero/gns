@@ -5,13 +5,14 @@ import com.backend.gns.core.parametrage.application.dtos.responses.ParametreGnsR
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/parametres-gns")
@@ -21,11 +22,17 @@ public class ParametreGnsController {
 
   private final ParametreGnsService service;
 
-  @PostMapping
-  @Operation(summary = "Créer ou mettre à jour un paramètre (Unicité garantie)")
-  public ResponseEntity<ParametreGnsResponse> saveOrUpdate(
-      @RequestBody ParametreGnsRequest request) {
-    return ResponseEntity.status(HttpStatus.OK).body(service.saveOrUpdate(request));
+  @PostMapping // For creation
+  @Operation(summary = "Créer un paramètre")
+  public ResponseEntity<ParametreGnsResponse> create(@RequestBody ParametreGnsRequest request) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
+  }
+
+  @PutMapping("/{trackingId}") // For update
+  @Operation(summary = "Mettre à jour un paramètre")
+  public ResponseEntity<ParametreGnsResponse> update(
+      @PathVariable UUID trackingId, @RequestBody ParametreGnsRequest request) {
+    return ResponseEntity.status(HttpStatus.OK).body(service.update(trackingId, request));
   }
 
   @GetMapping("/{trackingId}")

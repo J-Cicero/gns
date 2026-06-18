@@ -5,18 +5,30 @@ import com.backend.gns.commerce.application.dtos.responses.MerchantResponse;
 import com.backend.gns.commerce.application.mappers.MerchantMapper;
 import com.backend.gns.commerce.domain.models.Merchant;
 import com.backend.gns.commerce.domain.services.MerchantService;
+import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.core.exception.ResourceNotFoundException;
-import java.util.Optional;
-import java.util.UUID;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
+import com.backend.gns.core.parametrage.domain.models.CompteBancaire;
+import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
+import com.backend.gns.core.parametrage.infrastructure.repositories.BanqueRepository;
+import com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository;
+import com.backend.gns.user.infrastructure.repositories.UserRepository;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
+import com.backend.gns.wallet.domain.enums.WalletType;
+import com.backend.gns.wallet.domain.models.Wallet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -27,11 +39,11 @@ public class MerchantServiceImpl implements MerchantService {
 
   private final MerchantRepository merchantRepository;
   private final MerchantMapper merchantMapper;
-  private final com.backend.gns.user.infrastructure.repositories.UserRepository userRepository;
-  private final com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository boutiqueRepository;
-  private final com.backend.gns.core.infrastructure.repositories.BanqueRepository banqueRepository;
-  private final com.backend.gns.core.infrastructure.repositories.CompteBancaireRepository compteBancaireRepository;
-  private final com.backend.gns.core.storage.CloudinaryStorageService storageService;
+  private final UserRepository userRepository;
+  private final BoutiqueRepository boutiqueRepository;
+  private final BanqueRepository banqueRepository;
+  private final CompteBancaireRepository compteBancaireRepository;
+  private final CloudinaryStorageService storageService;
   private final PasswordEncoder passwordEncoder;
 
   private Pageable normalize(Pageable pageable) {
@@ -70,14 +82,14 @@ public class MerchantServiceImpl implements MerchantService {
     boutique.setTrackingId(UUID.randomUUID());
     boutique.setName(request.businessName());
     boutique.setMerchant(savedMerchantUser);
-    boutique.setKycStatus(com.backend.gns.core.domain.enums.KycStatus.EN_ATTENTE);
+    boutique.setKycStatus(KycStatus.EN_ATTENTE);
 
-    com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
+    com.backend.gns.wallet.domain.models.Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
-    wallet.setWalletType(com.backend.gns.wallet.domain.enums.WalletType.BOUTIQUE);
-    wallet.setStatus(com.backend.gns.wallet.domain.enums.WalletStatus.ACTIF);
-    wallet.setBalance(java.math.BigDecimal.ZERO);
-    wallet.setLimitAmount(java.math.BigDecimal.ZERO);
+    wallet.setWalletType(WalletType.BOUTIQUE);
+    wallet.setStatus(WalletStatus.ACTIF);
+    wallet.setBalance(BigDecimal.ZERO);
+    wallet.setLimitAmount(BigDecimal.ZERO);
     wallet.setCreatedAt(java.time.LocalDateTime.now());
     boutique.setWallet(wallet);
 
@@ -87,7 +99,7 @@ public class MerchantServiceImpl implements MerchantService {
       try {
         var ribUpload = storageService.upload(rib, "rib_merchant_" + savedMerchantUser.getTrackingId());
 
-        com.backend.gns.core.domain.models.CompteBancaire cb = new com.backend.gns.core.domain.models.CompteBancaire();
+        CompteBancaire cb = new CompteBancaire();
         cb.setTrackingId(UUID.randomUUID());
         cb.setOwnerTrackingId(savedMerchantUser.getTrackingId());
         cb.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.MERCHANT);

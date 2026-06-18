@@ -1,5 +1,6 @@
 package com.backend.gns.student.domain.services.impl;
 
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.student.application.dtos.requests.UniversiteRequest;
 import com.backend.gns.student.application.dtos.responses.UniversiteResponse;
 import com.backend.gns.student.application.mappers.UniversiteMapper;
@@ -7,17 +8,14 @@ import com.backend.gns.student.domain.models.Universite;
 import com.backend.gns.student.domain.services.UniversiteService;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -85,7 +83,7 @@ public class UniversiteServiceImpl implements UniversiteService {
               map.put(
                   "nbEligibles",
                   studentRepository.countByUniversiteAndKycStatus(
-                      u, com.backend.gns.core.domain.enums.KycStatus.VALIDEE));
+                      u, KycStatus.VALIDE));
               return map;
             })
         .collect(Collectors.toList());

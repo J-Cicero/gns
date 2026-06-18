@@ -1,7 +1,9 @@
 package com.backend.gns.user.domain.services.Impl;
 
-import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
+import com.backend.gns.core.parametrage.domain.models.Banque;
+import com.backend.gns.core.parametrage.infrastructure.repositories.BanqueRepository;
 import com.backend.gns.core.security.jwt.JwtService;
+import com.backend.gns.user.application.dtos.requests.AdminBanqueRequest;
 import com.backend.gns.user.application.dtos.requests.LoginRequest;
 import com.backend.gns.user.application.dtos.requests.UserRequest;
 import com.backend.gns.user.application.dtos.responses.LoginResponse;
@@ -9,16 +11,12 @@ import com.backend.gns.user.application.dtos.responses.UserResponse;
 import com.backend.gns.user.application.mappers.UserMapper;
 import com.backend.gns.user.domain.enums.UserRole;
 import com.backend.gns.user.domain.exception.ResourceNotFoundException;
-import com.backend.gns.user.domain.models.User;
 import com.backend.gns.user.domain.models.AdminBanque;
-import com.backend.gns.user.application.dtos.requests.AdminBanqueRequest;
-import com.backend.gns.core.domain.models.Banque;
+import com.backend.gns.user.domain.models.User;
 import com.backend.gns.user.domain.services.UserService;
 import com.backend.gns.user.infrastructure.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,6 +28,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service

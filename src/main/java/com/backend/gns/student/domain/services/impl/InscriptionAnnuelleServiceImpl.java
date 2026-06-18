@@ -1,5 +1,6 @@
 package com.backend.gns.student.domain.services.impl;
 
+import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.requests.InscriptionAnnuelleRequest;
 import com.backend.gns.student.application.dtos.responses.InscriptionAnnuelleResponse;
@@ -8,21 +9,23 @@ import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.InscriptionAnnuelleService;
+import com.backend.gns.student.domain.services.InscriptionExterneService;
+import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
-import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.math.BigDecimal;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,9 +39,9 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   private final ScolariteYearRepository scolariteYearRepository;
   private final ParametreGnsService parametreGnsService;
   private final WalletRepository walletRepository;
-  private final com.backend.gns.student.domain.services.InscriptionExterneService inscriptionExterneService;
-  private final com.backend.gns.core.storage.CloudinaryStorageService storageService;
-  private final com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository documentRepository;
+  private final InscriptionExterneService inscriptionExterneService;
+  private final CloudinaryStorageService storageService;
+  private final DocumentEtudiantRepository documentRepository;
 
   @Override
   @Transactional
@@ -72,8 +75,6 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
             var upload = storageService.upload(carte, "card_" + savedIns.getTrackingId());
             com.backend.gns.student.domain.models.DocumentEtudiant doc = new com.backend.gns.student.domain.models.DocumentEtudiant();
             doc.setTrackingId(UUID.randomUUID());
-            doc.setOwnerTrackingId(savedIns.getTrackingId());
-            doc.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
             doc.setDocumentType(com.backend.gns.core.parametrage.domain.enums.TypeDocument.PIECE_IDENTITE);
             doc.setFileUrl(upload.get("url"));
             doc.setProviderPublicId(upload.get("publicId"));

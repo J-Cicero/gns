@@ -1,4 +1,4 @@
-package com.backend.gns.core.systemstatus.controllers;
+package com.backend.gns.core.parametrage.application.controllers;
 
 import com.backend.gns.core.systemstatus.dtos.SystemStatusResponse;
 import com.backend.gns.core.systemstatus.services.SystemStatusService;

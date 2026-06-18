@@ -1,17 +1,10 @@
 package com.backend.gns.core.security.advice;
 
-import static org.springframework.http.HttpStatus.*;
-
 import com.backend.gns.core.security.exceptions.UserAlreadyExistException;
 import com.backend.gns.core.security.exceptions.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.NoResultException;
-import java.io.IOException;
-import java.nio.file.AccessDeniedException;
-import java.util.List;
-import java.util.Objects;
-import javax.management.relation.RoleNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +22,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+import javax.management.relation.RoleNotFoundException;
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+import java.util.Objects;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class SecurityExceptionsHandler {

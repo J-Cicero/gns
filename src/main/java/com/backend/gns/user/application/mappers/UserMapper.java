@@ -4,8 +4,9 @@ import com.backend.gns.user.application.dtos.requests.UserRequest;
 import com.backend.gns.user.application.dtos.responses.UserResponse;
 import com.backend.gns.user.domain.enums.UserRole;
 import com.backend.gns.user.domain.models.User;
-import java.util.UUID;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class UserMapper {

@@ -1,7 +1,7 @@
 package com.backend.gns.core.application.mappers;
 
 import com.backend.gns.core.application.dtos.responses.BanqueResponse;
-import com.backend.gns.core.domain.models.Banque;
+import com.backend.gns.core.parametrage.domain.models.Banque;
 import org.springframework.stereotype.Component;
 
 @Component

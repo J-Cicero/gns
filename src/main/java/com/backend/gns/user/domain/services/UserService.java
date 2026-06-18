@@ -5,8 +5,9 @@ import com.backend.gns.user.application.dtos.requests.LoginRequest;
 import com.backend.gns.user.application.dtos.requests.UserRequest;
 import com.backend.gns.user.application.dtos.responses.LoginResponse;
 import com.backend.gns.user.application.dtos.responses.UserResponse;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
+
+import java.util.UUID;
 
 public interface UserService {
 

@@ -1,12 +1,13 @@
-package com.backend.gns.core.storage;
+package com.backend.gns.core.parametrage.domain.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CloudinaryStorageService {

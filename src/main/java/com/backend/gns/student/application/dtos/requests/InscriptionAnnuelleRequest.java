@@ -4,9 +4,10 @@ import com.backend.gns.student.domain.enums.SourceVerification;
 import com.backend.gns.student.domain.enums.StatutInscription;
 import com.backend.gns.student.domain.enums.StudentNiveau;
 import com.backend.gns.student.domain.enums.TypeBourse;
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.util.UUID;
-import lombok.Builder;
 
 @Builder
 public record InscriptionAnnuelleRequest(

@@ -1,8 +1,8 @@
-package com.backend.gns.core.application.controllers;
+package com.backend.gns.core.parametrage.application.controllers;
 
-import com.backend.gns.core.application.dtos.requests.CompteBancaireRequest;
-import com.backend.gns.core.application.dtos.responses.CompteBancaireResponse;
-import com.backend.gns.core.domain.services.CompteBancaireService;
+import com.backend.gns.core.parametrage.application.dtos.requests.CompteBancaireRequest;
+import com.backend.gns.core.parametrage.application.dtos.responses.CompteBancaireResponse;
+import com.backend.gns.core.parametrage.domain.services.CompteBancaireService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

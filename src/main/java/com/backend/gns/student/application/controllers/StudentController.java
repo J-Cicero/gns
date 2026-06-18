@@ -1,22 +1,21 @@
 package com.backend.gns.student.application.controllers;
 
-import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.core.exception.ResourceNotFoundException;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
-import com.backend.gns.student.domain.services.StudentService;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
+import com.backend.gns.student.domain.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Map;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/students")
@@ -105,7 +104,7 @@ public class StudentController {
         Map.of(
             "totalStudents", studentService.countAll(),
             "activeStudents", studentService.countByEstActif(true),
-            "verifiedKyc", studentService.countByStatutKYC(KycStatus.VALIDEE)));
+            "verifiedKyc", studentService.countByStatutKYC(KycStatus.VALIDE)));
   }
 
   @GetMapping("/stats/total")

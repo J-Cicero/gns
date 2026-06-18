@@ -1,7 +1,8 @@
 package com.backend.gns.core.application.dtos.responses;
 
-import java.util.UUID;
 import lombok.Builder;
+
+import java.util.UUID;
 
 @Builder
 public record BanqueResponse(UUID trackingId, String code, String name) {}

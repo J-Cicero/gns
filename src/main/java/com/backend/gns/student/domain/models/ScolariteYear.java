@@ -2,9 +2,13 @@ package com.backend.gns.student.domain.models;
 
 import com.backend.gns.core.utils.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.UUID;
-import lombok.*;
 
 @Entity
 @Table(name = "SCOLARITE_YEAR")

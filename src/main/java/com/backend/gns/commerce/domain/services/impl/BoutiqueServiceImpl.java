@@ -8,7 +8,7 @@ import com.backend.gns.commerce.domain.models.Merchant;
 import com.backend.gns.commerce.domain.services.BoutiqueService;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
-import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
@@ -17,15 +17,16 @@ import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.domain.services.WalletService;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class BoutiqueServiceImpl implements BoutiqueService {

@@ -1,12 +1,7 @@
 package com.backend.gns.user.domain.models;
 
-import com.backend.gns.core.domain.models.Banque;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.backend.gns.core.parametrage.domain.models.Banque;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

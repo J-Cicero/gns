@@ -1,17 +1,23 @@
 package com.backend.gns.commerce.domain.models;
 
 import com.backend.gns.core.parametrage.domain.models.Document;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "DOCUMENT_MERCHANT")
+@DiscriminatorValue("MERCHANT")
 @Getter
 @Setter
 @NoArgsConstructor
-public class DocumentMerchant extends Document { // Extends generic Document
+public class DocumentMerchant extends Document {
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "merchant_id", nullable = false)
+  @JoinColumn(name = "merchant_id")
   private Merchant merchant;
 }

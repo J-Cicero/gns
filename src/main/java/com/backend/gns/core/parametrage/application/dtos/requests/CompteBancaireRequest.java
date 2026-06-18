@@ -1,11 +1,13 @@
-package com.backend.gns.core.application.dtos.requests;
+package com.backend.gns.core.parametrage.application.dtos.requests;
+
+import com.backend.gns.core.parametrage.domain.enums.ProprietaireType; // Added import
 
 import java.util.UUID;
 
 public record CompteBancaireRequest(
     UUID banqueTrackingId,
     UUID ownerTrackingId,
-    String typeProprietaire,
+    ProprietaireType ownerType, // Changed from String typeProprietaire
     String accountNumber,
     UUID ribDocumentTrackingId
 ) {}

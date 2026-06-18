@@ -5,11 +5,11 @@ import com.backend.gns.commerce.domain.models.Merchant;
 import com.backend.gns.commerce.domain.services.DocumentMerchantService;
 import com.backend.gns.commerce.infrastructure.repositories.DocumentMerchantRepository;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
-import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
-import com.backend.gns.core.storage.CloudinaryStorageService;
-import com.backend.gns.student.application.dtos.responses.DocumentResponse;
-import com.backend.gns.student.application.mappers.DocumentMapper;
 import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
+import com.backend.gns.student.application.dtos.responses.DocumentResponse;
+import com.backend.gns.student.application.mappers.DocumentEtudiantMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +28,7 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
 
     private final DocumentMerchantRepository documentRepository;
     private final MerchantRepository merchantRepository;
-    private final DocumentMapper documentMapper;
+    private final DocumentEtudiantMapper documentEtudiantMapperMapper;
     private final CloudinaryStorageService cloudinaryService;
 
     @Override
@@ -42,8 +42,6 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
         DocumentMerchant document = new DocumentMerchant();
         document.setTrackingId(UUID.randomUUID());
         document.setMerchant(merchant);
-        document.setOwnerTrackingId(merchantTrackingId);
-        document.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.MERCHANT);
         document.setDocumentType(typeDocument);
         document.setFileUrl(uploadResult.get("url"));
         document.setProviderPublicId(uploadResult.get("publicId"));
@@ -52,12 +50,12 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
 
         document = documentRepository.save(document);
 
-        return documentMapper.toResponse(document);
+        return documentEtudiantMapperMapper.toResponse(document);
     }
 
     @Override
     public Optional<DocumentResponse> findByTrackingId(UUID trackingId) {
-        return documentRepository.findByTrackingId(trackingId).map(documentMapper::toResponse);
+        return documentRepository.findByTrackingId(trackingId).map(documentEtudiantMapperMapper::toResponse);
     }
 
     @Override

@@ -1,14 +1,15 @@
 package com.backend.gns.commerce.infrastructure.repositories;
 
 import com.backend.gns.commerce.domain.models.Boutique;
-import com.backend.gns.core.domain.enums.KycStatus;
-import java.util.Optional;
-import java.util.UUID;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public interface BoutiqueRepository extends JpaRepository<Boutique, Long> {
 

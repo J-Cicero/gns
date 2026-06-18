@@ -1,7 +1,9 @@
 package com.backend.gns.commerce.domain.services.impl;
 
 import com.backend.gns.commerce.application.dtos.requests.TransactionRequest;
+import com.backend.gns.commerce.application.dtos.responses.CommissionsStatsResponse;
 import com.backend.gns.commerce.application.dtos.responses.TransactionResponse;
+import com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse;
 import com.backend.gns.commerce.application.mappers.TransactionMapper;
 import com.backend.gns.commerce.domain.enums.TransactionStatut;
 import com.backend.gns.commerce.domain.models.Boutique;
@@ -9,28 +11,28 @@ import com.backend.gns.commerce.domain.models.Transaction;
 import com.backend.gns.commerce.domain.services.TransactionService;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.commerce.infrastructure.repositories.TransactionRepository;
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
+import com.backend.gns.student.application.dtos.responses.ScolariteYearResponse;
 import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.domain.services.ScolariteYearService;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.domain.services.WalletService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import com.backend.gns.student.domain.services.ScolariteYearService;
-import com.backend.gns.student.application.dtos.responses.ScolariteYearResponse;
-import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
-import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse;
 
 @Slf4j
 @Service
@@ -81,6 +83,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .count();
         return new com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse(volume, commission, gnsCommission, bankCommission, count);
     }
+
 
     @Override
     @Transactional

@@ -2,12 +2,14 @@ package com.backend.gns.user.application.controllers;
 
 import com.backend.gns.user.application.dtos.requests.UserRequest;
 import com.backend.gns.user.application.dtos.responses.UserResponse;
-import com.backend.gns.user.domain.enums.UserRole;
 import com.backend.gns.user.domain.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/admins/gns")

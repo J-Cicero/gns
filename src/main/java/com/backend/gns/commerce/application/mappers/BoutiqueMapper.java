@@ -3,13 +3,12 @@ package com.backend.gns.commerce.application.mappers;
 import com.backend.gns.commerce.application.dtos.requests.BoutiqueRequest;
 import com.backend.gns.commerce.application.dtos.responses.BoutiqueResponse;
 import com.backend.gns.commerce.domain.models.Boutique;
-import com.backend.gns.commerce.domain.models.Merchant;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
-import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor

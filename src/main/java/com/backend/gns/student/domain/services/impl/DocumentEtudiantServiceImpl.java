@@ -1,10 +1,10 @@
 package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
-import com.backend.gns.core.storage.CloudinaryStorageService;
-import com.backend.gns.student.application.dtos.responses.DocumentResponse;
-import com.backend.gns.student.application.mappers.DocumentMapper;
 import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
+import com.backend.gns.student.application.dtos.responses.DocumentResponse;
+import com.backend.gns.student.application.mappers.DocumentEtudiantMapper;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
@@ -30,7 +30,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     private final DocumentEtudiantRepository documentRepository;
     private final InscriptionAnnuelleRepository inscriptionRepository;
-    private final DocumentMapper documentMapper;
+    private final DocumentEtudiantMapper documentMapper;
     private final CloudinaryStorageService cloudinaryService;
 
     @Override
@@ -44,8 +44,6 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
         
         DocumentEtudiant document = new DocumentEtudiant();
         document.setTrackingId(UUID.randomUUID());
-        document.setOwnerTrackingId(inscriptionTrackingId);
-        document.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
         document.setDocumentType(typeDocument);
         document.setFileUrl(uploadResult.get("url"));
         document.setProviderPublicId(uploadResult.get("publicId"));
@@ -68,7 +66,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     @Override
     public Page<DocumentResponse> findByInscriptionId(UUID inscriptionId, Pageable pageable) {
-        return documentRepository.findByOwnerTrackingId(inscriptionId, pageable)
+        return documentRepository.findByStudent_TrackingId(inscriptionId, pageable)
                 .map(documentMapper::toResponse);
     }
 
@@ -82,7 +80,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     @Override
     public java.util.List<com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse> getDocumentsByStudent(UUID studentTrackingId) {
-        return documentRepository.findByOwnerTrackingId(studentTrackingId).stream()
+        return documentRepository.findByStudent_TrackingId(studentTrackingId).stream()
             .map(doc -> new com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse(
                 doc.getDocumentType(),
                 doc.getFileUrl(),

@@ -1,6 +1,5 @@
 package com.backend.gns.core.parametrage.application.controllers;
 
-import com.backend.gns.core.parametrage.application.dtos.requests.DocumentRequest;
 import com.backend.gns.core.parametrage.application.dtos.responses.DocumentResponse;
 import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;

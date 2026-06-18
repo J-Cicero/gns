@@ -1,7 +1,7 @@
-package com.backend.gns.core.domain.enums;
+package com.backend.gns.core.parametrage.domain.enums;
 
 public enum KycStatus {
-  EN_ATTENTE,
-  VALIDEE,
-  REJETE
+  EN_ATTENTE, // En attente de validation
+  VALIDE, // Validé
+  REJETE // Rejeté
 }

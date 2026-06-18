@@ -3,8 +3,9 @@ package com.backend.gns.student.application.mappers;
 import com.backend.gns.student.application.dtos.requests.UniversiteRequest;
 import com.backend.gns.student.application.dtos.responses.UniversiteResponse;
 import com.backend.gns.student.domain.models.Universite;
-import java.util.UUID;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class UniversiteMapper {

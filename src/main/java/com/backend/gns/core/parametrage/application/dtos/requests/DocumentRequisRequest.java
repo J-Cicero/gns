@@ -1,11 +1,12 @@
-package com.backend.gns.core.application.dtos.requests;
+package com.backend.gns.core.parametrage.application.dtos.requests;
 
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
-import com.backend.gns.student.domain.enums.TargetType;
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
+@Builder
 public record DocumentRequisRequest(
-    String niveau,
-    TargetType targetType, 
-    TypeDocument typeDocument, 
-    boolean obligatoire, 
-    boolean estActif) {}
+        @NotNull TypeDocument typeDocument,
+        @NotNull Boolean required,
+        String description
+) {}

@@ -1,7 +1,7 @@
-package com.backend.gns.core.application.mappers;
+package com.backend.gns.core.parametrage.application.mappers;
 
-import com.backend.gns.core.application.dtos.responses.CompteBancaireResponse;
-import com.backend.gns.core.domain.models.CompteBancaire;
+import com.backend.gns.core.parametrage.application.dtos.responses.CompteBancaireResponse;
+import com.backend.gns.core.parametrage.domain.models.CompteBancaire;
 import org.springframework.stereotype.Component;
 
 @Component

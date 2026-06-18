@@ -1,37 +1,27 @@
-package com.backend.gns.core.application.mappers;
+package com.backend.gns.core.parametrage.application.mappers;
 
-import com.backend.gns.core.domain.models.DocumentRequis;
-import com.backend.gns.core.application.dtos.requests.DocumentRequisRequest;
-import com.backend.gns.core.application.dtos.responses.DocumentRequisResponse;
+import com.backend.gns.core.parametrage.application.dtos.requests.DocumentRequisRequest;
+import com.backend.gns.core.parametrage.application.dtos.responses.DocumentRequisResponse;
+import com.backend.gns.core.parametrage.domain.models.DocumentRequis;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DocumentRequisMapper {
 
-  public DocumentRequis toEntity(DocumentRequisRequest request) {
-    if (request == null) {
-      return null;
+    public DocumentRequis toEntity(DocumentRequisRequest request) {
+        return DocumentRequis.builder()
+                .typeDocument(request.typeDocument())
+                .required(request.required())
+                .description(request.description())
+                .build();
     }
-    DocumentRequis entity = new DocumentRequis();
-    entity.setNiveau(request.niveau());
-    entity.setTargetType(request.targetType());
-    entity.setTypeDocument(request.typeDocument());
-    entity.setObligatoire(request.obligatoire());
-    entity.setEstActif(request.estActif());
-    return entity;
-  }
 
-  public DocumentRequisResponse toResponse(DocumentRequis entity) {
-    if (entity == null) {
-      return null;
+    public DocumentRequisResponse toResponse(DocumentRequis entity) {
+        return DocumentRequisResponse.builder()
+                .trackingId(entity.getTrackingId())
+                .typeDocument(entity.getTypeDocument())
+                .required(entity.isRequired())
+                .description(entity.getDescription())
+                .build();
     }
-    return new DocumentRequisResponse(
-        entity.getId(),
-        entity.getTrackingId(),
-        entity.getNiveau(),
-        entity.getTargetType(),
-        entity.getTypeDocument(),
-        entity.isObligatoire(),
-        entity.isEstActif());
-  }
 }

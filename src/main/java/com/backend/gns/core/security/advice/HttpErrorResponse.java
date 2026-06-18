@@ -1,12 +1,13 @@
 package com.backend.gns.core.security.advice;
 
-import java.util.List;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
+
+import java.util.List;
 
 @Setter
 @Getter

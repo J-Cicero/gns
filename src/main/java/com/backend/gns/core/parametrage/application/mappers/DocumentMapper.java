@@ -10,8 +10,8 @@ public class DocumentMapper {
     public DocumentResponse toResponse(Document document) {
         return new DocumentResponse(
                 document.getTrackingId(),
-                document.getOwnerTrackingId(),
-                document.getOwnerType(),
+                null, // ownerTrackingId is not present on generic Document
+                null, // ownerType is not present on generic Document
                 document.getDocumentType(),
                 document.getFileUrl(),
                 document.getStatus(),

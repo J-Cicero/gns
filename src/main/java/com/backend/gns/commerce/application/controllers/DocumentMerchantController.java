@@ -1,8 +1,8 @@
 package com.backend.gns.commerce.application.controllers;
 
+import com.backend.gns.commerce.domain.services.DocumentMerchantService;
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.student.application.dtos.responses.DocumentResponse;
-import com.backend.gns.commerce.domain.services.DocumentMerchantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

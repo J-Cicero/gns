@@ -1,19 +1,9 @@
 package com.backend.gns.student.domain.models;
 
-import com.backend.gns.core.domain.enums.KycStatus;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.user.domain.models.User;
 import com.backend.gns.wallet.domain.models.Wallet;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

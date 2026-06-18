@@ -1,23 +1,23 @@
-package com.backend.gns.core.application.controllers;
+package com.backend.gns.core.parametrage.application.controllers;
 
 import com.backend.gns.core.application.dtos.requests.BanqueRequest;
 import com.backend.gns.core.application.dtos.responses.BanqueResponse;
-import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.domain.services.BanqueService;
-import com.backend.gns.core.storage.CloudinaryStorageService;
-import com.backend.gns.student.application.dtos.responses.DocumentResponse;
 import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/banques")
@@ -50,8 +50,6 @@ public class BanqueController {
 
       DocumentEtudiant document = new DocumentEtudiant();
       document.setTrackingId(UUID.randomUUID());
-      document.setOwnerTrackingId(UUID.randomUUID()); // using a generic tracking ID since it is unlinked
-      document.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.BANQUE);
       document.setDocumentType(TypeDocument.RIB);
       document.setFileUrl(uploadResult.get("url"));
       document.setProviderPublicId(uploadResult.get("publicId"));

@@ -5,9 +5,10 @@ import com.backend.gns.commerce.application.dtos.responses.ProductResponse;
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.domain.models.Product;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {

@@ -7,13 +7,14 @@ import com.backend.gns.commerce.domain.models.Product;
 import com.backend.gns.commerce.domain.services.ProductService;
 import com.backend.gns.commerce.infrastructure.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {

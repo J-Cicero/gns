@@ -1,7 +1,7 @@
-package com.backend.gns.core.domain.services;
+package com.backend.gns.core.parametrage.domain.services;
 
-import com.backend.gns.core.application.dtos.requests.CompteBancaireRequest;
-import com.backend.gns.core.application.dtos.responses.CompteBancaireResponse;
+import com.backend.gns.core.parametrage.application.dtos.requests.CompteBancaireRequest;
+import com.backend.gns.core.parametrage.application.dtos.responses.CompteBancaireResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,33 +1,36 @@
 package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.core.domain.enums.KycStatus;
 import com.backend.gns.core.exception.ResourceNotFoundException;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
+import com.backend.gns.core.parametrage.domain.models.CompteBancaire;
+import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
+import com.backend.gns.core.parametrage.infrastructure.repositories.BanqueRepository;
+import com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository;
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
 import com.backend.gns.student.application.mappers.StudentMapper;
 import com.backend.gns.student.domain.models.Card;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.StudentService;
+import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
-import com.backend.gns.wallet.domain.enums.WalletStatus;
-import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Slf4j
 @Service
@@ -43,10 +46,10 @@ public class StudentServiceImpl implements StudentService {
   private final PasswordEncoder passwordEncoder;
   private final com.backend.gns.user.infrastructure.repositories.UserRepository userRepository;
   private final com.backend.gns.student.infrastructure.repositories.UniversiteRepository universiteRepository;
-  private final com.backend.gns.core.infrastructure.repositories.BanqueRepository banqueRepository;
-  private final com.backend.gns.core.infrastructure.repositories.CompteBancaireRepository compteBancaireRepository;
-  private final com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository documentEtudiantRepository;
-  private final com.backend.gns.core.storage.CloudinaryStorageService storageService;
+  private final BanqueRepository banqueRepository;
+  private final CompteBancaireRepository compteBancaireRepository;
+  private final DocumentEtudiantRepository documentEtudiantRepository;
+  private final CloudinaryStorageService storageService;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -102,8 +105,6 @@ public class StudentServiceImpl implements StudentService {
         var ribUpload = storageService.upload(rib, "rib_" + savedStudent.getTrackingId());
         var docRib = new com.backend.gns.student.domain.models.DocumentEtudiant();
         docRib.setTrackingId(UUID.randomUUID());
-        docRib.setOwnerTrackingId(savedStudent.getTrackingId());
-        docRib.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
         docRib.setDocumentType(com.backend.gns.core.parametrage.domain.enums.TypeDocument.RIB);
         docRib.setFileUrl((String) ribUpload.get("url"));
         docRib.setProviderPublicId((String) ribUpload.get("publicId"));
@@ -111,7 +112,7 @@ public class StudentServiceImpl implements StudentService {
         docRib.setUploadedAt(LocalDateTime.now());
         documentEtudiantRepository.save(docRib);
 
-        com.backend.gns.core.domain.models.CompteBancaire cb = new com.backend.gns.core.domain.models.CompteBancaire();
+        CompteBancaire cb = new CompteBancaire();
         cb.setTrackingId(UUID.randomUUID());
         cb.setOwnerTrackingId(savedStudent.getTrackingId());
         cb.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
@@ -128,8 +129,6 @@ public class StudentServiceImpl implements StudentService {
         var mandatUpload = storageService.upload(mandat, "mandat_" + savedStudent.getTrackingId());
         var docMandat = new com.backend.gns.student.domain.models.DocumentEtudiant();
         docMandat.setTrackingId(UUID.randomUUID());
-        docMandat.setOwnerTrackingId(savedStudent.getTrackingId());
-        docMandat.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
         docMandat.setDocumentType(com.backend.gns.core.parametrage.domain.enums.TypeDocument.MANDAT);
         docMandat.setFileUrl((String) mandatUpload.get("url"));
         docMandat.setProviderPublicId((String) mandatUpload.get("publicId"));

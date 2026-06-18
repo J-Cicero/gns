@@ -5,9 +5,10 @@ import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
 import com.backend.gns.wallet.domain.models.Versement;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
 
 @Component
 public class VersementMapper {

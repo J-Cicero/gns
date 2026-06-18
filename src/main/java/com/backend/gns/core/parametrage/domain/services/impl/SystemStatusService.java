@@ -1,7 +1,7 @@
 package com.backend.gns.core.systemstatus.services;
 
+import com.backend.gns.core.parametrage.domain.enums.SystemStatus;
 import com.backend.gns.core.systemstatus.dtos.SystemStatusResponse;
-import com.backend.gns.core.systemstatus.enums.SystemStatus;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,53 +1,68 @@
-package com.backend.gns.core.domain.services.impl;
+package com.backend.gns.core.parametrage.domain.services.impl;
 
-import com.backend.gns.core.domain.models.DocumentRequis;
-import com.backend.gns.core.domain.services.DocumentRequisService;
-import com.backend.gns.core.infrastructure.repositories.DocumentRequisRepository;
-import com.backend.gns.core.application.dtos.requests.DocumentRequisRequest;
-import com.backend.gns.core.application.dtos.responses.DocumentRequisResponse;
-import com.backend.gns.core.application.mappers.DocumentRequisMapper;
-import com.backend.gns.student.domain.enums.TargetType;
+import com.backend.gns.core.parametrage.application.dtos.requests.DocumentRequisRequest;
+import com.backend.gns.core.parametrage.application.dtos.responses.DocumentRequisResponse;
+import com.backend.gns.core.parametrage.application.mappers.DocumentRequisMapper;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.models.DocumentRequis;
+import com.backend.gns.core.parametrage.domain.services.DocumentRequisService;
+import com.backend.gns.core.parametrage.infrastructure.repositories.DocumentRequisRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DocumentRequisServiceImpl implements DocumentRequisService {
 
-  private final DocumentRequisRepository repository;
-  private final DocumentRequisMapper mapper;
+    private final DocumentRequisRepository documentRequisRepository;
+    private final DocumentRequisMapper documentRequisMapper;
 
-  @Override
-  @Transactional
-  public DocumentRequisResponse create(DocumentRequisRequest request) {
-    DocumentRequis entity = mapper.toEntity(request);
-    return mapper.toResponse(repository.save(entity));
-  }
+    @Override
+    @Transactional
+    public DocumentRequisResponse saveOrUpdate(DocumentRequisRequest request) {
+        Optional<DocumentRequis> existing = documentRequisRepository.findByTypeDocument(request.typeDocument());
+        DocumentRequis entity;
 
-  @Override
-  public Optional<DocumentRequisResponse> findByTrackingId(UUID trackingId) {
-    return repository.findByTrackingId(trackingId).map(mapper::toResponse);
-  }
+        if (existing.isPresent()) {
+            entity = existing.get();
+            entity.setRequired(request.required());
+            entity.setDescription(request.description());
+        } else {
+            entity = documentRequisMapper.toEntity(request);
+        }
+        return documentRequisMapper.toResponse(documentRequisRepository.save(entity));
+    }
 
-  @Override
-  public Page<DocumentRequisResponse> findAll(Pageable pageable) {
-    return repository.findAll(pageable).map(mapper::toResponse);
-  }
+    @Override
+    public Optional<DocumentRequisResponse> findByTrackingId(UUID trackingId) {
+        return documentRequisRepository.findByTrackingId(trackingId)
+                .map(documentRequisMapper::toResponse);
+    }
 
-  @Override
-  public Page<DocumentRequisResponse> findByTargetType(TargetType targetType, Pageable pageable) {
-    // Méthode à ajouter dans le repository si nécessaire
-    return repository.findAll(pageable).map(mapper::toResponse); // Simulé pour l'instant
-  }
+    @Override
+    public Optional<DocumentRequisResponse> findByTypeDocument(TypeDocument typeDocument) {
+        return documentRequisRepository.findByTypeDocument(typeDocument)
+                .map(documentRequisMapper::toResponse);
+    }
 
-  @Override
-  @Transactional
-  public void delete(UUID trackingId) {
-    repository.findByTrackingId(trackingId).ifPresent(repository::delete);
-  }
+    @Override
+    public List<DocumentRequisResponse> findAll() {
+        return documentRequisRepository.findAll().stream()
+                .map(documentRequisMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID trackingId) {
+        DocumentRequis doc = documentRequisRepository.findByTrackingId(trackingId)
+                .orElseThrow(() -> new RuntimeException("Document requis non trouvé"));
+        documentRequisRepository.delete(doc);
+    }
 }
