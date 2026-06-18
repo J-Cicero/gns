@@ -1,10 +1,10 @@
 package com.backend.gns.student.domain.services.impl;
 
-import com.backend.gns.core.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.storage.CloudinaryStorageService;
 import com.backend.gns.student.application.dtos.responses.DocumentResponse;
 import com.backend.gns.student.application.mappers.DocumentMapper;
-import com.backend.gns.student.domain.enums.StatutDocument;
+import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
@@ -42,15 +42,15 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
         Map<String, String> uploadResult = cloudinaryService.upload(fichier, studentTrackingId.toString());
         
-        DocumentEtudiant document = DocumentEtudiant.builder()
-                .trackingId(UUID.randomUUID())
-                .ownerTrackingId(inscriptionTrackingId) // Corrected from .inscription(inscription)
-                .documentType(typeDocument)
-                .fileUrl(uploadResult.get("url"))
-                .providerPublicId(uploadResult.get("publicId"))
-                .status(StatutDocument.EN_ATTENTE)
-                .uploadedAt(LocalDateTime.now())
-                .build();
+        DocumentEtudiant document = new DocumentEtudiant();
+        document.setTrackingId(UUID.randomUUID());
+        document.setOwnerTrackingId(inscriptionTrackingId);
+        document.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
+        document.setDocumentType(typeDocument);
+        document.setFileUrl(uploadResult.get("url"));
+        document.setProviderPublicId(uploadResult.get("publicId"));
+        document.setStatus(StatutDocument.EN_ATTENTE);
+        document.setUploadedAt(LocalDateTime.now());
         
         return documentMapper.toResponse(documentRepository.save(document));
     }

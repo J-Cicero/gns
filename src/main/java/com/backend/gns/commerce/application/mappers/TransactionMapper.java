@@ -21,6 +21,8 @@ public class TransactionMapper {
         // The sender and receiver entities will be set in the service layer
         // via their tracking IDs.
         transaction.setAmount(request.amount());
+        transaction.setIsCommissionPaid(request.isCommissionPaid() != null ? request.isCommissionPaid() : false);
+        transaction.setIsRetry(request.isRetry() != null ? request.isRetry() : false);
         return transaction;
     }
 
@@ -50,6 +52,7 @@ public class TransactionMapper {
             entity.getGnsCommission(),
             entity.getBankCommission(),
             entity.getIsCommissionPaid(),
+            entity.getIsRetry(),
             entity.getStatus(),
             entity.getCreatedAt()
         );

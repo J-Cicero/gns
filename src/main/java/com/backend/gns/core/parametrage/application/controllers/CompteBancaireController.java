@@ -28,6 +28,13 @@ public class CompteBancaireController {
         return ResponseEntity.ok(service.findAll());
     }
 
+    @GetMapping("/proprietaire/{ownerTrackingId}")
+    public ResponseEntity<CompteBancaireResponse> findByOwnerTrackingId(@PathVariable UUID ownerTrackingId) {
+        return service.findByOwnerTrackingId(ownerTrackingId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
     @DeleteMapping("/{trackingId}")
     public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
         service.delete(trackingId);

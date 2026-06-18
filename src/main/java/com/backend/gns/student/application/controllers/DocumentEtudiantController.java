@@ -1,6 +1,6 @@
 package com.backend.gns.student.application.controllers;
 
-import com.backend.gns.core.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.student.application.dtos.responses.DocumentResponse;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,6 +1,6 @@
 package com.backend.gns.core.domain.models;
 
-import com.backend.gns.core.domain.enums.ProprietaireType;
+import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.student.domain.enums.MandatStatut;
 import com.fasterxml.jackson.annotation.JsonFormat;

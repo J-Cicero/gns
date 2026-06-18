@@ -41,6 +41,12 @@ public class StudentServiceImpl implements StudentService {
   private final WalletRepository walletRepository;
   private final com.backend.gns.student.infrastructure.repositories.CardRepository cardRepository;
   private final PasswordEncoder passwordEncoder;
+  private final com.backend.gns.user.infrastructure.repositories.UserRepository userRepository;
+  private final com.backend.gns.student.infrastructure.repositories.UniversiteRepository universiteRepository;
+  private final com.backend.gns.core.infrastructure.repositories.BanqueRepository banqueRepository;
+  private final com.backend.gns.core.infrastructure.repositories.CompteBancaireRepository compteBancaireRepository;
+  private final com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository documentEtudiantRepository;
+  private final com.backend.gns.core.storage.CloudinaryStorageService storageService;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -59,28 +65,83 @@ public class StudentServiceImpl implements StudentService {
 
   @Override
   @Transactional
-  public StudentResponse create(StudentRequest request) {
-    log.info("Création d'un étudiant: {} {}", request.firstName(), request.lastName());
+  public StudentResponse create(StudentRequest request, org.springframework.web.multipart.MultipartFile rib, org.springframework.web.multipart.MultipartFile mandat) {
+    log.info("Inscription étudiant complète pour: {}", request.email());
 
-    Student student = studentMapper.toEntity(request);
-    
-    if (request.password() != null && !request.password().isEmpty()) {
-        student.setPasswordHash(passwordEncoder.encode(request.password()));
+    if (userRepository.findByEmail(request.email()).isPresent()) {
+      throw new IllegalArgumentException("Cet email est déjà utilisé par un autre compte.");
     }
 
-    Wallet wallet = new Wallet();
+    Student student = studentMapper.toEntity(request);
+    student.setTrackingId(UUID.randomUUID());
+    student.setRole(com.backend.gns.user.domain.enums.UserRole.ETUDIANT);
+    student.setActive(true);
+    student.setKycStatus(KycStatus.EN_ATTENTE);
+    
+    if (request.password() != null && !request.password().isEmpty()) {
+      student.setPasswordHash(passwordEncoder.encode(request.password()));
+    }
+
+    com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
     wallet.setTrackingId(UUID.randomUUID());
-    wallet.setWalletType(WalletType.STUDENT);
-    wallet.setStatus(WalletStatus.INACTIF);
+    wallet.setWalletType(com.backend.gns.wallet.domain.enums.WalletType.STUDENT);
+    wallet.setStatus(com.backend.gns.wallet.domain.enums.WalletStatus.INACTIF);
     wallet.setBalance(BigDecimal.ZERO);
     wallet.setLimitAmount(BigDecimal.ZERO);
     wallet.setCreatedAt(LocalDateTime.now());
-
     student.setWallet(wallet);
 
+    if (request.universiteTrackingId() != null) {
+      student.setUniversite(universiteRepository.findByTrackingId(request.universiteTrackingId()).orElse(null));
+    }
+
     Student savedStudent = studentRepository.save(student);
-    log.info(
-        "Étudiant créé avec succès avec son Wallet, trackingId: {}", savedStudent.getTrackingId());
+
+    try {
+      if (rib != null) {
+        var ribUpload = storageService.upload(rib, "rib_" + savedStudent.getTrackingId());
+        var docRib = new com.backend.gns.student.domain.models.DocumentEtudiant();
+        docRib.setTrackingId(UUID.randomUUID());
+        docRib.setOwnerTrackingId(savedStudent.getTrackingId());
+        docRib.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
+        docRib.setDocumentType(com.backend.gns.core.parametrage.domain.enums.TypeDocument.RIB);
+        docRib.setFileUrl((String) ribUpload.get("url"));
+        docRib.setProviderPublicId((String) ribUpload.get("publicId"));
+        docRib.setStatus(com.backend.gns.core.parametrage.domain.enums.StatutDocument.EN_ATTENTE);
+        docRib.setUploadedAt(LocalDateTime.now());
+        documentEtudiantRepository.save(docRib);
+
+        com.backend.gns.core.domain.models.CompteBancaire cb = new com.backend.gns.core.domain.models.CompteBancaire();
+        cb.setTrackingId(UUID.randomUUID());
+        cb.setOwnerTrackingId(savedStudent.getTrackingId());
+        cb.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
+        cb.setAccountNumber(request.accountNumber());
+        cb.setMainScholarshipAccount(true);
+
+        if (request.bankTrackingId() != null) {
+          cb.setBank(banqueRepository.findByTrackingId(request.bankTrackingId()).orElse(null));
+        }
+        compteBancaireRepository.save(cb);
+      }
+
+      if (mandat != null) {
+        var mandatUpload = storageService.upload(mandat, "mandat_" + savedStudent.getTrackingId());
+        var docMandat = new com.backend.gns.student.domain.models.DocumentEtudiant();
+        docMandat.setTrackingId(UUID.randomUUID());
+        docMandat.setOwnerTrackingId(savedStudent.getTrackingId());
+        docMandat.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
+        docMandat.setDocumentType(com.backend.gns.core.parametrage.domain.enums.TypeDocument.MANDAT);
+        docMandat.setFileUrl((String) mandatUpload.get("url"));
+        docMandat.setProviderPublicId((String) mandatUpload.get("publicId"));
+        docMandat.setStatus(com.backend.gns.core.parametrage.domain.enums.StatutDocument.EN_ATTENTE);
+        docMandat.setUploadedAt(LocalDateTime.now());
+        documentEtudiantRepository.save(docMandat);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("Erreur lors de l'upload des documents bancaires", e);
+    }
+
+    log.info("Étudiant créé avec succès, trackingId: {}", savedStudent.getTrackingId());
     return studentMapper.toResponse(savedStudent);
   }
 

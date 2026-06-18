@@ -1,6 +1,6 @@
 package com.backend.gns.core.domain.models;
 
-import com.backend.gns.core.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.student.domain.enums.TargetType;
 import jakarta.persistence.*;

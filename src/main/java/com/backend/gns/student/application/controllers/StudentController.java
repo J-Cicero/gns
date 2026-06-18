@@ -39,7 +39,7 @@ public class StudentController {
       @PathVariable UUID trackingId,
       @RequestParam("fichier") org.springframework.web.multipart.MultipartFile fichier,
       @RequestParam("inscriptionTrackingId") UUID inscriptionTrackingId,
-      @RequestParam("typeDocument") com.backend.gns.core.domain.enums.TypeDocument typeDocument) {
+      @RequestParam("typeDocument") com.backend.gns.core.parametrage.domain.enums.TypeDocument typeDocument) {
     try {
       var response = documentService.uploadDocument(fichier, trackingId, inscriptionTrackingId, typeDocument);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -55,10 +55,13 @@ public class StudentController {
     return ResponseEntity.ok(documentService.findByUserTrackingId(trackingId, pageable));
   }
 
-  @PostMapping
-  @Operation(summary = "Créer un étudiant")
-  public ResponseEntity<StudentResponse> create(@RequestBody StudentRequest request) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(studentService.create(request));
+  @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Operation(summary = "Créer un étudiant avec documents")
+  public ResponseEntity<StudentResponse> create(
+      @RequestPart("student") StudentRequest request,
+      @RequestPart(value = "rib", required = false) org.springframework.web.multipart.MultipartFile rib,
+      @RequestPart(value = "mandat", required = false) org.springframework.web.multipart.MultipartFile mandat) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(studentService.create(request, rib, mandat));
   }
 
   @GetMapping("/{trackingId}")

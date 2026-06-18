@@ -1,8 +1,8 @@
 package com.backend.gns.student.domain.services;
 
-import com.backend.gns.core.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.student.application.dtos.responses.DocumentResponse;
-import com.backend.gns.student.domain.enums.StatutDocument;
+import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;

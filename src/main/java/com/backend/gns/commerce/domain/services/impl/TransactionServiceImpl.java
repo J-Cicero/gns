@@ -164,11 +164,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Page<TransactionResponse> findByBoutiqueId(UUID boutiqueId, Pageable pageable) {
-        throw new UnsupportedOperationException("findByBoutiqueId is no longer directly supported.");
+        return transactionRepository.findByReceiverTrackingId(boutiqueId, pageable).map(transactionMapper::toResponse);
     }
 
     @Override
     public Page<TransactionResponse> findByStudentId(UUID studentId, Pageable pageable) {
-        throw new UnsupportedOperationException("findByStudentId is no longer directly supported.");
+        return transactionRepository.findBySenderTrackingId(studentId, pageable).map(transactionMapper::toResponse);
     }
 }

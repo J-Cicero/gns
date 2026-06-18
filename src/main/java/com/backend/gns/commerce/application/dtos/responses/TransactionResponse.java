@@ -18,6 +18,7 @@ public record TransactionResponse(
     BigDecimal gnsCommission,
     BigDecimal bankCommission,
     Boolean isCommissionPaid,
+    Boolean isRetry,
     TransactionStatut status,
     LocalDateTime createdAt
 ) {}

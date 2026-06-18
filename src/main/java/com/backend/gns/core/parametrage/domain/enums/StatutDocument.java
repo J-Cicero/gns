@@ -1,4 +1,4 @@
-package com.backend.gns.student.domain.enums;
+package com.backend.gns.core.parametrage.domain.enums;
 
 public enum StatutDocument {
   EN_ATTENTE, // document soumis mais pas encore traité

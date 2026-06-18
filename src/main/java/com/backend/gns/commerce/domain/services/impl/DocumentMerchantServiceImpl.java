@@ -5,11 +5,11 @@ import com.backend.gns.commerce.domain.models.Merchant;
 import com.backend.gns.commerce.domain.services.DocumentMerchantService;
 import com.backend.gns.commerce.infrastructure.repositories.DocumentMerchantRepository;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
-import com.backend.gns.core.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.storage.CloudinaryStorageService;
 import com.backend.gns.student.application.dtos.responses.DocumentResponse;
 import com.backend.gns.student.application.mappers.DocumentMapper;
-import com.backend.gns.student.domain.enums.StatutDocument;
+import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,15 +39,18 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
 
         Map<String, String> uploadResult = cloudinaryService.upload(fichier, merchantTrackingId.toString());
 
-        DocumentMerchant document = DocumentMerchant.builder()
-                .trackingId(UUID.randomUUID())
-                .merchant(merchant)
-                .type(typeDocument)
-                .urlFichier(uploadResult.get("url"))
-                .publicIdCloudinary(uploadResult.get("publicId"))
-                .statut(StatutDocument.EN_ATTENTE)
-                .dateDepot(LocalDateTime.now())
-                .build();
+        DocumentMerchant document = new DocumentMerchant();
+        document.setTrackingId(UUID.randomUUID());
+        document.setMerchant(merchant);
+        document.setOwnerTrackingId(merchantTrackingId);
+        document.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.MERCHANT);
+        document.setDocumentType(typeDocument);
+        document.setFileUrl(uploadResult.get("url"));
+        document.setProviderPublicId(uploadResult.get("publicId"));
+        document.setStatus(StatutDocument.EN_ATTENTE);
+        document.setUploadedAt(LocalDateTime.now());
+
+        document = documentRepository.save(document);
 
         return documentMapper.toResponse(document);
     }
@@ -65,7 +68,7 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
     @Override
     public void delete(UUID trackingId) {
         documentRepository.findByTrackingId(trackingId).ifPresent(doc -> {
-            cloudinaryService.supprimer(doc.getPublicIdCloudinary());
+            cloudinaryService.supprimer(doc.getProviderPublicId());
             documentRepository.delete(doc);
         });
     }

@@ -70,14 +70,15 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     if (carte != null && !carte.isEmpty()) {
         try {
             var upload = storageService.upload(carte, "card_" + savedIns.getTrackingId());
-            com.backend.gns.student.domain.models.DocumentEtudiant doc = com.backend.gns.student.domain.models.DocumentEtudiant.builder()
-                .trackingId(UUID.randomUUID())
-                .ownerTrackingId(savedIns.getTrackingId())
-                .documentType(com.backend.gns.core.domain.enums.TypeDocument.PIECE_IDENTITE)
-                .fileUrl(upload.get("url"))
-                .status(com.backend.gns.student.domain.enums.StatutDocument.EN_ATTENTE)
-                .uploadedAt(java.time.LocalDateTime.now())
-                .build();
+            com.backend.gns.student.domain.models.DocumentEtudiant doc = new com.backend.gns.student.domain.models.DocumentEtudiant();
+            doc.setTrackingId(UUID.randomUUID());
+            doc.setOwnerTrackingId(savedIns.getTrackingId());
+            doc.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
+            doc.setDocumentType(com.backend.gns.core.parametrage.domain.enums.TypeDocument.PIECE_IDENTITE);
+            doc.setFileUrl(upload.get("url"));
+            doc.setProviderPublicId(upload.get("publicId"));
+            doc.setStatus(com.backend.gns.core.parametrage.domain.enums.StatutDocument.EN_ATTENTE);
+            doc.setUploadedAt(java.time.LocalDateTime.now());
             documentRepository.save(doc);
         } catch (Exception e) {
             throw new RuntimeException("Failed to upload student card", e);

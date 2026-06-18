@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface MerchantService {
 
-  MerchantResponse create(MerchantRequest request);
+  MerchantResponse create(MerchantRequest request, org.springframework.web.multipart.MultipartFile rib);
 
   Optional<MerchantResponse> findByTrackingId(UUID trackingId);
 

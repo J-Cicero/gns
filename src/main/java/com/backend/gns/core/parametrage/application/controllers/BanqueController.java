@@ -2,11 +2,11 @@ package com.backend.gns.core.application.controllers;
 
 import com.backend.gns.core.application.dtos.requests.BanqueRequest;
 import com.backend.gns.core.application.dtos.responses.BanqueResponse;
-import com.backend.gns.core.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.domain.services.BanqueService;
 import com.backend.gns.core.storage.CloudinaryStorageService;
 import com.backend.gns.student.application.dtos.responses.DocumentResponse;
-import com.backend.gns.student.domain.enums.StatutDocument;
+import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import java.time.LocalDateTime;
@@ -48,15 +48,15 @@ public class BanqueController {
       String refId = UUID.randomUUID().toString();
       Map<String, String> uploadResult = cloudinaryService.upload(fichier, refId);
 
-      DocumentEtudiant document = DocumentEtudiant.builder()
-          .trackingId(UUID.randomUUID())
-          .ownerTrackingId(UUID.randomUUID()) // using a generic tracking ID since it is unlinked
-          .documentType(TypeDocument.RIB)
-          .fileUrl(uploadResult.get("url"))
-          .providerPublicId(uploadResult.get("publicId"))
-          .status(StatutDocument.EN_ATTENTE)
-          .uploadedAt(LocalDateTime.now())
-          .build();
+      DocumentEtudiant document = new DocumentEtudiant();
+      document.setTrackingId(UUID.randomUUID());
+      document.setOwnerTrackingId(UUID.randomUUID()); // using a generic tracking ID since it is unlinked
+      document.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.BANQUE);
+      document.setDocumentType(TypeDocument.RIB);
+      document.setFileUrl(uploadResult.get("url"));
+      document.setProviderPublicId(uploadResult.get("publicId"));
+      document.setStatus(StatutDocument.EN_ATTENTE);
+      document.setUploadedAt(LocalDateTime.now());
 
       DocumentEtudiant saved = documentRepository.save(document);
       return ResponseEntity.status(HttpStatus.CREATED).body(

@@ -17,7 +17,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Page<Transaction> findBySenderTrackingId(UUID senderTrackingId, Pageable pageable);
     Page<Transaction> findByReceiverTrackingId(UUID receiverTrackingId, Pageable pageable);
     List<Transaction> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
-    List<Transaction> findByReceiverAndIsCommissionPaid(UUID  receiverTrackingId, Boolean isCommissionPaid);
-    List<Transaction> findBySenderAndIsRetry (UUID senderTrackingId , Boolean isRetry);
+    List<Transaction> findByReceiverTrackingIdAndIsCommissionPaid(UUID trackingId, Boolean isCommissionPaid);
+    List<Transaction> findBySenderTrackingIdAndIsRetry (UUID senderTrackingId , Boolean isRetry);
 
 }

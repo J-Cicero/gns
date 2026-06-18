@@ -1,7 +1,7 @@
 package com.backend.gns.core.domain.services;
 
 import com.backend.gns.commerce.infrastructure.repositories.DocumentMerchantRepository;
-import com.backend.gns.core.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.domain.models.DocumentRequis;
 import com.backend.gns.core.infrastructure.repositories.DocumentRequisRepository;
 import com.backend.gns.student.domain.enums.TargetType;
@@ -37,7 +37,7 @@ public class KYCValidationService {
                     .collect(Collectors.toList());
         } else if (target == TargetType.MERCHANT) {
             uploadedTypes = documentMerchantRepository.findByMerchantTrackingId(ownerTrackingId).stream()
-                    .map(doc -> doc.getType())
+                    .map(doc -> doc.getDocumentType())
                     .collect(Collectors.toList());
         } else {
             uploadedTypes = List.of();

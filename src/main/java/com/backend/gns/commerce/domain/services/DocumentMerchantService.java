@@ -1,6 +1,6 @@
 package com.backend.gns.commerce.domain.services;
 
-import com.backend.gns.core.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.student.application.dtos.responses.DocumentResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

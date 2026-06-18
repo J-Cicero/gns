@@ -8,10 +8,11 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface StudentService {
 
-  StudentResponse create(StudentRequest request);
+  StudentResponse create(StudentRequest request, MultipartFile rib, MultipartFile mandat);
 
   Optional<StudentResponse> findByTrackingId(UUID trackingId);
 

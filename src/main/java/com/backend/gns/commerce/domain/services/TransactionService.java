@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.backend.gns.commerce.application.dtos.responses.CommissionsStatsResponse; // New import
+
 public interface TransactionService {
     TransactionResponse createPayment(TransactionRequest request);
     Optional<TransactionResponse> findByTrackingId(UUID trackingId);
@@ -15,4 +17,5 @@ public interface TransactionService {
     Page<TransactionResponse> findByBoutiqueId(UUID boutiqueId, Pageable pageable);
     Page<TransactionResponse> findByStudentId(UUID studentId, Pageable pageable);
     TransactionStatsResponse getGlobalStats();
+    CommissionsStatsResponse getCommissionsStatsByBank(UUID bankTrackingId, LocalDateTime startDate, LocalDateTime endDate); // New method
 }

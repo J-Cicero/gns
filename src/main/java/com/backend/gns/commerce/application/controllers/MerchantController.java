@@ -25,12 +25,14 @@ public class MerchantController {
     this.merchantService = merchantService;
   }
 
-  @PostMapping
-  @Operation(summary = "Créer un marchand", description = "Crée un nouveau marchand")
+  @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Operation(summary = "Créer un marchand avec RIB", description = "Crée un nouveau marchand et sa boutique")
   @ApiResponse(responseCode = "201", description = "Marchand créé avec succès")
-  public ResponseEntity<?> create(@RequestBody MerchantRequest request) {
+  public ResponseEntity<?> create(
+      @RequestPart("merchant") MerchantRequest request,
+      @RequestPart(value = "rib", required = false) org.springframework.web.multipart.MultipartFile rib) {
     try {
-      MerchantResponse response = merchantService.create(request);
+      MerchantResponse response = merchantService.create(request, rib);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

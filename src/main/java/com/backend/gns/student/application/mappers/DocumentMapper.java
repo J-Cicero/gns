@@ -29,10 +29,10 @@ public class DocumentMapper {
     return DocumentResponse.builder()
         .trackingId(entity.getTrackingId())
         .ownerTrackingId(entity.getMerchant() != null ? entity.getMerchant().getTrackingId() : null)
-        .documentType(entity.getType())
-        .fileUrl(entity.getUrlFichier())
-        .status(entity.getStatut())
-        .uploadedAt(entity.getDateDepot())
+        .documentType(entity.getDocumentType())
+        .fileUrl(entity.getFileUrl())
+        .status(entity.getStatus())
+        .uploadedAt(entity.getUploadedAt())
         .build();
   }
 }

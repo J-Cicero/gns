@@ -3,7 +3,7 @@ package com.backend.gns.core.domain.services.impl;
 import com.backend.gns.core.application.dtos.requests.CompteBancaireRequest;
 import com.backend.gns.core.application.dtos.responses.CompteBancaireResponse;
 import com.backend.gns.core.application.mappers.CompteBancaireMapper;
-import com.backend.gns.core.domain.enums.ProprietaireType;
+import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
 import com.backend.gns.core.domain.models.Banque;
 import com.backend.gns.core.domain.models.CompteBancaire;
 import com.backend.gns.core.domain.services.CompteBancaireService;
@@ -65,6 +65,13 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
     @Transactional(readOnly = true)
     public List<CompteBancaireResponse> findAll() {
         return repository.findByOwnerType(ProprietaireType.GNS).stream().map(mapper::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<CompteBancaireResponse> findByOwnerTrackingId(UUID ownerTrackingId) {
+        log.debug("Recherche compte bancaire par ownerTrackingId: {}", ownerTrackingId);
+        return repository.findByOwnerTrackingId(ownerTrackingId).map(mapper::toResponse);
     }
 
     @Override

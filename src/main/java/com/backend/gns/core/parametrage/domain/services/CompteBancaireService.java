@@ -10,5 +10,6 @@ public interface CompteBancaireService {
     CompteBancaireResponse create(CompteBancaireRequest request);
     Optional<CompteBancaireResponse> findByTrackingId(UUID trackingId);
     List<CompteBancaireResponse> findAll();
+    Optional<CompteBancaireResponse> findByOwnerTrackingId(UUID ownerTrackingId);
     void delete(UUID trackingId);
 }

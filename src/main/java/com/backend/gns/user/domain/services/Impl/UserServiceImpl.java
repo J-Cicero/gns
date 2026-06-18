@@ -2,7 +2,6 @@ package com.backend.gns.user.domain.services.Impl;
 
 import com.backend.gns.core.infrastructure.repositories.BanqueRepository;
 import com.backend.gns.core.security.jwt.JwtService;
-import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import com.backend.gns.user.application.dtos.requests.LoginRequest;
 import com.backend.gns.user.application.dtos.requests.UserRequest;
 import com.backend.gns.user.application.dtos.responses.LoginResponse;
@@ -39,10 +38,10 @@ public class UserServiceImpl implements UserService {
 
   private final UserMapper userMapper;
   private final UserRepository userRepository;
-  private final BanqueRepository banqueRepository;
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
   private final PasswordEncoder passwordEncoder;
+  private final BanqueRepository banqueRepository;
 
 
 

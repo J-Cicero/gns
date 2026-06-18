@@ -33,7 +33,7 @@ public class LiquidationServiceImpl implements LiquidationService {
 
     private BigDecimal getMountMaxToLiquidate(UUID trackingId){
         BigDecimal sum = BigDecimal.ZERO;
-        List<Transaction> transactions = transactionRepository.findByReceiverAndIsCommissionPaid(trackingId,false); // only include eligible transactions
+        List<Transaction> transactions = transactionRepository.findByReceiverTrackingIdAndIsCommissionPaid(trackingId,false); // only include eligible transactions
         for(Transaction t : transactions){
             sum = sum.add(t.getAmount());
         }
