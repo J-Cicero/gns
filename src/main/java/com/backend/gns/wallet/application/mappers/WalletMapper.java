@@ -5,6 +5,7 @@ import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
 import com.backend.gns.wallet.domain.models.Wallet;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,10 +22,7 @@ public class WalletMapper {
     wallet.setWalletType(request.walletType());
     wallet.setStatus(request.status());
     wallet.setBalance(request.balance());
-    wallet.setLimitAmount(request.limitAmount());
-    wallet.setCurrency(request.currency() != null ? request.currency() : "XAF");
-    wallet.setCreatedAt(
-        request.createdAt() != null ? request.createdAt() : LocalDateTime.now());
+    wallet.setLimitAmount(BigDecimal.valueOf(1000));
 
     return wallet;
   }
@@ -46,10 +44,7 @@ public class WalletMapper {
         .fundingLevel(wallet.getFundingLevel())
         .balance(wallet.getBalance())
         .limitAmount(wallet.getLimitAmount())
-        .currency(wallet.getCurrency())
-        .createdAt(wallet.getCreatedAt())
         .studentTrackingId(wallet.getStudent() != null ? wallet.getStudent().getTrackingId() : null)
-        .ownerName(ownerName)
         .build();
   }
 }

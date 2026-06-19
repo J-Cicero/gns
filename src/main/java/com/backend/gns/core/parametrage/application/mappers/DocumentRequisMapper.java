@@ -12,6 +12,7 @@ public class DocumentRequisMapper {
         return DocumentRequis.builder()
                 .typeDocument(request.typeDocument())
                 .required(request.required())
+                .niveauRequis(request.studentNiveau())
                 .description(request.description())
                 .build();
     }
@@ -21,6 +22,7 @@ public class DocumentRequisMapper {
                 .trackingId(entity.getTrackingId())
                 .typeDocument(entity.getTypeDocument())
                 .required(entity.isRequired())
+                .studentNiveau(entity.getNiveauRequis())
                 .description(entity.getDescription())
                 .build();
     }

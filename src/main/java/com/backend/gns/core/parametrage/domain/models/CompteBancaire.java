@@ -2,16 +2,13 @@ package com.backend.gns.core.parametrage.domain.models;
 
 import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
 import com.backend.gns.core.utils.BaseEntity;
-import com.backend.gns.student.domain.enums.MandatStatut;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.backend.gns.user.domain.models.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -33,11 +30,9 @@ public class CompteBancaire extends BaseEntity {
   @JoinColumn(name = "banque_id", nullable = false)
   private Banque bank;
 
-  @Column(nullable = false)
-  private UUID ownerTrackingId;
-
-  @Column
-  private UUID ribDocumentTrackingId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User proprietaire;
 
   @Column(length = 50, nullable = false)
   private String accountNumber;
@@ -49,25 +44,6 @@ public class CompteBancaire extends BaseEntity {
   @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
   private boolean isMainScholarshipAccount = false;
 
-  @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-  private boolean mandateSigned = false;
-
-  @Column
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime mandateTimestamp;
-
-  @Column(length = 45)
-  private String registrationPlace;
-
-  @Enumerated(EnumType.STRING)
-  @Column(length = 50)
-  private MandatStatut mandateStatus; // Import missing, will add MandatStatut later
-
-  @Column
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime mandateValidatedAt;
-
   @Column(nullable = false)
   private boolean transferCompleted = false;
-
 }

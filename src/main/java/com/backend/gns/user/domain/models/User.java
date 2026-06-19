@@ -1,5 +1,6 @@
 package com.backend.gns.user.domain.models;
 
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.core.utils.BaseEntity;
 import com.backend.gns.user.domain.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -47,7 +48,7 @@ public class User extends BaseEntity {
 
   @JsonIgnore
   @Column(length = 255, nullable = false)
-  private String passwordHash;
+  private String password;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20)
@@ -75,7 +76,12 @@ public class User extends BaseEntity {
   @Column(length = 100, nullable = true) // Ajouté
   private String birthPlace;
 
+
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20, nullable = false)
+  private KycStatus kycStatus = KycStatus.EN_ATTENTE;
+
   public void setPassword(String password) {
-    this.passwordHash = password;
+    this.password = password;
   }
 }

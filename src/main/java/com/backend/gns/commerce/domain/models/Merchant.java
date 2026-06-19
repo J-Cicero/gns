@@ -16,7 +16,4 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Merchant extends User {
 
-  @Column(length = 100)
-  private String businessName;
-
 }

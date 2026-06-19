@@ -96,7 +96,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new EntityNotFoundException("Sender not found with ID: " + request.senderTrackingId()));
 
         // Verify password
-        if (request.password() == null || !passwordEncoder.matches(request.password(), sender.getPasswordHash())) {
+        if (request.password() == null || !passwordEncoder.matches(request.password(), sender.getPassword())) {
             throw new RuntimeException("Invalid authorization: Incorrect password.");
         }
 
@@ -133,8 +133,8 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         // 6. Perform transaction - Atomic operation
-        walletService.debit(senderWallet.getTrackingId(), amountDebited);
-        walletService.credit(receiverWallet.getTrackingId(), amountCredited);
+        walletService.debiter(senderWallet.getTrackingId(), amountDebited);
+        walletService.crediter(receiverWallet.getTrackingId(), amountCredited);
 
         // 7. Save the Transaction record
         Transaction transaction = Transaction.builder()

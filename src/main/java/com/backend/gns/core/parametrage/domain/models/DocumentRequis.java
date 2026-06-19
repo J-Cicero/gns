@@ -2,6 +2,7 @@ package com.backend.gns.core.parametrage.domain.models;
 
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.utils.BaseEntity;
+import com.backend.gns.student.domain.enums.StudentNiveau;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,8 +29,12 @@ public class DocumentRequis extends BaseEntity {
     private UUID trackingId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private TypeDocument typeDocument;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private StudentNiveau niveauRequis;
 
     @Column(nullable = false)
     private boolean required;

@@ -2,20 +2,18 @@
 package com.backend.gns.student.domain.models;
 
 import com.backend.gns.core.parametrage.domain.models.Document;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@DiscriminatorValue("STUDENT")
+@DiscriminatorValue("ETUDIANT")
 @Getter
 @Setter
 @NoArgsConstructor
+@SuperBuilder
 public class DocumentEtudiant extends Document {
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -62,7 +62,7 @@ public class StudentController {
       @RequestPart("student") StudentRequest request,
       @RequestPart(value = "rib", required = false) MultipartFile rib,
       @RequestPart(value = "mandat", required = false) MultipartFile mandat) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(studentService.create(request, rib, mandat));
+    return ResponseEntity.status(HttpStatus.CREATED).body(studentService.create(request));
   }
 
   @GetMapping("/{trackingId}")

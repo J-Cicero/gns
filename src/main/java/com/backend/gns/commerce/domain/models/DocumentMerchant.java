@@ -9,12 +9,14 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @DiscriminatorValue("MERCHANT")
 @Getter
 @Setter
 @NoArgsConstructor
+@SuperBuilder
 public class DocumentMerchant extends Document {
 
   @ManyToOne(fetch = FetchType.LAZY)

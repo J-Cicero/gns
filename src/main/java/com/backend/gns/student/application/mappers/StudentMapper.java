@@ -1,13 +1,12 @@
 package com.backend.gns.student.application.mappers;
 
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.models.Universite;
 import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
 import com.backend.gns.user.domain.enums.UserRole;
-import com.backend.gns.wallet.domain.models.Wallet;
-import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +17,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class StudentMapper {
 
-  private final WalletRepository walletRepository;
   private final UniversiteRepository universiteRepository;
+  // NB: J'ai retiré WalletRepository car le Wallet est généré automatiquement et non récupéré depuis la requête.
 
   public Student toEntity(StudentRequest request) {
     if (request == null) {
@@ -28,64 +27,52 @@ public class StudentMapper {
 
     Student student = new Student();
     student.setTrackingId(UUID.randomUUID());
+
     student.setEmail(request.email());
     student.setPassword(request.password());
     student.setLastName(request.lastName());
     student.setFirstName(request.firstName());
     student.setRole(UserRole.ETUDIANT);
-    student.setActive(request.isActive() != null ? request.isActive() : false);
     student.setPhoneNumber(request.phoneNumber());
+
+    student.setActive(false);
+    student.setKycStatus(KycStatus.EN_ATTENTE);
+
     student.setBirthDate(request.birthDate());
-    student.setBirthPlace(request.birthPlace()); 
-    student.setKycStatus(request.kycStatus());
-    student.setStudentIdNumber(request.studentIdNumber());
+    student.setBirthPlace(request.birthPlace());
+    student.setStudenNumber(request.studentNumber());
 
-    if (request.walletTrackingId() != null) {
-      Wallet wallet =
-          walletRepository
-              .findByTrackingId(request.walletTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "Wallet not found with trackingId: " + request.walletTrackingId()));
-      student.setWallet(wallet);
-    }
-
+    // Gestion de l'
     if (request.universiteTrackingId() != null) {
-      Universite universite =
-          universiteRepository
+      Universite universite = universiteRepository
               .findByTrackingId(request.universiteTrackingId())
-              .orElseThrow(
-                  () ->
-                      new IllegalArgumentException(
-                          "University not found with trackingId: " + request.universiteTrackingId()));
+              .orElseThrow(() -> new IllegalArgumentException("University not found with trackingId: " + request.universiteTrackingId()));
       student.setUniversite(universite);
     }
 
     return student;
   }
-
-  public StudentResponse toResponse(Student student) {
-    if (student == null) {
+  public StudentResponse toResponse(Student entity) {
+    if (entity == null) {
       return null;
     }
 
     return StudentResponse.builder()
-        .trackingId(student.getTrackingId())
-        .email(student.getEmail())
-        .lastName(student.getLastName())
-        .firstName(student.getFirstName())
-        .isActive(student.isActive())
-        .phoneNumber(student.getPhoneNumber())
-        .birthDate(student.getBirthDate())
-        .birthPlace(student.getBirthPlace()) // Ajouté
-        .kycStatus(student.getKycStatus())
-        .studentIdNumber(student.getStudentIdNumber())
-        .walletTrackingId(student.getWallet() != null ? student.getWallet().getTrackingId() : null)
-        .balance(student.getWallet() != null ? student.getWallet().getBalance() : BigDecimal.ZERO)
-        .universiteTrackingId(
-            student.getUniversite() != null ? student.getUniversite().getTrackingId() : null)
-        .universiteFullName(student.getUniversite() != null ? student.getUniversite().getFullName() : null)
-        .build();
+            .trackingId(entity.getTrackingId())
+            .email(entity.getEmail())
+            .firstName(entity.getFirstName())
+            .lastName(entity.getLastName())
+            .phoneNumber(entity.getPhoneNumber())
+
+            .isActive(entity.isActive())
+            .kycStatus(entity.getKycStatus())
+
+            .birthDate(entity.getBirthDate())
+            .birthPlace(entity.getBirthPlace())
+            .studentNumber(entity.getStudenNumber())
+
+            .universiteTrackingId(entity.getUniversite() != null ? entity.getUniversite().getTrackingId() : null)
+            .walletTrackingId(entity.getWallet() != null ? entity.getWallet().getTrackingId() : null)
+            .build();
   }
 }

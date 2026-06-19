@@ -30,10 +30,9 @@ public class MerchantController {
   @Operation(summary = "Créer un marchand avec RIB", description = "Crée un nouveau marchand et sa boutique")
   @ApiResponse(responseCode = "201", description = "Marchand créé avec succès")
   public ResponseEntity<?> create(
-      @RequestPart("merchant") MerchantRequest request,
-      @RequestPart(value = "rib", required = false) org.springframework.web.multipart.MultipartFile rib) {
+      @RequestPart("merchant") MerchantRequest request) {
     try {
-      MerchantResponse response = merchantService.create(request, rib);
+      MerchantResponse response = merchantService.create(request);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

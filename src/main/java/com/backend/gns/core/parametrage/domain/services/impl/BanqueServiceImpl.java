@@ -1,9 +1,9 @@
-package com.backend.gns.core.domain.services.impl;
+package com.backend.gns.core.parametrage.domain.services.impl;
 
-import com.backend.gns.core.application.dtos.requests.BanqueRequest;
-import com.backend.gns.core.application.dtos.responses.BanqueResponse;
-import com.backend.gns.core.application.mappers.BanqueMapper;
-import com.backend.gns.core.domain.services.BanqueService;
+import com.backend.gns.core.parametrage.application.dtos.requests.BanqueRequest;
+import com.backend.gns.core.parametrage.application.dtos.responses.BanqueResponse;
+import com.backend.gns.core.parametrage.application.mappers.BanqueMapper;
+import com.backend.gns.core.parametrage.domain.services.BanqueService;
 import com.backend.gns.core.parametrage.domain.models.Banque;
 import com.backend.gns.core.parametrage.infrastructure.repositories.BanqueRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,6 @@ public class BanqueServiceImpl implements BanqueService {
     banque.setTrackingId(UUID.randomUUID());
     banque.setName(request.name());
     banque.setCode(request.code());
-    banque.setLogoUrl(request.logoUrl());
     return banqueMapper.toResponse(banqueRepository.save(banque));
   }
 }

@@ -17,7 +17,5 @@ public record WalletResponse(
     WalletFundingLevel fundingLevel,
     BigDecimal balance,
     BigDecimal limitAmount,
-    String currency,
-    LocalDateTime createdAt,
-    UUID studentTrackingId,
-    String ownerName) {}
+    UUID studentTrackingId
+   ) {}

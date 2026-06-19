@@ -15,6 +15,4 @@ public record MerchantRequest(
     String phoneNumber,
     LocalDateTime birthDate,
     String businessName,
-    String registrationNumber,
-    UUID bankTrackingId,
-    String accountNumber) {}
+    String registrationNumber) {}

@@ -19,7 +19,6 @@ public class AdminController {
     private final UserService userService;
 
     @PostMapping("/create-banque-admin")
-    // @PreAuthorize("hasRole('ADMIN_GNS')") // A activer quand la sécurité sera finalisée
     public ResponseEntity<UserResponse> createBanqueAdmin(@RequestBody com.backend.gns.user.application.dtos.requests.AdminBanqueRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createAdminBanque(request));
     }

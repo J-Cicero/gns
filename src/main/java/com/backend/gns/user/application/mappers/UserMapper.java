@@ -47,6 +47,7 @@ public class UserMapper {
         user.getEmail(),
         user.getRole() != null ? user.getRole().name() : null,
         user.getRegistrationDate(),
+        user.getKycStatus(),
         user.isActive());
   }
 }

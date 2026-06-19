@@ -1,5 +1,7 @@
 package com.backend.gns.user.application.dtos.responses;
 
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,4 +13,5 @@ public record UserResponse(
     String email,
     String role,
     LocalDateTime registrationDate,
+    KycStatus kycStatus,
     boolean isActive) {}

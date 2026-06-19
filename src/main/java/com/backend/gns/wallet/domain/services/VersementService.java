@@ -23,7 +23,6 @@ public interface VersementService {
   Page<VersementResponse> findByWalletTrackingId(UUID walletTrackingId, Pageable pageable);
   Page<VersementResponse> findAll(Pageable pageable);
 
-  // Méthodes de masse enrichies avec WalletStatus
   void effectuerVersementMasseEtudiants(UUID scolariteYearTrackingId, WalletStatus statutCible, BigDecimal montantFixe);
   void effectuerVersementMasseBoutiques(BigDecimal seuil, WalletStatus statutCible, BigDecimal montantQuota);
 

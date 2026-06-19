@@ -54,7 +54,7 @@ public class InscriptionAnnuelleMapper {
         .studentFirstName(
             inscription.getStudent() != null ? inscription.getStudent().getFirstName() : null)
         .studentIdNumber(
-            inscription.getStudent() != null ? inscription.getStudent().getStudentIdNumber() : null)
+            inscription.getStudent() != null ? inscription.getStudent().getStudenNumber() : null)
         .academicYearLabel(
             inscription.getScolariteYear() != null
                 ? inscription.getScolariteYear().getLabel()

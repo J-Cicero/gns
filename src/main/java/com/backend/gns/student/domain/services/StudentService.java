@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public interface StudentService {
 
-  StudentResponse create(StudentRequest request, MultipartFile rib, MultipartFile mandat);
+  StudentResponse create(StudentRequest request );
 
   Optional<StudentResponse> findByTrackingId(UUID trackingId);
 

@@ -1,4 +1,4 @@
-package com.backend.gns.core.application.dtos.responses;
+package com.backend.gns.core.parametrage.application.dtos.responses;
 
 import lombok.Builder;
 

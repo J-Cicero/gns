@@ -7,6 +7,7 @@ import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,32 +24,28 @@ public interface WalletService {
 
   void delete(UUID trackingId);
 
+  // Recherche & Filtrage
   Page<WalletResponse> findByTypeWallet(WalletType typeWallet, Pageable pageable);
-
-  Page<WalletResponse> findFiltered(
-      WalletType typeWallet, WalletFundingLevel niveauSolde, Pageable pageable);
-
+  Page<WalletResponse> findFiltered(WalletType typeWallet, WalletFundingLevel niveauSolde, Pageable pageable);
   Page<WalletResponse> findByStatutWallet(WalletStatus statutWallet, Pageable pageable);
-
   Page<WalletResponse> findByNiveauSolde(WalletFundingLevel niveauSolde, Pageable pageable);
-
   Page<WalletResponse> findBySoldeLessThan(BigDecimal amount, Pageable pageable);
-
   Page<WalletResponse> findBySoldeGreaterThan(BigDecimal amount, Pageable pageable);
-
   Page<WalletResponse> findAll(Pageable pageable);
 
-  // New methods for direct transaction support
-  boolean hasSufficientBalance(UUID walletTrackingId, BigDecimal amount);
-  void credit(UUID walletTrackingId, BigDecimal montant);
-  void debit(UUID walletTrackingId, BigDecimal montant);
-
-  // Legacy methods (can be refactored later if not used)
+  // Transactions (Logique métier unifiée)
+  @Transactional
   void crediter(UUID walletTrackingId, BigDecimal montant);
+
+  @Transactional
   void debiter(UUID walletTrackingId, BigDecimal montant);
 
+  boolean hasSufficientBalance(UUID walletTrackingId, BigDecimal amount);
+
+  // Gestion technique
   void remettreAZero(UUID walletTrackingId);
 
+  @Transactional
   void remettreAZeroGroupe(List<UUID> walletTrackingIds);
 
   void gelerTousLesWalletsEtudiant(boolean geler);

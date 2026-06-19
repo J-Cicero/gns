@@ -9,17 +9,15 @@ import java.util.UUID;
 
 @Builder
 public record StudentResponse(
-    UUID trackingId,
-    String email,
-    String lastName,
-    String firstName,
-    Boolean isActive,
-    String phoneNumber,
-    LocalDateTime birthDate,
-    String birthPlace, // Ajouté
-    String studentIdNumber,
-    KycStatus kycStatus,
-    UUID walletTrackingId,
-    BigDecimal balance,
-    UUID universiteTrackingId,
-    String universiteFullName) {}
+        UUID trackingId,
+        String email,
+        String firstName,
+        String lastName,
+        String phoneNumber,
+        boolean isActive,
+        KycStatus kycStatus,
+        LocalDateTime birthDate,
+        String birthPlace,
+        String studentNumber,
+        UUID universiteTrackingId,
+        UUID walletTrackingId) {}

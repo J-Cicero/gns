@@ -12,6 +12,7 @@ public record WalletRequest(
     WalletType walletType,
     WalletStatus status,
     BigDecimal balance,
-    BigDecimal limitAmount,
-    String currency,
-    LocalDateTime createdAt) {}
+    BigDecimal limitAmount
+) {
+
+}

@@ -17,16 +17,11 @@ import java.util.UUID;
 
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
-  // Rechercher un portefeuille par son trackingId
   Optional<Wallet> findByTrackingId(UUID trackingId);
 
-  // Rechercher un portefeuille par son type
   Page<Wallet> findByWalletType(WalletType walletType, Pageable pageable);
 
-  // Rechercher un portefeuille par son statut
   Page<Wallet> findByStatus(WalletStatus status, Pageable pageable);
-
-  // Rechercher un portefeuille par son type et/ou niveau solde
   @Query(
       "SELECT w FROM Wallet w WHERE "
           + "(:walletType IS NULL OR w.walletType = :walletType) AND "
@@ -36,7 +31,6 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
       @Param("fundingLevel") WalletFundingLevel fundingLevel,
       Pageable pageable);
 
-  // Rechercher un portefeuille par son niveau de solde
   Page<Wallet> findByFundingLevel(WalletFundingLevel fundingLevel, Pageable pageable);
 
   @Query("SELECT w FROM Wallet w WHERE w.balance < :amount ORDER BY w.balance ASC")

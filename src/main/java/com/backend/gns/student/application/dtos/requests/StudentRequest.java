@@ -8,18 +8,13 @@ import java.util.UUID;
 
 @Builder
 public record StudentRequest(
-    String email,
-    String password,
-    String lastName,
-    String firstName,
-    Boolean isActive,
-    String phoneNumber,
-    LocalDateTime birthDate,
-    String birthPlace, 
-    String studentIdNumber,
-    KycStatus kycStatus,
-    UUID walletTrackingId,
-    UUID bankTrackingId,
-    String accountNumber,
-    UUID universiteTrackingId
+        String email,
+        String password,
+        String lastName,
+        String firstName,
+        String phoneNumber,
+        LocalDateTime birthDate,
+        String birthPlace,
+        String studentNumber, // Corrigé !
+        UUID universiteTrackingId
    ) {}

@@ -3,11 +3,9 @@ package com.backend.gns.wallet.domain.services.impl;
 import com.backend.gns.wallet.application.dtos.requests.WalletRequest;
 import com.backend.gns.wallet.application.dtos.responses.WalletResponse;
 import com.backend.gns.wallet.application.mappers.WalletMapper;
-import com.backend.gns.wallet.domain.enums.VersementStatut;
-import com.backend.gns.wallet.domain.enums.VersementType;
+import com.backend.gns.wallet.domain.enums.WalletFundingLevel;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
-import com.backend.gns.wallet.domain.models.Versement;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.domain.services.WalletService;
 import com.backend.gns.wallet.infrastructure.repositories.VersementRepository;
@@ -21,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -123,7 +121,6 @@ public class WalletServiceImpl implements WalletService {
     if (request.walletType() != null) wallet.setWalletType(request.walletType());
     if (request.status() != null) wallet.setStatus(request.status());
     if (request.balance() != null) wallet.setBalance(request.balance());
-    if (request.limitAmount() != null) wallet.setLimitAmount(request.limitAmount());
 
     Wallet updated = walletRepository.save(wallet);
     log.info("Portefeuille mis à jour avec succès, trackingId: {}", trackingId);
@@ -172,7 +169,7 @@ public class WalletServiceImpl implements WalletService {
   @Override
   @Transactional(readOnly = true)
   public Page<WalletResponse> findByNiveauSolde(
-      com.backend.gns.wallet.domain.enums.WalletFundingLevel fundingLevel, Pageable pageable) {
+          WalletFundingLevel fundingLevel, Pageable pageable) {
     log.debug("Recherche portefeuilles par niveau: {}", fundingLevel);
     return walletRepository
         .findByFundingLevel(fundingLevel, normalize(pageable))
@@ -204,14 +201,14 @@ public class WalletServiceImpl implements WalletService {
     return walletRepository.findAll(normalize(pageable)).map(walletMapper::toResponse);
   }
 
-  @Override
   @Transactional
+  @Override
   public void crediter(UUID walletTrackingId, BigDecimal montant) {
     updateWalletBalance(findWalletOrThrow(walletTrackingId), montant, true);
   }
 
-  @Override
   @Transactional
+  @Override
   public void debiter(UUID walletTrackingId, BigDecimal montant) {
     updateWalletBalance(findWalletOrThrow(walletTrackingId), montant, false);
   }
@@ -220,18 +217,6 @@ public class WalletServiceImpl implements WalletService {
   public boolean hasSufficientBalance(UUID walletTrackingId, BigDecimal amount) {
     Wallet wallet = findWalletOrThrow(walletTrackingId);
     return wallet.getBalance().compareTo(amount) >= 0;
-  }
-
-  @Override
-  @Transactional
-  public void credit(UUID walletTrackingId, BigDecimal montant) {
-    crediter(walletTrackingId, montant);
-  }
-
-  @Override
-  @Transactional
-  public void debit(UUID walletTrackingId, BigDecimal montant) {
-    debiter(walletTrackingId, montant);
   }
 
   @Override
@@ -246,26 +231,15 @@ public class WalletServiceImpl implements WalletService {
       return;
     }
 
-    // Remise à zéro
     wallet.setBalance(BigDecimal.ZERO);
     walletRepository.saveAndFlush(wallet);
-
-    // Traçabilité de l'opération
-    Versement trace = new Versement();
-    trace.setTrackingId(UUID.randomUUID());
-    trace.setWallet(wallet);
-    trace.setMontantVerse(balanceAtResest.negate());
-    trace.setDateVersement(LocalDateTime.now());
-    trace.setTypeVersement(VersementType.REMISE_A_ZERO);
-    trace.setStatut(VersementStatut.VALIDEE);
-    versementRepository.save(trace);
 
     log.info("Portefeuille réinitialisé avec succès.");
   }
 
-  @Override
   @Transactional
-  public void remettreAZeroGroupe(java.util.List<UUID> walletTrackingIds) {
+  @Override
+  public void remettreAZeroGroupe(List<UUID> walletTrackingIds) {
     log.info("Remise à zéro en masse de {} portefeuilles", walletTrackingIds.size());
     for (UUID id : walletTrackingIds) {
       try {

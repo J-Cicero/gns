@@ -13,6 +13,5 @@ import java.util.UUID;
 public interface CompteBancaireRepository extends JpaRepository<CompteBancaire, Long> {
     Optional<CompteBancaire> findByTrackingId(UUID trackingId);
     java.util.List<CompteBancaire> findByOwnerType(ProprietaireType typeProprietaire);
-    Optional<CompteBancaire> findByOwnerTrackingId(UUID ownerTrackingId);
-    List<CompteBancaire> findByBankTrackingIdAndOwnerType(UUID bankTrackingId, ProprietaireType ownerType);
+    Optional<CompteBancaire> findByProprietaireTrackingId(UUID proprietaireTrackingId);
 }

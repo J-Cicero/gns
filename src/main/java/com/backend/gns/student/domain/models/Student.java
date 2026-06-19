@@ -20,11 +20,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Student extends User {
 
   @Column(length = 50, nullable = true, unique = true)
-  private String studentIdNumber;
-
-  @Enumerated(EnumType.STRING)
-  @Column(length = 20, nullable = true)
-  private KycStatus kycStatus;
+  private String studenNumber;
 
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
   @JoinColumn(name = "wallet_id")

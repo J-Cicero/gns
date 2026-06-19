@@ -8,15 +8,11 @@ import com.backend.gns.commerce.domain.services.MerchantService;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.core.exception.ResourceNotFoundException;
-import com.backend.gns.core.parametrage.domain.enums.KycStatus;
-import com.backend.gns.core.parametrage.domain.models.CompteBancaire;
 import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
 import com.backend.gns.core.parametrage.infrastructure.repositories.BanqueRepository;
 import com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository;
 import com.backend.gns.user.infrastructure.repositories.UserRepository;
-import com.backend.gns.wallet.domain.enums.WalletStatus;
-import com.backend.gns.wallet.domain.enums.WalletType;
-import com.backend.gns.wallet.domain.models.Wallet;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,59 +58,22 @@ public class MerchantServiceImpl implements MerchantService {
 
   @Override
   @Transactional
-  public MerchantResponse create(MerchantRequest request, org.springframework.web.multipart.MultipartFile rib) {
-    log.info("Inscription commerçant complète pour: {}", request.email());
+  public MerchantResponse create(MerchantRequest request) {
+    log.info("Création de l'identité du commerçant: {}", request.email());
 
     if (userRepository.findByEmail(request.email()).isPresent()) {
-      throw new IllegalArgumentException("Cet email est déjà utilisé par un autre compte.");
+      throw new IllegalArgumentException("Cet email est déjà utilisé.");
     }
 
     Merchant merchant = merchantMapper.toEntity(request);
     merchant.setTrackingId(UUID.randomUUID());
     merchant.setRole(com.backend.gns.user.domain.enums.UserRole.COMMERCANT);
-    merchant.setActive(true);
-    merchant.setPasswordHash(passwordEncoder.encode(request.password()));
-    
-    Merchant savedMerchantUser = merchantRepository.save(merchant);
+    merchant.setPassword(passwordEncoder.encode(request.password()));
 
-    com.backend.gns.commerce.domain.models.Boutique boutique = new com.backend.gns.commerce.domain.models.Boutique();
-    boutique.setTrackingId(UUID.randomUUID());
-    boutique.setName(request.businessName());
-    boutique.setMerchant(savedMerchantUser);
-    boutique.setKycStatus(KycStatus.EN_ATTENTE);
+    Merchant savedMerchant = merchantRepository.save(merchant);
 
-    com.backend.gns.wallet.domain.models.Wallet wallet = new Wallet();
-    wallet.setTrackingId(UUID.randomUUID());
-    wallet.setWalletType(WalletType.BOUTIQUE);
-    wallet.setStatus(WalletStatus.ACTIF);
-    wallet.setBalance(BigDecimal.ZERO);
-    wallet.setLimitAmount(BigDecimal.ZERO);
-    wallet.setCreatedAt(java.time.LocalDateTime.now());
-    boutique.setWallet(wallet);
-
-    boutiqueRepository.save(boutique);
-
-    if (rib != null) {
-      try {
-        var ribUpload = storageService.upload(rib, "rib_merchant_" + savedMerchantUser.getTrackingId());
-
-        CompteBancaire cb = new CompteBancaire();
-        cb.setTrackingId(UUID.randomUUID());
-        cb.setOwnerTrackingId(savedMerchantUser.getTrackingId());
-        cb.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.MERCHANT);
-        cb.setAccountNumber(request.accountNumber());
-
-        if (request.bankTrackingId() != null) {
-          cb.setBank(banqueRepository.findByTrackingId(request.bankTrackingId()).orElse(null));
-        }
-        compteBancaireRepository.save(cb);
-      } catch (Exception e) {
-        throw new RuntimeException("Erreur lors de l'upload du RIB commerçant", e);
-      }
-    }
-
-    log.info("Marchand créé avec succès, trackingId: {}", savedMerchantUser.getTrackingId());
-    return merchantMapper.toResponse(savedMerchantUser);
+    log.info("Identité commerçant créée avec succès, trackingId: {}", savedMerchant.getTrackingId());
+    return merchantMapper.toResponse(savedMerchant);
   }
 
   @Override

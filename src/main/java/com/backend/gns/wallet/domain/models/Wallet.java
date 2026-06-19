@@ -51,13 +51,6 @@ public class Wallet extends BaseEntity {
   @Column(nullable = false)
   private BigDecimal limitAmount;
 
-  @Column(length = 3)
-  private String currency = "XAF";
-
-  @Column
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime createdAt;
-
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "student_id")
   private Student student;

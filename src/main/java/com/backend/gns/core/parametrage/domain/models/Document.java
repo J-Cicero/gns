@@ -4,25 +4,23 @@ import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.utils.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "DOCUMENT")
+@Table(name = "documents")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "document_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "document_type_disc")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class Document extends BaseEntity {
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(of = "trackingId")
+public abstract class Document  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,10 +39,14 @@ public class Document extends BaseEntity {
     @Column(length = 100)
     private String providerPublicId;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
-    private StatutDocument status;
+    private StatutDocument status = StatutDocument.EN_ATTENTE;
 
     @Column(nullable = false)
     private LocalDateTime uploadedAt;
+
+    // NE RIEN AJOUTER ICI (pas de equals, pas de hashCode)
+    // Laisse Lombok gérer les constructeurs via @SuperBuilder
 }

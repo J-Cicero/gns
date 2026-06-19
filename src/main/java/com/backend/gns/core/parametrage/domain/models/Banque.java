@@ -27,11 +27,9 @@ public class Banque extends BaseEntity {
   private UUID trackingId;
 
   @Column(nullable = false, unique = true, length = 50)
-  private String code; // e.g. "ECOBANK", "POSTE"
+  private String code;
 
   @Column(nullable = false, length = 100)
-  private String name; // e.g. "Ecobank Cameroon", "La Poste"
+  private String name;
 
-  @Column(name = "logo_url", columnDefinition = "TEXT", nullable = true)
-  private String logoUrl;
 }

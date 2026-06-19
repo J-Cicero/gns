@@ -91,7 +91,7 @@ public class VersementServiceImpl implements VersementService {
       versement.setDateVersement(LocalDateTime.now());
     }
     if (versement.getTypeVersement() == null) {
-      versement.setTypeVersement(VersementType.DOTATION_BOURSE_INITIALE);
+      versement.setTypeVersement(VersementType.BOURSE_INITIALE);
     }
 
     Versement savedVersement = versementRepository.save(versement);
@@ -156,7 +156,7 @@ public class VersementServiceImpl implements VersementService {
       Wallet wallet = ins.getStudent().getWallet();
       if (ins.isFullyEnrolled() && wallet != null && (statutCible == null || wallet.getStatus() == statutCible)) {
         BigDecimal montant = (montantFixe != null) ? montantFixe : ins.getAllocatedBudget();
-        executerVersement(wallet, montant, VersementType.DOTATION_BOURSE_INITIALE);
+        executerVersement(wallet, montant, VersementType.BOURSE_INITIALE);
       }
     }
   }

@@ -1,8 +1,8 @@
 package com.backend.gns.core.parametrage.application.controllers;
 
-import com.backend.gns.core.application.dtos.requests.BanqueRequest;
-import com.backend.gns.core.application.dtos.responses.BanqueResponse;
-import com.backend.gns.core.domain.services.BanqueService;
+import com.backend.gns.core.parametrage.application.dtos.requests.BanqueRequest;
+import com.backend.gns.core.parametrage.application.dtos.responses.BanqueResponse;
+import com.backend.gns.core.parametrage.domain.services.BanqueService;
 import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;

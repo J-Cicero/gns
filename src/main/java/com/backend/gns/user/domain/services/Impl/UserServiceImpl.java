@@ -90,9 +90,9 @@ public class UserServiceImpl implements UserService {
     user.setFirstName(request.firstName());
     user.setEmail(request.email());
     user.setPhoneNumber(request.phoneNumber());
-    user.setPasswordHash(passwordEncoder.encode(request.password()));
+    user.setPassword(passwordEncoder.encode(request.password()));
     user.setRole(role);
-    user.setActive(true);
+    user.setActive(false);
 
     User savedUser = userRepository.save(user);
     log.info("Utilisateur créé avec succès: ID {}", savedUser.getTrackingId());
@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
     admin.setPhoneNumber(request.phoneNumber());
     admin.setRole(UserRole.ADMIN_BANQUE);
     admin.setActive(true);
-    admin.setPasswordHash(passwordEncoder.encode(request.password()));
+    admin.setPassword(passwordEncoder.encode(request.password()));
     admin.setBanque(banque);
 
     AdminBanque savedAdmin = userRepository.save(admin);

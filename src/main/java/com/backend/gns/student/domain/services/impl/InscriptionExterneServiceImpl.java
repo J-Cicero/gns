@@ -20,7 +20,7 @@ public class InscriptionExterneServiceImpl implements InscriptionExterneService 
 
     @Override
     public InscriptionAnnuelle synchroniserStatutInscription(InscriptionAnnuelle inscriptionAnnuelle) {
-        String matricule = inscriptionAnnuelle.getStudent().getStudentIdNumber();
+        String matricule = inscriptionAnnuelle.getStudent().getStudenNumber();
         
         if (matricule == null || matricule.isBlank()) {
             log.warn("Impossible de synchroniser : matricule absent pour l'étudiant {}", 

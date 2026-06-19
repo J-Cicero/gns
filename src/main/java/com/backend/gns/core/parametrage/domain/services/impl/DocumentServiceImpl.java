@@ -7,8 +7,12 @@ import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
 import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.parametrage.domain.models.Document;
+import com.backend.gns.core.parametrage.domain.models.DocumentBanque;
 import com.backend.gns.core.parametrage.domain.services.DocumentService;
 import com.backend.gns.core.parametrage.infrastructure.repositories.DocumentRepository;
+import com.backend.gns.student.domain.models.DocumentEtudiant;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.Collections; // Added import
 
 @Service
 @RequiredArgsConstructor
@@ -29,68 +32,64 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentRepository documentRepository;
     private final DocumentMapper documentMapper;
-    private final CloudinaryStorageService cloudinaryStorageService; 
+    private final StudentRepository studentRepository;
+    private final CloudinaryStorageService cloudinaryStorageService;
 
     @Override
     public DocumentResponse uploadDocument(MultipartFile file, UUID ownerTrackingId, ProprietaireType ownerType, TypeDocument documentType) {
-        // 1. Upload file to Cloudinary
-        String fileUrl;
-        String publicId;
-        try {
-            var uploadResult = cloudinaryStorageService.upload(file, ownerTrackingId.toString());
-            fileUrl = uploadResult.get("url").toString(); 
-            publicId = uploadResult.get("publicId").toString(); 
-        } catch (Exception e) {
-            log.error("Failed to upload document to Cloudinary: {}", e.getMessage());
-            throw new RuntimeException("Failed to upload document: " + e.getMessage());
+        // 1. Upload sur Cloudinary
+        var uploadResult = cloudinaryStorageService.upload(file, "doc_" + UUID.randomUUID());
+        String fileUrl = uploadResult.get("url").toString();
+        String publicId = uploadResult.get("publicId").toString();
+
+        Document document;
+
+        if (ownerType == ProprietaireType.STUDENT) {
+            Student student  = studentRepository.findByTrackingId(ownerTrackingId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé: " + ownerTrackingId));
+            document = DocumentEtudiant.builder()
+                    .student(student)
+                    .build();
+        } else {
+            document = DocumentBanque.builder()
+                    .build();
         }
 
-        // 2. Save document metadata to database
-        Document document = Document.builder()
-                .trackingId(UUID.randomUUID())
-                .documentType(documentType)
-                .fileUrl(fileUrl)
-                .providerPublicId(publicId)
-                .status(StatutDocument.EN_ATTENTE)
-                .uploadedAt(LocalDateTime.now())
-                .build();
+        // 3. Remplissage des champs communs (Hérités de Document)
+        document.setTrackingId(UUID.randomUUID());
+        document.setDocumentType(documentType);
+        document.setFileUrl(fileUrl);
+        document.setProviderPublicId(publicId);
+        document.setStatus(StatutDocument.EN_ATTENTE);
+        document.setUploadedAt(LocalDateTime.now());
 
         documentRepository.save(document);
-        log.info("Document {} uploaded successfully for owner {} (Type: {})", document.getTrackingId(), ownerTrackingId, documentType);
+        log.info("Document {} enregistré avec succès pour {}", document.getTrackingId(), ownerType);
+
         return documentMapper.toResponse(document);
     }
 
     @Override
     public List<DocumentResponse> getDocumentsByOwner(UUID ownerTrackingId) {
-        // Since Document entity does not have an ownerTrackingId field,
-        // and modifying the model is forbidden, this generic query cannot be supported directly.
-        // Returning an empty list as a placeholder.
-        log.warn("Attempted to call getDocumentsByOwner for a generic Document, which is not supported by the current model design. OwnerTrackingId: {}", ownerTrackingId);
-        return Collections.emptyList();
+        return documentRepository.findByOwnerTrackingId(ownerTrackingId).stream()
+                .map(documentMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public DocumentResponse getDocumentByTrackingId(UUID trackingId) {
         Document document = documentRepository.findByTrackingId(trackingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Document not found with trackingId: " + trackingId));
+                .orElseThrow(() -> new ResourceNotFoundException("Document non trouvé: " + trackingId));
         return documentMapper.toResponse(document);
     }
 
     @Override
     public void deleteDocument(UUID trackingId) {
         Document document = documentRepository.findByTrackingId(trackingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Document not found with trackingId: " + trackingId));
+                .orElseThrow(() -> new ResourceNotFoundException("Document non trouvé: " + trackingId));
 
-        // Delete from Cloudinary first
-        try {
-            cloudinaryStorageService.supprimer(document.getProviderPublicId());
-            log.info("Document {} deleted from Cloudinary.", document.getProviderPublicId());
-        } catch (Exception e) {
-            log.error("Failed to delete document {} from Cloudinary: {}", document.getProviderPublicId(), e.getMessage());
-            // Optionally, throw an exception or handle partial failure
-        }
-
+        cloudinaryStorageService.supprimer(document.getProviderPublicId());
         documentRepository.delete(document);
-        log.info("Document {} deleted from database.", trackingId);
+        log.info("Document {} supprimé.", trackingId);
     }
 }

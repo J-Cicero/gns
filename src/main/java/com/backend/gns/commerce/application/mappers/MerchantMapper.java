@@ -23,7 +23,6 @@ public class MerchantMapper {
     merchant.setFirstName(request.firstName());
     merchant.setRole(UserRole.COMMERCANT);
     merchant.setActive(request.isActive() != null ? request.isActive() : true);
-    merchant.setBusinessName(request.businessName());
     merchant.setPhoneNumber(request.phoneNumber());
     merchant.setBirthDate(request.birthDate());
     return merchant;
@@ -40,7 +39,6 @@ public class MerchantMapper {
         .isActive(merchant.isActive())
         .phoneNumber(merchant.getPhoneNumber())
         .birthDate(merchant.getBirthDate())
-        .businessName(merchant.getBusinessName())
         .build();
   }
 }
