@@ -72,8 +72,30 @@ public class VersementServiceImpl implements VersementService {
   @Override
   @Transactional
   public VersementResponse create(VersementRequest request) {
+    if (request.amount() == null || request.amount().compareTo(BigDecimal.ZERO) <= 0) {
+      throw new IllegalArgumentException("Le montant du versement est obligatoire et doit être positif.");
+    }
+    if (request.walletTrackingId() == null) {
+      throw new IllegalArgumentException("L'identifiant du portefeuille (walletTrackingId) est obligatoire.");
+    }
+
+    // Créditer le wallet
+    walletService.crediter(request.walletTrackingId(), request.amount());
+
+    // Construire l'entité avec valeurs par défaut pour les champs nullables
     Versement versement = versementMapper.toEntity(request);
+    if (versement.getStatut() == null) {
+      versement.setStatut(VersementStatut.VALIDEE);
+    }
+    if (versement.getDateVersement() == null) {
+      versement.setDateVersement(LocalDateTime.now());
+    }
+    if (versement.getTypeVersement() == null) {
+      versement.setTypeVersement(VersementType.DOTATION_BOURSE_INITIALE);
+    }
+
     Versement savedVersement = versementRepository.save(versement);
+    log.info("Versement de {} créé avec succès pour le wallet {}", request.amount(), request.walletTrackingId());
     return versementMapper.toResponse(savedVersement);
   }
 

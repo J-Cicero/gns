@@ -3,19 +3,31 @@ package com.backend.gns.student.domain.services.impl;
 import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.core.parametrage.domain.models.CompteBancaire;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
+import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
 import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
 import com.backend.gns.core.parametrage.infrastructure.repositories.BanqueRepository;
 import com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository;
 import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
+import org.springframework.web.multipart.MultipartFile;
+import com.backend.gns.user.domain.enums.UserRole;
+import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
+import com.backend.gns.student.domain.models.DocumentEtudiant;
+import com.backend.gns.wallet.domain.enums.WalletType;
+import com.backend.gns.core.parametrage.domain.models.Wallet;
 import com.backend.gns.student.application.mappers.StudentMapper;
 import com.backend.gns.student.domain.models.Card;
+import com.backend.gns.student.infrastructure.repositories.CardRepository;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.StudentService;
 import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import com.backend.gns.user.infrastructure.repositories.UserRepository;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
+import com.backend.gns.student.infrastructure.repositories.UniversiteRepository;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -42,10 +54,10 @@ public class StudentServiceImpl implements StudentService {
   private final StudentRepository studentRepository;
   private final StudentMapper studentMapper;
   private final WalletRepository walletRepository;
-  private final com.backend.gns.student.infrastructure.repositories.CardRepository cardRepository;
+  private final CardRepository cardRepository;
   private final PasswordEncoder passwordEncoder;
-  private final com.backend.gns.user.infrastructure.repositories.UserRepository userRepository;
-  private final com.backend.gns.student.infrastructure.repositories.UniversiteRepository universiteRepository;
+  private final UserRepository userRepository;
+  private final UniversiteRepository universiteRepository;
   private final BanqueRepository banqueRepository;
   private final CompteBancaireRepository compteBancaireRepository;
   private final DocumentEtudiantRepository documentEtudiantRepository;
@@ -68,7 +80,7 @@ public class StudentServiceImpl implements StudentService {
 
   @Override
   @Transactional
-  public StudentResponse create(StudentRequest request, org.springframework.web.multipart.MultipartFile rib, org.springframework.web.multipart.MultipartFile mandat) {
+  public StudentResponse create(StudentRequest request, MultipartFile rib, MultipartFile mandat) {
     log.info("Inscription étudiant complète pour: {}", request.email());
 
     if (userRepository.findByEmail(request.email()).isPresent()) {
@@ -77,7 +89,7 @@ public class StudentServiceImpl implements StudentService {
 
     Student student = studentMapper.toEntity(request);
     student.setTrackingId(UUID.randomUUID());
-    student.setRole(com.backend.gns.user.domain.enums.UserRole.ETUDIANT);
+    student.setRole(UserRole.ETUDIANT);
     student.setActive(true);
     student.setKycStatus(KycStatus.EN_ATTENTE);
     
@@ -85,12 +97,12 @@ public class StudentServiceImpl implements StudentService {
       student.setPasswordHash(passwordEncoder.encode(request.password()));
     }
 
-    com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
+    Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
-    wallet.setWalletType(com.backend.gns.wallet.domain.enums.WalletType.STUDENT);
-    wallet.setStatus(com.backend.gns.wallet.domain.enums.WalletStatus.INACTIF);
+    wallet.setWalletType(WalletType.STUDENT);
+    wallet.setStatus(WalletStatus.INACTIF);
     wallet.setBalance(BigDecimal.ZERO);
-    wallet.setLimitAmount(BigDecimal.ZERO);
+    wallet.setLimitAmount(BigDecimal.valueOf(30000.0));   
     wallet.setCreatedAt(LocalDateTime.now());
     student.setWallet(wallet);
 
@@ -103,19 +115,19 @@ public class StudentServiceImpl implements StudentService {
     try {
       if (rib != null) {
         var ribUpload = storageService.upload(rib, "rib_" + savedStudent.getTrackingId());
-        var docRib = new com.backend.gns.student.domain.models.DocumentEtudiant();
+        var docRib = new DocumentEtudiant();
         docRib.setTrackingId(UUID.randomUUID());
-        docRib.setDocumentType(com.backend.gns.core.parametrage.domain.enums.TypeDocument.RIB);
+        docRib.setDocumentType(TypeDocument.RIB);
         docRib.setFileUrl((String) ribUpload.get("url"));
         docRib.setProviderPublicId((String) ribUpload.get("publicId"));
-        docRib.setStatus(com.backend.gns.core.parametrage.domain.enums.StatutDocument.EN_ATTENTE);
+        docRib.setStatus(StatutDocument.EN_ATTENTE);
         docRib.setUploadedAt(LocalDateTime.now());
         documentEtudiantRepository.save(docRib);
 
         CompteBancaire cb = new CompteBancaire();
         cb.setTrackingId(UUID.randomUUID());
         cb.setOwnerTrackingId(savedStudent.getTrackingId());
-        cb.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
+        cb.setOwnerType(ProprietaireType.STUDENT);
         cb.setAccountNumber(request.accountNumber());
         cb.setMainScholarshipAccount(true);
 
@@ -127,12 +139,12 @@ public class StudentServiceImpl implements StudentService {
 
       if (mandat != null) {
         var mandatUpload = storageService.upload(mandat, "mandat_" + savedStudent.getTrackingId());
-        var docMandat = new com.backend.gns.student.domain.models.DocumentEtudiant();
+        var docMandat = new DocumentEtudiant();
         docMandat.setTrackingId(UUID.randomUUID());
-        docMandat.setDocumentType(com.backend.gns.core.parametrage.domain.enums.TypeDocument.MANDAT);
+        docMandat.setDocumentType(TypeDocument.MANDAT);
         docMandat.setFileUrl((String) mandatUpload.get("url"));
         docMandat.setProviderPublicId((String) mandatUpload.get("publicId"));
-        docMandat.setStatus(com.backend.gns.core.parametrage.domain.enums.StatutDocument.EN_ATTENTE);
+        docMandat.setStatus(StatutDocument.EN_ATTENTE);
         docMandat.setUploadedAt(LocalDateTime.now());
         documentEtudiantRepository.save(docMandat);
       }

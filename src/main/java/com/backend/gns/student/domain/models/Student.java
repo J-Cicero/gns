@@ -26,7 +26,7 @@ public class Student extends User {
   @Column(length = 20, nullable = true)
   private KycStatus kycStatus;
 
-  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
   @JoinColumn(name = "wallet_id")
   private Wallet wallet;
 

@@ -2,6 +2,7 @@ package com.backend.gns.core.parametrage.application.controllers;
 
 import com.backend.gns.core.parametrage.application.dtos.requests.ParametreGnsRequest;
 import com.backend.gns.core.parametrage.application.dtos.responses.ParametreGnsResponse;
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,13 +23,13 @@ public class ParametreGnsController {
 
   private final ParametreGnsService service;
 
-  @PostMapping // For creation
+  @PostMapping
   @Operation(summary = "Créer un paramètre")
   public ResponseEntity<ParametreGnsResponse> create(@RequestBody ParametreGnsRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
   }
 
-  @PutMapping("/{trackingId}") // For update
+  @PutMapping("/{trackingId}")
   @Operation(summary = "Mettre à jour un paramètre")
   public ResponseEntity<ParametreGnsResponse> update(
       @PathVariable UUID trackingId, @RequestBody ParametreGnsRequest request) {
@@ -51,7 +52,7 @@ public class ParametreGnsController {
   @GetMapping("/type/{type}")
   @Operation(summary = "Rechercher par type de paramètre")
   public ResponseEntity<ParametreGnsResponse> findByNom(
-      @PathVariable com.backend.gns.core.parametrage.domain.enums.TypeParametreGns type) {
+      @PathVariable TypeParametreGns type) {
     return service
         .findByNomParametre(type)
         .map(ResponseEntity::ok)

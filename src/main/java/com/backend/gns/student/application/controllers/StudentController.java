@@ -6,6 +6,7 @@ import com.backend.gns.student.application.dtos.requests.StudentRequest;
 import com.backend.gns.student.application.dtos.responses.StudentResponse;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import com.backend.gns.student.domain.services.StudentService;
+import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.UUID;
@@ -36,9 +38,9 @@ public class StudentController {
   @Operation(summary = "Uploader un document pour un étudiant")
   public ResponseEntity<?> uploadDocument(
       @PathVariable UUID trackingId,
-      @RequestParam("fichier") org.springframework.web.multipart.MultipartFile fichier,
+      @RequestParam("fichier") MultipartFile fichier,
       @RequestParam("inscriptionTrackingId") UUID inscriptionTrackingId,
-      @RequestParam("typeDocument") com.backend.gns.core.parametrage.domain.enums.TypeDocument typeDocument) {
+      @RequestParam("typeDocument") TypeDocument typeDocument) {
     try {
       var response = documentService.uploadDocument(fichier, trackingId, inscriptionTrackingId, typeDocument);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -58,8 +60,8 @@ public class StudentController {
   @Operation(summary = "Créer un étudiant avec documents")
   public ResponseEntity<StudentResponse> create(
       @RequestPart("student") StudentRequest request,
-      @RequestPart(value = "rib", required = false) org.springframework.web.multipart.MultipartFile rib,
-      @RequestPart(value = "mandat", required = false) org.springframework.web.multipart.MultipartFile mandat) {
+      @RequestPart(value = "rib", required = false) MultipartFile rib,
+      @RequestPart(value = "mandat", required = false) MultipartFile mandat) {
     return ResponseEntity.status(HttpStatus.CREATED).body(studentService.create(request, rib, mandat));
   }
 
