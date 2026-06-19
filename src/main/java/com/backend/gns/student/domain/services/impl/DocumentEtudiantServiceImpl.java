@@ -1,15 +1,18 @@
 package com.backend.gns.student.domain.services.impl;
 
+import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
-import com.backend.gns.student.application.dtos.responses.DocumentResponse;
+import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.student.application.mappers.DocumentEtudiantMapper;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.domain.models.InscriptionAnnuelle;
+import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,9 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,44 +35,52 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     private final DocumentEtudiantRepository documentRepository;
     private final InscriptionAnnuelleRepository inscriptionRepository;
+    private final StudentRepository studentRepository;
     private final DocumentEtudiantMapper documentMapper;
     private final CloudinaryStorageService cloudinaryService;
 
     @Override
     @Transactional
-    public DocumentResponse uploadDocument(MultipartFile fichier, UUID studentTrackingId, UUID inscriptionTrackingId, TypeDocument typeDocument) {
-        
+    public DocumentEtudiantResponse uploadDocument(MultipartFile fichier, UUID studentTrackingId, UUID inscriptionTrackingId, TypeDocument typeDocument) {
+
+        Student student = studentRepository.findByTrackingId(studentTrackingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Étudiant non trouvé"));
+
         InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(inscriptionTrackingId)
-                .orElseThrow(() -> new RuntimeException("Inscription non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException("Inscription non trouvée"));
 
         Map<String, String> uploadResult = cloudinaryService.upload(fichier, studentTrackingId.toString());
-        
-        DocumentEtudiant document = new DocumentEtudiant();
-        document.setTrackingId(UUID.randomUUID());
-        document.setDocumentType(typeDocument);
-        document.setFileUrl(uploadResult.get("url"));
-        document.setProviderPublicId(uploadResult.get("publicId"));
-        document.setStatus(StatutDocument.EN_ATTENTE);
-        document.setUploadedAt(LocalDateTime.now());
-        
-        return documentMapper.toResponse(documentRepository.save(document));
+
+        DocumentEtudiant document = DocumentEtudiant.builder()
+                .trackingId(UUID.randomUUID())
+                .documentType(typeDocument)
+                .fileUrl(uploadResult.get("url"))
+                .providerPublicId(uploadResult.get("publicId"))
+                .status(StatutDocument.EN_ATTENTE)
+                .uploadedAt(LocalDateTime.now())
+                .student(student)
+                .inscription(inscription)
+                .build();
+
+        return documentMapper.toEtudiantResponse(documentRepository.save(document));
     }
 
     @Override
-    public Optional<DocumentResponse> findByTrackingId(UUID trackingId) {
-        return documentRepository.findByTrackingId(trackingId).map(documentMapper::toResponse);
+    public Optional<DocumentEtudiantResponse> findByTrackingId(UUID trackingId) {
+        return documentRepository.findByTrackingId(trackingId)
+                .map(documentMapper::toEtudiantResponse);
     }
 
     @Override
-    public Page<DocumentResponse> findByUserTrackingId(UUID userTrackingId, Pageable pageable) {
-        // Logique à adapter pour chercher par student
-        return Page.empty(); 
+    public Page<DocumentEtudiantResponse> findByUserTrackingId(UUID userTrackingId, Pageable pageable) {
+        return documentRepository.findByStudentTrackingId(userTrackingId, pageable)
+                .map(documentMapper::toEtudiantResponse);
     }
 
     @Override
-    public Page<DocumentResponse> findByInscriptionId(UUID inscriptionId, Pageable pageable) {
-        return documentRepository.findByStudent_TrackingId(inscriptionId, pageable)
-                .map(documentMapper::toResponse);
+    public Page<DocumentEtudiantResponse> findByInscriptionId(UUID inscriptionId, Pageable pageable) {
+        return documentRepository.findByInscriptionTrackingId(inscriptionId, pageable)
+                .map(documentMapper::toEtudiantResponse);
     }
 
     @Override
@@ -79,14 +92,9 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     }
 
     @Override
-    public java.util.List<com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse> getDocumentsByStudent(UUID studentTrackingId) {
-        return documentRepository.findByStudent_TrackingId(studentTrackingId).stream()
-            .map(doc -> new com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse(
-                doc.getDocumentType(),
-                doc.getFileUrl(),
-                doc.getStatus(),
-                doc.getUploadedAt()
-            ))
-            .collect(java.util.stream.Collectors.toList());
+    public List<DocumentEtudiantResponse> getDocumentsByStudent(UUID studentTrackingId) {
+        return documentRepository.findByStudentTrackingId(studentTrackingId).stream()
+                .map(documentMapper::toEtudiantResponse)
+                .collect(Collectors.toList());
     }
 }

@@ -1,11 +1,12 @@
 package com.backend.gns.student.application.controllers;
 
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
-import com.backend.gns.student.application.dtos.responses.DocumentResponse;
+import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse; // Import spécifique
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,8 @@ public class DocumentEtudiantController {
             @RequestParam("inscriptionTrackingId") UUID inscriptionTrackingId,
             @RequestParam("typeDocument") TypeDocument typeDocument) {
         try {
-            DocumentResponse response = documentService.uploadDocument(fichier, studentTrackingId, inscriptionTrackingId, typeDocument);
+            // Le service renvoie maintenant DocumentEtudiantResponse
+            DocumentEtudiantResponse response = documentService.uploadDocument(fichier, studentTrackingId, inscriptionTrackingId, typeDocument);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -40,12 +42,12 @@ public class DocumentEtudiantController {
     }
 
     @GetMapping("/inscription/{inscriptionId}")
-    public ResponseEntity<?> findByInscriptionId(@PathVariable UUID inscriptionId, Pageable pageable) {
+    public ResponseEntity<Page<DocumentEtudiantResponse>> findByInscriptionId(@PathVariable UUID inscriptionId, Pageable pageable) {
         return ResponseEntity.ok(documentService.findByInscriptionId(inscriptionId, pageable));
     }
 
     @GetMapping("/{trackingId}")
-    public ResponseEntity<?> findByTrackingId(@PathVariable UUID trackingId) {
+    public ResponseEntity<DocumentEtudiantResponse> findByTrackingId(@PathVariable UUID trackingId) {
         return documentService.findByTrackingId(trackingId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

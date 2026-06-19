@@ -4,10 +4,15 @@ import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 
 public record DocumentEtudiantResponse(
-    TypeDocument documentType,
-    String fileUrl,
-    StatutDocument status,
-    LocalDateTime uploadedAt
+        UUID trackingId,
+        TypeDocument documentType,
+        String fileUrl,
+        StatutDocument status,
+        LocalDateTime uploadedAt,
+        UUID inscriptionTrackingId,
+        String ownerType
 ) {}

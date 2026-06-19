@@ -4,6 +4,8 @@ import com.backend.gns.student.domain.models.DocumentEtudiant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,4 +17,8 @@ public interface DocumentEtudiantRepository extends JpaRepository<DocumentEtudia
     Optional<DocumentEtudiant> findByTrackingId(UUID trackingId);
     Page<DocumentEtudiant> findByStudent_TrackingId(UUID studentTrackingId, Pageable pageable);
     List<DocumentEtudiant> findByStudent_TrackingId(UUID studentTrackingId);
+    Page<DocumentEtudiant> findByInscriptionTrackingId(UUID trackingId, Pageable pageable);
+    List<DocumentEtudiant> findByStudentTrackingId(UUID studentId);
+    @Query("SELECT d FROM DocumentEtudiant d WHERE d.student.trackingId = :trackingId")
+    Page<DocumentEtudiant> findByStudentTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 }

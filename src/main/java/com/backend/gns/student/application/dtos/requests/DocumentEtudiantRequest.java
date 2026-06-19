@@ -8,8 +8,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
-public record DocumentRequest(
+public record DocumentEtudiantRequest(
     UUID ownerTrackingId,
+    UUID inscriptionTrackingId,
     TypeDocument documentType,
     String fileUrl,
     String providerPublicId,
