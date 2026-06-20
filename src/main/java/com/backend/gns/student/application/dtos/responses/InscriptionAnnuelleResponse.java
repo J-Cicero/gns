@@ -21,4 +21,6 @@ public record InscriptionAnnuelleResponse(
     boolean isEligibleForScholarship,
     TypeBourse scholarshipType,
     LocalDateTime apiValidationDate,
-    BigDecimal allocatedBudget) {}
+    BigDecimal allocatedBudget,
+    UUID walletTrackingId,
+    BigDecimal walletBalance) {}

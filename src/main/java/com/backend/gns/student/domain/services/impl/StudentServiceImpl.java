@@ -57,12 +57,12 @@ public class StudentServiceImpl implements StudentService {
 
   private Student findStudentOrThrow(UUID trackingId) {
     return studentRepository
-            .findByTrackingId(trackingId)
-            .orElseThrow(
-                    () -> {
-                      log.warn("Étudiant introuvable avec trackingId: {}", trackingId);
-                      return new ResourceNotFoundException("Étudiant non trouvé avec l'ID: " + trackingId);
-                    });
+        .findByTrackingId(trackingId)
+        .orElseThrow(
+            () -> {
+              log.warn("Étudiant introuvable avec trackingId: {}", trackingId);
+              return new ResourceNotFoundException("Étudiant non trouvé avec l'ID: " + trackingId);
+            });
   }
 
   @Override
@@ -79,13 +79,14 @@ public class StudentServiceImpl implements StudentService {
     }
 
     ParametreGns parametreGns = parametreGnsRepository.findByNomParametre(TypeParametreGns.MONTANT_BOURSE_MAJORATION)
-            .orElseThrow( () -> new ResourceNotFoundException("Paramètre de majoration de bourse non trouvé"));
+        .orElseThrow(() -> new ResourceNotFoundException("Paramètre de majoration de bourse non trouvé"));
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
     wallet.setWalletType(WalletType.STUDENT);
     wallet.setStatus(WalletStatus.INACTIF);
     wallet.setBalance(BigDecimal.ZERO);
-    wallet.setLimitAmount(parametreGns.getValeurAsBigDecimal());
+    BigDecimal limit = parametreGns.getValeurAsBigDecimal();
+    wallet.setLimitAmount(limit != null ? limit : BigDecimal.valueOf(30000.0));
     wallet.setCreatedAt(LocalDateTime.now());
 
     student.setWallet(wallet);
@@ -138,8 +139,8 @@ public class StudentServiceImpl implements StudentService {
   @Transactional(readOnly = true)
   public Page<StudentResponse> findByStatutKYC(KycStatus statutKYC, Pageable pageable) {
     return studentRepository
-            .findByKycStatusOrderByCreatedAtAsc(statutKYC, normalize(pageable))
-            .map(studentMapper::toResponse);
+        .findByKycStatusOrderByCreatedAtAsc(statutKYC, normalize(pageable))
+        .map(studentMapper::toResponse);
   }
 
   @Override
@@ -152,8 +153,8 @@ public class StudentServiceImpl implements StudentService {
   @Transactional(readOnly = true)
   public Page<StudentResponse> findByUniversiteTrackingId(UUID universiteTrackingId, Pageable pageable) {
     return studentRepository
-            .findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
-            .map(studentMapper::toResponse);
+        .findByUniversiteTrackingId(universiteTrackingId, normalize(pageable))
+        .map(studentMapper::toResponse);
   }
 
   @Override

@@ -44,6 +44,13 @@ public class DocumentRequisServiceImpl implements DocumentRequisService {
     }
 
     @Override
+    public List<DocumentRequisResponse> findByNiveauRequis(com.backend.gns.student.domain.enums.StudentNiveau niveauRequis) {
+        return documentRequisRepository.findByNiveauRequis(niveauRequis).stream()
+                .map(documentRequisMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public void delete(UUID trackingId) {
         DocumentRequis doc = documentRequisRepository.findByTrackingId(trackingId)

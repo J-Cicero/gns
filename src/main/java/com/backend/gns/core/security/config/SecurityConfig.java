@@ -37,7 +37,8 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/users/login", "/users/register", "/admins/**", "/public/**", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
-            .anyRequest().authenticated()
+            .requestMatchers(org.springframework.http.HttpMethod.GET, "/banques", "/universites").permitAll()
+            .anyRequest().permitAll()
         )
         .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
     

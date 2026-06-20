@@ -65,6 +65,8 @@ public class InscriptionAnnuelleMapper {
         .scholarshipType(inscription.getScholarshipType())
         .apiValidationDate(inscription.getApiValidationDate())
         .allocatedBudget(inscription.getAllocatedBudget())
+        .walletTrackingId((inscription.getStudent() != null && inscription.getStudent().getWallet() != null) ? inscription.getStudent().getWallet().getTrackingId() : null)
+        .walletBalance((inscription.getStudent() != null && inscription.getStudent().getWallet() != null) ? inscription.getStudent().getWallet().getBalance() : java.math.BigDecimal.ZERO)
         .build();
   }
 }

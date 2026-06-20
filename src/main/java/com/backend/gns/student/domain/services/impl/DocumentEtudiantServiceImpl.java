@@ -13,6 +13,7 @@ import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
+import com.backend.gns.student.domain.services.InscriptionValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     private final StudentRepository studentRepository;
     private final DocumentEtudiantMapper documentMapper;
     private final CloudinaryStorageService cloudinaryService;
+    private final InscriptionValidationService inscriptionValidationService;
 
     @Override
     @Transactional
@@ -62,7 +64,12 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
                 .inscription(inscription)
                 .build();
 
-        return documentMapper.toEtudiantResponse(documentRepository.save(document));
+        DocumentEtudiant savedDocument = documentRepository.save(document);
+
+        // Réévaluer le dossier après upload
+        inscriptionValidationService.reevaluateDossierAfterUpload(inscriptionTrackingId);
+
+        return documentMapper.toEtudiantResponse(savedDocument);
     }
 
     @Override

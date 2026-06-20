@@ -42,6 +42,7 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   private final InscriptionExterneService inscriptionExterneService;
   private final CloudinaryStorageService storageService;
   private final DocumentEtudiantRepository documentRepository;
+  private final com.backend.gns.student.domain.services.InscriptionValidationService inscriptionValidationService;
 
   @Override
   @Transactional
@@ -113,8 +114,6 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   @Override
   @Transactional
   public InscriptionAnnuelleResponse create(InscriptionAnnuelleRequest request) {
-    InscriptionAnnuelle inscription = inscriptionMapper.toEntity(request);
-
     ScolariteYear year =
         scolariteYearRepository
             .findByIsOpenTrue()
@@ -123,13 +122,20 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     Student student = studentRepository.findByTrackingId(request.studentTrackingId())
             .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-    inscription.setScolariteYear(year);
-    inscription.setStudent(student);
-    inscription.setTrackingId(UUID.randomUUID());
-
-    // Default initialization
-    inscription.setFullyEnrolled(false);
-    inscription.setAllocatedBudget(BigDecimal.ZERO);
+    Optional<InscriptionAnnuelle> existing = inscriptionRepository.findByStudentTrackingIdAndLabel(student.getTrackingId(), year.getLabel());
+    
+    InscriptionAnnuelle inscription;
+    if (existing.isPresent()) {
+        inscription = existing.get();
+        inscription.setStudyLevel(request.studyLevel());
+    } else {
+        inscription = inscriptionMapper.toEntity(request);
+        inscription.setScolariteYear(year);
+        inscription.setStudent(student);
+        inscription.setTrackingId(UUID.randomUUID());
+        inscription.setFullyEnrolled(false);
+        inscription.setAllocatedBudget(BigDecimal.ZERO);
+    }
     
     InscriptionAnnuelle savedInscription = inscriptionRepository.save(inscription);
     return inscriptionMapper.toResponse(savedInscription);
@@ -142,6 +148,9 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
         inscriptionRepository
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Enrollment not found"));
+
+    // Validation dynamique des documents requis avant validation
+    inscriptionValidationService.validateDocuments(ins);
 
     if (ins.isFullyEnrolled()) {
         updateBudget(ins);

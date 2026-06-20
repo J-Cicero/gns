@@ -12,5 +12,6 @@ public interface DocumentRequisService {
     DocumentRequisResponse create(DocumentRequisRequest request);
     Optional<DocumentRequisResponse> findByTrackingId(UUID trackingId);
     List<DocumentRequisResponse> findAll();
+    List<DocumentRequisResponse> findByNiveauRequis(com.backend.gns.student.domain.enums.StudentNiveau niveauRequis);
     void delete(UUID trackingId);
 }

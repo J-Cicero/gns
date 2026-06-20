@@ -137,6 +137,20 @@ public class InscriptionAnnuelleController {
     }
   }
 
+  @PostMapping("/{trackingId}/valider")
+  @Operation(
+      summary = "Valider et activer une inscription",
+      description = "Valide les documents d'une inscription et l'active")
+  public ResponseEntity<?> validerEtActiverInscription(@PathVariable UUID trackingId) {
+    try {
+      InscriptionAnnuelleResponse response = inscriptionService.validerEtActiverInscription(trackingId);
+      return ResponseEntity.ok(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "VALIDATION_FAILED", "message", e.getMessage()));
+    }
+  }
+
   @DeleteMapping("/{trackingId}")
   @Operation(
       summary = "Supprimer une inscription",

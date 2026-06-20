@@ -35,6 +35,11 @@ public class DocumentRequisController {
     }
 
 
+    @GetMapping("/niveau/{niveau}")
+    public ResponseEntity<List<DocumentRequisResponse>> getDocumentRequisByNiveau(@PathVariable com.backend.gns.student.domain.enums.StudentNiveau niveau) {
+        return ResponseEntity.ok(documentRequisService.findByNiveauRequis(niveau));
+    }
+
     @GetMapping
     public ResponseEntity<List<DocumentRequisResponse>> getAllDocumentRequis() {
         List<DocumentRequisResponse> response = documentRequisService.findAll();
