@@ -9,9 +9,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface DocumentRequisService {
-    DocumentRequisResponse saveOrUpdate(DocumentRequisRequest request);
+    DocumentRequisResponse create(DocumentRequisRequest request);
     Optional<DocumentRequisResponse> findByTrackingId(UUID trackingId);
-    Optional<DocumentRequisResponse> findByTypeDocument(TypeDocument typeDocument);
     List<DocumentRequisResponse> findAll();
     void delete(UUID trackingId);
 }

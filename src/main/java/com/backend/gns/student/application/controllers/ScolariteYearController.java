@@ -57,4 +57,11 @@ public class ScolariteYearController {
   public ResponseEntity<Page<ScolariteYearResponse>> getAll(Pageable pageable) {
     return ResponseEntity.ok(scolariteYearService.findAll(pageable));
   }
+
+  @DeleteMapping("/{trackingId}")
+  @Operation(summary = "Supprimer une année scolaire")
+  public ResponseEntity<Void> delete(@PathVariable UUID trackingId) {
+    scolariteYearService.delete(trackingId);
+    return ResponseEntity.noContent().build();
+  }
 }

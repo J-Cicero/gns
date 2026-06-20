@@ -19,4 +19,5 @@ public interface ScolariteYearService {
   Page<ScolariteYearResponse> findAll(Pageable pageable);
 
   Optional<ScolariteYearResponse> findActiveYear();
+  void delete(UUID trackingId);
 }

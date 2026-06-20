@@ -25,29 +25,14 @@ public class DocumentRequisServiceImpl implements DocumentRequisService {
 
     @Override
     @Transactional
-    public DocumentRequisResponse saveOrUpdate(DocumentRequisRequest request) {
-        Optional<DocumentRequis> existing = documentRequisRepository.findByTypeDocument(request.typeDocument());
-        DocumentRequis entity;
-
-        if (existing.isPresent()) {
-            entity = existing.get();
-            entity.setRequired(request.required());
-            entity.setDescription(request.description());
-        } else {
-            entity = documentRequisMapper.toEntity(request);
-        }
+    public DocumentRequisResponse create(DocumentRequisRequest request) {
+        DocumentRequis entity = documentRequisMapper.toEntity(request);
         return documentRequisMapper.toResponse(documentRequisRepository.save(entity));
     }
 
     @Override
     public Optional<DocumentRequisResponse> findByTrackingId(UUID trackingId) {
         return documentRequisRepository.findByTrackingId(trackingId)
-                .map(documentRequisMapper::toResponse);
-    }
-
-    @Override
-    public Optional<DocumentRequisResponse> findByTypeDocument(TypeDocument typeDocument) {
-        return documentRequisRepository.findByTypeDocument(typeDocument)
                 .map(documentRequisMapper::toResponse);
     }
 

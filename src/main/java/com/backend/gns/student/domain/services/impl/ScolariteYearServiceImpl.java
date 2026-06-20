@@ -84,4 +84,12 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
   public Optional<ScolariteYearResponse> findActiveYear() {
     return scolariteYearRepository.findByIsOpenTrue().map(scolariteYearMapper::toResponse);
   }
+
+  @Override
+  @Transactional
+  public void delete(UUID trackingId) {
+    ScolariteYear year = scolariteYearRepository.findByTrackingId(trackingId)
+            .orElseThrow(() -> new EntityNotFoundException("Année non trouvée"));
+    scolariteYearRepository.delete(year);
+  }
 }

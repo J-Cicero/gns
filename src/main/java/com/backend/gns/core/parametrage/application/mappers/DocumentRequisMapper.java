@@ -5,11 +5,14 @@ import com.backend.gns.core.parametrage.application.dtos.responses.DocumentRequi
 import com.backend.gns.core.parametrage.domain.models.DocumentRequis;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class DocumentRequisMapper {
 
     public DocumentRequis toEntity(DocumentRequisRequest request) {
         return DocumentRequis.builder()
+                .trackingId(UUID.randomUUID())
                 .typeDocument(request.typeDocument())
                 .required(request.required())
                 .niveauRequis(request.studentNiveau())

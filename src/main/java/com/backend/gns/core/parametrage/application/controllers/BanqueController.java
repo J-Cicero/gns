@@ -13,6 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.backend.gns.core.parametrage.domain.services.CompteBancaireService;
+import com.backend.gns.core.parametrage.application.dtos.requests.CompteBancaireRequest;
+import com.backend.gns.core.parametrage.application.dtos.responses.CompteBancaireResponse;
+import com.backend.gns.user.infrastructure.repositories.UserRepository;
+import com.backend.gns.user.domain.models.User;
+import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +35,8 @@ public class BanqueController {
   private final BanqueService banqueService;
   private final CloudinaryStorageService cloudinaryService;
   private final DocumentEtudiantRepository documentRepository;
+  private final CompteBancaireService compteBancaireService;
+  private final UserRepository userRepository;
 
   @GetMapping
   public ResponseEntity<List<BanqueResponse>> getAllBanques() {
@@ -68,5 +78,26 @@ public class BanqueController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "UPLOAD_FAILED", "message", e.getMessage()));
     }
+  }
+
+  @GetMapping("/comptes-gns")
+  public ResponseEntity<List<CompteBancaireResponse>> getComptesGns() {
+    List<CompteBancaireResponse> comptes = compteBancaireService.findAll().stream()
+        .filter(c -> c.ownerType() == ProprietaireType.GNS)
+        .toList();
+    return ResponseEntity.ok(comptes);
+  }
+
+  @PostMapping("/comptes-gns")
+  public ResponseEntity<CompteBancaireResponse> saveCompteGns(@RequestBody CompteBancaireRequest request) {
+    String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    User admin = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    return ResponseEntity.ok(compteBancaireService.createAccount(admin.getTrackingId(), request));
+  }
+
+  @DeleteMapping("/comptes-gns/{trackingId}")
+  public ResponseEntity<Void> deleteCompteGns(@PathVariable UUID trackingId) {
+    compteBancaireService.delete(trackingId);
+    return ResponseEntity.noContent().build();
   }
 }

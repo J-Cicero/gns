@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/document-requis")
+@RequestMapping("/documents-requis")
 @RequiredArgsConstructor
 @Slf4j
 public class DocumentRequisController {
@@ -22,8 +22,8 @@ public class DocumentRequisController {
     private final DocumentRequisService documentRequisService;
 
     @PostMapping
-    public ResponseEntity<DocumentRequisResponse> saveOrUpdateDocumentRequis(@RequestBody DocumentRequisRequest request) {
-        DocumentRequisResponse response = documentRequisService.saveOrUpdate(request);
+    public ResponseEntity<DocumentRequisResponse> create(@RequestBody DocumentRequisRequest request) {
+        DocumentRequisResponse response = documentRequisService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -34,12 +34,6 @@ public class DocumentRequisController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/type/{typeDocument}")
-    public ResponseEntity<DocumentRequisResponse> getDocumentRequisByType(@PathVariable TypeDocument typeDocument) {
-        return documentRequisService.findByTypeDocument(typeDocument)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
 
     @GetMapping
     public ResponseEntity<List<DocumentRequisResponse>> getAllDocumentRequis() {
