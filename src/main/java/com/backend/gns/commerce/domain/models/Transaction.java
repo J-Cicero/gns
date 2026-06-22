@@ -63,4 +63,20 @@ public class Transaction {
     @Column(nullable = false)
     @Builder.Default
     private Boolean isRetry = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean retrievedByBoutique = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean deductedFromStudentBourse = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "liquidation_id")
+    private Liquidation liquidation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_liquidation_id")
+    private StudentLiquidation studentLiquidation;
 }

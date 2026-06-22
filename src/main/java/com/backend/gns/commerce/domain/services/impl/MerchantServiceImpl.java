@@ -58,7 +58,7 @@ public class MerchantServiceImpl implements MerchantService {
 
   @Override
   @Transactional
-  public MerchantResponse create(MerchantRequest request) {
+  public MerchantResponse create(MerchantRequest request, org.springframework.web.multipart.MultipartFile ribFile) {
     log.info("Création de l'identité du commerçant: {}", request.email());
 
     if (userRepository.findByEmail(request.email()).isPresent()) {
@@ -71,6 +71,41 @@ public class MerchantServiceImpl implements MerchantService {
     merchant.setPassword(passwordEncoder.encode(request.password()));
 
     Merchant savedMerchant = merchantRepository.save(merchant);
+
+    if (request.businessName() != null && !request.businessName().isEmpty()) {
+        com.backend.gns.commerce.domain.models.Boutique boutique = new com.backend.gns.commerce.domain.models.Boutique();
+        boutique.setTrackingId(UUID.randomUUID());
+        boutique.setName(request.businessName());
+        boutique.setRegistrationNumber(request.registrationNumber());
+        boutique.setMerchant(savedMerchant);
+        boutique.setStatus(com.backend.gns.commerce.domain.enums.BoutiqueStatus.EN_ATTENTE);
+        boutiqueRepository.save(boutique);
+        log.info("Boutique créée avec succès pour le marchand");
+    }
+
+    if (request.bankTrackingId() != null && request.accountNumber() != null) {
+        var banque = banqueRepository.findByTrackingId(request.bankTrackingId())
+            .orElseThrow(() -> new IllegalArgumentException("Banque introuvable"));
+            
+        com.backend.gns.core.parametrage.domain.models.CompteBancaire compte = new com.backend.gns.core.parametrage.domain.models.CompteBancaire();
+        compte.setTrackingId(UUID.randomUUID());
+        compte.setAccountNumber(request.accountNumber());
+        compte.setBanque(banque);
+        compte.setOwnerId(savedMerchant.getTrackingId());
+        compte.setOwnerType("MERCHANT");
+        
+        if (ribFile != null && !ribFile.isEmpty()) {
+            try {
+                String ribUrl = storageService.uploadFile(ribFile, "merchants/rib");
+                compte.setRibUrl(ribUrl);
+            } catch (Exception e) {
+                log.error("Erreur lors de l'upload du RIB", e);
+            }
+        }
+        
+        compteBancaireRepository.save(compte);
+        log.info("Compte bancaire créé pour le marchand");
+    }
 
     log.info("Identité commerçant créée avec succès, trackingId: {}", savedMerchant.getTrackingId());
     return merchantMapper.toResponse(savedMerchant);

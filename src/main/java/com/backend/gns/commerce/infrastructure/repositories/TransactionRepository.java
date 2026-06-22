@@ -1,5 +1,6 @@
 package com.backend.gns.commerce.infrastructure.repositories;
 
+import com.backend.gns.commerce.domain.enums.TransactionStatut;
 import com.backend.gns.commerce.domain.models.Transaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,5 +20,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
     List<Transaction> findByReceiverTrackingIdAndIsCommissionPaid(UUID trackingId, Boolean isCommissionPaid);
     List<Transaction> findBySenderTrackingIdAndIsRetry (UUID senderTrackingId , Boolean isRetry);
-
+    
+    List<Transaction> findByReceiverTrackingIdAndStatusAndLiquidationIsNull(UUID receiverTrackingId, TransactionStatut status);
+    
+    List<Transaction> findBySenderTrackingIdAndStatusAndStudentLiquidationIsNull(UUID senderTrackingId, TransactionStatut status);
 }

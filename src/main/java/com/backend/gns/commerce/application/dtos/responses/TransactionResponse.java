@@ -19,6 +19,8 @@ public record TransactionResponse(
     BigDecimal bankCommission,
     Boolean isCommissionPaid,
     Boolean isRetry,
+    Boolean retrievedByBoutique,
+    Boolean deductedFromStudentBourse,
     TransactionStatut status,
     LocalDateTime createdAt
 ) {}

@@ -1,0 +1,20 @@
+--- src/main/java/com/backend/gns/commerce/domain/services/impl/MerchantServiceImpl.java
++++ src/main/java/com/backend/gns/commerce/domain/services/impl/MerchantServiceImpl.java
+@@ -69,6 +69,32 @@
+     merchant.setRole(com.backend.gns.user.domain.enums.UserRole.COMMERCANT);
+     merchant.setPassword(passwordEncoder.encode(request.password()));
+ 
+     Merchant savedMerchant = merchantRepository.save(merchant);
++
++    if (request.businessName() != null && !request.businessName().isEmpty()) {
++        com.backend.gns.commerce.domain.models.Boutique boutique = new com.backend.gns.commerce.domain.models.Boutique();
++        boutique.setTrackingId(UUID.randomUUID());
++        boutique.setName(request.businessName());
++        boutique.setRegistrationNumber(request.registrationNumber());
++        boutique.setMerchant(savedMerchant);
++        boutique.setStatus(com.backend.gns.commerce.domain.enums.BoutiqueStatus.EN_ATTENTE);
++        boutiqueRepository.save(boutique);
++        log.info("Boutique créée avec succès pour le marchand");
++    }
+ 
+     log.info("Identité commerçant créée avec succès, trackingId: {}", savedMerchant.getTrackingId());

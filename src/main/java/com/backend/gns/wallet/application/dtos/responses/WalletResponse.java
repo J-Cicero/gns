@@ -6,16 +6,15 @@ import com.backend.gns.wallet.domain.enums.WalletType;
 import lombok.Builder;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
 public record WalletResponse(
-    UUID trackingId,
-    WalletType walletType,
-    WalletStatus status,
-    WalletFundingLevel fundingLevel,
-    BigDecimal balance,
-    BigDecimal limitAmount,
-    UUID studentTrackingId
-   ) {}
+        UUID trackingId,
+        WalletType walletType,
+        WalletStatus status,
+        WalletFundingLevel fundingLevel,
+        BigDecimal balance,
+        BigDecimal limitAmount,
+        UUID studentTrackingId) {
+}

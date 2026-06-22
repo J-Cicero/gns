@@ -4,6 +4,7 @@ import com.backend.gns.commerce.application.dtos.requests.LiquidationRequest;
 import com.backend.gns.commerce.application.dtos.responses.LiquidationResponse;
 import com.backend.gns.commerce.application.mappers.LiquidationMapper;
 import com.backend.gns.commerce.domain.enums.LiquidationStatut;
+import com.backend.gns.commerce.domain.enums.TransactionStatut;
 import com.backend.gns.commerce.domain.models.Boutique;
 import com.backend.gns.commerce.domain.models.Liquidation;
 import com.backend.gns.commerce.domain.models.Transaction;
@@ -30,36 +31,52 @@ public class LiquidationServiceImpl implements LiquidationService {
     private final BoutiqueRepository boutiqueRepository;
     private final TransactionRepository transactionRepository;
 
-    private BigDecimal getMountMaxToLiquidate(UUID trackingId){
-        BigDecimal sum = BigDecimal.ZERO;
-        List<Transaction> transactions = transactionRepository.findByReceiverTrackingIdAndIsCommissionPaid(trackingId,false); // only include eligible transactions
-        for(Transaction t : transactions){
-            sum = sum.add(t.getAmount());
-        }
-        return sum;
-    }
-
     @Override
     @Transactional
     public LiquidationResponse create(LiquidationRequest request) {
-        if(request.boutiqueTrackingId() == null) { // Changed != null to == null, as the error message indicates it's required
+        if(request.boutiqueTrackingId() == null) {
              throw new RuntimeException("Le trackingId de la boutique est requis");
-        }
-
-        if(getMountMaxToLiquidate(request.boutiqueTrackingId()).compareTo(request.amountToLiquidate()) < 0) {
-            throw new RuntimeException("Le montant à liquider dépasse le montant maximum disponible");
         }
 
         Boutique boutique = boutiqueRepository.findByTrackingId(request.boutiqueTrackingId())
                 .orElseThrow(() -> new RuntimeException("Boutique non trouvée"));
+
+        // 1. Récupération des transactions VALIDES et NON LIQUIDÉES pour cette boutique
+        List<Transaction> pendingTransactions = transactionRepository
+                .findByReceiverTrackingIdAndStatusAndLiquidationIsNull(request.boutiqueTrackingId(), TransactionStatut.VALIDE);
+
+        if (pendingTransactions.isEmpty()) {
+            throw new RuntimeException("Aucune transaction en attente de liquidation pour cette boutique.");
+        }
+
+        // 2. Calcul du montant total disponible à liquider
+        BigDecimal sumAvailable = pendingTransactions.stream()
+                .map(Transaction::getAmountCredited) // La boutique reçoit l'AmountCredited
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if(sumAvailable.compareTo(request.amountToLiquidate()) < 0) {
+            throw new RuntimeException("Le montant à liquider demandé (" + request.amountToLiquidate() + ") dépasse le solde disponible (" + sumAvailable + ").");
+        }
+
+        // 3. Création de l'entité Liquidation
         Liquidation liquidation = Liquidation.builder()
                 .trackingId(UUID.randomUUID())
                 .boutique(boutique)
-                .amountToLiquidate(request.amountToLiquidate())
+                .amountToLiquidate(request.amountToLiquidate()) // On garde le montant demandé par le marchand (peut être inférieur au max disponible)
                 .createdAt(LocalDateTime.now())
                 .status(LiquidationStatut.EN_ATTENTE)
                 .build();
-        return liquidationMapper.toResponse(liquidationRepository.save(liquidation));
+        
+        Liquidation savedLiquidation = liquidationRepository.save(liquidation);
+
+        // 4. Mise à jour de toutes les transactions en attente pour les lier à cette liquidation
+        for (Transaction t : pendingTransactions) {
+            t.setLiquidation(savedLiquidation);
+            t.setRetrievedByBoutique(true);
+        }
+        transactionRepository.saveAll(pendingTransactions);
+
+        return liquidationMapper.toResponse(savedLiquidation);
     }
 
     @Override

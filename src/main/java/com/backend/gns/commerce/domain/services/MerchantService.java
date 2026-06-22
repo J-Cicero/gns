@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface MerchantService {
 
-  MerchantResponse create(MerchantRequest request);
+  MerchantResponse create(MerchantRequest request, org.springframework.web.multipart.MultipartFile ribFile);
 
   Optional<MerchantResponse> findByTrackingId(UUID trackingId);
 
