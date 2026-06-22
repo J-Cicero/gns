@@ -37,6 +37,9 @@ public class CompteBancaire extends BaseEntity {
   @Column(length = 50, nullable = false)
   private String accountNumber;
 
+  @Column(length = 255)
+  private String ribUrl;
+
   @Enumerated(EnumType.STRING)
   @Column(length = 20, nullable = false)
   private ProprietaireType ownerType;

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/documents")
+@RequestMapping("/documents")
 @RequiredArgsConstructor
 @Slf4j
 public class DocumentController {

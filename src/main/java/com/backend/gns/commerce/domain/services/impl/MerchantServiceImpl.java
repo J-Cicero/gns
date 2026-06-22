@@ -78,7 +78,7 @@ public class MerchantServiceImpl implements MerchantService {
         boutique.setName(request.businessName());
         boutique.setRegistrationNumber(request.registrationNumber());
         boutique.setMerchant(savedMerchant);
-        boutique.setStatus(com.backend.gns.commerce.domain.enums.BoutiqueStatus.EN_ATTENTE);
+        boutique.setKycStatus(com.backend.gns.core.parametrage.domain.enums.KycStatus.EN_ATTENTE);
         boutiqueRepository.save(boutique);
         log.info("Boutique créée avec succès pour le marchand");
     }
@@ -90,13 +90,13 @@ public class MerchantServiceImpl implements MerchantService {
         com.backend.gns.core.parametrage.domain.models.CompteBancaire compte = new com.backend.gns.core.parametrage.domain.models.CompteBancaire();
         compte.setTrackingId(UUID.randomUUID());
         compte.setAccountNumber(request.accountNumber());
-        compte.setBanque(banque);
-        compte.setOwnerId(savedMerchant.getTrackingId());
-        compte.setOwnerType("MERCHANT");
+        compte.setBank(banque);
+        compte.setProprietaire(savedMerchant);
+        compte.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.MERCHANT);
         
         if (ribFile != null && !ribFile.isEmpty()) {
             try {
-                String ribUrl = storageService.uploadFile(ribFile, "merchants/rib");
+                String ribUrl = storageService.upload(ribFile, "merchants/rib").get("url");
                 compte.setRibUrl(ribUrl);
             } catch (Exception e) {
                 log.error("Erreur lors de l'upload du RIB", e);

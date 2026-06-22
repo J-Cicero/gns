@@ -34,45 +34,43 @@ public class LiquidationServiceImpl implements LiquidationService {
     @Override
     @Transactional
     public LiquidationResponse create(LiquidationRequest request) {
-        if(request.boutiqueTrackingId() == null) {
-             throw new RuntimeException("Le trackingId de la boutique est requis");
+        if (request.boutiqueTrackingId() == null) {
+            throw new RuntimeException("Le trackingId de la boutique est requis");
         }
 
         Boutique boutique = boutiqueRepository.findByTrackingId(request.boutiqueTrackingId())
                 .orElseThrow(() -> new RuntimeException("Boutique non trouvée"));
 
-        // 1. Récupération des transactions VALIDES et NON LIQUIDÉES pour cette boutique
         List<Transaction> pendingTransactions = transactionRepository
-                .findByReceiverTrackingIdAndStatusAndLiquidationIsNull(request.boutiqueTrackingId(), TransactionStatut.VALIDE);
+                .findByReceiverTrackingIdAndStatusAndLiquidationIsNull(request.boutiqueTrackingId(),
+                        TransactionStatut.VALIDE);
 
         if (pendingTransactions.isEmpty()) {
             throw new RuntimeException("Aucune transaction en attente de liquidation pour cette boutique.");
         }
 
-        // 2. Calcul du montant total disponible à liquider
         BigDecimal sumAvailable = pendingTransactions.stream()
                 .map(Transaction::getAmountCredited) // La boutique reçoit l'AmountCredited
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        if(sumAvailable.compareTo(request.amountToLiquidate()) < 0) {
-            throw new RuntimeException("Le montant à liquider demandé (" + request.amountToLiquidate() + ") dépasse le solde disponible (" + sumAvailable + ").");
+        if (sumAvailable.compareTo(request.amountToLiquidate()) < 0) {
+            throw new RuntimeException("Le montant à liquider demandé (" + request.amountToLiquidate()
+                    + ") dépasse le solde disponible (" + sumAvailable + ").");
         }
 
-        // 3. Création de l'entité Liquidation
         Liquidation liquidation = Liquidation.builder()
                 .trackingId(UUID.randomUUID())
                 .boutique(boutique)
-                .amountToLiquidate(request.amountToLiquidate()) // On garde le montant demandé par le marchand (peut être inférieur au max disponible)
+                .amountToLiquidate(request.amountToLiquidate()) // On garde le montant demandé par le marchand (peut
+                                                                // être inférieur au max disponible)
                 .createdAt(LocalDateTime.now())
                 .status(LiquidationStatut.EN_ATTENTE)
                 .build();
-        
+
         Liquidation savedLiquidation = liquidationRepository.save(liquidation);
 
-        // 4. Mise à jour de toutes les transactions en attente pour les lier à cette liquidation
         for (Transaction t : pendingTransactions) {
             t.setLiquidation(savedLiquidation);
-            t.setRetrievedByBoutique(true);
         }
         transactionRepository.saveAll(pendingTransactions);
 
@@ -103,11 +101,11 @@ public class LiquidationServiceImpl implements LiquidationService {
     public LiquidationResponse validerLiquidation(UUID trackingId, String referenceVirement) {
         Liquidation liquidation = liquidationRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new RuntimeException("Liquidation non trouvée"));
-        
+
         liquidation.setStatus(LiquidationStatut.PAYE);
         liquidation.setValidatedAt(LocalDateTime.now());
         liquidation.setTransferReference(referenceVirement);
-        
+
         return liquidationMapper.toResponse(liquidationRepository.save(liquidation));
     }
 }

@@ -34,6 +34,9 @@ public class Boutique extends BaseEntity {
   @Column(length = 100, nullable = false)
   private String description;
 
+  @Column(length = 100)
+  private String registrationNumber;
+
   @Enumerated(EnumType.STRING)
   @Column(length = 20, nullable = false)
   private KycStatus kycStatus;

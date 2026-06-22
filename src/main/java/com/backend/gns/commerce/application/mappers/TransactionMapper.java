@@ -53,6 +53,8 @@ public class TransactionMapper {
             entity.getBankCommission(),
             entity.getIsCommissionPaid(),
             entity.getIsRetry(),
+            entity.getRetrievedByBoutique(),
+            entity.getDeductedFromStudentBourse(),
             entity.getStatus(),
             entity.getCreatedAt()
         );
