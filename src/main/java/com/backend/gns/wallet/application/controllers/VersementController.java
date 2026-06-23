@@ -1,5 +1,7 @@
 package com.backend.gns.wallet.application.controllers;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.backend.gns.wallet.application.dtos.requests.VersementRequest;
 import com.backend.gns.wallet.application.dtos.responses.VersementResponse;
 import com.backend.gns.wallet.domain.enums.VersementStatut;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/versements")
 @Tag(name = "VERSEMENT", description = "Gestion des versements")
@@ -39,6 +42,7 @@ public class VersementController {
       VersementResponse response = versementService.create(request);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (Exception e) {
+      log.error("Erreur lors de la création du versement: {}", e.getMessage(), e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "CREATION_FAILED", "message", e.getMessage()));
     }
@@ -57,6 +61,31 @@ public class VersementController {
       versementService.effectuerVersementMasseEtudiants(scolariteYearTrackingId, statutCible, montantFixe);
       return ResponseEntity.ok(
           Map.of("success", true, "message", "Versements en masse lancés avec succès"));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "MASS_DISBURSEMENT_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/masse/etudiants/specifiques")
+  @Operation(
+      summary = "Versement en masse pour des étudiants spécifiques",
+      description = "Effectue les versements de bourse pour une liste d'étudiants (via wallet tracking IDs)")
+  public ResponseEntity<?> effectuerVersementMasseEtudiantsSpecifiques(
+      @RequestBody Map<String, Object> payload) {
+    try {
+      java.util.List<String> trackingIdsStr = (java.util.List<String>) payload.get("walletTrackingIds");
+      java.util.List<UUID> trackingIds = trackingIdsStr.stream().map(UUID::fromString).collect(java.util.stream.Collectors.toList());
+      
+      Object montantFixeObj = payload.get("montantFixe");
+      BigDecimal montantFixe = null;
+      if (montantFixeObj != null) {
+          montantFixe = new BigDecimal(montantFixeObj.toString());
+      }
+      
+      versementService.effectuerVersementMasseEtudiantsSpecifiques(trackingIds, montantFixe);
+      return ResponseEntity.ok(
+          Map.of("success", true, "message", "Versements sélectifs lancés avec succès"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "MASS_DISBURSEMENT_FAILED", "message", e.getMessage()));

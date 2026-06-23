@@ -81,6 +81,8 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
             doc.setProviderPublicId(upload.get("publicId"));
             doc.setStatus(com.backend.gns.core.parametrage.domain.enums.StatutDocument.EN_ATTENTE);
             doc.setUploadedAt(java.time.LocalDateTime.now());
+            doc.setStudent(student);
+            doc.setInscription(savedIns);
             documentRepository.save(doc);
         } catch (Exception e) {
             throw new RuntimeException("Failed to upload student card", e);

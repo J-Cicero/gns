@@ -12,4 +12,6 @@ public interface UniversiteRepository extends JpaRepository<Universite, Long> {
   Optional<Universite> findByTrackingId(UUID trackingId);
 
   Optional<Universite> findByCode(String code);
+
+  org.springframework.data.domain.Page<Universite> findByIsActiveTrue(org.springframework.data.domain.Pageable pageable);
 }

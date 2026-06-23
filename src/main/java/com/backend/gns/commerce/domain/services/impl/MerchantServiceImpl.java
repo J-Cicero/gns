@@ -70,12 +70,18 @@ public class MerchantServiceImpl implements MerchantService {
     merchant.setRole(com.backend.gns.user.domain.enums.UserRole.COMMERCANT);
     merchant.setPassword(passwordEncoder.encode(request.password()));
 
+    log.info("lastName length: {}", (request.lastName() != null ? request.lastName().length() : "null"));
+    log.info("firstName length: {}", (request.firstName() != null ? request.firstName().length() : "null"));
+    log.info("email length: {}", (request.email() != null ? request.email().length() : "null"));
+    log.info("password encoded length: {}", merchant.getPassword().length());
+
     Merchant savedMerchant = merchantRepository.save(merchant);
 
     if (request.businessName() != null && !request.businessName().isEmpty()) {
         com.backend.gns.commerce.domain.models.Boutique boutique = new com.backend.gns.commerce.domain.models.Boutique();
         boutique.setTrackingId(UUID.randomUUID());
         boutique.setName(request.businessName());
+        boutique.setDescription("Boutique de " + request.businessName());
         boutique.setRegistrationNumber(request.registrationNumber());
         boutique.setMerchant(savedMerchant);
         boutique.setKycStatus(com.backend.gns.core.parametrage.domain.enums.KycStatus.EN_ATTENTE);

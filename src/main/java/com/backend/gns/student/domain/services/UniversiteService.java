@@ -17,6 +17,8 @@ public interface UniversiteService {
 
   Page<UniversiteResponse> findAll(Pageable pageable);
 
+  Page<UniversiteResponse> findActives(Pageable pageable);
+
   void delete(UUID trackingId);
 
   UniversiteResponse updateEtat(UUID trackingId, boolean etat);

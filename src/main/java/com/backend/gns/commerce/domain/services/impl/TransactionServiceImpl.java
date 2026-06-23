@@ -127,14 +127,19 @@ public class TransactionServiceImpl implements TransactionService {
         BigDecimal gnsCommission = totalCommission.multiply(gnsShareRate);
         BigDecimal bankCommission = totalCommission.subtract(gnsCommission);
 
-        // 5. Pre-check: Sufficient funds for the debited amount
+        // 5. Pre-check: Sufficient funds
         if (!walletService.hasSufficientBalance(senderWallet.getTrackingId(), amountDebited)) {
             throw new RuntimeException("Sender has insufficient funds for amount + commission.");
         }
+        
+        if (!walletService.hasSufficientBalance(receiverWallet.getTrackingId(), amountCredited)) {
+            throw new RuntimeException("Boutique has insufficient quota to accept this transaction.");
+        }
 
-        // 6. Perform transaction - Atomic operation
+        // 6. Perform transaction - Atomic operation (Both are debited!)
         walletService.debiter(senderWallet.getTrackingId(), amountDebited);
-        walletService.crediter(receiverWallet.getTrackingId(), amountCredited);
+        walletService.debiter(receiverWallet.getTrackingId(), amountCredited); // Debiting quota
+
 
         // 7. Save the Transaction record
         Transaction transaction = Transaction.builder()

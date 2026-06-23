@@ -45,6 +45,12 @@ public class UniversiteServiceImpl implements UniversiteService {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  public Page<UniversiteResponse> findActives(Pageable pageable) {
+    return repository.findByIsActiveTrue(pageable).map(mapper::toResponse);
+  }
+
+  @Override
   @Transactional
   public void delete(UUID trackingId) {
     Universite entity =

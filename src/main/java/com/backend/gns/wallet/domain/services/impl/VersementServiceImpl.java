@@ -163,6 +163,32 @@ public class VersementServiceImpl implements VersementService {
 
   @Override
   @Transactional
+  public void effectuerVersementMasseEtudiantsSpecifiques(List<UUID> walletTrackingIds, BigDecimal montantFixe) {
+    if (walletTrackingIds == null || walletTrackingIds.isEmpty()) return;
+    
+    // We fetch the wallets through the service
+    for (UUID trackingId : walletTrackingIds) {
+      walletService.findByTrackingId(trackingId).ifPresent(walletResponse -> {
+         try {
+            BigDecimal montant = (montantFixe != null && montantFixe.compareTo(BigDecimal.ZERO) > 0) ? montantFixe : new BigDecimal("50000"); // Default 50k if no budget provided
+            
+            VersementRequest req = new VersementRequest(
+                trackingId,
+                montant,
+                VersementType.BOURSE_INITIALE,
+                LocalDateTime.now(),
+                VersementStatut.VALIDEE
+            );
+            this.create(req);
+         } catch (Exception e) {
+            log.error("Erreur versement spécifique pour wallet {}: {}", trackingId, e.getMessage());
+         }
+      });
+    }
+  }
+
+  @Override
+  @Transactional
   public void effectuerVersementMasseBoutiques(BigDecimal seuil, WalletStatus statutCible, BigDecimal montantQuota) {
     List<Boutique> boutiques = boutiqueRepository.findAll();
 

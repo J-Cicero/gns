@@ -24,6 +24,7 @@ public interface VersementService {
   Page<VersementResponse> findAll(Pageable pageable);
 
   void effectuerVersementMasseEtudiants(UUID scolariteYearTrackingId, WalletStatus statutCible, BigDecimal montantFixe);
+  void effectuerVersementMasseEtudiantsSpecifiques(List<UUID> walletTrackingIds, BigDecimal montantFixe);
   void effectuerVersementMasseBoutiques(BigDecimal seuil, WalletStatus statutCible, BigDecimal montantQuota);
 
   List<String> previewMasseEtudiants(UUID scolariteYearTrackingId);
