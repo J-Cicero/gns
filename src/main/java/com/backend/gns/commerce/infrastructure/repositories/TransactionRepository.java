@@ -24,4 +24,16 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByReceiverTrackingIdAndStatusAndLiquidationIsNull(UUID receiverTrackingId, TransactionStatut status);
     
     List<Transaction> findBySenderTrackingIdAndStatusAndStudentLiquidationIsNull(UUID senderTrackingId, TransactionStatut status);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.amountCredited), 0) FROM Transaction t WHERE t.status = 'COMPLETED' AND t.retrievedByBoutique = false")
+    java.math.BigDecimal sumNetCommercants();
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.bankCommission), 0) FROM Transaction t WHERE t.status = 'COMPLETED'")
+    java.math.BigDecimal sumBankCommissions();
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.gnsCommission), 0) FROM Transaction t WHERE t.status = 'COMPLETED'")
+    java.math.BigDecimal sumGnsCommissions();
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.status = 'COMPLETED'")
+    java.math.BigDecimal sumTotalDepenses();
 }

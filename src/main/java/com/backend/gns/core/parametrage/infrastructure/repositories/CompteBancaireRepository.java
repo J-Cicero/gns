@@ -14,4 +14,5 @@ public interface CompteBancaireRepository extends JpaRepository<CompteBancaire, 
     Optional<CompteBancaire> findByTrackingId(UUID trackingId);
     java.util.List<CompteBancaire> findByOwnerType(ProprietaireType typeProprietaire);
     Optional<CompteBancaire> findByProprietaireTrackingId(UUID proprietaireTrackingId);
+    Optional<CompteBancaire> findByOwnerTypeAndBank(ProprietaireType typeProprietaire, com.backend.gns.core.parametrage.domain.models.Banque bank);
 }
