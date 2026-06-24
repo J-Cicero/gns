@@ -85,8 +85,18 @@ public class MerchantServiceImpl implements MerchantService {
         boutique.setRegistrationNumber(request.registrationNumber());
         boutique.setMerchant(savedMerchant);
         boutique.setKycStatus(com.backend.gns.core.parametrage.domain.enums.KycStatus.EN_ATTENTE);
+
+        com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
+        wallet.setTrackingId(UUID.randomUUID());
+        wallet.setWalletType(com.backend.gns.wallet.domain.enums.WalletType.BOUTIQUE);
+        wallet.setStatus(com.backend.gns.wallet.domain.enums.WalletStatus.ACTIF);
+        wallet.setBalance(java.math.BigDecimal.ZERO);
+        wallet.setLimitAmount(new java.math.BigDecimal("100000"));
+        wallet.setCreatedAt(java.time.LocalDateTime.now());
+        boutique.setWallet(wallet);
+
         boutiqueRepository.save(boutique);
-        log.info("Boutique créée avec succès pour le marchand");
+        log.info("Boutique et Wallet créés avec succès pour le marchand");
     }
 
     if (request.bankTrackingId() != null && request.accountNumber() != null) {

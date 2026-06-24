@@ -25,15 +25,15 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     
     List<Transaction> findBySenderTrackingIdAndStatusAndStudentLiquidationIsNull(UUID senderTrackingId, TransactionStatut status);
 
-    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.amountCredited), 0) FROM Transaction t WHERE t.status = 'COMPLETED' AND t.retrievedByBoutique = false")
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.amountCredited), 0) FROM Transaction t WHERE t.status = 'VALIDE' AND t.retrievedByBoutique = false")
     java.math.BigDecimal sumNetCommercants();
 
-    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.bankCommission), 0) FROM Transaction t WHERE t.status = 'COMPLETED'")
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.bankCommission), 0) FROM Transaction t WHERE t.status = 'VALIDE'")
     java.math.BigDecimal sumBankCommissions();
 
-    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.gnsCommission), 0) FROM Transaction t WHERE t.status = 'COMPLETED'")
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.gnsCommission), 0) FROM Transaction t WHERE t.status = 'VALIDE'")
     java.math.BigDecimal sumGnsCommissions();
 
-    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.status = 'COMPLETED'")
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.status = 'VALIDE'")
     java.math.BigDecimal sumTotalDepenses();
 }

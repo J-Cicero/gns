@@ -1,7 +1,6 @@
 package com.backend.gns.commerce.domain.services.impl;
 
 import com.backend.gns.commerce.application.dtos.requests.TransactionRequest;
-import com.backend.gns.commerce.application.dtos.responses.CommissionsStatsResponse;
 import com.backend.gns.commerce.application.dtos.responses.TransactionResponse;
 import com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse;
 import com.backend.gns.commerce.application.mappers.TransactionMapper;
@@ -51,13 +50,13 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionStatsResponse getGlobalStats() {
         Optional<ScolariteYearResponse> activeYear = scolariteYearService.findActiveYear();
-        
+
         List<Transaction> transactions;
         if (activeYear.isPresent()) {
             ScolariteYearResponse year = activeYear.get();
             transactions = transactionRepository.findByCreatedAtBetween(
-                year.startDate().atStartOfDay(), 
-                year.endDate().atTime(23, 59, 59));
+                    year.startDate().atStartOfDay(),
+                    year.endDate().atTime(23, 59, 59));
         } else {
             transactions = transactionRepository.findAll();
         }
@@ -81,9 +80,9 @@ public class TransactionServiceImpl implements TransactionService {
         long count = transactions.stream()
                 .filter(t -> t.getStatus() == TransactionStatut.VALIDE)
                 .count();
-        return new com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse(volume, commission, gnsCommission, bankCommission, count);
+        return new com.backend.gns.commerce.application.dtos.responses.TransactionStatsResponse(volume, commission,
+                gnsCommission, bankCommission, count);
     }
-
 
     @Override
     @Transactional
@@ -93,7 +92,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         // 1. Validate sender and receiver existence using repositories
         Student sender = studentRepository.findByTrackingId(request.senderTrackingId())
-                .orElseThrow(() -> new EntityNotFoundException("Sender not found with ID: " + request.senderTrackingId()));
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Sender not found with ID: " + request.senderTrackingId()));
 
         // Verify password
         if (request.password() == null || !passwordEncoder.matches(request.password(), sender.getPassword())) {
@@ -101,7 +101,8 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         Boutique receiver = boutiqueRepository.findByTrackingId(request.receiverTrackingId())
-                .orElseThrow(() -> new EntityNotFoundException("Receiver not found with ID: " + request.receiverTrackingId()));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Receiver not found with ID: " + request.receiverTrackingId()));
 
         // 2. Fetch wallets
         Wallet senderWallet = sender.getWallet();
@@ -117,13 +118,14 @@ public class TransactionServiceImpl implements TransactionService {
 
         // 4. Calculate Commissions
         BigDecimal amount = request.amount();
-        BigDecimal commissionRate = new BigDecimal(parametreService.getValeur(TypeParametreGns.TAUX_COMMISSION_PAIEMENT));
+        BigDecimal commissionRate = new BigDecimal(
+                parametreService.getValeur(TypeParametreGns.TAUX_COMMISSION_PAIEMENT));
         BigDecimal gnsShareRate = new BigDecimal(parametreService.getValeur(TypeParametreGns.PART_COMMISSION_GNS));
 
         BigDecimal totalCommission = amount.multiply(commissionRate);
         BigDecimal amountDebited = amount.add(totalCommission);
         BigDecimal amountCredited = amount;
-        
+
         BigDecimal gnsCommission = totalCommission.multiply(gnsShareRate);
         BigDecimal bankCommission = totalCommission.subtract(gnsCommission);
 
@@ -131,7 +133,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (!walletService.hasSufficientBalance(senderWallet.getTrackingId(), amountDebited)) {
             throw new RuntimeException("Sender has insufficient funds for amount + commission.");
         }
-        
+
         if (!walletService.hasSufficientBalance(receiverWallet.getTrackingId(), amountCredited)) {
             throw new RuntimeException("Boutique has insufficient quota to accept this transaction.");
         }
@@ -139,7 +141,6 @@ public class TransactionServiceImpl implements TransactionService {
         // 6. Perform transaction - Atomic operation (Both are debited!)
         walletService.debiter(senderWallet.getTrackingId(), amountDebited);
         walletService.debiter(receiverWallet.getTrackingId(), amountCredited); // Debiting quota
-
 
         // 7. Save the Transaction record
         Transaction transaction = Transaction.builder()
@@ -156,7 +157,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .status(TransactionStatut.VALIDE)
                 .createdAt(LocalDateTime.now())
                 .build();
-        
+
         return transactionMapper.toResponse(transactionRepository.save(transaction));
     }
 

@@ -14,6 +14,7 @@ public record MerchantRequest(
     Boolean isActive,
     String phoneNumber,
     LocalDateTime birthDate,
+    String birthPlace,
     String businessName,
     String registrationNumber,
     UUID bankTrackingId,

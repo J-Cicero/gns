@@ -64,6 +64,9 @@ public class WalletServiceImpl implements WalletService {
         throw new IllegalStateException("Crédit refusé : plafond dépassé.");
       }
       wallet.setBalance(wallet.getBalance().add(amount));
+      if (wallet.getStatus() == WalletStatus.INACTIF && wallet.getBalance().compareTo(BigDecimal.ZERO) > 0) {
+          wallet.setStatus(WalletStatus.ACTIF);
+      }
     } else {
       ensureWalletCanSpend(wallet);
       if (wallet.getBalance().compareTo(amount) < 0) {

@@ -25,6 +25,7 @@ public class MerchantMapper {
     merchant.setActive(request.isActive() != null ? request.isActive() : true);
     merchant.setPhoneNumber(request.phoneNumber());
     merchant.setBirthDate(request.birthDate());
+    merchant.setBirthPlace(request.birthPlace());
     return merchant;
   }
 

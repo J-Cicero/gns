@@ -17,4 +17,5 @@ public record BoutiqueResponse(
     Double latitude,
     Double longitude,
     BigDecimal balance,
-    BigDecimal limitAmount) {}
+    BigDecimal limitAmount,
+    String walletStatus) {}

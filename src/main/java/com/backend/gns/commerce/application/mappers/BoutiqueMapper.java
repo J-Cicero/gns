@@ -63,6 +63,7 @@ public class BoutiqueMapper {
         .walletTrackingId(boutique.getWallet() != null ? boutique.getWallet().getTrackingId() : null)
         .balance(boutique.getWallet() != null ? boutique.getWallet().getBalance() : java.math.BigDecimal.ZERO)
         .limitAmount(limitAmount)
+        .walletStatus(boutique.getWallet() != null && boutique.getWallet().getStatus() != null ? boutique.getWallet().getStatus().name() : null)
         .build();
   }
 }

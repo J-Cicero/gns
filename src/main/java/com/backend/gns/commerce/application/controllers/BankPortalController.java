@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
-
+import com.backend.gns.commerce.application.dtos.responses.BoutiqueLiquidationInfoResponse;
+import com.backend.gns.commerce.application.dtos.responses.StudentLiquidationInfoResponse;
 @RestController
 @RequestMapping("/bank-portal")
 @RequiredArgsConstructor
@@ -29,5 +31,17 @@ public class BankPortalController {
     public ResponseEntity<BanqueInfoResponse> getBanqueInfo(
             @RequestParam UUID bankOperatorTrackingId) {
         return ResponseEntity.ok(bankPortalService.getBanqueInfo(bankOperatorTrackingId));
+    }
+
+    @GetMapping("/students")
+    public ResponseEntity<List<StudentLiquidationInfoResponse>> getStudents(
+            @RequestParam UUID bankOperatorTrackingId) {
+        return ResponseEntity.ok(bankPortalService.getStudents(bankOperatorTrackingId));
+    }
+
+    @GetMapping("/boutiques")
+    public ResponseEntity<List<BoutiqueLiquidationInfoResponse>> getBoutiques(
+            @RequestParam UUID bankOperatorTrackingId) {
+        return ResponseEntity.ok(bankPortalService.getBoutiques(bankOperatorTrackingId));
     }
 }
