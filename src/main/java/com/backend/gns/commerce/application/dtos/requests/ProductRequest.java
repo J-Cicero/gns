@@ -12,6 +12,6 @@ public record ProductRequest(
     String name,
     String description,
     BigDecimal price,
-    int stock,
+    Integer stock,
     Boolean isAvailable,
     LocalDateTime addedAt) {}

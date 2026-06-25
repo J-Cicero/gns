@@ -15,6 +15,7 @@ public record StudentRequest(
         String phoneNumber,
         LocalDateTime birthDate,
         String birthPlace,
+        String transactionPin,
         String studentNumber, // Corrigé !
         UUID universiteTrackingId
    ) {}

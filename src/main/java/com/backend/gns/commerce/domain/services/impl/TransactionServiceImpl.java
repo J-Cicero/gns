@@ -95,9 +95,13 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(
                         () -> new EntityNotFoundException("Sender not found with ID: " + request.senderTrackingId()));
 
-        // Verify password
-        if (request.password() == null || !passwordEncoder.matches(request.password(), sender.getPassword())) {
-            throw new RuntimeException("Invalid authorization: Incorrect password.");
+        // Verify PIN
+        if (sender.getTransactionPinHash() == null) {
+            throw new RuntimeException("PIN_NOT_SET: L'étudiant n'a pas encore configuré son code PIN de transaction.");
+        }
+
+        if (request.transactionPin() == null || !passwordEncoder.matches(request.transactionPin(), sender.getTransactionPinHash())) {
+            throw new RuntimeException("Code PIN de transaction incorrect.");
         }
 
         Boutique receiver = boutiqueRepository.findByTrackingId(request.receiverTrackingId())

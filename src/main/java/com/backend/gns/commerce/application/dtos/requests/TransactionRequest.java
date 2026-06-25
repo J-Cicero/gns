@@ -7,7 +7,7 @@ public record TransactionRequest(
     UUID senderTrackingId,
     UUID receiverTrackingId,
     BigDecimal amount,
-    String password,
+    String transactionPin,
     Boolean isCommissionPaid,
     Boolean isRetry
 ) {}

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
+
 @Entity
 @DiscriminatorValue("STUDENT")
 @Getter
@@ -18,6 +20,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Student extends User {
+
+  @Column(length = 255, nullable = true)
+  private String transactionPinHash;
 
   @Column(length = 50, nullable = true, unique = true)
   private String studenNumber;

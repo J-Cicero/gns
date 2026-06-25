@@ -77,6 +77,9 @@ public class StudentServiceImpl implements StudentService {
     if (request.password() != null && !request.password().isEmpty()) {
       student.setPassword(passwordEncoder.encode(request.password()));
     }
+    if (request.transactionPin() != null && !request.transactionPin().isEmpty()) {
+      student.setTransactionPinHash(passwordEncoder.encode(request.transactionPin()));
+    }
 
     ParametreGns parametreGns = parametreGnsRepository.findByNomParametre(TypeParametreGns.MONTANT_BOURSE_MAJORATION)
         .orElseThrow(() -> new ResourceNotFoundException("Paramètre de majoration de bourse non trouvé"));

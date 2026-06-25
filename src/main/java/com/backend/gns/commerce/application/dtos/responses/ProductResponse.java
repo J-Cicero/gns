@@ -13,6 +13,6 @@ public record ProductResponse(
     String name,
     String description,
     BigDecimal price,
-    int stock,
+    Integer stock,
     Boolean isAvailable,
     LocalDateTime addedAt) {}
