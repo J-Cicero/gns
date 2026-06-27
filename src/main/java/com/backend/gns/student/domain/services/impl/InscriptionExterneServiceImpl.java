@@ -31,17 +31,17 @@ public class InscriptionExterneServiceImpl implements InscriptionExterneService 
         log.info("Simulation appel API externe pour le matricule numérique: {}", matricule);
 
         if (matricule.startsWith("1")) {
-            inscriptionAnnuelle.setFullyEnrolled(true);
+            inscriptionAnnuelle.setStatus(com.backend.gns.student.domain.enums.StatutInscription.ACTIVE);
             inscriptionAnnuelle.setEligibleForScholarship(true);
             inscriptionAnnuelle.setScholarshipType(com.backend.gns.student.domain.enums.TypeBourse.BOURSE_EXCELLENCE);
             log.info("Mock API : Étudiant {} (6 chiffres) reconnu comme Excellence", matricule);
         } else if (matricule.startsWith("2")) {
-            inscriptionAnnuelle.setFullyEnrolled(true);
+            inscriptionAnnuelle.setStatus(com.backend.gns.student.domain.enums.StatutInscription.ACTIVE);
             inscriptionAnnuelle.setEligibleForScholarship(true);
             inscriptionAnnuelle.setScholarshipType(com.backend.gns.student.domain.enums.TypeBourse.BOURSE_MERITE);
             log.info("Mock API : Étudiant {} (6 chiffres) reconnu comme Mérite", matricule);
         } else {
-            inscriptionAnnuelle.setFullyEnrolled(true);
+            inscriptionAnnuelle.setStatus(com.backend.gns.student.domain.enums.StatutInscription.ACTIVE);
             inscriptionAnnuelle.setEligibleForScholarship(false);
             inscriptionAnnuelle.setScholarshipType(null);
             log.info("Mock API : Étudiant {} (6 chiffres) reconnu comme Non Boursier", matricule);

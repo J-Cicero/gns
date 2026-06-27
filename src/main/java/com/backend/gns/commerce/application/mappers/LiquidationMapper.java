@@ -28,27 +28,24 @@ public class LiquidationMapper {
 
         Liquidation liquidation = new Liquidation();
         liquidation.setTrackingId(UUID.randomUUID());
-        liquidation.setBoutique(boutique);
         liquidation.setAmountToLiquidate(request.amountToLiquidate());
         liquidation.setStatus(LiquidationStatut.EN_ATTENTE); 
         liquidation.setCreatedAt(LocalDateTime.now());
         
-
         return liquidation;
     }
 
-   
     public LiquidationResponse toResponse(Liquidation entity) {
         if (entity == null) {
             return null;
         }
 
-        // Récupération sécurisée du nom de la boutique
         String boutiqueName = "Unknown";
-        if (entity.getBoutique() != null && entity.getBoutique().getTrackingId() != null) {
-            boutiqueName = boutiqueRepository.findByTrackingId(entity.getBoutique().getTrackingId())
-                    .map(Boutique::getName) 
-                    .orElse("Unknown");
+        if (entity.getTransactions() != null && !entity.getTransactions().isEmpty()) {
+            Boutique boutique = entity.getTransactions().get(0).getReceiver();
+            if (boutique != null) {
+                boutiqueName = boutique.getName();
+            }
         }
 
         return new LiquidationResponse(

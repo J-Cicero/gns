@@ -88,4 +88,23 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
                 .map(documentMerchantMapper::toResponse)
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public DocumentResponse updateDocumentStatus(UUID trackingId, StatutDocument status, String rejectionReason) {
+        DocumentMerchant document = documentRepository.findByTrackingId(trackingId)
+                .orElseThrow(() -> new RuntimeException("Document non trouvé"));
+
+        document.setStatus(status);
+        if (status == StatutDocument.REJETE) {
+            document.setRejectionReason(rejectionReason);
+        } else {
+            document.setRejectionReason(null);
+        }
+
+        DocumentMerchant saved = documentRepository.save(document);
+        log.info("Statut du document marchand {} mis à jour: {}", trackingId, status);
+
+        return documentMerchantMapper.toResponse(saved);
+    }
 }

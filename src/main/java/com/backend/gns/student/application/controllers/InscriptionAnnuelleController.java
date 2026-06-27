@@ -100,9 +100,11 @@ public class InscriptionAnnuelleController {
       summary = "Mettre à jour le statut",
       description = "Mettre à jour uniquement le statut d'une inscription")
   public ResponseEntity<?> updateStatus(
-      @PathVariable UUID trackingId, @RequestParam StatutInscription statut) {
+      @PathVariable UUID trackingId, 
+      @RequestParam StatutInscription statut,
+      @RequestParam(required = false) String motifRejet) {
     try {
-      InscriptionAnnuelleResponse response = inscriptionService.updateStatus(trackingId, statut);
+      InscriptionAnnuelleResponse response = inscriptionService.updateStatus(trackingId, statut, motifRejet);
       return ResponseEntity.ok(response);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

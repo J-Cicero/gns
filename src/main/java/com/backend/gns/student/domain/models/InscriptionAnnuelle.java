@@ -5,7 +5,6 @@ import com.backend.gns.student.domain.enums.StudentNiveau;
 import com.backend.gns.student.domain.enums.TypeBourse;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder; // Utilise SuperBuilder
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
@@ -38,8 +37,12 @@ public class InscriptionAnnuelle extends BaseEntity {
   @JoinColumn(name = "scolarite_year_id", nullable = false)
   private ScolariteYear scolariteYear;
 
-  @Column(nullable = false)
-  private boolean isFullyEnrolled = false;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private com.backend.gns.student.domain.enums.StatutInscription status = com.backend.gns.student.domain.enums.StatutInscription.EN_ATTENTE;
+
+  @Column(length = 255)
+  private String rejectionReason;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20)

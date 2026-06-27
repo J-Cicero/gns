@@ -44,6 +44,10 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
         Student student = studentRepository.findByTrackingId(request.studentTrackingId())
                 .orElseThrow(() -> new RuntimeException("Étudiant non trouvé"));
 
+        if (student.getWallet() == null || student.getWallet().getStatus() != com.backend.gns.wallet.domain.enums.WalletStatus.ACTIF) {
+            throw new IllegalStateException("Impossible de prélever : le portefeuille de l'étudiant n'est pas actif.");
+        }
+
         ScolariteYear scolariteYear = scolariteYearRepository.findByTrackingId(request.scolariteYearTrackingId())
                 .orElseThrow(() -> new RuntimeException("Année scolaire non trouvée"));
 
@@ -64,7 +68,6 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
 
         StudentLiquidation liquidation = StudentLiquidation.builder()
                 .trackingId(UUID.randomUUID())
-                .student(student)
                 .scolariteYear(scolariteYear)
                 .amountDeducted(request.amountToDeduct())
                 .createdAt(LocalDateTime.now())

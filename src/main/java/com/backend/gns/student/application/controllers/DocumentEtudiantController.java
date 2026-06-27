@@ -29,7 +29,7 @@ public class DocumentEtudiantController {
     public ResponseEntity<?> uploadDocument(
             @RequestParam("fichier") MultipartFile fichier,
             @RequestParam("studentTrackingId") UUID studentTrackingId,
-            @RequestParam("inscriptionTrackingId") UUID inscriptionTrackingId,
+            @RequestParam(value = "inscriptionTrackingId", required = false) UUID inscriptionTrackingId,
             @RequestParam("typeDocument") TypeDocument typeDocument) {
         try {
             // Le service renvoie maintenant DocumentEtudiantResponse

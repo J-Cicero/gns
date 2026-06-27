@@ -16,5 +16,6 @@ public record DocumentResponse(
     TypeDocument documentType,
     String fileUrl,
     StatutDocument status,
+    String rejectionReason,
     LocalDateTime uploadedAt
 ) {}

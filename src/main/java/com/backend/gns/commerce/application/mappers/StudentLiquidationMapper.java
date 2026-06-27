@@ -13,8 +13,11 @@ public class StudentLiquidationMapper {
         }
 
         String studentName = "Unknown";
-        if (entity.getStudent() != null) {
-            studentName = entity.getStudent().getFirstName() + " " + entity.getStudent().getLastName();
+        if (entity.getTransactions() != null && !entity.getTransactions().isEmpty()) {
+            com.backend.gns.student.domain.models.Student student = entity.getTransactions().get(0).getSender();
+            if (student != null) {
+                studentName = student.getFirstName() + " " + student.getLastName();
+            }
         }
 
         return new StudentLiquidationResponse(

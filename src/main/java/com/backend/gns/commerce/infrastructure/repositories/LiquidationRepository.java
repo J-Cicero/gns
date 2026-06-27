@@ -11,5 +11,6 @@ import java.util.UUID;
 @Repository
 public interface LiquidationRepository extends JpaRepository<Liquidation, Long> {
     Optional<Liquidation> findByTrackingId(UUID trackingId);
-    List<Liquidation> findByBoutiqueTrackingId(UUID boutiqueTrackingId);
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT l FROM Transaction t JOIN t.liquidation l WHERE t.receiver.trackingId = :boutiqueTrackingId")
+    List<Liquidation> findByBoutiqueTrackingId(@org.springframework.data.repository.query.Param("boutiqueTrackingId") UUID boutiqueTrackingId);
 }

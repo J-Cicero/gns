@@ -65,7 +65,7 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
         ins.setScolariteYear(year);
         ins.setStudent(student);
         ins.setTrackingId(UUID.randomUUID());
-        ins.setFullyEnrolled(false);
+        ins.setStatus(com.backend.gns.student.domain.enums.StatutInscription.EN_ATTENTE);
         ins.setAllocatedBudget(BigDecimal.ZERO);
     }
     
@@ -101,7 +101,7 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     InscriptionAnnuelle synched = inscriptionExterneService.synchroniserStatutInscription(ins);
     
     // If eligibility is confirmed, update budget
-    if (synched.isEligibleForScholarship() && synched.isFullyEnrolled()) {
+    if (synched.isEligibleForScholarship() && synched.getStatus() == com.backend.gns.student.domain.enums.StatutInscription.ACTIVE) {
         updateBudget(synched);
     }
     
@@ -135,7 +135,7 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
         inscription.setScolariteYear(year);
         inscription.setStudent(student);
         inscription.setTrackingId(UUID.randomUUID());
-        inscription.setFullyEnrolled(false);
+        inscription.setStatus(com.backend.gns.student.domain.enums.StatutInscription.EN_ATTENTE);
         inscription.setAllocatedBudget(BigDecimal.ZERO);
     }
     
@@ -154,7 +154,7 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     // Validation dynamique des documents requis avant validation
     inscriptionValidationService.validateDocuments(ins);
 
-    if (ins.isFullyEnrolled()) {
+    if (ins.getStatus() == com.backend.gns.student.domain.enums.StatutInscription.ACTIVE) {
         updateBudget(ins);
     }
 
@@ -209,8 +209,18 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
 
   @Override
   @Transactional
-  public InscriptionAnnuelleResponse updateStatus(UUID trackingId, com.backend.gns.student.domain.enums.StatutInscription statut) {
-      throw new UnsupportedOperationException("This method is obsolete in the new architecture.");
+  public InscriptionAnnuelleResponse updateStatus(UUID trackingId, com.backend.gns.student.domain.enums.StatutInscription statut, String motifRejet) {
+      InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
+              .orElseThrow(() -> new EntityNotFoundException("Enrollment not found with ID: " + trackingId));
+      
+      inscription.setStatus(statut);
+      if (statut == com.backend.gns.student.domain.enums.StatutInscription.REJETEE) {
+          inscription.setRejectionReason(motifRejet);
+      } else {
+          inscription.setRejectionReason(null);
+      }
+
+      return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
   }
 
   @Override
@@ -219,9 +229,11 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Enrollment not found with ID: " + trackingId));
     
-    inscription.setFullyEnrolled(estInscritDefinitif);
     if (estInscritDefinitif) {
+        inscription.setStatus(com.backend.gns.student.domain.enums.StatutInscription.ACTIVE);
         updateBudget(inscription);
+    } else {
+        inscription.setStatus(com.backend.gns.student.domain.enums.StatutInscription.EN_ATTENTE);
     }
     
     return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));

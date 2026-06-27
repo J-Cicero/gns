@@ -13,6 +13,7 @@ public record DocumentEtudiantResponse(
         String fileUrl,
         StatutDocument status,
         LocalDateTime uploadedAt,
+        String rejectionReason,
         UUID inscriptionTrackingId,
         String ownerType
 ) {}

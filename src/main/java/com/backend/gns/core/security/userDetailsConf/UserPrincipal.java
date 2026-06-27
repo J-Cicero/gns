@@ -49,7 +49,7 @@ public class UserPrincipal implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return user.isActive();
+    return true; // We allow inactive users to log in (e.g., to finish onboarding or check status)
   }
 
   public User getUser() {

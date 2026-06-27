@@ -41,6 +41,10 @@ public class LiquidationServiceImpl implements LiquidationService {
         Boutique boutique = boutiqueRepository.findByTrackingId(request.boutiqueTrackingId())
                 .orElseThrow(() -> new RuntimeException("Boutique non trouvée"));
 
+        if (boutique.getWallet() == null || boutique.getWallet().getStatus() != com.backend.gns.wallet.domain.enums.WalletStatus.ACTIF) {
+            throw new IllegalStateException("Impossible de liquider : le portefeuille de la boutique n'est pas actif.");
+        }
+
         List<Transaction> pendingTransactions = transactionRepository
                 .findByReceiverTrackingIdAndStatusAndLiquidationIsNull(request.boutiqueTrackingId(),
                         TransactionStatut.VALIDE);
@@ -60,7 +64,6 @@ public class LiquidationServiceImpl implements LiquidationService {
 
         Liquidation liquidation = Liquidation.builder()
                 .trackingId(UUID.randomUUID())
-                .boutique(boutique)
                 .amountToLiquidate(request.amountToLiquidate()) // On garde le montant demandé par le marchand (peut
                                                                 // être inférieur au max disponible)
                 .createdAt(LocalDateTime.now())

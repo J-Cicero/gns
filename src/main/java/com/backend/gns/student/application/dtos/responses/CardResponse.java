@@ -11,8 +11,12 @@ public record CardResponse(
     UUID trackingId,
     String cardNumber,
     String qrCodeData,
+    @com.fasterxml.jackson.annotation.JsonProperty("statutCarte")
     CardStatut status,
     LocalDateTime emissionDate,
+    @com.fasterxml.jackson.annotation.JsonProperty("dateExpiration")
     LocalDateTime expirationDate,
-    UUID walletTrackingId
+    UUID walletTrackingId,
+    String studentNom,
+    String studentPrenom
 ) {}

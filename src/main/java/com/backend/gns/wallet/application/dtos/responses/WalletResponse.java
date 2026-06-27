@@ -11,10 +11,15 @@ import java.util.UUID;
 @Builder
 public record WalletResponse(
         UUID trackingId,
+        @com.fasterxml.jackson.annotation.JsonProperty("typeWallet")
         WalletType walletType,
+        @com.fasterxml.jackson.annotation.JsonProperty("statutWallet")
         WalletStatus status,
+        @com.fasterxml.jackson.annotation.JsonProperty("niveauSolde")
         WalletFundingLevel fundingLevel,
+        @com.fasterxml.jackson.annotation.JsonProperty("solde")
         BigDecimal balance,
+        @com.fasterxml.jackson.annotation.JsonProperty("plafond")
         BigDecimal limitAmount,
         UUID studentTrackingId) {
 }

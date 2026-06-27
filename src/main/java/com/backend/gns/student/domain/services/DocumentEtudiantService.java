@@ -16,4 +16,5 @@ public interface DocumentEtudiantService {
   Page<DocumentEtudiantResponse> findByInscriptionId(UUID inscriptionId, Pageable pageable);
   void delete(UUID trackingId);
   List<DocumentEtudiantResponse> getDocumentsByStudent(UUID studentTrackingId);
+  DocumentEtudiantResponse updateDocumentStatus(UUID trackingId, com.backend.gns.core.parametrage.domain.enums.StatutDocument status, String rejectionReason);
 }

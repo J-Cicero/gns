@@ -2,7 +2,6 @@ package com.backend.gns.core.parametrage.domain.models;
 
 import com.backend.gns.core.parametrage.domain.enums.StatutDocument;
 import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
-import com.backend.gns.core.utils.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -20,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "trackingId")
-public abstract class Document  {
+public abstract class Document {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +45,9 @@ public abstract class Document  {
 
     @Column(nullable = false)
     private LocalDateTime uploadedAt;
+
+    @Column(length = 500)
+    private String rejectionReason;
 
     // NE RIEN AJOUTER ICI (pas de equals, pas de hashCode)
     // Laisse Lombok gérer les constructeurs via @SuperBuilder

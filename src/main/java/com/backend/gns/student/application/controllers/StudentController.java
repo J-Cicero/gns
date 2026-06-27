@@ -39,7 +39,7 @@ public class StudentController {
   public ResponseEntity<?> uploadDocument(
       @PathVariable UUID trackingId,
       @RequestParam("fichier") MultipartFile fichier,
-      @RequestParam("inscriptionTrackingId") UUID inscriptionTrackingId,
+      @RequestParam(value = "inscriptionTrackingId", required = false) UUID inscriptionTrackingId,
       @RequestParam("typeDocument") TypeDocument typeDocument) {
     try {
       var response = documentService.uploadDocument(fichier, trackingId, inscriptionTrackingId, typeDocument);
@@ -62,7 +62,17 @@ public class StudentController {
       @RequestPart("student") StudentRequest request,
       @RequestPart(value = "rib", required = false) MultipartFile rib,
       @RequestPart(value = "mandat", required = false) MultipartFile mandat) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(studentService.create(request));
+    
+    StudentResponse response = studentService.create(request);
+    
+    if (rib != null) {
+      documentService.uploadDocument(rib, response.trackingId(), null, TypeDocument.RIB);
+    }
+    if (mandat != null) {
+      documentService.uploadDocument(mandat, response.trackingId(), null, TypeDocument.MANDAT);
+    }
+    
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @GetMapping("/{trackingId}")

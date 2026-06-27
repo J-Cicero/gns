@@ -19,7 +19,7 @@ public interface InscriptionAnnuelleService {
 
   InscriptionAnnuelleResponse update(UUID trackingId, InscriptionAnnuelleRequest request);
 
-  InscriptionAnnuelleResponse updateStatus(UUID trackingId, StatutInscription statut);
+  InscriptionAnnuelleResponse updateStatus(UUID trackingId, StatutInscription statut, String motifRejet);
 
   InscriptionAnnuelleResponse validerEtActiverInscription(UUID trackingId);
 

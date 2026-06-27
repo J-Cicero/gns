@@ -54,6 +54,8 @@ public class CardMapper {
         .emissionDate(card.getEmissionDate())
         .expirationDate(card.getExpirationDate())
         .walletTrackingId(card.getWallet() != null ? card.getWallet().getTrackingId() : null)
+        .studentNom((card.getWallet() != null && card.getWallet().getStudent() != null) ? card.getWallet().getStudent().getLastName() : null)
+        .studentPrenom((card.getWallet() != null && card.getWallet().getStudent() != null) ? card.getWallet().getStudent().getFirstName() : null)
         .build();
   }
 }

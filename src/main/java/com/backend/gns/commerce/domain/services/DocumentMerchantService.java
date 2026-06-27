@@ -16,4 +16,5 @@ public interface DocumentMerchantService {
     Page<DocumentResponse> findByMerchantTrackingId(UUID merchantTrackingId, Pageable pageable);
     void delete(UUID trackingId);
     List<DocumentResponse> getDocumentsByMerchant(UUID merchantTrackingId);
+    DocumentResponse updateDocumentStatus(UUID trackingId, com.backend.gns.core.parametrage.domain.enums.StatutDocument status, String rejectionReason);
 }

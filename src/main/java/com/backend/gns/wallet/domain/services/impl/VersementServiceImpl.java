@@ -154,7 +154,7 @@ public class VersementServiceImpl implements VersementService {
 
     for (InscriptionAnnuelle ins : inscriptions) {
       Wallet wallet = ins.getStudent().getWallet();
-      if (ins.isFullyEnrolled() && wallet != null && (statutCible == null || wallet.getStatus() == statutCible)) {
+      if (ins.getStatus() == com.backend.gns.student.domain.enums.StatutInscription.ACTIVE && wallet != null && (statutCible == null || wallet.getStatus() == statutCible)) {
         BigDecimal montant = (montantFixe != null) ? montantFixe : ins.getAllocatedBudget();
         executerVersement(wallet, montant, VersementType.BOURSE_INITIALE);
       }
@@ -204,7 +204,7 @@ public class VersementServiceImpl implements VersementService {
   public List<String> previewMasseEtudiants(UUID scolariteYearTrackingId) {
     ScolariteYear year = scolariteYearRepository.findByTrackingId(scolariteYearTrackingId).orElseThrow();
     return inscriptionAnnuelleRepository.findAllByScolariteYear(year).stream()
-            .filter(ins -> ins.isFullyEnrolled() && ins.getStudent().getWallet() != null)
+            .filter(ins -> ins.getStatus() == com.backend.gns.student.domain.enums.StatutInscription.ACTIVE && ins.getStudent().getWallet() != null)
             .map(ins -> ins.getStudent().getLastName() + " " + ins.getStudent().getFirstName())
             .toList();
   }

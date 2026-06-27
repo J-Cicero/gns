@@ -48,8 +48,11 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
         Student student = studentRepository.findByTrackingId(studentTrackingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Étudiant non trouvé"));
 
-        InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(inscriptionTrackingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Inscription non trouvée"));
+        InscriptionAnnuelle inscription = null;
+        if (inscriptionTrackingId != null) {
+            inscription = inscriptionRepository.findByTrackingId(inscriptionTrackingId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Inscription non trouvée"));
+        }
 
         Map<String, String> uploadResult = cloudinaryService.upload(fichier, studentTrackingId.toString());
 
@@ -67,7 +70,9 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
         DocumentEtudiant savedDocument = documentRepository.save(document);
 
         // Réévaluer le dossier après upload
-        inscriptionValidationService.reevaluateDossierAfterUpload(inscriptionTrackingId);
+        if (inscriptionTrackingId != null) {
+            inscriptionValidationService.reevaluateDossierAfterUpload(inscriptionTrackingId);
+        }
 
         return documentMapper.toEtudiantResponse(savedDocument);
     }
@@ -103,5 +108,28 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
         return documentRepository.findByStudentTrackingId(studentTrackingId).stream()
                 .map(documentMapper::toEtudiantResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public DocumentEtudiantResponse updateDocumentStatus(UUID trackingId, StatutDocument status, String rejectionReason) {
+        DocumentEtudiant document = documentRepository.findByTrackingId(trackingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Document non trouvé"));
+
+        document.setStatus(status);
+        if (status == StatutDocument.REJETE) {
+            document.setRejectionReason(rejectionReason);
+        } else {
+            document.setRejectionReason(null);
+        }
+
+        DocumentEtudiant saved = documentRepository.save(document);
+        
+        // Si c'est un document d'inscription annuelle, on réévalue
+        if (saved.getInscription() != null) {
+            inscriptionValidationService.reevaluateDossierAfterUpload(saved.getInscription().getTrackingId());
+        }
+
+        return documentMapper.toEtudiantResponse(saved);
     }
 }

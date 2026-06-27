@@ -141,6 +141,7 @@ public class BankPortalServiceImpl implements BankPortalService {
                 .numeroCompte(null) // Fetch from compteBancaireRepository if needed
                 .soldeWallet(b.getWallet() != null ? b.getWallet().getBalance() : BigDecimal.ZERO)
                 .proprietaireNom(proprietaireNom)
+                .merchantTrackingId(b.getMerchant() != null ? b.getMerchant().getTrackingId() : null)
                 .walletTrackingId(b.getWallet() != null ? b.getWallet().getTrackingId() : null)
                 .walletStatus(b.getWallet() != null && b.getWallet().getStatus() != null ? b.getWallet().getStatus().name() : "ACTIF")
                 .build();

@@ -21,4 +21,5 @@ public class BoutiqueLiquidationInfoResponse {
     private String proprietaireNom;
     private UUID walletTrackingId;
     private String walletStatus;
+    private UUID merchantTrackingId;
 }

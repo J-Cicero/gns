@@ -1,6 +1,5 @@
 package com.backend.gns.student.domain.models;
 
-import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.user.domain.models.User;
 import com.backend.gns.wallet.domain.models.Wallet;
 import jakarta.persistence.*;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 
 @Entity
 @DiscriminatorValue("STUDENT")

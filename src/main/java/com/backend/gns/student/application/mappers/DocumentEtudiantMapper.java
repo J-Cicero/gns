@@ -15,6 +15,7 @@ public class DocumentEtudiantMapper {
             .documentType(entity.getDocumentType())
             .fileUrl(entity.getFileUrl())
             .status(entity.getStatus())
+            .rejectionReason(entity.getRejectionReason())
             .uploadedAt(entity.getUploadedAt())
             .ownerType(ProprietaireType.STUDENT)
             .build();
@@ -28,6 +29,7 @@ public class DocumentEtudiantMapper {
             entity.getFileUrl(),
             entity.getStatus(),
             entity.getUploadedAt(),
+            entity.getRejectionReason(),
             entity.getInscription() != null ? entity.getInscription().getTrackingId() : null,
             "ETUDIANT"
     );

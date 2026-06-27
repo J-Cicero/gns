@@ -24,10 +24,6 @@ public class Liquidation {
     private UUID trackingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "boutique_id", nullable = false)
-    private Boutique boutique;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scolarite_year_id", nullable = false)
     private ScolariteYear scolariteYear;
 
@@ -44,4 +40,7 @@ public class Liquidation {
     private LiquidationStatut status;
 
     private String transferReference;
+
+    @OneToMany(mappedBy = "liquidation", fetch = FetchType.LAZY)
+    private java.util.List<Transaction> transactions;
 }

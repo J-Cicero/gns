@@ -15,6 +15,7 @@ public class DocumentMapper {
                 document.getDocumentType(),
                 document.getFileUrl(),
                 document.getStatus(),
+                document.getRejectionReason(),
                 document.getUploadedAt()
         );
     }
