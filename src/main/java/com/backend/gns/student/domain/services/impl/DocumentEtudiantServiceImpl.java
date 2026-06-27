@@ -54,6 +54,22 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
                     .orElseThrow(() -> new ResourceNotFoundException("Inscription non trouvée"));
         }
 
+        if (inscription != null) {
+            documentRepository.findByInscriptionTrackingId(inscriptionTrackingId, Pageable.unpaged()).stream()
+                    .filter(d -> d.getDocumentType() == typeDocument)
+                    .forEach(d -> {
+                        cloudinaryService.supprimer(d.getProviderPublicId());
+                        documentRepository.delete(d);
+                    });
+        } else {
+            documentRepository.findByStudentTrackingId(studentTrackingId).stream()
+                    .filter(d -> d.getDocumentType() == typeDocument && d.getInscription() == null)
+                    .forEach(d -> {
+                        cloudinaryService.supprimer(d.getProviderPublicId());
+                        documentRepository.delete(d);
+                    });
+        }
+
         Map<String, String> uploadResult = cloudinaryService.upload(fichier, studentTrackingId.toString());
 
         DocumentEtudiant document = DocumentEtudiant.builder()

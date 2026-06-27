@@ -99,18 +99,18 @@ public class StudentServiceImpl implements StudentService {
     Student savedStudent = studentRepository.save(student);
 
     if (request.banqueTrackingId() != null && request.numeroCompte() != null) {
-        var banque = banqueRepository.findByTrackingId(request.banqueTrackingId())
-            .orElseThrow(() -> new IllegalArgumentException("Banque introuvable"));
-            
-        com.backend.gns.core.parametrage.domain.models.CompteBancaire compte = new com.backend.gns.core.parametrage.domain.models.CompteBancaire();
-        compte.setTrackingId(UUID.randomUUID());
-        compte.setAccountNumber(request.numeroCompte());
-        compte.setBank(banque);
-        compte.setProprietaire(savedStudent);
-        compte.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.ETUDIANT);
-        
-        compteBancaireRepository.save(compte);
-        log.info("Compte bancaire créé pour l'étudiant");
+      var banque = banqueRepository.findByTrackingId(request.banqueTrackingId())
+          .orElseThrow(() -> new IllegalArgumentException("Banque introuvable"));
+
+      com.backend.gns.core.parametrage.domain.models.CompteBancaire compte = new com.backend.gns.core.parametrage.domain.models.CompteBancaire();
+      compte.setTrackingId(UUID.randomUUID());
+      compte.setAccountNumber(request.numeroCompte());
+      compte.setBank(banque);
+      compte.setProprietaire(savedStudent);
+      compte.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.STUDENT);
+
+      compteBancaireRepository.save(compte);
+      log.info("Compte bancaire créé pour l'étudiant");
     }
 
     log.info("Identité étudiante créée avec succès, trackingId: {}", savedStudent.getTrackingId());
