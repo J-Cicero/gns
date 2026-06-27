@@ -49,6 +49,8 @@ public class StudentServiceImpl implements StudentService {
   private final UserRepository userRepository;
   private final UniversiteRepository universiteRepository;
   private final ParametreGnsRepository parametreGnsRepository;
+  private final com.backend.gns.core.parametrage.infrastructure.repositories.BanqueRepository banqueRepository;
+  private final com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository compteBancaireRepository;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -95,6 +97,21 @@ public class StudentServiceImpl implements StudentService {
     student.setWallet(wallet);
 
     Student savedStudent = studentRepository.save(student);
+
+    if (request.banqueTrackingId() != null && request.numeroCompte() != null) {
+        var banque = banqueRepository.findByTrackingId(request.banqueTrackingId())
+            .orElseThrow(() -> new IllegalArgumentException("Banque introuvable"));
+            
+        com.backend.gns.core.parametrage.domain.models.CompteBancaire compte = new com.backend.gns.core.parametrage.domain.models.CompteBancaire();
+        compte.setTrackingId(UUID.randomUUID());
+        compte.setAccountNumber(request.numeroCompte());
+        compte.setBank(banque);
+        compte.setProprietaire(savedStudent);
+        compte.setOwnerType(com.backend.gns.core.parametrage.domain.enums.ProprietaireType.ETUDIANT);
+        
+        compteBancaireRepository.save(compte);
+        log.info("Compte bancaire créé pour l'étudiant");
+    }
 
     log.info("Identité étudiante créée avec succès, trackingId: {}", savedStudent.getTrackingId());
     return studentMapper.toResponse(savedStudent);

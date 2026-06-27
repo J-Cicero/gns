@@ -17,5 +17,7 @@ public record StudentRequest(
         String birthPlace,
         String transactionPin,
         String studentNumber, // Corrigé !
-        UUID universiteTrackingId
+        UUID universiteTrackingId,
+        UUID banqueTrackingId,
+        String numeroCompte
    ) {}
