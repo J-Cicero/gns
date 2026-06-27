@@ -103,9 +103,21 @@ public class BankPortalServiceImpl implements BankPortalService {
     @Transactional(readOnly = true)
     public List<StudentLiquidationInfoResponse> getStudents(UUID bankOperatorTrackingId) {
         log.info("Fetching students for bank operator {}", bankOperatorTrackingId);
-        // Normally we would verify the bankOperator and get students related to that bank.
-        // For now, let's fetch all students.
-        return studentRepository.findAll().stream().map(s -> {
+        AdminBanque admin = (AdminBanque) userRepository.findByTrackingId(bankOperatorTrackingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Bank Operator not found"));
+        Banque banque = admin.getBanque();
+        if (banque == null) {
+            throw new ResourceNotFoundException("Bank not associated with operator");
+        }
+
+        return studentRepository.findAll().stream().filter(s -> {
+            java.util.Optional<com.backend.gns.core.parametrage.domain.models.CompteBancaire> cb = compteBancaireRepository.findByProprietaireTrackingId(s.getTrackingId());
+            return cb.isPresent() && cb.get().getBank().getId().equals(banque.getId());
+        }).map(s -> {
+            String numeroCompte = compteBancaireRepository.findByProprietaireTrackingId(s.getTrackingId())
+                    .map(cb -> cb.getAccountNumber())
+                    .orElse("Non renseigné");
+
             return StudentLiquidationInfoResponse.builder()
                 .studentTrackingId(s.getTrackingId())
                 .nom(s.getLastName())
@@ -121,7 +133,7 @@ public class BankPortalServiceImpl implements BankPortalService {
                 .inscritDefinitif(true)
                 .walletTrackingId(s.getWallet() != null ? s.getWallet().getTrackingId() : null)
                 .walletStatus(s.getWallet() != null && s.getWallet().getStatus() != null ? s.getWallet().getStatus().name() : "ACTIF")
-                .numeroCompte(null) // Fetch account number from compteBancaireRepository if needed
+                .numeroCompte(numeroCompte)
                 .build();
         }).collect(Collectors.toList());
     }
@@ -130,15 +142,30 @@ public class BankPortalServiceImpl implements BankPortalService {
     @Transactional(readOnly = true)
     public List<BoutiqueLiquidationInfoResponse> getBoutiques(UUID bankOperatorTrackingId) {
         log.info("Fetching boutiques for bank operator {}", bankOperatorTrackingId);
-        return boutiqueRepository.findAll().stream().map(b -> {
+        AdminBanque admin = (AdminBanque) userRepository.findByTrackingId(bankOperatorTrackingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Bank Operator not found"));
+        Banque banque = admin.getBanque();
+        if (banque == null) {
+            throw new ResourceNotFoundException("Bank not associated with operator");
+        }
+
+        return boutiqueRepository.findAll().stream().filter(b -> {
+            if (b.getMerchant() == null) return false;
+            java.util.Optional<com.backend.gns.core.parametrage.domain.models.CompteBancaire> cb = compteBancaireRepository.findByProprietaireTrackingId(b.getMerchant().getTrackingId());
+            return cb.isPresent() && cb.get().getBank().getId().equals(banque.getId());
+        }).map(b -> {
             String proprietaireNom = b.getMerchant() != null ?
                 b.getMerchant().getFirstName() + " " + b.getMerchant().getLastName() : "Inconnu";
             
+            String numeroCompte = b.getMerchant() != null ? compteBancaireRepository.findByProprietaireTrackingId(b.getMerchant().getTrackingId())
+                    .map(cb -> cb.getAccountNumber())
+                    .orElse("Non renseigné") : "Non renseigné";
+
             return BoutiqueLiquidationInfoResponse.builder()
                 .boutiqueTrackingId(b.getTrackingId())
                 .nomBoutique(b.getName())
                 .categorieShop("INCONNU")
-                .numeroCompte(null) // Fetch from compteBancaireRepository if needed
+                .numeroCompte(numeroCompte)
                 .soldeWallet(b.getWallet() != null ? b.getWallet().getBalance() : BigDecimal.ZERO)
                 .proprietaireNom(proprietaireNom)
                 .merchantTrackingId(b.getMerchant() != null ? b.getMerchant().getTrackingId() : null)
