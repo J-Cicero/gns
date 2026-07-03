@@ -110,10 +110,7 @@ public class BankPortalServiceImpl implements BankPortalService {
             throw new ResourceNotFoundException("Bank not associated with operator");
         }
 
-        return studentRepository.findAll().stream().filter(s -> {
-            java.util.Optional<com.backend.gns.core.parametrage.domain.models.CompteBancaire> cb = compteBancaireRepository.findByProprietaireTrackingId(s.getTrackingId());
-            return cb.isPresent() && cb.get().getBank().getId().equals(banque.getId());
-        }).map(s -> {
+        return studentRepository.findAll().stream().map(s -> {
             String numeroCompte = compteBancaireRepository.findByProprietaireTrackingId(s.getTrackingId())
                     .map(cb -> cb.getAccountNumber())
                     .orElse("Non renseigné");
@@ -149,11 +146,7 @@ public class BankPortalServiceImpl implements BankPortalService {
             throw new ResourceNotFoundException("Bank not associated with operator");
         }
 
-        return boutiqueRepository.findAll().stream().filter(b -> {
-            if (b.getMerchant() == null) return false;
-            java.util.Optional<com.backend.gns.core.parametrage.domain.models.CompteBancaire> cb = compteBancaireRepository.findByProprietaireTrackingId(b.getMerchant().getTrackingId());
-            return cb.isPresent() && cb.get().getBank().getId().equals(banque.getId());
-        }).map(b -> {
+        return boutiqueRepository.findAll().stream().map(b -> {
             String proprietaireNom = b.getMerchant() != null ?
                 b.getMerchant().getFirstName() + " " + b.getMerchant().getLastName() : "Inconnu";
             
@@ -173,5 +166,18 @@ public class BankPortalServiceImpl implements BankPortalService {
                 .walletStatus(b.getWallet() != null && b.getWallet().getStatus() != null ? b.getWallet().getStatus().name() : "ACTIF")
                 .build();
         }).collect(Collectors.toList());
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<com.backend.gns.commerce.application.dtos.responses.StudentDepenseResponse> getStudentDepenses(UUID studentTrackingId) {
+        log.info("Fetching expenses for student {}", studentTrackingId);
+        return transactionRepository.findBySenderTrackingId(studentTrackingId).stream()
+            .map(t -> com.backend.gns.commerce.application.dtos.responses.StudentDepenseResponse.builder()
+                .trackingId(t.getTrackingId())
+                .date(t.getCreatedAt())
+                .montant(t.getAmount())
+                .boutiqueNom(t.getReceiver() != null ? t.getReceiver().getName() : "Inconnu")
+                .build())
+            .collect(Collectors.toList());
     }
 }

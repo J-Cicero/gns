@@ -10,4 +10,6 @@ public interface EmailService {
   void envoyerNotificationVersement(String email, String nom, String montant);
 
   void envoyerAlerteSoldeFaible(String email, String nom, String solde);
+
+  void envoyerChangementStatutWallet(String email, String nom, String nouveauStatut);
 }

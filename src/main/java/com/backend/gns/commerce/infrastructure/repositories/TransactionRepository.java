@@ -16,6 +16,7 @@ import java.util.UUID;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     Optional<Transaction> findByTrackingId(UUID trackingId);
     Page<Transaction> findBySenderTrackingId(UUID senderTrackingId, Pageable pageable);
+    List<Transaction> findBySenderTrackingId(UUID senderTrackingId);
     Page<Transaction> findByReceiverTrackingId(UUID receiverTrackingId, Pageable pageable);
     List<Transaction> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
     List<Transaction> findByReceiverTrackingIdAndIsCommissionPaid(UUID trackingId, Boolean isCommissionPaid);

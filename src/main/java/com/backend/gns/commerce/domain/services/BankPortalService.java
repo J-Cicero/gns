@@ -13,4 +13,5 @@ public interface BankPortalService {
     BanqueInfoResponse getBanqueInfo(UUID bankOperatorTrackingId);
     List<StudentLiquidationInfoResponse> getStudents(UUID bankOperatorTrackingId);
     List<BoutiqueLiquidationInfoResponse> getBoutiques(UUID bankOperatorTrackingId);
+    List<com.backend.gns.commerce.application.dtos.responses.StudentDepenseResponse> getStudentDepenses(UUID studentTrackingId);
 }

@@ -44,4 +44,10 @@ public class BankPortalController {
             @RequestParam UUID bankOperatorTrackingId) {
         return ResponseEntity.ok(bankPortalService.getBoutiques(bankOperatorTrackingId));
     }
+
+    @GetMapping("/students/{studentTrackingId}/depenses")
+    public ResponseEntity<List<com.backend.gns.commerce.application.dtos.responses.StudentDepenseResponse>> getStudentDepenses(
+            @org.springframework.web.bind.annotation.PathVariable UUID studentTrackingId) {
+        return ResponseEntity.ok(bankPortalService.getStudentDepenses(studentTrackingId));
+    }
 }

@@ -188,29 +188,6 @@ public class UserServiceImpl implements UserService {
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
 
-    // Validation des documents si on active
-    if (etat) {
-        if (user.getRole() == UserRole.ETUDIANT) {
-            long validatedDocs = documentEtudiantRepository.findByStudentTrackingId(trackingId).stream()
-                .filter(d -> d.getStatus() == com.backend.gns.core.parametrage.domain.enums.StatutDocument.VALIDE)
-                .filter(d -> d.getDocumentType() == com.backend.gns.core.parametrage.domain.enums.TypeDocument.RIB || d.getDocumentType() == com.backend.gns.core.parametrage.domain.enums.TypeDocument.MANDAT)
-                .map(d -> d.getDocumentType())
-                .distinct()
-                .count();
-            if (validatedDocs < 2) {
-                throw new IllegalStateException("Impossible d'activer le compte étudiant : RIB et Mandat de prélèvement doivent être validés par la banque.");
-            }
-        } else if (user.getRole() == UserRole.COMMERCANT) {
-            long validatedRib = documentMerchantRepository.findByMerchantTrackingId(trackingId).stream()
-                .filter(d -> d.getStatus() == com.backend.gns.core.parametrage.domain.enums.StatutDocument.VALIDE)
-                .filter(d -> d.getDocumentType() == com.backend.gns.core.parametrage.domain.enums.TypeDocument.RIB)
-                .count();
-            if (validatedRib == 0) {
-                throw new IllegalStateException("Impossible d'activer le compte marchand : Le RIB doit être validé par la banque.");
-            }
-        }
-    }
-
     user.setActive(etat);
     return userMapper.toResponse(userRepository.save(user));
   }
