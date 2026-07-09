@@ -193,4 +193,56 @@ public class TransactionServiceImpl implements TransactionService {
     public Page<TransactionResponse> findByStudentId(UUID studentId, Pageable pageable) {
         return transactionRepository.findBySenderTrackingId(studentId, pageable).map(transactionMapper::toResponse);
     }
+
+    @Override
+    public com.backend.gns.commerce.application.dtos.responses.TransactionChartStatsResponse getChartStats() {
+        Optional<com.backend.gns.student.application.dtos.responses.ScolariteYearResponse> activeYear = scolariteYearService.findActiveYear();
+        List<Transaction> transactions;
+        if (activeYear.isPresent()) {
+            var year = activeYear.get();
+            transactions = transactionRepository.findByCreatedAtBetween(
+                    year.startDate().atStartOfDay(),
+                    year.endDate().atTime(23, 59, 59));
+        } else {
+            transactions = transactionRepository.findAll();
+        }
+
+        // Group by month
+        java.util.Map<String, BigDecimal> monthlyMap = new java.util.LinkedHashMap<>();
+        String[] months = {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"};
+        for (String m : months) {
+            monthlyMap.put(m, BigDecimal.ZERO);
+        }
+
+        for (Transaction t : transactions) {
+            if (t.getStatus() == TransactionStatut.VALIDE && t.getCreatedAt() != null) {
+                int monthVal = t.getCreatedAt().getMonthValue();
+                String monthName = months[monthVal - 1];
+                BigDecimal current = monthlyMap.getOrDefault(monthName, BigDecimal.ZERO);
+                monthlyMap.put(monthName, current.add(t.getAmount()));
+            }
+        }
+
+        List<com.backend.gns.commerce.application.dtos.responses.TransactionChartStatsResponse.MonthlyVolume> monthlyVolume = 
+            monthlyMap.entrySet().stream()
+                .map(e -> new com.backend.gns.commerce.application.dtos.responses.TransactionChartStatsResponse.MonthlyVolume(e.getKey(), e.getValue()))
+                .collect(java.util.stream.Collectors.toList());
+
+        // Group by Boutique name
+        java.util.Map<String, BigDecimal> boutiqueMap = new java.util.HashMap<>();
+        for (Transaction t : transactions) {
+            if (t.getStatus() == TransactionStatut.VALIDE && t.getReceiver() != null) {
+                String boutiqueName = t.getReceiver().getName();
+                BigDecimal current = boutiqueMap.getOrDefault(boutiqueName, BigDecimal.ZERO);
+                boutiqueMap.put(boutiqueName, current.add(t.getAmount()));
+            }
+        }
+
+        List<com.backend.gns.commerce.application.dtos.responses.TransactionChartStatsResponse.BoutiqueShare> boutiqueShare = 
+            boutiqueMap.entrySet().stream()
+                .map(e -> new com.backend.gns.commerce.application.dtos.responses.TransactionChartStatsResponse.BoutiqueShare(e.getKey(), e.getValue()))
+                .collect(java.util.stream.Collectors.toList());
+
+        return new com.backend.gns.commerce.application.dtos.responses.TransactionChartStatsResponse(monthlyVolume, boutiqueShare);
+    }
 }

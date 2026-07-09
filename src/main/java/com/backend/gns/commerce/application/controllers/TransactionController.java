@@ -47,4 +47,9 @@ public class TransactionController {
     public ResponseEntity<?> findByStudentId(@PathVariable UUID studentId, Pageable pageable) {
         return ResponseEntity.ok(transactionService.findByStudentId(studentId, pageable));
     }
+
+    @GetMapping("/stats/chart")
+    public ResponseEntity<?> getChartStats() {
+        return ResponseEntity.ok(transactionService.getChartStats());
+    }
 }

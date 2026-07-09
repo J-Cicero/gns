@@ -21,4 +21,6 @@ public interface TransactionService {
     Page<TransactionResponse> findByStudentId(UUID studentId, Pageable pageable);
 
     TransactionStatsResponse getGlobalStats();
+
+    com.backend.gns.commerce.application.dtos.responses.TransactionChartStatsResponse getChartStats();
 }
