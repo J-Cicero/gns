@@ -13,4 +13,5 @@ public record BoutiqueRequest(
     String description,
     KycStatus kycStatus,
     Double latitude,
-    Double longitude) {}
+    Double longitude,
+    String imageUrl) {}

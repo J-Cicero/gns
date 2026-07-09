@@ -10,8 +10,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -202,6 +204,19 @@ public class BoutiqueController {
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "FETCH_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PostMapping(value = "/{trackingId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Operation(summary = "Uploader une image pour la boutique")
+  public ResponseEntity<?> uploadImage(
+      @PathVariable UUID trackingId,
+      @RequestParam("file") MultipartFile file) {
+    try {
+      return ResponseEntity.ok(boutiqueService.uploadBoutiqueImage(trackingId, file));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "UPLOAD_FAILED", "message", e.getMessage()));
     }
   }
 }

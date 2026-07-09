@@ -23,4 +23,5 @@ public interface ProductService {
   Page<ProductResponse> findByEstDisponible(Boolean estDisponible, Pageable pageable);
 
   Page<ProductResponse> findAll(Pageable pageable);
+  ProductResponse uploadProductImage(UUID trackingId, org.springframework.web.multipart.MultipartFile file);
 }

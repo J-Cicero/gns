@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,10 +24,12 @@ public class ProductServiceImpl implements ProductService {
 
   private final ProductRepository productRepository;
   private final ProductMapper productMapper;
+  private final CloudinaryStorageService cloudinaryService;
 
-  public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
+  public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, CloudinaryStorageService cloudinaryService) {
     this.productRepository = productRepository;
     this.productMapper = productMapper;
+    this.cloudinaryService = cloudinaryService;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -62,7 +65,8 @@ public class ProductServiceImpl implements ProductService {
     product.setPrice(request.price());
     product.setStock(request.stock());
     product.setIsAvailable(request.isAvailable());
-    product.setAddedAt(request.addedAt());
+    product.setAddedAt(request.addedAt() != null ? request.addedAt() : product.getAddedAt());
+    product.setImageUrl(request.imageUrl() != null ? request.imageUrl() : product.getImageUrl());
 
     return productMapper.toResponse(productRepository.save(product));
   }
@@ -99,5 +103,22 @@ public class ProductServiceImpl implements ProductService {
   @Transactional(readOnly = true)
   public Page<ProductResponse> findAll(Pageable pageable) {
     return productRepository.findAll(normalize(pageable)).map(productMapper::toResponse);
+  }
+
+  @Override
+  @Transactional
+  public ProductResponse uploadProductImage(UUID trackingId, org.springframework.web.multipart.MultipartFile file) {
+    Product product = productRepository.findByTrackingId(trackingId)
+        .orElseThrow(() -> new EntityNotFoundException("Produit non trouvé avec l'ID: " + trackingId));
+
+    if (product.getImagePublicId() != null) {
+      cloudinaryService.supprimer(product.getImagePublicId());
+    }
+
+    java.util.Map<String, String> uploadResult = cloudinaryService.upload(file, trackingId.toString());
+    product.setImageUrl(uploadResult.get("url"));
+    product.setImagePublicId(uploadResult.get("publicId"));
+
+    return productMapper.toResponse(productRepository.save(product));
   }
 }

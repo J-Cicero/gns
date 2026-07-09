@@ -30,6 +30,7 @@ public class BoutiqueMapper {
     boutique.setKycStatus(request.kycStatus());
     boutique.setLatitude(request.latitude());
     boutique.setLongitude(request.longitude());
+    boutique.setImageUrl(request.imageUrl());
 
     if (request.merchantTrackingId() != null) {
       merchantRepository.findByTrackingId(request.merchantTrackingId())
@@ -64,6 +65,7 @@ public class BoutiqueMapper {
         .balance(boutique.getWallet() != null ? boutique.getWallet().getBalance() : java.math.BigDecimal.ZERO)
         .limitAmount(limitAmount)
         .walletStatus(boutique.getWallet() != null && boutique.getWallet().getStatus() != null ? boutique.getWallet().getStatus().name() : null)
+        .imageUrl(boutique.getImageUrl())
         .build();
   }
 }

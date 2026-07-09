@@ -24,6 +24,8 @@ public interface BoutiqueRepository extends JpaRepository<Boutique, Long> {
 
   Page<Boutique> findByKycStatus(KycStatus kycStatus, Pageable pageable);
 
+  java.util.List<Boutique> findByMerchant(com.backend.gns.commerce.domain.models.Merchant merchant);
+
   @Query(
       "SELECT b FROM Boutique b WHERE b.wallet IS NOT NULL AND b.wallet.limitAmount > 0 AND b.wallet.balance <= (b.wallet.limitAmount * :seuil)")
   Page<Boutique> findBoutiquesEnAlerteQuota(

@@ -15,4 +15,5 @@ public record ProductResponse(
     BigDecimal price,
     Integer stock,
     Boolean isAvailable,
-    LocalDateTime addedAt) {}
+    LocalDateTime addedAt,
+    String imageUrl) {}

@@ -11,6 +11,7 @@ import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
+import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageService;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import com.backend.gns.wallet.domain.enums.WalletType;
 import com.backend.gns.wallet.domain.models.Wallet;
@@ -39,18 +40,21 @@ public class BoutiqueServiceImpl implements BoutiqueService {
   private final MerchantRepository merchantRepository;
   private final WalletRepository walletRepository;
   private final ParametreGnsService parametreGnsService;
+  private final CloudinaryStorageService cloudinaryService;
 
   public BoutiqueServiceImpl(
       BoutiqueRepository boutiqueRepository,
       BoutiqueMapper boutiqueMapper,
       MerchantRepository merchantRepository,
       WalletRepository walletRepository,
-      ParametreGnsService parametreGnsService) {
+      ParametreGnsService parametreGnsService,
+      CloudinaryStorageService cloudinaryService) {
     this.boutiqueRepository = boutiqueRepository;
     this.boutiqueMapper = boutiqueMapper;
     this.merchantRepository = merchantRepository;
     this.walletRepository = walletRepository;
     this.parametreGnsService = parametreGnsService;
+    this.cloudinaryService = cloudinaryService;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -97,7 +101,7 @@ public class BoutiqueServiceImpl implements BoutiqueService {
       Wallet wallet = new Wallet();
       wallet.setTrackingId(UUID.randomUUID());
       wallet.setWalletType(WalletType.BOUTIQUE);
-      wallet.setStatus(WalletStatus.ACTIF);
+      wallet.setStatus(WalletStatus.INACTIF);
       wallet.setBalance(BigDecimal.ZERO);
 
       BigDecimal quotaBoutique = parametreGnsService.findByNomParametre(TypeParametreGns.MAJORATION_MONTANT_BOUTIQUE)
@@ -140,6 +144,7 @@ public class BoutiqueServiceImpl implements BoutiqueService {
     boutique.setKycStatus(request.kycStatus() != null ? request.kycStatus() : boutique.getKycStatus());
     boutique.setLatitude(request.latitude() != null ? request.latitude() : boutique.getLatitude());
     boutique.setLongitude(request.longitude() != null ? request.longitude() : boutique.getLongitude());
+    boutique.setImageUrl(request.imageUrl() != null ? request.imageUrl() : boutique.getImageUrl());
 
     if (request.merchantTrackingId() != null) {
       Merchant merchant = merchantRepository
@@ -221,5 +226,22 @@ public class BoutiqueServiceImpl implements BoutiqueService {
     return boutiqueRepository
         .findBoutiquesEnAlerteQuota(seuilPourcentage, normalize(pageable))
         .map(boutiqueMapper::toResponse);
+  }
+
+  @Override
+  @Transactional
+  public BoutiqueResponse uploadBoutiqueImage(UUID trackingId, org.springframework.web.multipart.MultipartFile file) {
+    Boutique boutique = boutiqueRepository.findByTrackingId(trackingId)
+        .orElseThrow(() -> new EntityNotFoundException("Boutique non trouvée avec l'ID: " + trackingId));
+
+    if (boutique.getImagePublicId() != null) {
+      cloudinaryService.supprimer(boutique.getImagePublicId());
+    }
+
+    java.util.Map<String, String> uploadResult = cloudinaryService.upload(file, trackingId.toString());
+    boutique.setImageUrl(uploadResult.get("url"));
+    boutique.setImagePublicId(uploadResult.get("publicId"));
+
+    return boutiqueMapper.toResponse(boutiqueRepository.save(boutique));
   }
 }

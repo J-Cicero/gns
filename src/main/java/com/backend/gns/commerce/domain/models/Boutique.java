@@ -54,4 +54,10 @@ public class Boutique extends BaseEntity {
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "wallet_id")
   private Wallet wallet;
+
+  @Column(length = 500)
+  private String imageUrl;
+
+  @Column(length = 100)
+  private String imagePublicId;
 }

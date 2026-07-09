@@ -32,6 +32,7 @@ public class ProductMapper {
     product.setStock(request.stock());
     product.setIsAvailable(request.isAvailable());
     product.setAddedAt(request.addedAt() != null ? request.addedAt() : LocalDateTime.now());
+    product.setImageUrl(request.imageUrl());
 
     if (request.boutiqueTrackingId() != null) {
       Boutique boutique =
@@ -62,6 +63,7 @@ public class ProductMapper {
         .addedAt(product.getAddedAt())
         .boutiqueTrackingId(
             product.getBoutique() != null ? product.getBoutique().getTrackingId() : null)
+        .imageUrl(product.getImageUrl())
         .build();
   }
 }

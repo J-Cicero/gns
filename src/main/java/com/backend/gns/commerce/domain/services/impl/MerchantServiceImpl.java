@@ -89,7 +89,7 @@ public class MerchantServiceImpl implements MerchantService {
         com.backend.gns.wallet.domain.models.Wallet wallet = new com.backend.gns.wallet.domain.models.Wallet();
         wallet.setTrackingId(UUID.randomUUID());
         wallet.setWalletType(com.backend.gns.wallet.domain.enums.WalletType.BOUTIQUE);
-        wallet.setStatus(com.backend.gns.wallet.domain.enums.WalletStatus.ACTIF);
+        wallet.setStatus(com.backend.gns.wallet.domain.enums.WalletStatus.INACTIF);
         wallet.setBalance(java.math.BigDecimal.ZERO);
         wallet.setLimitAmount(new java.math.BigDecimal("100000"));
         wallet.setCreatedAt(java.time.LocalDateTime.now());

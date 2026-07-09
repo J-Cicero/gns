@@ -51,4 +51,10 @@ public class Product extends BaseEntity {
   @Column(nullable = false)
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime addedAt;
+
+  @Column(length = 500)
+  private String imageUrl;
+
+  @Column(length = 100)
+  private String imagePublicId;
 }

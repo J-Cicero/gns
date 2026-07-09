@@ -14,6 +14,8 @@ import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepos
 import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.student.domain.services.InscriptionValidationService;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
+import com.backend.gns.wallet.domain.enums.WalletStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -126,6 +128,37 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
                 .collect(Collectors.toList());
     }
 
+    private void reevaluateStudentKyc(Student student) {
+        List<DocumentEtudiant> docs = documentRepository.findByStudentTrackingId(student.getTrackingId());
+        
+        boolean hasValideRib = docs.stream()
+                .anyMatch(d -> d.getDocumentType() == TypeDocument.RIB && d.getStatus() == StatutDocument.VALIDE);
+                
+        boolean hasValideMandatOrSouche = docs.stream()
+                .anyMatch(d -> (d.getDocumentType() == TypeDocument.MANDAT || d.getDocumentType() == TypeDocument.SOUCHE_TAMPONNEE) 
+                        && d.getStatus() == StatutDocument.VALIDE);
+                        
+        if (hasValideRib && hasValideMandatOrSouche) {
+            student.setKycStatus(KycStatus.VALIDE);
+            if (student.getWallet() != null) {
+                student.getWallet().setStatus(WalletStatus.ACTIF);
+            }
+        } else {
+            boolean hasRejeteCritical = docs.stream()
+                    .anyMatch(d -> (d.getDocumentType() == TypeDocument.RIB || d.getDocumentType() == TypeDocument.MANDAT || d.getDocumentType() == TypeDocument.SOUCHE_TAMPONNEE) 
+                            && d.getStatus() == StatutDocument.REJETE);
+            if (hasRejeteCritical) {
+                student.setKycStatus(KycStatus.REJETE);
+            } else {
+                student.setKycStatus(KycStatus.EN_ATTENTE);
+            }
+            if (student.getWallet() != null) {
+                student.getWallet().setStatus(WalletStatus.INACTIF);
+            }
+        }
+        studentRepository.save(student);
+    }
+
     @Override
     @Transactional
     public DocumentEtudiantResponse updateDocumentStatus(UUID trackingId, StatutDocument status, String rejectionReason) {
@@ -141,6 +174,10 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
         DocumentEtudiant saved = documentRepository.save(document);
         
+        if (saved.getStudent() != null) {
+            reevaluateStudentKyc(saved.getStudent());
+        }
+
         // Si c'est un document d'inscription annuelle, on réévalue
         if (saved.getInscription() != null) {
             inscriptionValidationService.reevaluateDossierAfterUpload(saved.getInscription().getTrackingId());

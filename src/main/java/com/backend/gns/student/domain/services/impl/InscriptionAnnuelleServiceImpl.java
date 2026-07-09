@@ -151,12 +151,8 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Enrollment not found"));
 
-    // Validation dynamique des documents requis avant validation
-    inscriptionValidationService.validateDocuments(ins);
-
-    if (ins.getStatus() == com.backend.gns.student.domain.enums.StatutInscription.ACTIVE) {
-        updateBudget(ins);
-    }
+    ins.setStatus(com.backend.gns.student.domain.enums.StatutInscription.ACTIVE);
+    updateBudget(ins);
 
     return inscriptionMapper.toResponse(inscriptionRepository.save(ins));
   }

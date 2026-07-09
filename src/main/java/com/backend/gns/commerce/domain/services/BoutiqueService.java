@@ -30,4 +30,5 @@ public interface BoutiqueService {
 
   Page<BoutiqueResponse> getBoutiquesEnAlerteQuota(BigDecimal seuilPourcentage, Pageable pageable);
   long countLowQuota();
+  BoutiqueResponse uploadBoutiqueImage(UUID trackingId, org.springframework.web.multipart.MultipartFile file);
 }

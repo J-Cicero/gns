@@ -11,6 +11,7 @@ import com.backend.gns.commerce.domain.services.TransactionService;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
 import com.backend.gns.commerce.infrastructure.repositories.TransactionRepository;
 import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 import com.backend.gns.student.application.dtos.responses.ScolariteYearResponse;
 import com.backend.gns.student.domain.models.Student;
@@ -95,6 +96,10 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(
                         () -> new EntityNotFoundException("Sender not found with ID: " + request.senderTrackingId()));
 
+        if (sender.getKycStatus() != KycStatus.VALIDE) {
+            throw new RuntimeException("TRANSACTION_FAILED: Le compte étudiant n'est pas validé (KYC non valide).");
+        }
+
         // Verify PIN
         if (sender.getTransactionPinHash() == null) {
             throw new RuntimeException("PIN_NOT_SET: L'étudiant n'a pas encore configuré son code PIN de transaction.");
@@ -107,6 +112,10 @@ public class TransactionServiceImpl implements TransactionService {
         Boutique receiver = boutiqueRepository.findByTrackingId(request.receiverTrackingId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Receiver not found with ID: " + request.receiverTrackingId()));
+
+        if (receiver.getKycStatus() != KycStatus.VALIDE) {
+            throw new RuntimeException("TRANSACTION_FAILED: La boutique n'est pas validée (KYC non valide).");
+        }
 
         // 2. Fetch wallets
         Wallet senderWallet = sender.getWallet();
