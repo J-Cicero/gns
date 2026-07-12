@@ -15,6 +15,8 @@ import com.backend.gns.commerce.infrastructure.repositories.TransactionRepositor
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.backend.gns.student.domain.models.ScolariteYear;
+import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ public class LiquidationServiceImpl implements LiquidationService {
     private final LiquidationMapper liquidationMapper;
     private final BoutiqueRepository boutiqueRepository;
     private final TransactionRepository transactionRepository;
+    private final ScolariteYearRepository scolariteYearRepository;
 
     @Override
     @Transactional
@@ -62,12 +65,16 @@ public class LiquidationServiceImpl implements LiquidationService {
                     + ") dépasse le solde disponible (" + sumAvailable + ").");
         }
 
+        ScolariteYear activeYear = scolariteYearRepository.findByIsOpenTrue()
+                .orElseThrow(() -> new RuntimeException("Aucune année scolaire active n'est ouverte."));
+
         Liquidation liquidation = Liquidation.builder()
                 .trackingId(UUID.randomUUID())
                 .amountToLiquidate(request.amountToLiquidate()) // On garde le montant demandé par le marchand (peut
                                                                 // être inférieur au max disponible)
                 .createdAt(LocalDateTime.now())
                 .status(LiquidationStatut.EN_ATTENTE)
+                .scolariteYear(activeYear)
                 .build();
 
         Liquidation savedLiquidation = liquidationRepository.save(liquidation);
@@ -87,8 +94,9 @@ public class LiquidationServiceImpl implements LiquidationService {
 
     @Override
     public List<LiquidationResponse> findByBoutiqueId(UUID boutiqueId) {
-        // Nécessite une méthode dans le repository
-        return List.of();
+        return liquidationRepository.findByBoutiqueTrackingId(boutiqueId).stream()
+                .map(liquidationMapper::toResponse)
+                .toList();
     }
 
     @Override
@@ -102,8 +110,57 @@ public class LiquidationServiceImpl implements LiquidationService {
     @Override
     @Transactional
     public LiquidationResponse validerLiquidation(UUID trackingId, String referenceVirement) {
-        Liquidation liquidation = liquidationRepository.findByTrackingId(trackingId)
-                .orElseThrow(() -> new RuntimeException("Liquidation non trouvée"));
+        Optional<Liquidation> liquidationOpt = liquidationRepository.findByTrackingId(trackingId);
+        
+        Liquidation liquidation;
+        if (liquidationOpt.isPresent()) {
+            liquidation = liquidationOpt.get();
+        } else {
+            Optional<Boutique> boutiqueOpt = boutiqueRepository.findByTrackingId(trackingId);
+            if (boutiqueOpt.isPresent()) {
+                Boutique boutique = boutiqueOpt.get();
+                List<Liquidation> liquidations = liquidationRepository.findByBoutiqueTrackingId(boutique.getTrackingId());
+                Optional<Liquidation> pendingLiquidation = liquidations.stream()
+                        .filter(l -> l.getStatus() == LiquidationStatut.EN_ATTENTE)
+                        .findFirst();
+                
+                if (pendingLiquidation.isPresent()) {
+                    liquidation = pendingLiquidation.get();
+                } else {
+                    List<Transaction> pendingTransactions = transactionRepository
+                            .findByReceiverTrackingIdAndStatusAndLiquidationIsNull(boutique.getTrackingId(),
+                                    TransactionStatut.VALIDE);
+                    
+                    if (pendingTransactions.isEmpty()) {
+                        throw new RuntimeException("Aucune transaction à liquider pour cette boutique.");
+                    }
+                    
+                    BigDecimal sumAvailable = pendingTransactions.stream()
+                            .map(Transaction::getAmountCredited)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                            
+                    ScolariteYear activeYear = scolariteYearRepository.findByIsOpenTrue()
+                            .orElseThrow(() -> new RuntimeException("Aucune année scolaire active n'est ouverte."));
+                    
+                    liquidation = Liquidation.builder()
+                            .trackingId(UUID.randomUUID())
+                            .scolariteYear(activeYear)
+                            .amountToLiquidate(sumAvailable)
+                            .createdAt(LocalDateTime.now())
+                            .status(LiquidationStatut.EN_ATTENTE)
+                            .build();
+                            
+                    liquidation = liquidationRepository.save(liquidation);
+                    
+                    for (Transaction t : pendingTransactions) {
+                        t.setLiquidation(liquidation);
+                    }
+                    transactionRepository.saveAll(pendingTransactions);
+                }
+            } else {
+                throw new RuntimeException("Liquidation ou Boutique non trouvée avec le trackingId: " + trackingId);
+            }
+        }
 
         liquidation.setStatus(LiquidationStatut.PAYE);
         liquidation.setValidatedAt(LocalDateTime.now());

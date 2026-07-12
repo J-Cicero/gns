@@ -57,7 +57,7 @@ public class User extends BaseEntity {
   @Column(nullable = false)
   private boolean isActive = false;
 
-  @Column(length = 20)
+  @Column(length = 50)
   private String phoneNumber;
 
   @Column(length = 50)

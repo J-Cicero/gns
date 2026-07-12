@@ -187,4 +187,25 @@ public class CardController {
           .body(Map.of("error", "SEARCH_FAILED", "message", e.getMessage()));
     }
   }
+
+  @PostMapping("/demander/{studentTrackingId}")
+  @Operation(
+      summary = "Demander une carte étudiante",
+      description = "Initie une demande de création de carte physique pour un étudiant")
+  @ApiResponse(responseCode = "201", description = "Demande de carte créée avec succès")
+  @ApiResponse(
+      responseCode = "400",
+      description = "Étudiant a déjà une carte ou solde insuffisant")
+  public ResponseEntity<?> demanderCarte(@PathVariable UUID studentTrackingId) {
+    try {
+      CardResponse response = cardService.demanderCarte(studentTrackingId);
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "REQUEST_FAILED", "message", e.getMessage()));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "INTERNAL_ERROR", "message", e.getMessage()));
+    }
+  }
 }
