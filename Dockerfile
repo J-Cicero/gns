@@ -21,4 +21,5 @@ COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080
 
 # Run the application
+# Force rebuild trigger 2026-07-27
 ENTRYPOINT ["java", "-jar", "app.jar"]
