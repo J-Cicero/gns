@@ -42,4 +42,14 @@ public class DocumentMerchantController {
     public ResponseEntity<?> findByMerchantId(@PathVariable UUID merchantId, Pageable pageable) {
         return ResponseEntity.ok(documentService.findByMerchantTrackingId(merchantId, pageable));
     }
+
+    @PatchMapping("/{trackingId}/status")
+    @Operation(summary = "Mettre à jour le statut d'un document marchand (VALIDE / REJETE)")
+    public ResponseEntity<DocumentResponse> updateDocumentStatus(
+            @PathVariable UUID trackingId,
+            @RequestParam com.backend.gns.core.parametrage.domain.enums.StatutDocument status,
+            @RequestParam(required = false) String rejectionReason) {
+        DocumentResponse response = documentService.updateDocumentStatus(trackingId, status, rejectionReason);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -88,14 +88,6 @@ public class GeminiExtractionService {
 
   private String buildPrompt(TypeDocument typeDoc) {
     return switch (typeDoc) {
-      case RELEVE_BAC ->
-          "Analyse ce relevé du BAC. Retourne JSON: {\"moyenneBac\": 13.5, \"anneeObtention\": \"2023\", \"nomComplet\": \"...\"}";
-      case FICHE_UE ->
-          "Analyse cette fiche UE. Retourne JSON: {\"niveau\": \"L1\", \"montantScolarite\": 25000, \"creditsTotalValides\": 30}";
-      case RELEVE_NOTES ->
-          "Analyse ce relevé notes. Retourne JSON: {\"niveau\": \"L2\", \"creditsTotalValides\": 60}";
-      case SOUCHE_TAMPONNEE ->
-          "Analyse ce mandat. Retourne JSON: {\"documentStatus\": \"valide\", \"nomBanque\": \"...\"}";
       case PIECE_IDENTITE ->
           "Analyse cette ID. Retourne JSON: {\"nomComplet\": \"...\", \"dateNaissance\": \"YYYY-MM-DD\"}";
       case RIB ->

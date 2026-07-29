@@ -49,4 +49,8 @@ public interface WalletService {
   void remettreAZeroGroupe(List<UUID> walletTrackingIds);
 
   void gelerTousLesWalletsEtudiant(boolean geler);
+
+  void gelerWallet(UUID walletTrackingId, boolean geler);
+
+  void gelerWalletsEnMasse(List<UUID> walletTrackingIds, boolean geler);
 }

@@ -175,4 +175,40 @@ public class WalletController {
           .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
     }
   }
+
+  @PutMapping("/{trackingId}/freeze")
+  @Operation(summary = "Geler ou dégeler un portefeuille individuel")
+  public ResponseEntity<?> gelerWallet(
+      @PathVariable UUID trackingId,
+      @RequestParam boolean geler) {
+    try {
+      walletService.gelerWallet(trackingId, geler);
+      return ResponseEntity.ok(
+          Map.of(
+              "success",
+              true,
+              "message",
+              "Le portefeuille " + trackingId + " a été " + (geler ? "gelé" : "dégelé") + " avec succès."));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/freeze-bulk")
+  @Operation(summary = "Geler ou dégeler une liste de portefeuilles en masse")
+  public ResponseEntity<?> gelerWalletsEnMasse(@RequestBody com.backend.gns.wallet.application.dtos.requests.BulkFreezeRequest request) {
+    try {
+      walletService.gelerWalletsEnMasse(request.walletTrackingIds(), request.geler());
+      return ResponseEntity.ok(
+          Map.of(
+              "success",
+              true,
+              "message",
+              "Statut des portefeuilles sélectionnés mis à jour avec succès."));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "UPDATE_FAILED", "message", e.getMessage()));
+    }
+  }
 }

@@ -260,4 +260,29 @@ public class WalletServiceImpl implements WalletService {
     walletRepository.updateStatutByType(targetStatus, WalletType.STUDENT);
     log.info("Tous les portefeuilles étudiants ont été mis à jour avec le statut: {}", targetStatus);
   }
+
+  @Override
+  @Transactional
+  public void gelerWallet(UUID walletTrackingId, boolean geler) {
+    Wallet wallet = findWalletOrThrow(walletTrackingId);
+    WalletStatus targetStatus = geler ? WalletStatus.GELE : WalletStatus.ACTIF;
+    wallet.setStatus(targetStatus);
+    walletRepository.saveAndFlush(wallet);
+    log.info("Portefeuille {} mis à jour avec le statut: {}", walletTrackingId, targetStatus);
+  }
+
+  @Override
+  @Transactional
+  public void gelerWalletsEnMasse(List<UUID> walletTrackingIds, boolean geler) {
+    if (walletTrackingIds == null || walletTrackingIds.isEmpty()) return;
+    WalletStatus targetStatus = geler ? WalletStatus.GELE : WalletStatus.ACTIF;
+    log.info("Gel/Dégel en masse de {} portefeuilles vers le statut: {}", walletTrackingIds.size(), targetStatus);
+    for (UUID id : walletTrackingIds) {
+      try {
+        gelerWallet(id, geler);
+      } catch (Exception e) {
+        log.error("Échec de la mise à jour du statut pour le portefeuille {}: {}", id, e.getMessage());
+      }
+    }
+  }
 }

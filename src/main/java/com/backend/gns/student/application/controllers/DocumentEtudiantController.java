@@ -46,10 +46,26 @@ public class DocumentEtudiantController {
         return ResponseEntity.ok(documentService.findByInscriptionId(inscriptionId, pageable));
     }
 
+    @GetMapping("/student/{studentId}")
+    @Operation(summary = "Récupérer la liste des documents d'un étudiant par son trackingId")
+    public ResponseEntity<java.util.List<DocumentEtudiantResponse>> findByStudentId(@PathVariable UUID studentId) {
+        return ResponseEntity.ok(documentService.getDocumentsByStudent(studentId));
+    }
+
     @GetMapping("/{trackingId}")
     public ResponseEntity<DocumentEtudiantResponse> findByTrackingId(@PathVariable UUID trackingId) {
         return documentService.findByTrackingId(trackingId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{trackingId}/status")
+    @Operation(summary = "Mettre à jour le statut d'un document étudiant (VALIDE / REJETE)")
+    public ResponseEntity<DocumentEtudiantResponse> updateDocumentStatus(
+            @PathVariable UUID trackingId,
+            @RequestParam com.backend.gns.core.parametrage.domain.enums.StatutDocument status,
+            @RequestParam(required = false) String rejectionReason) {
+        DocumentEtudiantResponse response = documentService.updateDocumentStatus(trackingId, status, rejectionReason);
+        return ResponseEntity.ok(response);
     }
 }

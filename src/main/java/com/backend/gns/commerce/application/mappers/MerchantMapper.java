@@ -22,7 +22,7 @@ public class MerchantMapper {
     merchant.setLastName(request.lastName());
     merchant.setFirstName(request.firstName());
     merchant.setRole(UserRole.COMMERCANT);
-    merchant.setActive(request.isActive() != null ? request.isActive() : true);
+    merchant.setActive(request.isActive() != null ? request.isActive() : false);
     merchant.setPhoneNumber(request.phoneNumber());
     merchant.setBirthDate(request.birthDate());
     merchant.setBirthPlace(request.birthPlace());

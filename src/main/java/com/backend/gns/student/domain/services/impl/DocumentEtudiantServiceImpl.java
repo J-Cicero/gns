@@ -134,18 +134,17 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
         boolean hasValideRib = docs.stream()
                 .anyMatch(d -> d.getDocumentType() == TypeDocument.RIB && d.getStatus() == StatutDocument.VALIDE);
                 
-        boolean hasValideMandatOrSouche = docs.stream()
-                .anyMatch(d -> (d.getDocumentType() == TypeDocument.MANDAT || d.getDocumentType() == TypeDocument.SOUCHE_TAMPONNEE) 
-                        && d.getStatus() == StatutDocument.VALIDE);
+        boolean hasValideMandat = docs.stream()
+                .anyMatch(d -> d.getDocumentType() == TypeDocument.MANDAT && d.getStatus() == StatutDocument.VALIDE);
                         
-        if (hasValideRib && hasValideMandatOrSouche) {
+        if (hasValideRib && hasValideMandat) {
             student.setKycStatus(KycStatus.VALIDE);
             if (student.getWallet() != null) {
                 student.getWallet().setStatus(WalletStatus.ACTIF);
             }
         } else {
             boolean hasRejeteCritical = docs.stream()
-                    .anyMatch(d -> (d.getDocumentType() == TypeDocument.RIB || d.getDocumentType() == TypeDocument.MANDAT || d.getDocumentType() == TypeDocument.SOUCHE_TAMPONNEE) 
+                    .anyMatch(d -> (d.getDocumentType() == TypeDocument.RIB || d.getDocumentType() == TypeDocument.MANDAT) 
                             && d.getStatus() == StatutDocument.REJETE);
             if (hasRejeteCritical) {
                 student.setKycStatus(KycStatus.REJETE);
