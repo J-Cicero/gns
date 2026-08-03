@@ -87,13 +87,20 @@ public class GeminiExtractionService {
   }
 
   private String buildPrompt(TypeDocument typeDoc) {
+    if (typeDoc == null) {
+      return "Analyse ce document et extrait les informations principales sous forme de JSON.";
+    }
     return switch (typeDoc) {
       case PIECE_IDENTITE ->
           "Analyse cette ID. Retourne JSON: {\"nomComplet\": \"...\", \"dateNaissance\": \"YYYY-MM-DD\"}";
       case RIB ->
-          "Analyse ce RIB. Retourne JSON: {\"nomComplet\": \"...\", \"numeroCDompte\": \"...\", \"nomBanque\": \"...\"}";
+          "Analyse ce RIB. Retourne JSON: {\"nomComplet\": \"...\", \"numeroCompte\": \"...\", \"nomBanque\": \"...\"}";
       case MANDAT ->
           "Analyse ce mandat de prélèvement. Retourne JSON: {\"signe\": true, \"dateSignature\": \"...\"}";
+      case RELEVE_NOTES ->
+          "Analyse ce relevé de notes. Retourne JSON: {\"nomComplet\": \"...\", \"niveau\": \"...\", \"moyenne\": \"...\"}";
+      default ->
+          "Analyse ce document. Retourne JSON: {\"nomComplet\": \"...\"}";
     };
   }
 
