@@ -35,7 +35,7 @@ public class StudentMapper {
     student.setRole(UserRole.ETUDIANT);
     student.setPhoneNumber(request.phoneNumber());
 
-    student.setActive(false);
+    student.setActive(true);  // Compte actif dès la création — wallet reste INACTIF jusqu'à validation KYC
     student.setKycStatus(KycStatus.EN_ATTENTE);
 
     student.setBirthDate(request.birthDate());

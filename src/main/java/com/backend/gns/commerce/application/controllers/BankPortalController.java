@@ -50,4 +50,10 @@ public class BankPortalController {
             @org.springframework.web.bind.annotation.PathVariable UUID studentTrackingId) {
         return ResponseEntity.ok(bankPortalService.getStudentDepenses(studentTrackingId));
     }
+
+    @GetMapping("/merchants")
+    public ResponseEntity<List<com.backend.gns.commerce.application.dtos.responses.MerchantKycInfoResponse>> getMerchants(
+            @RequestParam UUID bankOperatorTrackingId) {
+        return ResponseEntity.ok(bankPortalService.getMerchants(bankOperatorTrackingId));
+    }
 }

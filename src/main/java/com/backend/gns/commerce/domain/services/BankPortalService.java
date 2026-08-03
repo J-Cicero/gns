@@ -4,6 +4,7 @@ import com.backend.gns.user.application.dtos.responses.BankFinancialSummaryRespo
 import com.backend.gns.user.application.dtos.responses.BanqueInfoResponse;
 
 import com.backend.gns.commerce.application.dtos.responses.BoutiqueLiquidationInfoResponse;
+import com.backend.gns.commerce.application.dtos.responses.MerchantKycInfoResponse;
 import com.backend.gns.commerce.application.dtos.responses.StudentLiquidationInfoResponse;
 
 import java.util.List;
@@ -13,5 +14,6 @@ public interface BankPortalService {
     BanqueInfoResponse getBanqueInfo(UUID bankOperatorTrackingId);
     List<StudentLiquidationInfoResponse> getStudents(UUID bankOperatorTrackingId);
     List<BoutiqueLiquidationInfoResponse> getBoutiques(UUID bankOperatorTrackingId);
+    List<MerchantKycInfoResponse> getMerchants(UUID bankOperatorTrackingId);
     List<com.backend.gns.commerce.application.dtos.responses.StudentDepenseResponse> getStudentDepenses(UUID studentTrackingId);
 }

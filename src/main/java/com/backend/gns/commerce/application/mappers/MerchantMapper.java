@@ -22,7 +22,7 @@ public class MerchantMapper {
     merchant.setLastName(request.lastName());
     merchant.setFirstName(request.firstName());
     merchant.setRole(UserRole.COMMERCANT);
-    merchant.setActive(request.isActive() != null ? request.isActive() : false);
+    merchant.setActive(true);  // Compte actif dès la création — wallet reste INACTIF jusqu'à validation KYC
     merchant.setPhoneNumber(request.phoneNumber());
     merchant.setBirthDate(request.birthDate());
     merchant.setBirthPlace(request.birthPlace());

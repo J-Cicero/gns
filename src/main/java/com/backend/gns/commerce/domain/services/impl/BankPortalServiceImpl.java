@@ -20,7 +20,9 @@ import com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancai
 import com.backend.gns.core.parametrage.domain.enums.ProprietaireType;
 import com.backend.gns.commerce.application.dtos.responses.BoutiqueLiquidationInfoResponse;
 import com.backend.gns.commerce.application.dtos.responses.StudentLiquidationInfoResponse;
+import com.backend.gns.commerce.application.dtos.responses.MerchantKycInfoResponse;
 import com.backend.gns.commerce.infrastructure.repositories.BoutiqueRepository;
+import com.backend.gns.commerce.infrastructure.repositories.MerchantRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +36,7 @@ public class BankPortalServiceImpl implements BankPortalService {
     private final CompteBancaireRepository compteBancaireRepository;
     private final StudentRepository studentRepository;
     private final BoutiqueRepository boutiqueRepository;
+    private final MerchantRepository merchantRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -167,6 +170,46 @@ public class BankPortalServiceImpl implements BankPortalService {
                 .build();
         }).collect(Collectors.toList());
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<MerchantKycInfoResponse> getMerchants(UUID bankOperatorTrackingId) {
+        log.info("Fetching merchants (KYC) for bank operator {}", bankOperatorTrackingId);
+
+        return merchantRepository.findAll().stream().map(m -> {
+            String numeroCompte = compteBancaireRepository.findByProprietaireTrackingId(m.getTrackingId())
+                    .map(cb -> cb.getAccountNumber())
+                    .orElse("Non renseigné");
+
+            List<com.backend.gns.commerce.domain.models.Boutique> boutiques =
+                boutiqueRepository.findByMerchant(m);
+
+            // Prendre le wallet de la première boutique comme wallet représentatif
+            java.util.Optional<com.backend.gns.commerce.domain.models.Boutique> boutiqueAvecWallet =
+                boutiques.stream()
+                    .filter(b -> b.getWallet() != null)
+                    .findFirst();
+
+            List<String> nomsBoutiques = boutiques.stream()
+                .map(com.backend.gns.commerce.domain.models.Boutique::getName)
+                .collect(Collectors.toList());
+
+            return MerchantKycInfoResponse.builder()
+                .merchantTrackingId(m.getTrackingId())
+                .nom(m.getLastName())
+                .prenom(m.getFirstName())
+                .email(m.getEmail())
+                .phoneNumber(m.getPhoneNumber())
+                .kycStatus(m.getKycStatus() != null ? m.getKycStatus().name() : "EN_ATTENTE")
+                .numeroCompte(numeroCompte)
+                .walletTrackingId(boutiqueAvecWallet.map(b -> b.getWallet().getTrackingId()).orElse(null))
+                .walletStatus(boutiqueAvecWallet.map(b -> b.getWallet().getStatus() != null ? b.getWallet().getStatus().name() : "ACTIF").orElse("ACTIF"))
+                .soldeWallet(boutiqueAvecWallet.map(b -> b.getWallet().getBalance()).orElse(BigDecimal.ZERO))
+                .nomsBoutiques(nomsBoutiques)
+                .nombreBoutiques(boutiques.size())
+                .build();
+        }).collect(Collectors.toList());
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<com.backend.gns.commerce.application.dtos.responses.StudentDepenseResponse> getStudentDepenses(UUID studentTrackingId) {
