@@ -1,6 +1,7 @@
 package com.backend.gns.student.application.dtos.requests;
 
 import com.backend.gns.student.domain.enums.CardStatut;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Builder;
 
 import java.util.UUID;
@@ -9,6 +10,7 @@ import java.util.UUID;
 public record CardRequest(
     String cardNumber,
     String qrCodeData,
+    @JsonAlias({"statut", "statutCarte", "status"})
     CardStatut status,
     UUID walletTrackingId
 ) {}

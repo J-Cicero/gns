@@ -154,9 +154,15 @@ public class CardServiceImpl implements CardService {
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Card not found"));
     
-    // Update logic with English attributes
-    card.setStatus(request.status());
-    // ... other updates
+    if (request.status() != null) {
+      card.setStatus(request.status());
+    }
+    if (request.cardNumber() != null) {
+      card.setCardNumber(request.cardNumber());
+    }
+    if (request.qrCodeData() != null) {
+      card.setQrCodeData(request.qrCodeData());
+    }
     
     return cardMapper.toResponse(cardRepository.save(card));
   }

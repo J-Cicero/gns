@@ -3,6 +3,8 @@ package com.backend.gns.student.application.mappers;
 import com.backend.gns.student.application.dtos.requests.CardRequest;
 import com.backend.gns.student.application.dtos.responses.CardResponse;
 import com.backend.gns.student.domain.models.Card;
+import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.UUID;
 public class CardMapper {
 
   private final WalletRepository walletRepository;
+  private final StudentRepository studentRepository;
 
   public Card toEntity(CardRequest request) {
     if (request == null) {
@@ -46,6 +49,20 @@ public class CardMapper {
       return null;
     }
 
+    String studentNom = null;
+    String studentPrenom = null;
+
+    if (card.getWallet() != null && card.getWallet().getTrackingId() != null) {
+      Student student = card.getWallet().getStudent();
+      if (student == null) {
+        student = studentRepository.findByWalletTrackingId(card.getWallet().getTrackingId()).orElse(null);
+      }
+      if (student != null) {
+        studentNom = student.getLastName();
+        studentPrenom = student.getFirstName();
+      }
+    }
+
     return CardResponse.builder()
         .trackingId(card.getTrackingId())
         .cardNumber(card.getCardNumber())
@@ -54,8 +71,8 @@ public class CardMapper {
         .emissionDate(card.getEmissionDate())
         .expirationDate(card.getExpirationDate())
         .walletTrackingId(card.getWallet() != null ? card.getWallet().getTrackingId() : null)
-        .studentNom((card.getWallet() != null && card.getWallet().getStudent() != null) ? card.getWallet().getStudent().getLastName() : null)
-        .studentPrenom((card.getWallet() != null && card.getWallet().getStudent() != null) ? card.getWallet().getStudent().getFirstName() : null)
+        .studentNom(studentNom)
+        .studentPrenom(studentPrenom)
         .build();
   }
 }
