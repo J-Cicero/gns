@@ -168,6 +168,7 @@ public class CardServiceImpl implements CardService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Page<CardResponse> findAll(Pageable pageable) {
     return cardRepository.findAll(normalize(pageable)).map(cardMapper::toResponse);
   }

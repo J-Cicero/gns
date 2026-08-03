@@ -52,10 +52,16 @@ public class CardMapper {
     String studentNom = null;
     String studentPrenom = null;
 
-    if (card.getWallet() != null && card.getWallet().getTrackingId() != null) {
+    if (card.getWallet() != null) {
       Student student = card.getWallet().getStudent();
-      if (student == null) {
+      if (student == null && card.getWallet().getTrackingId() != null) {
         student = studentRepository.findByWalletTrackingId(card.getWallet().getTrackingId()).orElse(null);
+      }
+      if (student == null && card.getWallet().getId() != null) {
+        student = studentRepository.findByWallet_Id(card.getWallet().getId()).orElse(null);
+      }
+      if (student == null) {
+        student = studentRepository.findByWallet(card.getWallet()).orElse(null);
       }
       if (student != null) {
         studentNom = student.getLastName();

@@ -19,6 +19,10 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
   @Query("SELECT s FROM Student s WHERE s.wallet.trackingId = :walletTrackingId")
   Optional<Student> findByWalletTrackingId(@Param("walletTrackingId") UUID walletTrackingId);
 
+  Optional<Student> findByWallet(com.backend.gns.wallet.domain.models.Wallet wallet);
+
+  Optional<Student> findByWallet_Id(Long walletId);
+
   Optional<Student> findByEmail(String email);
 
   Long countByKycStatus(KycStatus statut);
