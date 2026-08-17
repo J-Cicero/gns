@@ -30,7 +30,7 @@ public class DocumentEtudiantMapper {
             entity.getStatus(),
             entity.getUploadedAt(),
             entity.getRejectionReason(),
-            entity.getInscription() != null ? entity.getInscription().getTrackingId() : null,
+            null,
             "ETUDIANT"
     );
   }

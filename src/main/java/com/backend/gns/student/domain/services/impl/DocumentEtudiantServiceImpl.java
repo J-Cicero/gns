@@ -7,13 +7,11 @@ import com.backend.gns.core.parametrage.domain.services.impl.CloudinaryStorageSe
 import com.backend.gns.student.application.dtos.responses.DocumentEtudiantResponse;
 import com.backend.gns.student.application.mappers.DocumentEtudiantMapper;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
-import com.backend.gns.student.domain.models.InscriptionAnnuelle;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.DocumentEtudiantService;
 import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
-import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository;
+
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
-import com.backend.gns.student.domain.services.InscriptionValidationService;
 import com.backend.gns.core.parametrage.domain.enums.KycStatus;
 import com.backend.gns.wallet.domain.enums.WalletStatus;
 import lombok.RequiredArgsConstructor;
@@ -37,11 +35,10 @@ import java.util.stream.Collectors;
 public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     private final DocumentEtudiantRepository documentRepository;
-    private final InscriptionAnnuelleRepository inscriptionRepository;
     private final StudentRepository studentRepository;
     private final DocumentEtudiantMapper documentMapper;
     private final CloudinaryStorageService cloudinaryService;
-    private final InscriptionValidationService inscriptionValidationService;
+
 
     @Override
     @Transactional
@@ -50,27 +47,12 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
         Student student = studentRepository.findByTrackingId(studentTrackingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Étudiant non trouvé"));
 
-        InscriptionAnnuelle inscription = null;
-        if (inscriptionTrackingId != null) {
-            inscription = inscriptionRepository.findByTrackingId(inscriptionTrackingId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Inscription non trouvée"));
-        }
-
-        if (inscription != null) {
-            documentRepository.findByInscriptionTrackingId(inscriptionTrackingId, Pageable.unpaged()).stream()
-                    .filter(d -> d.getDocumentType() == typeDocument)
-                    .forEach(d -> {
-                        cloudinaryService.supprimer(d.getProviderPublicId());
-                        documentRepository.delete(d);
-                    });
-        } else {
-            documentRepository.findByStudentTrackingId(studentTrackingId).stream()
-                    .filter(d -> d.getDocumentType() == typeDocument && d.getInscription() == null)
-                    .forEach(d -> {
-                        cloudinaryService.supprimer(d.getProviderPublicId());
-                        documentRepository.delete(d);
-                    });
-        }
+        documentRepository.findByStudentTrackingId(studentTrackingId).stream()
+                .filter(d -> d.getDocumentType() == typeDocument)
+                .forEach(d -> {
+                    cloudinaryService.supprimer(d.getProviderPublicId());
+                    documentRepository.delete(d);
+                });
 
         Map<String, String> uploadResult = cloudinaryService.upload(fichier, studentTrackingId.toString());
 
@@ -82,15 +64,9 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
                 .status(StatutDocument.EN_ATTENTE)
                 .uploadedAt(LocalDateTime.now())
                 .student(student)
-                .inscription(inscription)
                 .build();
 
         DocumentEtudiant savedDocument = documentRepository.save(document);
-
-        // Réévaluer le dossier après upload
-        if (inscriptionTrackingId != null) {
-            inscriptionValidationService.reevaluateDossierAfterUpload(inscriptionTrackingId);
-        }
 
         return documentMapper.toEtudiantResponse(savedDocument);
     }
@@ -109,8 +85,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     @Override
     public Page<DocumentEtudiantResponse> findByInscriptionId(UUID inscriptionId, Pageable pageable) {
-        return documentRepository.findByInscriptionTrackingId(inscriptionId, pageable)
-                .map(documentMapper::toEtudiantResponse);
+        return Page.empty();
     }
 
     @Override
@@ -175,11 +150,6 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
         
         if (saved.getStudent() != null) {
             reevaluateStudentKyc(saved.getStudent());
-        }
-
-        // Si c'est un document d'inscription annuelle, on réévalue
-        if (saved.getInscription() != null) {
-            inscriptionValidationService.reevaluateDossierAfterUpload(saved.getInscription().getTrackingId());
         }
 
         return documentMapper.toEtudiantResponse(saved);

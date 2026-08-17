@@ -6,6 +6,7 @@ import com.backend.gns.student.application.mappers.ScolariteYearMapper;
 import com.backend.gns.student.domain.models.ScolariteYear;
 import com.backend.gns.student.domain.services.ScolariteYearService;
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
+import com.backend.gns.core.notification.domain.services.NotificationService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,11 +24,15 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
 
   private final ScolariteYearRepository scolariteYearRepository;
   private final ScolariteYearMapper scolariteYearMapper;
+  private final NotificationService notificationService;
 
   public ScolariteYearServiceImpl(
-      ScolariteYearRepository scolariteYearRepository, ScolariteYearMapper scolariteYearMapper) {
+      ScolariteYearRepository scolariteYearRepository, 
+      ScolariteYearMapper scolariteYearMapper,
+      NotificationService notificationService) {
     this.scolariteYearRepository = scolariteYearRepository;
     this.scolariteYearMapper = scolariteYearMapper;
+    this.notificationService = notificationService;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -41,14 +46,25 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
     if (request.isOpen()) {
       Optional<ScolariteYear> activeYear = scolariteYearRepository.findByIsOpenTrue();
       if (activeYear.isPresent()) {
-        throw new IllegalStateException(
-            "Une année scolaire est déjà ouverte. Veuillez la clôturer d'abord.");
+        ScolariteYear oldYear = activeYear.get();
+        oldYear.setOpen(false);
+        oldYear.setClosed(true);
+        scolariteYearRepository.save(oldYear);
       }
     }
 
     ScolariteYear entity = scolariteYearMapper.toEntity(request);
     entity.setTrackingId(UUID.randomUUID());
     ScolariteYear saved = scolariteYearRepository.save(entity);
+
+    // Send notification to Admin Banque
+    notificationService.createNotification(
+        "Nouvelle Année Scolaire",
+        "L'année scolaire \"" + saved.getLabel() + "\" a été créée et activée par l'Admin GNS.",
+        "ADMIN_BANQUE",
+        "SCOLARITE_YEAR"
+    );
+
     return scolariteYearMapper.toResponse(saved);
   }
 
@@ -69,6 +85,13 @@ public class ScolariteYearServiceImpl implements ScolariteYearService {
     year.setOpen(false);
     year.setClosed(true);
     scolariteYearRepository.save(year);
+
+    notificationService.createNotification(
+        "Année Scolaire Clôturée",
+        "L'année scolaire \"" + year.getLabel() + "\" a été clôturée par l'Admin GNS.",
+        "ADMIN_BANQUE",
+        "SCOLARITE_YEAR"
+    );
   }
 
   @Override

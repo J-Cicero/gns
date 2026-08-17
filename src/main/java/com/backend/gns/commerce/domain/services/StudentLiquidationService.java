@@ -12,6 +12,9 @@ public interface StudentLiquidationService {
     StudentLiquidationResponse create(StudentLiquidationRequest request);
     Optional<StudentLiquidationResponse> findByTrackingId(UUID trackingId);
     List<StudentLiquidationResponse> findByStudentId(UUID studentId);
+    List<StudentLiquidationResponse> findAll();
+    List<StudentLiquidationResponse> findPending();
+    List<StudentLiquidationResponse> findByScolariteYear(UUID scolariteYearTrackingId);
     BigDecimal getPendingTotal();
     StudentLiquidationResponse validerLiquidation(UUID trackingId, String referenceVirement);
 }

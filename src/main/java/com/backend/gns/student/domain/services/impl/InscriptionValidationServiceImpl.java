@@ -29,40 +29,12 @@ public class InscriptionValidationServiceImpl implements InscriptionValidationSe
 
     @Override
     public void validateDocuments(InscriptionAnnuelle inscription) {
-        List<DocumentRequis> documentsRequis = documentRequisRepository.findByRequiredTrue();
-
-        List<DocumentRequis> expectedRules = documentsRequis.stream()
-                .filter(req -> req.getNiveauRequis() == null || req.getNiveauRequis() == inscription.getStudyLevel())
-                .toList();
-
-        List<DocumentEtudiant> documentsFournis = documentEtudiantRepository.findByInscription(inscription);
-
-        Set<TypeDocument> typesFournis = documentsFournis.stream()
-                .map(DocumentEtudiant::getDocumentType)
-                .collect(Collectors.toSet());
-
-        List<TypeDocument> missingDocuments = expectedRules.stream()
-                .map(DocumentRequis::getTypeDocument)
-                .filter(type -> !typesFournis.contains(type))
-                .toList();
-
-        if (!missingDocuments.isEmpty()) {
-            throw new MissingRequiredDocumentsException(
-                    "Dossier incomplet. Des documents obligatoires sont manquants.",
-                    missingDocuments);
-        }
+        // Aucune exigence de document pour l'inscription annuelle.
+        // Les documents (RIB, Mandat) sont rattachés uniquement au profil de l'étudiant à la création de compte.
     }
 
     @Override
     public void reevaluateDossierAfterUpload(UUID inscriptionId) {
-        inscriptionAnnuelleRepository.findByTrackingId(inscriptionId).ifPresent(inscription -> {
-            try {
-                validateDocuments(inscription);
-                log.info("Dossier complet pour l'inscription : {}", inscriptionId);
-            } catch (MissingRequiredDocumentsException e) {
-                log.info("Dossier toujours incomplet pour l'inscription : {}. Documents manquants : {}", inscriptionId, e.getMissingDocuments());
-            }
-        });
+        log.info("Évaluation automatique ignorée : les documents sont gérés au niveau du compte étudiant.");
     }
-
 }

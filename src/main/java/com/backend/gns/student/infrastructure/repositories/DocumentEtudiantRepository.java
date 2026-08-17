@@ -17,9 +17,7 @@ public interface DocumentEtudiantRepository extends JpaRepository<DocumentEtudia
     Optional<DocumentEtudiant> findByTrackingId(UUID trackingId);
     Page<DocumentEtudiant> findByStudent_TrackingId(UUID studentTrackingId, Pageable pageable);
     List<DocumentEtudiant> findByStudent_TrackingId(UUID studentTrackingId);
-    Page<DocumentEtudiant> findByInscriptionTrackingId(UUID trackingId, Pageable pageable);
     List<DocumentEtudiant> findByStudentTrackingId(UUID studentId);
     @Query("SELECT d FROM DocumentEtudiant d WHERE d.student.trackingId = :trackingId")
     Page<DocumentEtudiant> findByStudentTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
-    List<DocumentEtudiant> findByInscription(com.backend.gns.student.domain.models.InscriptionAnnuelle inscription);
 }

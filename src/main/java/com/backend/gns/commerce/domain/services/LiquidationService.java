@@ -12,4 +12,6 @@ public interface LiquidationService {
     List<LiquidationResponse> findByBoutiqueId(UUID boutiqueId);
     LiquidationResponse validerLiquidation(UUID trackingId, String referenceVirement);
     java.math.BigDecimal getPendingTotal();
+    List<LiquidationResponse> findAll();
+    List<LiquidationResponse> findByScolariteYear(UUID scolariteYearTrackingId);
 }

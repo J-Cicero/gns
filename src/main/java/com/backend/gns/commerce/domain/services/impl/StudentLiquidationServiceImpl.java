@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.backend.gns.core.notification.domain.services.NotificationService;
+
 @Service
 @RequiredArgsConstructor
 public class StudentLiquidationServiceImpl implements StudentLiquidationService {
@@ -33,6 +35,7 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
     private final ScolariteYearRepository scolariteYearRepository;
     private final TransactionRepository transactionRepository;
     private final StudentLiquidationMapper mapper;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -69,6 +72,7 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
         StudentLiquidation liquidation = StudentLiquidation.builder()
                 .trackingId(UUID.randomUUID())
                 .scolariteYear(scolariteYear)
+                .student(student)
                 .amountDeducted(request.amountToDeduct())
                 .createdAt(LocalDateTime.now())
                 .status(LiquidationStatut.EN_ATTENTE)
@@ -82,6 +86,13 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
         }
         transactionRepository.saveAll(pendingTransactions);
 
+        notificationService.createNotification(
+            "Nouvelle Liquidation Étudiant",
+            "L'Admin GNS a créé une liquidation étudiant pour " + student.getFirstName() + " " + student.getLastName() + " (" + savedLiquidation.getAmountDeducted() + " FCFA).",
+            "ADMIN_BANQUE",
+            "LIQUIDATION_STUDENT"
+        );
+
         return mapper.toResponse(savedLiquidation);
     }
 
@@ -93,6 +104,21 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
     @Override
     public List<StudentLiquidationResponse> findByStudentId(UUID studentId) {
         return List.of();
+    }
+
+    @Override
+    public List<StudentLiquidationResponse> findAll() {
+        return studentLiquidationRepository.findAll().stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<StudentLiquidationResponse> findPending() {
+        return studentLiquidationRepository.findAll().stream()
+                .filter(l -> l.getStatus() == LiquidationStatut.EN_ATTENTE)
+                .map(mapper::toResponse)
+                .toList();
     }
 
     @Override
@@ -111,8 +137,29 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
         
         liquidation.setStatus(LiquidationStatut.PAYE);
         liquidation.setValidatedAt(LocalDateTime.now());
-        liquidation.setTransactionReference(referenceVirement);
         
-        return mapper.toResponse(studentLiquidationRepository.save(liquidation));
+        StudentLiquidation savedLiquidation = studentLiquidationRepository.save(liquidation);
+
+        List<Transaction> transactions = transactionRepository.findByStudentLiquidation_TrackingId(savedLiquidation.getTrackingId());
+        for (Transaction t : transactions) {
+            t.setDeductedFromStudentBourse(true);
+        }
+        transactionRepository.saveAll(transactions);
+
+        notificationService.createNotification(
+            "Liquidation Étudiant Validée",
+            "La liquidation étudiant d'un montant de " + savedLiquidation.getAmountDeducted() + " FCFA a été validée par la Banque.",
+            "ADMIN_GNS",
+            "LIQUIDATION_STUDENT"
+        );
+
+        return mapper.toResponse(savedLiquidation);
+    }
+
+    @Override
+    public List<StudentLiquidationResponse> findByScolariteYear(UUID scolariteYearTrackingId) {
+        return studentLiquidationRepository.findByScolariteYear_TrackingId(scolariteYearTrackingId).stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 }

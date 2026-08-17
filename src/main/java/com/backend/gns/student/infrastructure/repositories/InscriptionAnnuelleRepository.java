@@ -37,4 +37,9 @@ public interface InscriptionAnnuelleRepository extends JpaRepository<Inscription
 
   Page<InscriptionAnnuelle> findByStudentUniversiteTrackingId(
       UUID universiteTrackingId, Pageable pageable);
+
+  Page<InscriptionAnnuelle> findByScolariteYear_TrackingId(
+      UUID scolariteYearTrackingId, Pageable pageable);
+
+  long countByScolariteYear_TrackingId(UUID scolariteYearTrackingId);
 }

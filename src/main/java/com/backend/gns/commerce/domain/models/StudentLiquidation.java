@@ -28,8 +28,12 @@ public class StudentLiquidation {
     @JoinColumn(name = "scolarite_year_id", nullable = false)
     private ScolariteYear scolariteYear;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    private Student student;
+
     @Column(nullable = false)
-    private BigDecimal amountDeducted;
+    private BigDecimal amountDeducted; 
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -39,9 +43,4 @@ public class StudentLiquidation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LiquidationStatut status;
-
-    private String transactionReference;
-
-    @OneToMany(mappedBy = "studentLiquidation", fetch = FetchType.LAZY)
-    private java.util.List<Transaction> transactions;
 }

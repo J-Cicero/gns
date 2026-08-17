@@ -15,6 +15,7 @@ import com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRe
 import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.wallet.infrastructure.repositories.WalletRepository;
+import com.backend.gns.core.notification.domain.services.NotificationService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,7 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   private final CloudinaryStorageService storageService;
   private final DocumentEtudiantRepository documentRepository;
   private final com.backend.gns.student.domain.services.InscriptionValidationService inscriptionValidationService;
+  private final NotificationService notificationService;
 
   @Override
   @Transactional
@@ -59,7 +61,6 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     InscriptionAnnuelle ins;
     if (existing.isPresent()) {
         ins = existing.get();
-        ins.setStudyLevel(request.studyLevel());
     } else {
         ins = inscriptionMapper.toEntity(request);
         ins.setScolariteYear(year);
@@ -82,7 +83,6 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
             doc.setStatus(com.backend.gns.core.parametrage.domain.enums.StatutDocument.EN_ATTENTE);
             doc.setUploadedAt(java.time.LocalDateTime.now());
             doc.setStudent(student);
-            doc.setInscription(savedIns);
             documentRepository.save(doc);
         } catch (Exception e) {
             throw new RuntimeException("Failed to upload student card", e);
@@ -129,7 +129,6 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     InscriptionAnnuelle inscription;
     if (existing.isPresent()) {
         inscription = existing.get();
-        inscription.setStudyLevel(request.studyLevel());
     } else {
         inscription = inscriptionMapper.toEntity(request);
         inscription.setScolariteYear(year);
@@ -196,12 +195,11 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
   public InscriptionAnnuelleResponse update(UUID trackingId, InscriptionAnnuelleRequest request) {
     InscriptionAnnuelle inscription = inscriptionRepository.findByTrackingId(trackingId)
             .orElseThrow(() -> new EntityNotFoundException("Enrollment not found with ID: " + trackingId));
-
-    inscription.setStudyLevel(request.studyLevel());
     
     InscriptionAnnuelle updatedInscription = inscriptionRepository.save(inscription);
     return inscriptionMapper.toResponse(updatedInscription);
   }
+
 
   @Override
   @Transactional
@@ -216,7 +214,20 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
           inscription.setRejectionReason(null);
       }
 
-      return inscriptionMapper.toResponse(inscriptionRepository.save(inscription));
+      InscriptionAnnuelle saved = inscriptionRepository.save(inscription);
+
+      String studentName = (inscription.getStudent() != null)
+          ? inscription.getStudent().getFirstName() + " " + inscription.getStudent().getLastName()
+          : "Étudiant";
+
+      notificationService.createNotification(
+          "Statut Inscription Mis à Jour",
+          "Le dossier de l'étudiant " + studentName + " a été mis à jour par la Banque (Statut: " + statut + ").",
+          "ADMIN_GNS",
+          "INSCRIPTION"
+      );
+
+      return inscriptionMapper.toResponse(saved);
   }
 
   @Override

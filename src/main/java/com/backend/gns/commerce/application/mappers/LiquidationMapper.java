@@ -40,13 +40,7 @@ public class LiquidationMapper {
             return null;
         }
 
-        String boutiqueName = "Unknown";
-        if (entity.getTransactions() != null && !entity.getTransactions().isEmpty()) {
-            Boutique boutique = entity.getTransactions().get(0).getReceiver();
-            if (boutique != null) {
-                boutiqueName = boutique.getName();
-            }
-        }
+        String boutiqueName = entity.getBoutique() != null ? entity.getBoutique().getName() : "Inconnue";
 
         return new LiquidationResponse(
             entity.getTrackingId(),
@@ -54,8 +48,7 @@ public class LiquidationMapper {
             entity.getAmountToLiquidate(),
             entity.getCreatedAt(),
             entity.getValidatedAt(),
-            entity.getStatus(),
-            entity.getTransferReference()
+            entity.getStatus()
         );
     }
 }

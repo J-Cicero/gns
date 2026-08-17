@@ -11,6 +11,5 @@ public record LiquidationResponse(
     BigDecimal amountToLiquidate,
     LocalDateTime createdAt,
     LocalDateTime validatedAt,
-    LiquidationStatut status,
-    String transferReference
+    LiquidationStatut status
 ) {}

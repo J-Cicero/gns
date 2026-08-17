@@ -12,22 +12,21 @@ public class StudentLiquidationMapper {
             return null;
         }
 
-        String studentName = "Unknown";
-        if (entity.getTransactions() != null && !entity.getTransactions().isEmpty()) {
-            com.backend.gns.student.domain.models.Student student = entity.getTransactions().get(0).getSender();
-            if (student != null) {
-                studentName = student.getFirstName() + " " + student.getLastName();
-            }
+        String studentName = "Inconnu";
+        java.util.UUID studentTrackingId = null;
+        if (entity.getStudent() != null) {
+            studentName = (entity.getStudent().getFirstName() + " " + entity.getStudent().getLastName()).trim();
+            studentTrackingId = entity.getStudent().getTrackingId();
         }
 
         return new StudentLiquidationResponse(
             entity.getTrackingId(),
+            studentTrackingId,
             studentName,
             entity.getAmountDeducted(),
             entity.getCreatedAt(),
             entity.getValidatedAt(),
-            entity.getStatus(),
-            entity.getTransactionReference()
+            entity.getStatus()
         );
     }
 }

@@ -1,7 +1,6 @@
 package com.backend.gns.student.domain.models;
 
 import com.backend.gns.core.utils.BaseEntity;
-import com.backend.gns.student.domain.enums.StudentNiveau;
 import com.backend.gns.student.domain.enums.TypeBourse;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,9 +43,6 @@ public class InscriptionAnnuelle extends BaseEntity {
   @Column(length = 255)
   private String rejectionReason;
 
-  @Enumerated(EnumType.STRING)
-  @Column(length = 20)
-  private StudentNiveau studyLevel;
 
   @Column(nullable = false)
   private boolean isEligibleForScholarship = false;

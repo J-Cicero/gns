@@ -24,7 +24,6 @@ public class InscriptionAnnuelleMapper {
 
     InscriptionAnnuelle inscription = new InscriptionAnnuelle();
     inscription.setTrackingId(UUID.randomUUID());
-    inscription.setStudyLevel(request.studyLevel());
 
     if (request.studentTrackingId() != null) {
       Student student =
@@ -59,7 +58,6 @@ public class InscriptionAnnuelleMapper {
             inscription.getScolariteYear() != null
                 ? inscription.getScolariteYear().getLabel()
                 : null)
-        .studyLevel(inscription.getStudyLevel())
         .status(inscription.getStatus())
         .rejectionReason(inscription.getRejectionReason())
         .isEligibleForScholarship(inscription.isEligibleForScholarship())

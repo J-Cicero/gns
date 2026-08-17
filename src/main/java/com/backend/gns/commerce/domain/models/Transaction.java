@@ -56,13 +56,6 @@ public class Transaction {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal bankCommission;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isCommissionPaid = false;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isRetry = false;
 
     @Column(nullable = false)
     @Builder.Default

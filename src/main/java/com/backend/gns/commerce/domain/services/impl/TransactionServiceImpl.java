@@ -166,7 +166,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .totalCommission(totalCommission)
                 .gnsCommission(gnsCommission)
                 .bankCommission(bankCommission)
-                .isCommissionPaid(false)
                 .status(TransactionStatut.VALIDE)
                 .createdAt(LocalDateTime.now())
                 .build();

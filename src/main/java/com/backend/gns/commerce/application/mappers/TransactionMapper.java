@@ -9,17 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TransactionMapper {
-    // To get receiverName
 
     public Transaction toEntity(TransactionRequest request) {
         if (request == null)
             return null;
         Transaction transaction = new Transaction();
-        // The sender and receiver entities will be set in the service layer
-        // via their tracking IDs.
         transaction.setAmount(request.amount());
-        transaction.setIsCommissionPaid(request.isCommissionPaid() != null ? request.isCommissionPaid() : false);
-        transaction.setIsRetry(request.isRetry() != null ? request.isRetry() : false);
         return transaction;
     }
 
@@ -27,13 +22,18 @@ public class TransactionMapper {
         if (entity == null)
             return null;
 
-        String senderName = "Unknown";
+        // Résoudre senderName depuis la relation JPA (chargée grâce au JOIN FETCH dans le repository)
+        String senderName = "Inconnu";
         if (entity.getSender() != null) {
-            senderName = entity.getSender().getFirstName() + " " + entity.getSender().getLastName();
+            String fn = entity.getSender().getFirstName() != null ? entity.getSender().getFirstName() : "";
+            String ln = entity.getSender().getLastName() != null ? entity.getSender().getLastName() : "";
+            senderName = (fn + " " + ln).trim();
+            if (senderName.isBlank()) senderName = "Étudiant";
         }
 
-        String receiverName = "Unknown";
-        if (entity.getReceiver() != null) {
+        // Résoudre receiverName depuis la relation JPA
+        String receiverName = "Boutique inconnue";
+        if (entity.getReceiver() != null && entity.getReceiver().getName() != null) {
             receiverName = entity.getReceiver().getName();
         }
 
@@ -49,8 +49,6 @@ public class TransactionMapper {
                 entity.getTotalCommission(),
                 entity.getGnsCommission(),
                 entity.getBankCommission(),
-                entity.getIsCommissionPaid(),
-                entity.getIsRetry(),
                 entity.getRetrievedByBoutique(),
                 entity.getDeductedFromStudentBourse(),
                 entity.getStatus(),

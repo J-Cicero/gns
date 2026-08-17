@@ -27,6 +27,10 @@ public class Liquidation {
     @JoinColumn(name = "scolarite_year_id", nullable = false)
     private ScolariteYear scolariteYear;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "boutique_id")
+    private Boutique boutique;
+
     @Column(nullable = false)
     private BigDecimal amountToLiquidate;
 
@@ -38,9 +42,4 @@ public class Liquidation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LiquidationStatut status;
-
-    private String transferReference;
-
-    @OneToMany(mappedBy = "liquidation", fetch = FetchType.LAZY)
-    private java.util.List<Transaction> transactions;
 }

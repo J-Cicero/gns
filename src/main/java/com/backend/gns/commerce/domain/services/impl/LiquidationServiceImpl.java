@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.backend.gns.core.notification.domain.services.NotificationService;
+
 @Service
 @RequiredArgsConstructor
 public class LiquidationServiceImpl implements LiquidationService {
@@ -33,6 +35,7 @@ public class LiquidationServiceImpl implements LiquidationService {
     private final BoutiqueRepository boutiqueRepository;
     private final TransactionRepository transactionRepository;
     private final ScolariteYearRepository scolariteYearRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -70,8 +73,7 @@ public class LiquidationServiceImpl implements LiquidationService {
 
         Liquidation liquidation = Liquidation.builder()
                 .trackingId(UUID.randomUUID())
-                .amountToLiquidate(request.amountToLiquidate()) // On garde le montant demandé par le marchand (peut
-                                                                // être inférieur au max disponible)
+                .amountToLiquidate(request.amountToLiquidate()) // On garde le montant demandé par le marchand
                 .createdAt(LocalDateTime.now())
                 .status(LiquidationStatut.EN_ATTENTE)
                 .scolariteYear(activeYear)
@@ -83,6 +85,13 @@ public class LiquidationServiceImpl implements LiquidationService {
             t.setLiquidation(savedLiquidation);
         }
         transactionRepository.saveAll(pendingTransactions);
+
+        notificationService.createNotification(
+            "Nouvelle Liquidation Marchand",
+            "Demande de liquidation marchand pour la boutique \"" + boutique.getName() + "\" d'un montant de " + savedLiquidation.getAmountToLiquidate() + " FCFA.",
+            "ADMIN_BANQUE",
+            "LIQUIDATION_MERCHANT"
+        );
 
         return liquidationMapper.toResponse(savedLiquidation);
     }
@@ -164,8 +173,37 @@ public class LiquidationServiceImpl implements LiquidationService {
 
         liquidation.setStatus(LiquidationStatut.PAYE);
         liquidation.setValidatedAt(LocalDateTime.now());
-        liquidation.setTransferReference(referenceVirement);
 
-        return liquidationMapper.toResponse(liquidationRepository.save(liquidation));
+        Liquidation savedLiquidation = liquidationRepository.save(liquidation);
+
+        // Passer à retrievedByBoutique = true pour toutes les transactions liées à cette liquidation
+        List<Transaction> transactions = transactionRepository.findByLiquidation_TrackingId(savedLiquidation.getTrackingId());
+        for (Transaction t : transactions) {
+            t.setRetrievedByBoutique(true);
+        }
+        transactionRepository.saveAll(transactions);
+
+        notificationService.createNotification(
+            "Liquidation Marchand Validée",
+            "La liquidation marchand d'un montant de " + savedLiquidation.getAmountToLiquidate() + " FCFA a été validée par la Banque.",
+            "ADMIN_GNS",
+            "LIQUIDATION_MERCHANT"
+        );
+
+        return liquidationMapper.toResponse(savedLiquidation);
+    }
+
+    @Override
+    public List<LiquidationResponse> findAll() {
+        return liquidationRepository.findAll().stream()
+                .map(liquidationMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<LiquidationResponse> findByScolariteYear(UUID scolariteYearTrackingId) {
+        return liquidationRepository.findByScolariteYear_TrackingId(scolariteYearTrackingId).stream()
+                .map(liquidationMapper::toResponse)
+                .toList();
     }
 }

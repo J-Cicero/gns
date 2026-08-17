@@ -17,8 +17,6 @@ public record TransactionResponse(
     BigDecimal totalCommission,
     BigDecimal gnsCommission,
     BigDecimal bankCommission,
-    Boolean isCommissionPaid,
-    Boolean isRetry,
     Boolean retrievedByBoutique,
     Boolean deductedFromStudentBourse,
     TransactionStatut status,

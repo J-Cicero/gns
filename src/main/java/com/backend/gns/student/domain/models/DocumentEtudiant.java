@@ -19,8 +19,4 @@ public class DocumentEtudiant extends Document {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Student student;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inscription_annuelle_id")
-    private InscriptionAnnuelle inscription;
 }

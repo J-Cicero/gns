@@ -7,10 +7,10 @@ import java.util.UUID;
 
 public record StudentLiquidationResponse(
     UUID trackingId,
+    UUID studentTrackingId,
     String studentName,
     BigDecimal amountDeducted,
     LocalDateTime createdAt,
     LocalDateTime validatedAt,
-    LiquidationStatut status,
-    String transactionReference
+    LiquidationStatut status
 ) {}

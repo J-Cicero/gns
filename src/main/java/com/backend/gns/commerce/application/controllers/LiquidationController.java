@@ -37,6 +37,16 @@ public class LiquidationController {
         return ResponseEntity.ok(liquidationService.getPendingTotal());
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> findAll() {
+        return ResponseEntity.ok(liquidationService.findAll());
+    }
+
+    @GetMapping("/by-year/{scolariteYearTrackingId}")
+    public ResponseEntity<?> findByYear(@PathVariable UUID scolariteYearTrackingId) {
+        return ResponseEntity.ok(liquidationService.findByScolariteYear(scolariteYearTrackingId));
+    }
+
     @PatchMapping("/{trackingId}/valider")
     public ResponseEntity<?> validerLiquidation(
             @PathVariable UUID trackingId, 

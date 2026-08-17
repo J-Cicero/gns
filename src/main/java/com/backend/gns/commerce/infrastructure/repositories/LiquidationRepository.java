@@ -13,4 +13,8 @@ public interface LiquidationRepository extends JpaRepository<Liquidation, Long> 
     Optional<Liquidation> findByTrackingId(UUID trackingId);
     @org.springframework.data.jpa.repository.Query("SELECT DISTINCT l FROM Transaction t JOIN t.liquidation l WHERE t.receiver.trackingId = :boutiqueTrackingId")
     List<Liquidation> findByBoutiqueTrackingId(@org.springframework.data.repository.query.Param("boutiqueTrackingId") UUID boutiqueTrackingId);
+    List<Liquidation> findAll();
+    List<Liquidation> findByScolariteYear_TrackingId(UUID scolariteYearTrackingId);
+    com.backend.gns.commerce.domain.enums.LiquidationStatut findStatutByTrackingId(UUID trackingId);
+    List<Liquidation> findByStatus(com.backend.gns.commerce.domain.enums.LiquidationStatut status);
 }
