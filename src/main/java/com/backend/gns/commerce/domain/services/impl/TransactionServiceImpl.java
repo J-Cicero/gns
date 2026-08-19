@@ -194,6 +194,20 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public List<TransactionResponse> findByLiquidationId(UUID liquidationTrackingId) {
+        return transactionRepository.findByLiquidation_TrackingId(liquidationTrackingId).stream()
+                .map(transactionMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponse> findByStudentLiquidationId(UUID studentLiquidationTrackingId) {
+        return transactionRepository.findByStudentLiquidation_TrackingId(studentLiquidationTrackingId).stream()
+                .map(transactionMapper::toResponse)
+                .toList();
+    }
+
+    @Override
     public com.backend.gns.commerce.application.dtos.responses.TransactionChartStatsResponse getChartStats() {
         Optional<com.backend.gns.student.application.dtos.responses.ScolariteYearResponse> activeYear = scolariteYearService.findActiveYear();
         List<Transaction> transactions;

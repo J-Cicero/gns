@@ -20,6 +20,10 @@ public interface TransactionService {
 
     Page<TransactionResponse> findByStudentId(UUID studentId, Pageable pageable);
 
+    java.util.List<TransactionResponse> findByLiquidationId(UUID liquidationTrackingId);
+
+    java.util.List<TransactionResponse> findByStudentLiquidationId(UUID studentLiquidationTrackingId);
+
     TransactionStatsResponse getGlobalStats();
 
     com.backend.gns.commerce.application.dtos.responses.TransactionChartStatsResponse getChartStats();

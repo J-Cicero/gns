@@ -48,6 +48,16 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.findByStudentId(studentId, pageable));
     }
 
+    @GetMapping("/liquidation/{liquidationId}")
+    public ResponseEntity<?> findByLiquidationId(@PathVariable UUID liquidationId) {
+        return ResponseEntity.ok(transactionService.findByLiquidationId(liquidationId));
+    }
+
+    @GetMapping("/student-liquidation/{studentLiquidationId}")
+    public ResponseEntity<?> findByStudentLiquidationId(@PathVariable UUID studentLiquidationId) {
+        return ResponseEntity.ok(transactionService.findByStudentLiquidationId(studentLiquidationId));
+    }
+
     @GetMapping("/stats/chart")
     public ResponseEntity<?> getChartStats() {
         return ResponseEntity.ok(transactionService.getChartStats());

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin-banque/documents")
+@RequestMapping("/admin-banque/documents")
 @RequiredArgsConstructor
 public class DocumentBankAdminController {
 

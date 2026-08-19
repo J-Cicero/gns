@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/notifications")
 @Tag(name = "Notifications", description = "Gestion des notifications système inter-interfaces")
 public class NotificationController {
 

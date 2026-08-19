@@ -73,6 +73,7 @@ public class LiquidationServiceImpl implements LiquidationService {
 
         Liquidation liquidation = Liquidation.builder()
                 .trackingId(UUID.randomUUID())
+                .boutique(boutique)
                 .amountToLiquidate(request.amountToLiquidate()) // On garde le montant demandé par le marchand
                 .createdAt(LocalDateTime.now())
                 .status(LiquidationStatut.EN_ATTENTE)
@@ -153,6 +154,7 @@ public class LiquidationServiceImpl implements LiquidationService {
                     
                     liquidation = Liquidation.builder()
                             .trackingId(UUID.randomUUID())
+                            .boutique(boutique)
                             .scolariteYear(activeYear)
                             .amountToLiquidate(sumAvailable)
                             .createdAt(LocalDateTime.now())
@@ -182,6 +184,14 @@ public class LiquidationServiceImpl implements LiquidationService {
             t.setRetrievedByBoutique(true);
         }
         transactionRepository.saveAll(transactions);
+
+        String boutiqueNom = savedLiquidation.getBoutique() != null ? savedLiquidation.getBoutique().getName() : "";
+        notificationService.createNotification(
+            "Liquidation Validée",
+            "Votre liquidation pour la boutique \"" + boutiqueNom + "\" d'un montant de " + savedLiquidation.getAmountToLiquidate() + " FCFA a été validée par la Banque. Vous pouvez vous rendre à la banque pour effectuer le retrait.",
+            "MERCHANT",
+            "LIQUIDATION_MERCHANT"
+        );
 
         notificationService.createNotification(
             "Liquidation Marchand Validée",

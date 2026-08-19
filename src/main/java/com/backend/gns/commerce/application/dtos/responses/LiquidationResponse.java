@@ -7,7 +7,10 @@ import java.util.UUID;
 
 public record LiquidationResponse(
     UUID trackingId,
+    UUID boutiqueTrackingId,
     String boutiqueName,
+    String merchantName,
+    String accountNumber,
     BigDecimal amountToLiquidate,
     LocalDateTime createdAt,
     LocalDateTime validatedAt,

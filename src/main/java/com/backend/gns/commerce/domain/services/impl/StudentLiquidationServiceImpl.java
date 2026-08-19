@@ -51,8 +51,14 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
             throw new IllegalStateException("Impossible de prélever : le portefeuille de l'étudiant n'est pas actif.");
         }
 
-        ScolariteYear scolariteYear = scolariteYearRepository.findByTrackingId(request.scolariteYearTrackingId())
-                .orElseThrow(() -> new RuntimeException("Année scolaire non trouvée"));
+        ScolariteYear scolariteYear;
+        if (request.scolariteYearTrackingId() != null) {
+            scolariteYear = scolariteYearRepository.findByTrackingId(request.scolariteYearTrackingId())
+                    .orElseThrow(() -> new RuntimeException("Année scolaire non trouvée"));
+        } else {
+            scolariteYear = scolariteYearRepository.findByIsOpenTrue()
+                    .orElseThrow(() -> new RuntimeException("Aucune année scolaire active n'est ouverte."));
+        }
 
         List<Transaction> pendingTransactions = transactionRepository
                 .findBySenderTrackingIdAndStatusAndStudentLiquidationIsNull(request.studentTrackingId(), TransactionStatut.VALIDE);

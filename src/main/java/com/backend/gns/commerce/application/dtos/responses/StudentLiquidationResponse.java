@@ -9,6 +9,8 @@ public record StudentLiquidationResponse(
     UUID trackingId,
     UUID studentTrackingId,
     String studentName,
+    String studentNumber,
+    String accountNumber,
     BigDecimal amountDeducted,
     LocalDateTime createdAt,
     LocalDateTime validatedAt,

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin/students")
+@RequestMapping("/admin/students")
 @RequiredArgsConstructor
 public class DocumentAdminController {
 
