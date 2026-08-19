@@ -38,6 +38,7 @@ public class MerchantServiceImpl implements MerchantService {
   private final BoutiqueRepository boutiqueRepository;
   private final BanqueRepository banqueRepository;
   private final CompteBancaireRepository compteBancaireRepository;
+  private final com.backend.gns.commerce.infrastructure.repositories.DocumentMerchantRepository documentMerchantRepository;
   private final CloudinaryStorageService storageService;
   private final PasswordEncoder passwordEncoder;
 
@@ -112,8 +113,22 @@ public class MerchantServiceImpl implements MerchantService {
         
         if (ribFile != null && !ribFile.isEmpty()) {
             try {
-                String ribUrl = storageService.upload(ribFile, "merchants/rib").get("url");
+                var uploadRes = storageService.upload(ribFile, "merchants/rib");
+                String ribUrl = uploadRes.get("url");
+                String publicId = uploadRes.get("publicId");
                 compte.setRibUrl(ribUrl);
+
+                com.backend.gns.commerce.domain.models.DocumentMerchant doc = com.backend.gns.commerce.domain.models.DocumentMerchant.builder()
+                        .trackingId(UUID.randomUUID())
+                        .merchant(savedMerchant)
+                        .documentType(com.backend.gns.core.parametrage.domain.enums.TypeDocument.RIB)
+                        .fileUrl(ribUrl)
+                        .providerPublicId(publicId)
+                        .status(com.backend.gns.core.parametrage.domain.enums.StatutDocument.EN_ATTENTE)
+                        .uploadedAt(java.time.LocalDateTime.now())
+                        .build();
+                documentMerchantRepository.save(doc);
+                log.info("DocumentMerchant (RIB) créé pour le marchand {}", savedMerchant.getTrackingId());
             } catch (Exception e) {
                 log.error("Erreur lors de l'upload du RIB", e);
             }

@@ -14,8 +14,9 @@ import java.util.UUID;
 
 @Repository
 public interface DocumentMerchantRepository extends JpaRepository<DocumentMerchant, Long> {
-    Optional<DocumentMerchant> findByTrackingId(UUID trackingId);
-    List<DocumentMerchant> findByMerchantTrackingId(UUID merchantTrackingId);
+    @Query("SELECT d FROM DocumentMerchant d WHERE d.merchant.trackingId = :merchantTrackingId")
+    List<DocumentMerchant> findByMerchantTrackingId(@Param("merchantTrackingId") UUID merchantTrackingId);
+
     @Query("SELECT d FROM DocumentMerchant d WHERE d.merchant.trackingId = :trackingId")
     Page<DocumentMerchant> findByMerchantTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 

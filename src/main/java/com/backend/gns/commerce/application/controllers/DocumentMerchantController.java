@@ -39,8 +39,8 @@ public class DocumentMerchantController {
     }
 
     @GetMapping("/merchant/{merchantId}")
-    public ResponseEntity<?> findByMerchantId(@PathVariable UUID merchantId, Pageable pageable) {
-        return ResponseEntity.ok(documentService.findByMerchantTrackingId(merchantId, pageable));
+    public ResponseEntity<?> findByMerchantId(@PathVariable UUID merchantId) {
+        return ResponseEntity.ok(documentService.getDocumentsByMerchant(merchantId));
     }
 
     @PatchMapping("/{trackingId}/status")

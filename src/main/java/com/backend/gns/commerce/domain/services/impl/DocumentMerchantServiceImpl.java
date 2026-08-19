@@ -34,8 +34,8 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
     private final DocumentMerchantRepository documentRepository;
     private final MerchantRepository merchantRepository;
     private final DocumentMerchantMapper documentMerchantMapper; // Mapper dédié aux marchands
-    private final CloudinaryStorageService cloudinaryService;
     private final BoutiqueRepository boutiqueRepository;
+    private final com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository compteBancaireRepository;
 
     @Override
     @Transactional
@@ -86,9 +86,29 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
     }
 
     @Override
+    @Transactional
     public java.util.List<DocumentResponse> getDocumentsByMerchant(UUID merchantTrackingId) {
-        return documentRepository.findByMerchantTrackingId(merchantTrackingId)
-                .stream()
+        java.util.List<DocumentMerchant> docs = documentRepository.findByMerchantTrackingId(merchantTrackingId);
+        if (docs.isEmpty()) {
+            merchantRepository.findByTrackingId(merchantTrackingId).ifPresent(merchant -> {
+                compteBancaireRepository.findByProprietaireTrackingId(merchantTrackingId).ifPresent(compte -> {
+                    if (compte.getRibUrl() != null && !compte.getRibUrl().isEmpty()) {
+                        DocumentMerchant doc = DocumentMerchant.builder()
+                                .trackingId(UUID.randomUUID())
+                                .merchant(merchant)
+                                .documentType(TypeDocument.RIB)
+                                .fileUrl(compte.getRibUrl())
+                                .status(StatutDocument.EN_ATTENTE)
+                                .uploadedAt(LocalDateTime.now())
+                                .build();
+                        documentRepository.save(doc);
+                        docs.add(doc);
+                        log.info("Auto-création du DocumentMerchant RIB pour le marchand {}", merchantTrackingId);
+                    }
+                });
+            });
+        }
+        return docs.stream()
                 .map(documentMerchantMapper::toResponse)
                 .collect(java.util.stream.Collectors.toList());
     }
