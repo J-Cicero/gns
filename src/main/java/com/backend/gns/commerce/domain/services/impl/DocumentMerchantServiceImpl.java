@@ -96,10 +96,10 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
     private void reevaluateMerchantKyc(Merchant merchant) {
         java.util.List<DocumentMerchant> docs = documentRepository.findByMerchantTrackingId(merchant.getTrackingId());
         
-        boolean hasValideRib = docs.stream()
-                .anyMatch(d -> d.getDocumentType() == TypeDocument.RIB && d.getStatus() == StatutDocument.VALIDE);
+        boolean hasValideDoc = docs.stream()
+                .anyMatch(d -> d.getStatus() == StatutDocument.VALIDE);
                 
-        if (hasValideRib) {
+        if (hasValideDoc) {
             merchant.setKycStatus(KycStatus.VALIDE);
             // Validate and activate all boutiques of this merchant
             java.util.List<Boutique> boutiques = boutiqueRepository.findByMerchant(merchant);
