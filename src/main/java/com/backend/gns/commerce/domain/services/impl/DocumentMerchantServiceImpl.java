@@ -35,6 +35,7 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
     private final MerchantRepository merchantRepository;
     private final DocumentMerchantMapper documentMerchantMapper; // Mapper dédié aux marchands
     private final BoutiqueRepository boutiqueRepository;
+    private final CloudinaryStorageService cloudinaryService;
     private final com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository compteBancaireRepository;
 
     @Override

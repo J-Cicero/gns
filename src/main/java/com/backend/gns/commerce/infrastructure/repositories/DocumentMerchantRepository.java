@@ -20,4 +20,5 @@ public interface DocumentMerchantRepository extends JpaRepository<DocumentMercha
     @Query("SELECT d FROM DocumentMerchant d WHERE d.merchant.trackingId = :trackingId")
     Page<DocumentMerchant> findByMerchantTrackingId(@Param("trackingId") UUID trackingId, Pageable pageable);
 
+    Optional<DocumentMerchant> findByTrackingId(UUID trackingId);
 }
