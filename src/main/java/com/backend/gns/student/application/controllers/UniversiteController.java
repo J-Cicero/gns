@@ -30,6 +30,13 @@ public class UniversiteController {
     return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
   }
 
+  @PutMapping("/{trackingId}")
+  @Operation(summary = "Modifier une université")
+  public ResponseEntity<UniversiteResponse> update(
+      @PathVariable UUID trackingId, @RequestBody UniversiteRequest request) {
+    return ResponseEntity.ok(service.update(trackingId, request));
+  }
+
   @GetMapping("/{trackingId}")
   public ResponseEntity<UniversiteResponse> findByTrackingId(@PathVariable UUID trackingId) {
     return service

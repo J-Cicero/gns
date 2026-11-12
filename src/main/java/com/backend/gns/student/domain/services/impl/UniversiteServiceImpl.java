@@ -28,7 +28,33 @@ public class UniversiteServiceImpl implements UniversiteService {
   @Override
   @Transactional
   public UniversiteResponse create(UniversiteRequest request) {
+    if (request.code() != null && repository.findByCode(request.code().trim().toUpperCase()).isPresent()) {
+      throw new IllegalArgumentException("Une université avec le code '" + request.code() + "' existe déjà.");
+    }
     Universite entity = mapper.toEntity(request);
+    if (entity.getCode() != null) {
+      entity.setCode(entity.getCode().trim().toUpperCase());
+    }
+    return mapper.toResponse(repository.save(entity));
+  }
+
+  @Override
+  @Transactional
+  public UniversiteResponse update(UUID trackingId, UniversiteRequest request) {
+    Universite entity =
+        repository
+            .findByTrackingId(trackingId)
+            .orElseThrow(() -> new RuntimeException("Université non trouvée"));
+
+    if (request.code() != null && !request.code().trim().equalsIgnoreCase(entity.getCode())) {
+      if (repository.findByCode(request.code().trim().toUpperCase()).isPresent()) {
+        throw new IllegalArgumentException("Une université avec le code '" + request.code() + "' existe déjà.");
+      }
+      entity.setCode(request.code().trim().toUpperCase());
+    }
+    entity.setFullName(request.fullName());
+    entity.setCity(request.city());
+    entity.setActive(request.isActive());
     return mapper.toResponse(repository.save(entity));
   }
 

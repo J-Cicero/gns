@@ -13,6 +13,8 @@ import java.util.UUID;
 public interface UniversiteService {
   UniversiteResponse create(UniversiteRequest request);
 
+  UniversiteResponse update(UUID trackingId, UniversiteRequest request);
+
   Optional<UniversiteResponse> findByTrackingId(UUID trackingId);
 
   Page<UniversiteResponse> findAll(Pageable pageable);
