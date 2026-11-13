@@ -35,6 +35,12 @@ public class StudentLiquidation {
     @Column(nullable = false)
     private BigDecimal amountDeducted; 
 
+    @Column(name = "tranche_amount")
+    private BigDecimal trancheAmount;
+
+    @Column(name = "reliquat_amount")
+    private BigDecimal reliquatAmount;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 

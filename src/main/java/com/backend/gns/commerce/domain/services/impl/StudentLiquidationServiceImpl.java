@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.backend.gns.core.notification.domain.services.NotificationService;
+import com.backend.gns.core.parametrage.domain.enums.TypeParametreGns;
+import com.backend.gns.core.parametrage.domain.services.ParametreGnsService;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
     private final TransactionRepository transactionRepository;
     private final StudentLiquidationMapper mapper;
     private final NotificationService notificationService;
+    private final ParametreGnsService parametreGnsService;
 
     @Override
     @Transactional
@@ -60,41 +63,66 @@ public class StudentLiquidationServiceImpl implements StudentLiquidationService 
                     .orElseThrow(() -> new RuntimeException("Aucune année scolaire active n'est ouverte."));
         }
 
+        // Détermination du montant de la tranche de bourse (ex: 36 000 FCFA officiel)
+        BigDecimal trancheAmount = BigDecimal.valueOf(36000);
+        if (request.amountToDeduct() != null && request.amountToDeduct().compareTo(BigDecimal.ZERO) > 0) {
+            trancheAmount = request.amountToDeduct();
+        } else if (parametreGnsService != null) {
+            try {
+                BigDecimal paramVal = parametreGnsService.getValeurAsBigDecimal(TypeParametreGns.MONTANT_BOURSE_BASE);
+                if (paramVal != null && paramVal.compareTo(BigDecimal.ZERO) > 0) {
+                    trancheAmount = paramVal;
+                }
+            } catch (Exception ignored) {}
+        }
+
+        // Récupération des transactions d'achats non encore liquidées
         List<Transaction> pendingTransactions = transactionRepository
                 .findBySenderTrackingIdAndStatusAndStudentLiquidationIsNull(request.studentTrackingId(), TransactionStatut.VALIDE);
 
-        if (pendingTransactions.isEmpty()) {
-            throw new RuntimeException("Aucune transaction en attente de prélèvement pour cet étudiant.");
+        // Cumul progressif des achats jusqu'à concurrence de la tranche
+        List<Transaction> transactionsToLiquidate = new java.util.ArrayList<>();
+        BigDecimal totalAchatsDeduits = BigDecimal.ZERO;
+
+        for (Transaction tx : pendingTransactions) {
+            BigDecimal txAmount = tx.getAmountDebited() != null ? tx.getAmountDebited() : BigDecimal.ZERO;
+            if (totalAchatsDeduits.add(txAmount).compareTo(trancheAmount) <= 0) {
+                transactionsToLiquidate.add(tx);
+                totalAchatsDeduits = totalAchatsDeduits.add(txAmount);
+            }
         }
 
-        BigDecimal sumAvailable = pendingTransactions.stream()
-                .map(Transaction::getAmountDebited) 
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        if(sumAvailable.compareTo(request.amountToDeduct()) < 0) {
-            throw new RuntimeException("Le montant à prélever (" + request.amountToDeduct() + ") dépasse le montant des transactions (" + sumAvailable + ").");
+        // Calcul du reliquat restant pour l'étudiant
+        BigDecimal reliquat = trancheAmount.subtract(totalAchatsDeduits);
+        if (reliquat.compareTo(BigDecimal.ZERO) < 0) {
+            reliquat = BigDecimal.ZERO;
         }
 
         StudentLiquidation liquidation = StudentLiquidation.builder()
                 .trackingId(UUID.randomUUID())
                 .scolariteYear(scolariteYear)
                 .student(student)
-                .amountDeducted(request.amountToDeduct())
+                .amountDeducted(totalAchatsDeduits)
+                .trancheAmount(trancheAmount)
+                .reliquatAmount(reliquat)
                 .createdAt(LocalDateTime.now())
                 .status(LiquidationStatut.EN_ATTENTE)
                 .build();
         
         StudentLiquidation savedLiquidation = studentLiquidationRepository.save(liquidation);
 
-        for (Transaction t : pendingTransactions) {
+        for (Transaction t : transactionsToLiquidate) {
             t.setStudentLiquidation(savedLiquidation);
             t.setDeductedFromStudentBourse(true);
         }
-        transactionRepository.saveAll(pendingTransactions);
+        if (!transactionsToLiquidate.isEmpty()) {
+            transactionRepository.saveAll(transactionsToLiquidate);
+        }
 
         notificationService.createNotification(
-            "Nouvelle Liquidation Étudiant",
-            "L'Admin GNS a créé une liquidation étudiant pour " + student.getFirstName() + " " + student.getLastName() + " (" + savedLiquidation.getAmountDeducted() + " FCFA).",
+            "Nouvelle Liquidation Tranche Étudiant",
+            "Tranche de " + trancheAmount + " FCFA pour " + student.getFirstName() + " " + student.getLastName() + 
+            " (Dépenses prélevées : " + totalAchatsDeduits + " FCFA, Reliquat à verser : " + reliquat + " FCFA).",
             "ADMIN_BANQUE",
             "LIQUIDATION_STUDENT"
         );

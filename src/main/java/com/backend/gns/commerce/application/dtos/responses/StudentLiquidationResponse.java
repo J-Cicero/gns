@@ -12,6 +12,8 @@ public record StudentLiquidationResponse(
     String studentNumber,
     String accountNumber,
     BigDecimal amountDeducted,
+    BigDecimal trancheAmount,
+    BigDecimal reliquatAmount,
     LocalDateTime createdAt,
     LocalDateTime validatedAt,
     LiquidationStatut status

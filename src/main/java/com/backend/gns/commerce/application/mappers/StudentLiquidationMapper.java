@@ -39,6 +39,8 @@ public class StudentLiquidationMapper {
             studentNumber,
             accountNumber,
             entity.getAmountDeducted(),
+            entity.getTrancheAmount(),
+            entity.getReliquatAmount(),
             entity.getCreatedAt(),
             entity.getValidatedAt(),
             entity.getStatus()
