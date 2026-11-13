@@ -24,4 +24,6 @@ public record InscriptionAnnuelleResponse(
     LocalDateTime apiValidationDate,
     BigDecimal allocatedBudget,
     UUID walletTrackingId,
-    BigDecimal walletBalance) {}
+    BigDecimal walletBalance,
+    String walletStatus,
+    String universiteNom) {}

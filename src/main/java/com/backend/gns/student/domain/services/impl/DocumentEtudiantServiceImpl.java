@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     private final DocumentEtudiantRepository documentRepository;
+    private final com.backend.gns.core.parametrage.infrastructure.repositories.DocumentBanqueRepository documentBanqueRepository;
+    private final com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository inscriptionRepository;
     private final StudentRepository studentRepository;
     private final DocumentEtudiantMapper documentMapper;
     private final CloudinaryStorageService cloudinaryService;
@@ -79,13 +81,19 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     @Override
     public Page<DocumentEtudiantResponse> findByUserTrackingId(UUID userTrackingId, Pageable pageable) {
-        return documentRepository.findByStudentTrackingId(userTrackingId, pageable)
-                .map(documentMapper::toEtudiantResponse);
+        List<DocumentEtudiantResponse> allDocs = getDocumentsByStudent(userTrackingId);
+        return new org.springframework.data.domain.PageImpl<>(allDocs, pageable, allDocs.size());
     }
 
     @Override
     public Page<DocumentEtudiantResponse> findByInscriptionId(UUID inscriptionId, Pageable pageable) {
-        return Page.empty();
+        return inscriptionRepository.findByTrackingId(inscriptionId)
+                .filter(ins -> ins.getStudent() != null)
+                .map(ins -> {
+                    List<DocumentEtudiantResponse> allDocs = getDocumentsByStudent(ins.getStudent().getTrackingId());
+                    return (Page<DocumentEtudiantResponse>) new org.springframework.data.domain.PageImpl<>(allDocs, pageable, allDocs.size());
+                })
+                .orElseGet(Page::empty);
     }
 
     @Override
@@ -98,18 +106,48 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
 
     @Override
     public List<DocumentEtudiantResponse> getDocumentsByStudent(UUID studentTrackingId) {
-        return documentRepository.findByStudentTrackingId(studentTrackingId).stream()
+        java.util.Map<String, DocumentEtudiantResponse> map = new java.util.LinkedHashMap<>();
+
+        documentRepository.findByStudentTrackingId(studentTrackingId).stream()
                 .map(documentMapper::toEtudiantResponse)
-                .collect(Collectors.toList());
+                .forEach(r -> {
+                    if (r.fileUrl() != null) {
+                        map.putIfAbsent(r.fileUrl(), r);
+                    }
+                });
+
+        documentBanqueRepository.findByCompteBancaireProprietaireTrackingIdOrderByUploadedAtDesc(studentTrackingId)
+                .forEach(db -> {
+                    if (db.getFileUrl() != null) {
+                        map.putIfAbsent(db.getFileUrl(), new DocumentEtudiantResponse(
+                                db.getTrackingId(),
+                                db.getDocumentType(),
+                                db.getFileUrl(),
+                                db.getStatus(),
+                                db.getUploadedAt(),
+                                db.getRejectionReason(),
+                                null,
+                                "ETUDIANT"
+                        ));
+                    }
+                });
+
+        return new java.util.ArrayList<>(map.values());
     }
 
     private void reevaluateStudentKyc(Student student) {
         List<DocumentEtudiant> docs = documentRepository.findByStudentTrackingId(student.getTrackingId());
+        List<com.backend.gns.core.parametrage.domain.models.DocumentBanque> bankDocs =
+                documentBanqueRepository.findByCompteBancaireProprietaireTrackingIdOrderByUploadedAtDesc(student.getTrackingId());
         
         boolean hasValideRib = docs.stream()
+                .anyMatch(d -> d.getDocumentType() == TypeDocument.RIB && d.getStatus() == StatutDocument.VALIDE)
+                || bankDocs.stream()
                 .anyMatch(d -> d.getDocumentType() == TypeDocument.RIB && d.getStatus() == StatutDocument.VALIDE);
                 
         boolean hasValideMandat = docs.stream()
+                .anyMatch(d -> d.getDocumentType() == TypeDocument.MANDAT && d.getStatus() == StatutDocument.VALIDE)
+                || bankDocs.stream()
                 .anyMatch(d -> d.getDocumentType() == TypeDocument.MANDAT && d.getStatus() == StatutDocument.VALIDE);
                         
         if (hasValideRib && hasValideMandat) {
@@ -120,6 +158,9 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
         } else {
             boolean hasRejeteCritical = docs.stream()
                     .anyMatch(d -> (d.getDocumentType() == TypeDocument.RIB || d.getDocumentType() == TypeDocument.MANDAT) 
+                            && d.getStatus() == StatutDocument.REJETE)
+                    || bankDocs.stream()
+                    .anyMatch(d -> (d.getDocumentType() == TypeDocument.RIB || d.getDocumentType() == TypeDocument.MANDAT)
                             && d.getStatus() == StatutDocument.REJETE);
             if (hasRejeteCritical) {
                 student.setKycStatus(KycStatus.REJETE);
@@ -136,22 +177,49 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     @Override
     @Transactional
     public DocumentEtudiantResponse updateDocumentStatus(UUID trackingId, StatutDocument status, String rejectionReason) {
-        DocumentEtudiant document = documentRepository.findByTrackingId(trackingId)
+        Optional<DocumentEtudiant> optEtudiantDoc = documentRepository.findByTrackingId(trackingId);
+        if (optEtudiantDoc.isPresent()) {
+            DocumentEtudiant document = optEtudiantDoc.get();
+            document.setStatus(status);
+            if (status == StatutDocument.REJETE) {
+                document.setRejectionReason(rejectionReason);
+            } else {
+                document.setRejectionReason(null);
+            }
+
+            DocumentEtudiant saved = documentRepository.save(document);
+
+            if (saved.getStudent() != null) {
+                reevaluateStudentKyc(saved.getStudent());
+            }
+
+            return documentMapper.toEtudiantResponse(saved);
+        }
+
+        com.backend.gns.core.parametrage.domain.models.DocumentBanque bankDoc = documentBanqueRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Document non trouvé"));
 
-        document.setStatus(status);
+        bankDoc.setStatus(status);
         if (status == StatutDocument.REJETE) {
-            document.setRejectionReason(rejectionReason);
+            bankDoc.setRejectionReason(rejectionReason);
         } else {
-            document.setRejectionReason(null);
+            bankDoc.setRejectionReason(null);
+        }
+        com.backend.gns.core.parametrage.domain.models.DocumentBanque savedBankDoc = documentBanqueRepository.save(bankDoc);
+
+        if (savedBankDoc.getCompteBancaire() != null && savedBankDoc.getCompteBancaire().getProprietaire() instanceof Student student) {
+            reevaluateStudentKyc(student);
         }
 
-        DocumentEtudiant saved = documentRepository.save(document);
-        
-        if (saved.getStudent() != null) {
-            reevaluateStudentKyc(saved.getStudent());
-        }
-
-        return documentMapper.toEtudiantResponse(saved);
+        return new DocumentEtudiantResponse(
+                savedBankDoc.getTrackingId(),
+                savedBankDoc.getDocumentType(),
+                savedBankDoc.getFileUrl(),
+                savedBankDoc.getStatus(),
+                savedBankDoc.getUploadedAt(),
+                savedBankDoc.getRejectionReason(),
+                null,
+                "ETUDIANT"
+        );
     }
 }

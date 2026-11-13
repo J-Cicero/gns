@@ -1,5 +1,6 @@
 package com.backend.gns.core.parametrage.domain.services.impl;
 
+import com.backend.gns.commerce.infrastructure.repositories.DocumentMerchantRepository;
 import com.backend.gns.core.exception.ResourceNotFoundException;
 import com.backend.gns.core.parametrage.application.dtos.responses.DocumentResponse;
 import com.backend.gns.core.parametrage.application.mappers.DocumentMapper;
@@ -9,9 +10,11 @@ import com.backend.gns.core.parametrage.domain.enums.TypeDocument;
 import com.backend.gns.core.parametrage.domain.models.Document;
 import com.backend.gns.core.parametrage.domain.models.DocumentBanque;
 import com.backend.gns.core.parametrage.domain.services.DocumentService;
+import com.backend.gns.core.parametrage.infrastructure.repositories.DocumentBanqueRepository;
 import com.backend.gns.core.parametrage.infrastructure.repositories.DocumentRepository;
 import com.backend.gns.student.domain.models.DocumentEtudiant;
 import com.backend.gns.student.domain.models.Student;
+import com.backend.gns.student.infrastructure.repositories.DocumentEtudiantRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +36,9 @@ import java.util.stream.Collectors;
 public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentRepository documentRepository;
+    private final DocumentEtudiantRepository documentEtudiantRepository;
+    private final DocumentMerchantRepository documentMerchantRepository;
+    private final DocumentBanqueRepository documentBanqueRepository;
     private final DocumentMapper documentMapper;
     private final StudentRepository studentRepository;
     private final CloudinaryStorageService cloudinaryStorageService;
@@ -71,9 +79,37 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<DocumentResponse> getDocumentsByOwner(UUID ownerTrackingId) {
-        return documentRepository.findByOwnerTrackingId(ownerTrackingId).stream()
-                .map(documentMapper::toResponse)
-                .collect(Collectors.toList());
+        Map<String, DocumentResponse> deduplicated = new LinkedHashMap<>();
+
+        documentEtudiantRepository.findByStudentTrackingId(ownerTrackingId)
+                .forEach(d -> {
+                    if (d.getFileUrl() != null) {
+                        deduplicated.putIfAbsent(d.getFileUrl(), documentMapper.toResponse(d));
+                    }
+                });
+
+        documentMerchantRepository.findByMerchantTrackingId(ownerTrackingId)
+                .forEach(d -> {
+                    if (d.getFileUrl() != null) {
+                        deduplicated.putIfAbsent(d.getFileUrl(), documentMapper.toResponse(d));
+                    }
+                });
+
+        documentBanqueRepository.findByCompteBancaireProprietaireTrackingIdOrderByUploadedAtDesc(ownerTrackingId)
+                .forEach(d -> {
+                    if (d.getFileUrl() != null) {
+                        deduplicated.putIfAbsent(d.getFileUrl(), documentMapper.toResponse(d));
+                    }
+                });
+
+        documentBanqueRepository.findByCompteBancaireTrackingIdOrderByUploadedAtDesc(ownerTrackingId)
+                .forEach(d -> {
+                    if (d.getFileUrl() != null) {
+                        deduplicated.putIfAbsent(d.getFileUrl(), documentMapper.toResponse(d));
+                    }
+                });
+
+        return new ArrayList<>(deduplicated.values());
     }
 
     @Override

@@ -133,6 +133,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public UserResponse getUserByTrackingId(UUID trackingId) {
     User user =
         userRepository
@@ -142,6 +143,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public Page<UserResponse> getAllUsers(int page, int size) {
     PageRequest pageRequest = PageRequest.of(page, size);
     Page<User> usersPage = userRepository.findAll(pageRequest);
@@ -152,6 +154,7 @@ public class UserServiceImpl implements UserService {
     return Page.empty();
   }
 
+  @Override
   @Transactional
   public UserResponse updateUser(UUID trackingId, UserRequest request) {
     User user =
@@ -159,15 +162,15 @@ public class UserServiceImpl implements UserService {
             .findByTrackingId(trackingId)
             .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
 
-    if (!user.getEmail().equals(request.email())
+    if (request.email() != null && !request.email().isBlank() && !user.getEmail().equals(request.email())
         && userRepository.findByEmail(request.email()).isPresent()) {
       throw new IllegalArgumentException("Cet email est déjà utilisé.");
     }
 
-    user.setLastName(request.lastName());
-    user.setFirstName(request.firstName());
-    user.setEmail(request.email());
-    user.setPhoneNumber(request.phoneNumber());
+    if (request.lastName() != null) user.setLastName(request.lastName());
+    if (request.firstName() != null) user.setFirstName(request.firstName());
+    if (request.email() != null && !request.email().isBlank()) user.setEmail(request.email());
+    if (request.phoneNumber() != null) user.setPhoneNumber(request.phoneNumber());
 
     if (request.role() != null && !request.role().trim().isEmpty()) {
       try {
@@ -194,6 +197,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public java.util.List<UserResponse> searchUsers(String query) {
     if (query == null || query.trim().isEmpty()) {
       return getAllUsers(0, 50).getContent();

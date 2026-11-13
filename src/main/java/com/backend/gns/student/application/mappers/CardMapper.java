@@ -51,8 +51,13 @@ public class CardMapper {
 
     String studentNom = null;
     String studentPrenom = null;
+    String studentMatricule = null;
+    String studentEmail = null;
+    String universiteNom = null;
+    java.math.BigDecimal walletBalance = null;
 
     if (card.getWallet() != null) {
+      walletBalance = card.getWallet().getBalance();
       Student student = card.getWallet().getStudent();
       if (student == null && card.getWallet().getTrackingId() != null) {
         student = studentRepository.findByWalletTrackingId(card.getWallet().getTrackingId()).orElse(null);
@@ -66,6 +71,13 @@ public class CardMapper {
       if (student != null) {
         studentNom = student.getLastName();
         studentPrenom = student.getFirstName();
+        studentMatricule = student.getStudenNumber();
+        studentEmail = student.getEmail();
+        if (student.getUniversite() != null) {
+          universiteNom = student.getUniversite().getCode() != null
+              ? student.getUniversite().getCode()
+              : student.getUniversite().getFullName();
+        }
       }
     }
 
@@ -79,6 +91,10 @@ public class CardMapper {
         .walletTrackingId(card.getWallet() != null ? card.getWallet().getTrackingId() : null)
         .studentNom(studentNom)
         .studentPrenom(studentPrenom)
+        .studentMatricule(studentMatricule)
+        .studentEmail(studentEmail)
+        .universiteNom(universiteNom)
+        .walletBalance(walletBalance)
         .build();
   }
 }

@@ -32,6 +32,7 @@ import java.util.UUID;
 public class DocumentMerchantServiceImpl implements DocumentMerchantService {
 
     private final DocumentMerchantRepository documentRepository;
+    private final com.backend.gns.core.parametrage.infrastructure.repositories.DocumentBanqueRepository documentBanqueRepository;
     private final MerchantRepository merchantRepository;
     private final DocumentMerchantMapper documentMerchantMapper; // Mapper dédié aux marchands
     private final BoutiqueRepository boutiqueRepository;
@@ -44,6 +45,18 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
 
         Merchant merchant = merchantRepository.findByTrackingId(merchantTrackingId)
                 .orElseThrow(() -> new RuntimeException("Marchand non trouvé"));
+
+        documentRepository.findByMerchantTrackingId(merchantTrackingId).stream()
+                .filter(d -> d.getDocumentType() == typeDocument)
+                .forEach(d -> {
+                    try {
+                        if (d.getProviderPublicId() != null) {
+                            cloudinaryService.supprimer(d.getProviderPublicId());
+                        }
+                    } catch (Exception ignored) {
+                    }
+                    documentRepository.delete(d);
+                });
 
         Map<String, String> uploadResult = cloudinaryService.upload(fichier, merchantTrackingId.toString());
 
@@ -93,12 +106,19 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
         if (docs.isEmpty()) {
             merchantRepository.findByTrackingId(merchantTrackingId).ifPresent(merchant -> {
                 compteBancaireRepository.findByProprietaireTrackingId(merchantTrackingId).ifPresent(compte -> {
-                    if (compte.getRibUrl() != null && !compte.getRibUrl().isEmpty()) {
+                    String ribUrl = compte.getRibUrl();
+                    if (ribUrl == null || ribUrl.isEmpty()) {
+                        ribUrl = documentBanqueRepository
+                                .findFirstByCompteBancaireTrackingIdAndDocumentTypeOrderByUploadedAtDesc(compte.getTrackingId(), TypeDocument.RIB)
+                                .map(com.backend.gns.core.parametrage.domain.models.DocumentBanque::getFileUrl)
+                                .orElse(null);
+                    }
+                    if (ribUrl != null && !ribUrl.isEmpty()) {
                         DocumentMerchant doc = DocumentMerchant.builder()
                                 .trackingId(UUID.randomUUID())
                                 .merchant(merchant)
                                 .documentType(TypeDocument.RIB)
-                                .fileUrl(compte.getRibUrl())
+                                .fileUrl(ribUrl)
                                 .status(StatutDocument.EN_ATTENTE)
                                 .uploadedAt(LocalDateTime.now())
                                 .build();
@@ -158,23 +178,50 @@ public class DocumentMerchantServiceImpl implements DocumentMerchantService {
     @Override
     @Transactional
     public DocumentResponse updateDocumentStatus(UUID trackingId, StatutDocument status, String rejectionReason) {
-        DocumentMerchant document = documentRepository.findByTrackingId(trackingId)
+        Optional<DocumentMerchant> optDoc = documentRepository.findByTrackingId(trackingId);
+        if (optDoc.isPresent()) {
+            DocumentMerchant document = optDoc.get();
+            document.setStatus(status);
+            if (status == StatutDocument.REJETE) {
+                document.setRejectionReason(rejectionReason);
+            } else {
+                document.setRejectionReason(null);
+            }
+
+            DocumentMerchant saved = documentRepository.save(document);
+            log.info("Statut du document marchand {} mis à jour: {}", trackingId, status);
+
+            if (saved.getMerchant() != null) {
+                reevaluateMerchantKyc(saved.getMerchant());
+            }
+
+            return documentMerchantMapper.toResponse(saved);
+        }
+
+        com.backend.gns.core.parametrage.domain.models.DocumentBanque bankDoc = documentBanqueRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new RuntimeException("Document non trouvé"));
 
-        document.setStatus(status);
+        bankDoc.setStatus(status);
         if (status == StatutDocument.REJETE) {
-            document.setRejectionReason(rejectionReason);
+            bankDoc.setRejectionReason(rejectionReason);
         } else {
-            document.setRejectionReason(null);
+            bankDoc.setRejectionReason(null);
+        }
+        com.backend.gns.core.parametrage.domain.models.DocumentBanque savedBankDoc = documentBanqueRepository.save(bankDoc);
+
+        if (savedBankDoc.getCompteBancaire() != null && savedBankDoc.getCompteBancaire().getProprietaire() instanceof Merchant merchant) {
+            reevaluateMerchantKyc(merchant);
         }
 
-        DocumentMerchant saved = documentRepository.save(document);
-        log.info("Statut du document marchand {} mis à jour: {}", trackingId, status);
-
-        if (saved.getMerchant() != null) {
-            reevaluateMerchantKyc(saved.getMerchant());
-        }
-
-        return documentMerchantMapper.toResponse(saved);
+        return DocumentResponse.builder()
+                .trackingId(savedBankDoc.getTrackingId())
+                .ownerTrackingId(savedBankDoc.getCompteBancaire() != null && savedBankDoc.getCompteBancaire().getProprietaire() != null
+                        ? savedBankDoc.getCompteBancaire().getProprietaire().getTrackingId() : null)
+                .documentType(savedBankDoc.getDocumentType())
+                .fileUrl(savedBankDoc.getFileUrl())
+                .status(savedBankDoc.getStatus())
+                .rejectionReason(savedBankDoc.getRejectionReason())
+                .uploadedAt(savedBankDoc.getUploadedAt())
+                .build();
     }
 }

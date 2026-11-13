@@ -174,26 +174,31 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<TransactionResponse> findByTrackingId(UUID trackingId) {
         return transactionRepository.findByTrackingId(trackingId).map(transactionMapper::toResponse);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TransactionResponse> findAll(Pageable pageable) {
         return transactionRepository.findAll(pageable).map(transactionMapper::toResponse);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TransactionResponse> findByBoutiqueId(UUID boutiqueId, Pageable pageable) {
         return transactionRepository.findByReceiverTrackingId(boutiqueId, pageable).map(transactionMapper::toResponse);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TransactionResponse> findByStudentId(UUID studentId, Pageable pageable) {
         return transactionRepository.findBySenderTrackingId(studentId, pageable).map(transactionMapper::toResponse);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TransactionResponse> findByLiquidationId(UUID liquidationTrackingId) {
         return transactionRepository.findByLiquidation_TrackingId(liquidationTrackingId).stream()
                 .map(transactionMapper::toResponse)
@@ -201,6 +206,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TransactionResponse> findByStudentLiquidationId(UUID studentLiquidationTrackingId) {
         return transactionRepository.findByStudentLiquidation_TrackingId(studentLiquidationTrackingId).stream()
                 .map(transactionMapper::toResponse)

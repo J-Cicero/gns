@@ -15,6 +15,7 @@ public interface UserService {
   UserResponse createAdminBanque(AdminBanqueRequest request);
   LoginResponse login(LoginRequest request);
   UserResponse getUserByTrackingId(UUID trackingId);
+  UserResponse updateUser(UUID trackingId, UserRequest request);
 
   UserResponse updateUserEtat(UUID trackingId, boolean etat);
   void deleteUser(UUID trackingId);

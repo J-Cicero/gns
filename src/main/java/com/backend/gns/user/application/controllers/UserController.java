@@ -58,6 +58,13 @@ public class UserController {
     return ResponseEntity.ok(userService.getUserByTrackingId(trackingId));
   }
 
+  @PutMapping("/update/{trackingId}")
+  @Operation(summary = "Update user profile", description = "Update user personal information")
+  public ResponseEntity<UserResponse> updateUser(
+      @PathVariable UUID trackingId, @RequestBody UserRequest request) {
+    return ResponseEntity.ok(userService.updateUser(trackingId, request));
+  }
+
   @PatchMapping("/etat/{trackingId}")
   @Operation(
       summary = "Update user activation status",

@@ -81,18 +81,35 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
 
         // 1. Upload sur Cloudinary
         var uploadResult = storageService.upload(file, "rib_" + compte.getTrackingId());
+        String ribUrl = (String) uploadResult.get("url");
+
+        // Supprimer les anciens RIB liés à ce compte bancaire pour éviter les doublons
+        documentBanqueRepository
+                .findAllByCompteBancaireTrackingIdAndDocumentTypeOrderByUploadedAtDesc(compte.getTrackingId(), TypeDocument.RIB)
+                .forEach(oldDoc -> {
+                    try {
+                        if (oldDoc.getProviderPublicId() != null) {
+                            storageService.supprimer(oldDoc.getProviderPublicId());
+                        }
+                    } catch (Exception ignored) {
+                    }
+                    documentBanqueRepository.delete(oldDoc);
+                });
 
         // 2. Création de l'entité DocumentBanque (Type RIB)
         DocumentBanque ribDoc = new DocumentBanque();
         ribDoc.setTrackingId(UUID.randomUUID());
         ribDoc.setDocumentType(TypeDocument.RIB);
-        ribDoc.setFileUrl((String) uploadResult.get("url"));
+        ribDoc.setFileUrl(ribUrl);
         ribDoc.setProviderPublicId((String) uploadResult.get("publicId"));
         ribDoc.setStatus(StatutDocument.EN_ATTENTE);
         ribDoc.setUploadedAt(LocalDateTime.now());
         ribDoc.setCompteBancaire(compte);
 
         documentBanqueRepository.save(ribDoc);
+
+        compte.setRibUrl(ribUrl);
+        compteBancaireRepository.save(compte);
 
         // On retourne le compte mis à jour AVEC les infos du RIB !
         return compteBancaireMapper.toResponse(compte, ribDoc);
@@ -117,6 +134,19 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
         // 1. Upload sur Cloudinary
         var uploadResult = storageService.upload(file, "mandat_" + compte.getTrackingId());
 
+        // Supprimer les anciens mandats liés à ce compte bancaire pour éviter les doublons
+        documentBanqueRepository
+                .findAllByCompteBancaireTrackingIdAndDocumentTypeOrderByUploadedAtDesc(compte.getTrackingId(), TypeDocument.MANDAT)
+                .forEach(oldDoc -> {
+                    try {
+                        if (oldDoc.getProviderPublicId() != null) {
+                            storageService.supprimer(oldDoc.getProviderPublicId());
+                        }
+                    } catch (Exception ignored) {
+                    }
+                    documentBanqueRepository.delete(oldDoc);
+                });
+
         // 2. Création de l'entité DocumentBanque (Type MANDAT)
         DocumentBanque mandatDoc = new DocumentBanque();
         mandatDoc.setTrackingId(UUID.randomUUID());
@@ -138,7 +168,7 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
         return compteBancaireRepository.findAll().stream()
                 .map(compte -> {
                     DocumentBanque ribDoc = documentBanqueRepository
-                            .findByCompteBancaireTrackingIdAndDocumentType(compte.getTrackingId(), TypeDocument.RIB)
+                            .findFirstByCompteBancaireTrackingIdAndDocumentTypeOrderByUploadedAtDesc(compte.getTrackingId(), TypeDocument.RIB)
                             .orElse(null);
                     return compteBancaireMapper.toResponse(compte, ribDoc);
                 })
@@ -155,7 +185,7 @@ public class CompteBancaireServiceImpl implements CompteBancaireService {
                 .map(compte -> {
                     // On récupère le RIB pour l'envoyer au Frontend
                     DocumentBanque ribDoc = documentBanqueRepository
-                            .findByCompteBancaireTrackingIdAndDocumentType(compte.getTrackingId(), TypeDocument.RIB)
+                            .findFirstByCompteBancaireTrackingIdAndDocumentTypeOrderByUploadedAtDesc(compte.getTrackingId(), TypeDocument.RIB)
                             .orElse(null);
                     return compteBancaireMapper.toResponse(compte, ribDoc);
                 });

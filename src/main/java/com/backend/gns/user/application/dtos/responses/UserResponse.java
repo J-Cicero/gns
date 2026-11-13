@@ -14,4 +14,6 @@ public record UserResponse(
     String role,
     LocalDateTime registrationDate,
     KycStatus kycStatus,
-    boolean isActive) {}
+    boolean isActive,
+    UUID walletTrackingId,
+    String walletStatus) {}

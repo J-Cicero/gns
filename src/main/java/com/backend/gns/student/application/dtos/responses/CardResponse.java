@@ -3,6 +3,7 @@ package com.backend.gns.student.application.dtos.responses;
 import com.backend.gns.student.domain.enums.CardStatut;
 import lombok.Builder;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,5 +19,9 @@ public record CardResponse(
     LocalDateTime expirationDate,
     UUID walletTrackingId,
     String studentNom,
-    String studentPrenom
+    String studentPrenom,
+    String studentMatricule,
+    String studentEmail,
+    String universiteNom,
+    BigDecimal walletBalance
 ) {}

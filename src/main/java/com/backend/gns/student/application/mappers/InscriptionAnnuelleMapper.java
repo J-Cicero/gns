@@ -66,6 +66,8 @@ public class InscriptionAnnuelleMapper {
         .allocatedBudget(inscription.getAllocatedBudget())
         .walletTrackingId((inscription.getStudent() != null && inscription.getStudent().getWallet() != null) ? inscription.getStudent().getWallet().getTrackingId() : null)
         .walletBalance((inscription.getStudent() != null && inscription.getStudent().getWallet() != null) ? inscription.getStudent().getWallet().getBalance() : java.math.BigDecimal.ZERO)
+        .walletStatus((inscription.getStudent() != null && inscription.getStudent().getWallet() != null && inscription.getStudent().getWallet().getStatus() != null) ? inscription.getStudent().getWallet().getStatus().name() : "INACTIF")
+        .universiteNom((inscription.getStudent() != null && inscription.getStudent().getUniversite() != null) ? (inscription.getStudent().getUniversite().getCode() != null ? inscription.getStudent().getUniversite().getCode() : inscription.getStudent().getUniversite().getFullName()) : null)
         .build();
   }
 }

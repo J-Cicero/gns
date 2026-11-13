@@ -3,12 +3,18 @@ package com.backend.gns.commerce.application.mappers;
 import com.backend.gns.commerce.application.dtos.requests.TransactionRequest;
 import com.backend.gns.commerce.application.dtos.responses.TransactionResponse;
 import com.backend.gns.commerce.domain.models.Transaction;
+import com.backend.gns.core.parametrage.domain.models.CompteBancaire;
+import com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class TransactionMapper {
+
+    private final CompteBancaireRepository compteBancaireRepository;
 
     public Transaction toEntity(TransactionRequest request) {
         if (request == null)
@@ -22,13 +28,30 @@ public class TransactionMapper {
         if (entity == null)
             return null;
 
-        // Résoudre senderName depuis la relation JPA (chargée grâce au JOIN FETCH dans le repository)
+        // Résoudre senderName, matricule et banque depuis la relation JPA
         String senderName = "Inconnu";
+        String studentMatricule = null;
+        UUID bankTrackingId = null;
+        String bankName = null;
+        String bankCode = null;
+
         if (entity.getSender() != null) {
             String fn = entity.getSender().getFirstName() != null ? entity.getSender().getFirstName() : "";
             String ln = entity.getSender().getLastName() != null ? entity.getSender().getLastName() : "";
             senderName = (fn + " " + ln).trim();
             if (senderName.isBlank()) senderName = "Étudiant";
+            studentMatricule = entity.getSender().getStudenNumber();
+
+            if (entity.getSender().getTrackingId() != null) {
+                CompteBancaire compte = compteBancaireRepository
+                        .findByProprietaireTrackingId(entity.getSender().getTrackingId())
+                        .orElse(null);
+                if (compte != null && compte.getBank() != null) {
+                    bankTrackingId = compte.getBank().getTrackingId();
+                    bankName = compte.getBank().getName();
+                    bankCode = compte.getBank().getCode();
+                }
+            }
         }
 
         // Résoudre receiverName depuis la relation JPA
@@ -43,6 +66,10 @@ public class TransactionMapper {
                 entity.getReceiver() != null ? entity.getReceiver().getTrackingId() : null,
                 senderName,
                 receiverName,
+                studentMatricule,
+                bankTrackingId,
+                bankName,
+                bankCode,
                 entity.getAmount(),
                 entity.getAmountDebited(),
                 entity.getAmountCredited(),
