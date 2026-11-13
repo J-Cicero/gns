@@ -153,13 +153,36 @@ public class InscriptionAnnuelleServiceImpl implements InscriptionAnnuelleServic
     ins.setStatus(com.backend.gns.student.domain.enums.StatutInscription.ACTIVE);
     updateBudget(ins);
 
-    return inscriptionMapper.toResponse(inscriptionRepository.save(ins));
+    InscriptionAnnuelle saved = inscriptionRepository.save(ins);
+
+    // Notification à la Banque pour vérification KYC (RIB & Mandat)
+    String studentName = (saved.getStudent() != null)
+        ? saved.getStudent().getFirstName() + " " + saved.getStudent().getLastName()
+        : "Étudiant";
+
+    notificationService.createNotification(
+        "Dossier Étudiant Prêt pour Vérification Bancaire",
+        "L'inscription de " + studentName + " a été validée par l'Admin GNS. Veuillez vérifier son RIB et son Mandat pour débloquer son portefeuille StudCash.",
+        "ADMIN_BANQUE",
+        "DOSSIER_ETUDIANT"
+    );
+
+    return inscriptionMapper.toResponse(saved);
   }
 
   private void updateBudget(InscriptionAnnuelle inscription) {
-    // Fixed budget application for enrolled students
-    BigDecimal newBudget = new BigDecimal("30000"); // To be replaced by ParametreGns if necessary
-    inscription.setAllocatedBudget(newBudget);
+    BigDecimal budget = BigDecimal.valueOf(25000);
+    try {
+      if (parametreGnsService != null) {
+        BigDecimal val = parametreGnsService.getValeurAsBigDecimal(com.backend.gns.core.parametrage.domain.enums.TypeParametreGns.MONTANT_BOURSE_BASE);
+        if (val != null && val.compareTo(BigDecimal.ZERO) > 0) {
+          budget = val;
+        }
+      }
+    } catch (Exception e) {
+      budget = BigDecimal.valueOf(25000);
+    }
+    inscription.setAllocatedBudget(budget);
   }
 
   @Override

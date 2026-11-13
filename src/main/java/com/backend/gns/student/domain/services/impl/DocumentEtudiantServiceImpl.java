@@ -40,6 +40,7 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
     private final StudentRepository studentRepository;
     private final DocumentEtudiantMapper documentMapper;
     private final CloudinaryStorageService cloudinaryService;
+    private final com.backend.gns.core.notification.domain.services.NotificationService notificationService;
 
 
     @Override
@@ -154,6 +155,15 @@ public class DocumentEtudiantServiceImpl implements DocumentEtudiantService {
             student.setKycStatus(KycStatus.VALIDE);
             if (student.getWallet() != null) {
                 student.getWallet().setStatus(WalletStatus.ACTIF);
+            }
+            if (notificationService != null) {
+                String studentName = student.getFirstName() + " " + student.getLastName();
+                notificationService.createNotification(
+                    "Portefeuille Débloqué par la Banque",
+                    "Le RIB et le Mandat de l'étudiant " + studentName + " ont été validés par la Banque. Son portefeuille StudCash est désormais ACTIF.",
+                    "ADMIN_GNS",
+                    "ACTIVATION_WALLET"
+                );
             }
         } else {
             boolean hasRejeteCritical = docs.stream()
