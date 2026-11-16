@@ -48,12 +48,24 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("SELECT COALESCE(SUM(t.amountCredited), 0) FROM Transaction t WHERE t.status = 'VALIDE' AND t.retrievedByBoutique = false")
     java.math.BigDecimal sumNetCommercants();
 
+    @Query("SELECT COALESCE(SUM(t.amountCredited), 0) FROM Transaction t WHERE t.status = 'VALIDE' AND t.retrievedByBoutique = false AND t.createdAt BETWEEN :start AND :end")
+    java.math.BigDecimal sumNetCommercantsBetween(@org.springframework.data.repository.query.Param("start") LocalDateTime start, @org.springframework.data.repository.query.Param("end") LocalDateTime end);
+
     @Query("SELECT COALESCE(SUM(t.bankCommission), 0) FROM Transaction t WHERE t.status = 'VALIDE'")
     java.math.BigDecimal sumBankCommissions();
+
+    @Query("SELECT COALESCE(SUM(t.bankCommission), 0) FROM Transaction t WHERE t.status = 'VALIDE' AND t.createdAt BETWEEN :start AND :end")
+    java.math.BigDecimal sumBankCommissionsBetween(@org.springframework.data.repository.query.Param("start") LocalDateTime start, @org.springframework.data.repository.query.Param("end") LocalDateTime end);
 
     @Query("SELECT COALESCE(SUM(t.gnsCommission), 0) FROM Transaction t WHERE t.status = 'VALIDE'")
     java.math.BigDecimal sumGnsCommissions();
 
+    @Query("SELECT COALESCE(SUM(t.gnsCommission), 0) FROM Transaction t WHERE t.status = 'VALIDE' AND t.createdAt BETWEEN :start AND :end")
+    java.math.BigDecimal sumGnsCommissionsBetween(@org.springframework.data.repository.query.Param("start") LocalDateTime start, @org.springframework.data.repository.query.Param("end") LocalDateTime end);
+
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.status = 'VALIDE'")
     java.math.BigDecimal sumTotalDepenses();
+
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.status = 'VALIDE' AND t.createdAt BETWEEN :start AND :end")
+    java.math.BigDecimal sumTotalDepensesBetween(@org.springframework.data.repository.query.Param("start") LocalDateTime start, @org.springframework.data.repository.query.Param("end") LocalDateTime end);
 }

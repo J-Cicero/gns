@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 public interface BankPortalService {
     BankFinancialSummaryResponse getFinancialSummary(UUID bankOperatorTrackingId);
+    BankFinancialSummaryResponse getFinancialSummary(UUID bankOperatorTrackingId, UUID scolariteYearTrackingId);
     BanqueInfoResponse getBanqueInfo(UUID bankOperatorTrackingId);
     List<StudentLiquidationInfoResponse> getStudents(UUID bankOperatorTrackingId);
     List<BoutiqueLiquidationInfoResponse> getBoutiques(UUID bankOperatorTrackingId);

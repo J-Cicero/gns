@@ -19,6 +19,10 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
   Optional<Wallet> findByTrackingId(UUID trackingId);
 
+  @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+  @Query("SELECT w FROM Wallet w WHERE w.trackingId = :trackingId")
+  Optional<Wallet> findByTrackingIdWithLock(@Param("trackingId") UUID trackingId);
+
   Page<Wallet> findByWalletType(WalletType walletType, Pageable pageable);
 
   Page<Wallet> findByStatus(WalletStatus status, Pageable pageable);

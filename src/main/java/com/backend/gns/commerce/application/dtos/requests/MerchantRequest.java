@@ -1,5 +1,6 @@
 package com.backend.gns.commerce.application.dtos.requests;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,11 @@ public record MerchantRequest(
     String phoneNumber,
     LocalDateTime birthDate,
     String birthPlace,
+    @JsonAlias({"businessName", "nomBoutique", "boutiqueName", "name"})
     String businessName,
+    @JsonAlias({"registrationNumber", "rccm", "nif"})
     String registrationNumber,
+    @JsonAlias({"bankTrackingId", "banqueTrackingId"})
     UUID bankTrackingId,
+    @JsonAlias({"accountNumber", "numeroCompte"})
     String accountNumber) {}

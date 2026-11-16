@@ -37,23 +37,52 @@ public class BankPortalServiceImpl implements BankPortalService {
     private final StudentRepository studentRepository;
     private final BoutiqueRepository boutiqueRepository;
     private final MerchantRepository merchantRepository;
+    private final com.backend.gns.student.domain.services.ScolariteYearService scolariteYearService;
 
     @Override
     @Transactional(readOnly = true)
     public BankFinancialSummaryResponse getFinancialSummary(UUID bankOperatorTrackingId) {
-        log.info("Fetching financial summary for bank operator {}", bankOperatorTrackingId);
+        return getFinancialSummary(bankOperatorTrackingId, null);
+    }
 
-        BigDecimal netCommercants = transactionRepository.sumNetCommercants();
-        BigDecimal bankCommissions = transactionRepository.sumBankCommissions();
-        BigDecimal gnsCommissions = transactionRepository.sumGnsCommissions();
-        BigDecimal totalDepenses = transactionRepository.sumTotalDepenses();
-        // Assuming scolarite universites will be handled later. For now we set 0.
+    @Override
+    @Transactional(readOnly = true)
+    public BankFinancialSummaryResponse getFinancialSummary(UUID bankOperatorTrackingId, UUID scolariteYearTrackingId) {
+        log.info("Fetching financial summary for bank operator {} and scolariteYear {}", bankOperatorTrackingId, scolariteYearTrackingId);
+
+        java.time.LocalDateTime start;
+        java.time.LocalDateTime end;
+
+        if (scolariteYearTrackingId != null) {
+            var yearOpt = scolariteYearService.findByTrackingId(scolariteYearTrackingId);
+            if (yearOpt.isPresent()) {
+                var year = yearOpt.get();
+                start = year.startDate().atStartOfDay();
+                end = year.endDate().atTime(23, 59, 59);
+            } else {
+                start = java.time.LocalDateTime.now().withDayOfYear(1).withHour(0).withMinute(0).withSecond(0);
+                end = start.plusYears(1).minusNanos(1);
+            }
+        } else {
+            var activeYearOpt = scolariteYearService.findActiveYear();
+            if (activeYearOpt.isPresent()) {
+                var year = activeYearOpt.get();
+                start = year.startDate().atStartOfDay();
+                end = year.endDate().atTime(23, 59, 59);
+            } else {
+                start = java.time.LocalDateTime.now().withDayOfYear(1).withHour(0).withMinute(0).withSecond(0);
+                end = start.plusYears(1).minusNanos(1);
+            }
+        }
+
+        BigDecimal netCommercants = transactionRepository.sumNetCommercantsBetween(start, end);
+        BigDecimal bankCommissions = transactionRepository.sumBankCommissionsBetween(start, end);
+        BigDecimal gnsCommissions = transactionRepository.sumGnsCommissionsBetween(start, end);
+        BigDecimal totalDepenses = transactionRepository.sumTotalDepensesBetween(start, end);
         BigDecimal totalScolarite = BigDecimal.ZERO;
 
-        // Calculate monthly profits for the current year
-        java.time.LocalDateTime startOfYear = java.time.LocalDateTime.now().withDayOfYear(1).withHour(0).withMinute(0).withSecond(0);
-        java.time.LocalDateTime endOfYear = startOfYear.plusYears(1).minusNanos(1);
-        java.util.List<com.backend.gns.commerce.domain.models.Transaction> yearTxs = transactionRepository.findByCreatedAtBetween(startOfYear, endOfYear);
+        // Calculate monthly profits for the target period
+        java.util.List<com.backend.gns.commerce.domain.models.Transaction> yearTxs = transactionRepository.findByCreatedAtBetween(start, end);
         
         java.util.List<BigDecimal> monthlyProfits = new java.util.ArrayList<>();
         for (int i = 1; i <= 12; i++) {

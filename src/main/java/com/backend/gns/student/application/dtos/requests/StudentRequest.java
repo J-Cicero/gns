@@ -1,6 +1,6 @@
 package com.backend.gns.student.application.dtos.requests;
 
-import com.backend.gns.core.parametrage.domain.enums.KycStatus;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -16,8 +16,11 @@ public record StudentRequest(
         LocalDateTime birthDate,
         String birthPlace,
         String transactionPin,
-        String studentNumber, // Corrigé !
+        @JsonAlias({"studentNumber", "studentIdNumber", "matricule"})
+        String studentNumber,
         UUID universiteTrackingId,
+        @JsonAlias({"banqueTrackingId", "bankTrackingId"})
         UUID banqueTrackingId,
+        @JsonAlias({"numeroCompte", "accountNumber"})
         String numeroCompte
    ) {}

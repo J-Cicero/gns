@@ -50,6 +50,17 @@ public class WalletServiceImpl implements WalletService {
             });
   }
 
+  private Wallet findWalletWithLockOrThrow(UUID trackingId) {
+    return walletRepository
+        .findByTrackingIdWithLock(trackingId)
+        .orElseThrow(
+            () -> {
+              log.warn("Portefeuille introuvable avec trackingId: {}", trackingId);
+              return new com.backend.gns.user.domain.exception.ResourceNotFoundException(
+                  "Portefeuille non trouvé avec l'ID: " + trackingId);
+            });
+  }
+
   private void updateWalletBalance(Wallet wallet, BigDecimal amount, boolean isCredit) {
     if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
       throw new IllegalArgumentException("Le montant doit être strictement positif.");
@@ -207,13 +218,13 @@ public class WalletServiceImpl implements WalletService {
   @Transactional
   @Override
   public void crediter(UUID walletTrackingId, BigDecimal montant) {
-    updateWalletBalance(findWalletOrThrow(walletTrackingId), montant, true);
+    updateWalletBalance(findWalletWithLockOrThrow(walletTrackingId), montant, true);
   }
 
   @Transactional
   @Override
   public void debiter(UUID walletTrackingId, BigDecimal montant) {
-    updateWalletBalance(findWalletOrThrow(walletTrackingId), montant, false);
+    updateWalletBalance(findWalletWithLockOrThrow(walletTrackingId), montant, false);
   }
 
   @Override

@@ -23,8 +23,9 @@ public class BankPortalController {
 
     @GetMapping("/summary")
     public ResponseEntity<BankFinancialSummaryResponse> getFinancialSummary(
-            @RequestParam UUID bankOperatorTrackingId) {
-        return ResponseEntity.ok(bankPortalService.getFinancialSummary(bankOperatorTrackingId));
+            @RequestParam UUID bankOperatorTrackingId,
+            @RequestParam(required = false) UUID scolariteYearTrackingId) {
+        return ResponseEntity.ok(bankPortalService.getFinancialSummary(bankOperatorTrackingId, scolariteYearTrackingId));
     }
 
     @GetMapping("/info")
