@@ -27,6 +27,12 @@ public interface VersementRepository extends JpaRepository<Versement, Long> {
 
   Page<Versement> findByTypeVersement(VersementType typeVersement, Pageable pageable);
 
+  @Query("SELECT v FROM Versement v WHERE v.wallet.trackingId = :walletTrackingId AND v.statut = :statut AND v.typeVersement = :type ORDER BY v.dateVersement DESC")
+  List<Versement> findLatestByWalletAndStatutAndType(
+      @Param("walletTrackingId") UUID walletTrackingId,
+      @Param("statut") VersementStatut statut,
+      @Param("type") VersementType type);
+
  List<Versement> findByDateVersementBetween(
           LocalDateTime start, LocalDateTime end);
 

@@ -56,14 +56,41 @@ public class StudentController {
     return ResponseEntity.ok(documentService.findByUserTrackingId(trackingId, pageable));
   }
 
+  @PostMapping(consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+  @Operation(summary = "Créer un étudiant en format JSON")
+  public ResponseEntity<StudentResponse> createJson(@RequestBody StudentRequest request) {
+    StudentResponse response = studentService.create(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
   @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "Créer un étudiant avec documents")
   public ResponseEntity<StudentResponse> create(
-      @RequestPart("student") StudentRequest request,
+      @RequestPart(value = "student", required = false) StudentRequest studentRequest,
+      @RequestPart(value = "request", required = false) String requestJson,
+      @RequestParam(value = "request", required = false) String requestParam,
       @RequestPart(value = "rib", required = false) MultipartFile rib,
       @RequestPart(value = "mandat", required = false) MultipartFile mandat) {
     
-    StudentResponse response = studentService.create(request);
+    StudentRequest req = studentRequest;
+    if (req == null) {
+      String json = (requestJson != null && !requestJson.isBlank()) ? requestJson : requestParam;
+      if (json != null && !json.isBlank()) {
+        try {
+          com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+          mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+          req = mapper.readValue(json, StudentRequest.class);
+        } catch (Exception e) {
+          throw new RuntimeException("Erreur lors de la lecture des données de l'étudiant: " + e.getMessage(), e);
+        }
+      }
+    }
+
+    if (req == null) {
+      throw new IllegalArgumentException("Les données de l'étudiant sont obligatoires (part 'request' ou 'student').");
+    }
+    
+    StudentResponse response = studentService.create(req);
     
     if (rib != null) {
       documentService.uploadDocument(rib, response.trackingId(), null, TypeDocument.RIB);

@@ -68,11 +68,11 @@ public class WalletServiceImpl implements WalletService {
     
     if (isCredit) {
       ensureWalletCanReceiveFunds(wallet);
-      if (wallet.getLimitAmount() == null) {
-        wallet.setLimitAmount(wallet.getWalletType() == WalletType.STUDENT ? new BigDecimal("30000") : new BigDecimal("100000"));
+      if (wallet.getLimitAmount() == null || (wallet.getWalletType() == WalletType.STUDENT && wallet.getLimitAmount().compareTo(new BigDecimal("144000")) < 0)) {
+        wallet.setLimitAmount(wallet.getWalletType() == WalletType.STUDENT ? new BigDecimal("144000") : new BigDecimal("500000"));
       }
       if (wallet.getBalance().add(amount).compareTo(wallet.getLimitAmount()) > 0) {
-        throw new IllegalStateException("Crédit refusé : plafond dépassé.");
+        throw new IllegalStateException("Crédit refusé : le montant total (" + wallet.getBalance().add(amount) + " FCFA) dépasserait le plafond autorisé (" + wallet.getLimitAmount() + " FCFA).");
       }
       wallet.setBalance(wallet.getBalance().add(amount));
       if (wallet.getStatus() == WalletStatus.INACTIF && wallet.getBalance().compareTo(BigDecimal.ZERO) > 0) {

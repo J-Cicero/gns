@@ -51,6 +51,8 @@ public class StudentServiceImpl implements StudentService {
   private final ParametreGnsRepository parametreGnsRepository;
   private final com.backend.gns.core.parametrage.infrastructure.repositories.BanqueRepository banqueRepository;
   private final com.backend.gns.core.parametrage.infrastructure.repositories.CompteBancaireRepository compteBancaireRepository;
+  private final com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository scolariteYearRepository;
+  private final com.backend.gns.student.infrastructure.repositories.InscriptionAnnuelleRepository inscriptionAnnuelleRepository;
 
   private Pageable normalize(Pageable pageable) {
     int size = pageable.getPageSize() > 0 ? pageable.getPageSize() : DEFAULT_PAGE_SIZE;
@@ -83,15 +85,16 @@ public class StudentServiceImpl implements StudentService {
       student.setTransactionPinHash(passwordEncoder.encode(request.transactionPin()));
     }
 
-    ParametreGns parametreGns = parametreGnsRepository.findByNomParametre(TypeParametreGns.MONTANT_BOURSE_MAJORATION)
-        .orElseThrow(() -> new ResourceNotFoundException("Paramètre de majoration de bourse non trouvé"));
+    BigDecimal baseBourse = parametreGnsRepository.findByNomParametre(TypeParametreGns.MONTANT_BOURSE_BASE)
+        .map(ParametreGns::getValeurAsBigDecimal)
+        .orElse(BigDecimal.valueOf(36000.0));
+    BigDecimal limit = (baseBourse != null) ? baseBourse.multiply(BigDecimal.valueOf(4)) : BigDecimal.valueOf(144000.0);
     Wallet wallet = new Wallet();
     wallet.setTrackingId(UUID.randomUUID());
     wallet.setWalletType(WalletType.STUDENT);
     wallet.setStatus(WalletStatus.INACTIF);
     wallet.setBalance(BigDecimal.ZERO);
-    BigDecimal limit = parametreGns.getValeurAsBigDecimal();
-    wallet.setLimitAmount(limit != null ? limit : BigDecimal.valueOf(30000.0));
+    wallet.setLimitAmount(limit);
     wallet.setCreatedAt(LocalDateTime.now());
 
     student.setWallet(wallet);
@@ -111,6 +114,27 @@ public class StudentServiceImpl implements StudentService {
 
       compteBancaireRepository.save(compte);
       log.info("Compte bancaire créé pour l'étudiant");
+    }
+
+    // Inscription annuelle automatique pour l'année académique ouverte
+    try {
+      scolariteYearRepository.findByIsOpenTrue().ifPresent(activeYear -> {
+        var existing = inscriptionAnnuelleRepository.findByStudentTrackingIdAndLabel(savedStudent.getTrackingId(), activeYear.getLabel());
+        if (existing.isEmpty()) {
+          com.backend.gns.student.domain.models.InscriptionAnnuelle inscription = new com.backend.gns.student.domain.models.InscriptionAnnuelle();
+          inscription.setTrackingId(UUID.randomUUID());
+          inscription.setStudent(savedStudent);
+          inscription.setScolariteYear(activeYear);
+          inscription.setStatus(com.backend.gns.student.domain.enums.StatutInscription.EN_ATTENTE);
+          inscription.setAllocatedBudget(baseBourse != null ? baseBourse : BigDecimal.valueOf(36000.0));
+          inscription.setEligibleForScholarship(true);
+          inscription.setScholarshipType(null);
+          inscriptionAnnuelleRepository.save(inscription);
+          log.info("Inscription annuelle automatique créée pour l'étudiant {} sur l'année {}", savedStudent.getEmail(), activeYear.getLabel());
+        }
+      });
+    } catch (Exception e) {
+      log.warn("Impossible de créer l'inscription annuelle automatique: {}", e.getMessage());
     }
 
     log.info("Identité étudiante créée avec succès, trackingId: {}", savedStudent.getTrackingId());

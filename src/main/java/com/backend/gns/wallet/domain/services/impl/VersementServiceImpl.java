@@ -79,6 +79,23 @@ public class VersementServiceImpl implements VersementService {
       throw new IllegalArgumentException("L'identifiant du portefeuille (walletTrackingId) est obligatoire.");
     }
 
+    // Règle de régulation trimestrielle : un étudiant ne peut percevoir qu'une tranche de bourse par trimestre (tous les 3 mois)
+    if (request.paymentType() == null || request.paymentType() == VersementType.BOURSE_INITIALE) {
+      List<Versement> previous = versementRepository.findLatestByWalletAndStatutAndType(
+          request.walletTrackingId(), VersementStatut.VALIDEE, VersementType.BOURSE_INITIALE);
+      if (!previous.isEmpty() && previous.get(0).getDateVersement() != null) {
+        LocalDateTime lastDate = previous.get(0).getDateVersement();
+        LocalDateTime nextEligibleDate = lastDate.plusMonths(3);
+        if (LocalDateTime.now().isBefore(nextEligibleDate)) {
+          long daysRemaining = java.time.temporal.ChronoUnit.DAYS.between(LocalDateTime.now(), nextEligibleDate);
+          throw new IllegalStateException("Versement trimestriel : cet étudiant a déjà bénéficié d'un versement le " 
+              + lastDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) 
+              + ". Le prochain versement sera disponible dans " + daysRemaining + " jour(s) (à partir du " 
+              + nextEligibleDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ").");
+        }
+      }
+    }
+
     // Créditer le wallet
     walletService.crediter(request.walletTrackingId(), request.amount());
 
