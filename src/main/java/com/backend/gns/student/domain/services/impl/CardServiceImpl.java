@@ -10,6 +10,7 @@ import com.backend.gns.student.domain.models.Card;
 import com.backend.gns.student.domain.models.Student;
 import com.backend.gns.student.domain.services.CardService;
 import com.backend.gns.student.infrastructure.repositories.CardRepository;
+import com.backend.gns.student.infrastructure.repositories.ScolariteYearRepository;
 import com.backend.gns.student.infrastructure.repositories.StudentRepository;
 import com.backend.gns.wallet.domain.models.Wallet;
 import com.backend.gns.wallet.domain.services.WalletService;
@@ -35,18 +36,21 @@ public class CardServiceImpl implements CardService {
   private final StudentRepository studentRepository;
   private final WalletService walletService;
   private final ParametreGnsService parametreGnsService;
+  private final ScolariteYearRepository scolariteYearRepository;
 
   public CardServiceImpl(
       CardRepository cardRepository,
       CardMapper cardMapper,
       StudentRepository studentRepository,
       WalletService walletService,
-      ParametreGnsService parametreGnsService) {
+      ParametreGnsService parametreGnsService,
+      ScolariteYearRepository scolariteYearRepository) {
     this.cardRepository = cardRepository;
     this.cardMapper = cardMapper;
     this.studentRepository = studentRepository;
     this.walletService = walletService;
     this.parametreGnsService = parametreGnsService;
+    this.scolariteYearRepository = scolariteYearRepository;
   }
 
   private Pageable normalize(Pageable pageable) {
@@ -76,8 +80,12 @@ public class CardServiceImpl implements CardService {
       card.setQrCodeData(secureToken);
     }
 
+    LocalDateTime activeYearEndDate = scolariteYearRepository.findByIsOpenTrue()
+        .map(year -> year.getEndDate().atTime(23, 59, 59))
+        .orElseGet(() -> LocalDateTime.now().plusYears(1));
+
     card.setEmissionDate(LocalDateTime.now());
-    card.setExpirationDate(LocalDateTime.now().plusYears(1));
+    card.setExpirationDate(activeYearEndDate);
 
     Card savedCard = cardRepository.save(card);
     return cardMapper.toResponse(savedCard);
@@ -129,8 +137,12 @@ public class CardServiceImpl implements CardService {
     card.setTrackingId(UUID.randomUUID());
     card.setWallet(wallet);
     card.setStatus(CardStatut.EN_ATTENTE);
+    LocalDateTime activeYearEndDate = scolariteYearRepository.findByIsOpenTrue()
+        .map(year -> year.getEndDate().atTime(23, 59, 59))
+        .orElseGet(() -> LocalDateTime.now().plusYears(1));
+
     card.setEmissionDate(LocalDateTime.now());
-    card.setExpirationDate(LocalDateTime.now().plusYears(1));
+    card.setExpirationDate(activeYearEndDate);
 
     String cardNumber = "STC-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     card.setCardNumber(cardNumber);
